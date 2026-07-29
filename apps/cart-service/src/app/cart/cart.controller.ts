@@ -121,6 +121,15 @@ export class CartController {
   ) {
     return this.cartService.validateCart(parseActor(userId, cartToken), city);
   }
+
+  /** Đánh dấu giỏ ACTIVE → CONVERTED sau khi tạo đơn thành công (order-service). */
+  @Post('convert')
+  convert(
+    @Headers('x-user-id') userId?: string,
+    @Body() body?: Record<string, unknown>,
+  ) {
+    return this.cartService.convertCart(parseActor(userId), body as never);
+  }
 }
 
 @ApiTags('wishlist')

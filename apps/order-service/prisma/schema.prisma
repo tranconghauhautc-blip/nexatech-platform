@@ -1,0 +1,211 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("ORDER_DATABASE_URL")
+}
+
+enum OrderStatus {
+  PENDING
+  AWAITING_PAYMENT
+  CONFIRMED
+  PROCESSING
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  CANCELLED
+  RETURN_REQUESTED
+  RETURNED
+  FAILED
+}
+
+enum DeliveryMethod {
+  STANDARD
+  EXPRESS
+  STORE_PICKUP
+}
+
+enum PaymentMethod {
+  COD
+  MOCK
+  VNPAY
+}
+
+enum PaymentStatus {
+  UNPAID
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+  REFUND_PENDING
+}
+
+enum PackageStatus {
+  PENDING
+  ALLOCATED
+  READY_TO_SHIP
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum LocationType {
+  warehouse
+  store
+}
+
+model Order {
+  id                   String         @id @default(uuid())
+  orderCode            String         @unique
+  customerId           String
+  customerDisplayName  String?
+  customerEmail        String?
+  customerPhone        String?
+  status               OrderStatus    @default(PENDING)
+  version              Int            @default(0)
+  cartId               String
+  reservationId        String?
+  deliveryMethod       DeliveryMethod
+  deliverySlot         String?
+  pickupStoreId        String?
+  paymentMethod        PaymentMethod
+  paymentStatus        PaymentStatus  @default(UNPAID)
+  paymentReference     String?
+  paidAt               DateTime?
+  currency             String         @default("VND")
+  merchandiseSubtotal  Int
+  shippingFee          Int
+  discountTotal        Int            @default(0)
+  grandTotal           Int
+  totalQuantity        Int
+  cancelReason         String?
+  cancelledAt          DateTime?
+  inventoryReleased    Boolean        @default(false)
+  refundContractStatus String?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  items    OrderItem[]
+  address  OrderAddressSnapshot?
+  history  OrderStatusHistory[]
+  packages OrderPackage[]
+
+  @@index([customerId, createdAt])
+  @@index([status])
+  @@index([reservationId])
+}
+
+model OrderItem {
+  id                String   @id @default(uuid())
+  orderId           String
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  skuId             String
+  skuCode           String
+  skuName           String
+  productId         String
+  productName       String
+  variantAttributes Json     @default("{}")
+  unitPrice         Int
+  quantity          Int
+  lineSubtotal      Int
+  currency          String   @default("VND")
+
+  packageItems OrderPackageItem[]
+
+  @@index([orderId])
+  @@index([skuCode])
+}
+
+model OrderAddressSnapshot {
+  id             String @id @default(uuid())
+  orderId        String @unique
+  order          Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  recipientName  String
+  recipientPhone String
+  line1          String
+  line2          String?
+  ward           String?
+  district       String?
+  city           String
+  province       String?
+  postalCode     String?
+  country        String @default("VN")
+  fullText       String
+}
+
+model OrderStatusHistory {
+  id         String       @id @default(uuid())
+  orderId    String
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus?
+  toStatus   OrderStatus
+  actorId    String
+  actorType  String
+  reason     String?
+  createdAt  DateTime     @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+model OrderPackage {
+  id                  String        @id @default(uuid())
+  orderId             String
+  order               Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  packageCode         String
+  status              PackageStatus @default(PENDING)
+  sourceLocationType  LocationType
+  sourceLocationId    String
+  shippingProvider    String?
+  trackingCode        String?
+  estimatedDeliveryAt DateTime?
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  items OrderPackageItem[]
+
+  @@unique([orderId, packageCode])
+  @@index([orderId])
+}
+
+model OrderPackageItem {
+  id          String       @id @default(uuid())
+  packageId   String
+  package     OrderPackage @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  orderItemId String
+  orderItem   OrderItem    @relation(fields: [orderItemId], references: [id], onDelete: Cascade)
+  skuCode     String
+  quantity    Int
+
+  @@index([packageId])
+  @@index([orderItemId])
+}
+
+model OrderIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  routingKey  String
+  payloadJson Json
+  traceId     String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([publishedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

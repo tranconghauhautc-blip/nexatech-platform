@@ -278,4 +278,31 @@ describe('CartService', () => {
       publisher.published.some((e) => e.eventType === EventTypes.CART_EXPIRED),
     ).toBe(true);
   });
+
+  it('converts active customer cart and creates a fresh empty cart', async () => {
+    const sku = seedSku(catalog);
+    inventory.seed(sku.skuCode, 10);
+    const customer = { userId: 'cust-cv', customerId: 'cust-cv' };
+    await service.addItem(customer, {
+      skuCode: sku.skuCode,
+      quantity: 1,
+    });
+    const converted = await service.convertCart(customer, {
+      orderId: 'order-1',
+      idempotencyKey: 'convert-key-1',
+    });
+    expect(converted.items).toHaveLength(0);
+    expect(converted.status).toBe('ACTIVE');
+    expect(
+      publisher.published.some(
+        (e) => e.eventType === EventTypes.CART_CONVERTED,
+      ),
+    ).toBe(true);
+
+    const again = await service.convertCart(customer, {
+      orderId: 'order-1',
+      idempotencyKey: 'convert-key-1',
+    });
+    expect(again.id).toBe(converted.id);
+  });
 });

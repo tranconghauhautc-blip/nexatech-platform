@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -89,6 +89,17 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - Optimistic locking qua `Cart.version`; mutation quan trọng hỗ trợ `idempotencyKey`.
 - Catalog/Inventory gọi REST qua `CATALOG_SERVICE_URL` / `INVENTORY_SERVICE_URL` (timeout + retry), không import Prisma schema của service khác.
 - Auth tạm: `x-user-id` (customer) và `x-cart-token` (guest) — không tin customerId từ body.
+
+## ADR-026 — Order checkout orchestration + outbox (M7)
+
+- **Quyết định:** `order-service` sở hữu DB `nexatech_order`. Tạo đơn chỉ từ authenticated cart: refresh + validate cart, re-price từ catalog, reserve inventory, persist order + packages + outbox trong local transaction, rồi convert cart. Không tin giá/SKU/totals/customerId từ body.
+- Order code dạng `NT-YYYYMMDD-XXXXXX` (unique, không dùng raw UUID làm mã hiển thị).
+- Money: integer VND; `discountTotal` luôn 0 (không voucher).
+- State machine nghiêm ngặt; mọi transition ghi `OrderStatusHistory` + outbox event sau commit.
+- Hủy: release reservation một lần (`inventoryReleased`); `refundContractStatus` chuẩn bị cho payment-service.
+- Packages nhóm theo `(locationType, locationId)` từ kết quả reservation — không hard-code một kho.
+- Sync REST tới cart/catalog/inventory; auth tạm `x-user-id` / `x-user-roles`.
+- Compensation: nếu convert cart thất bại sau persist → release reservation + chuyển `FAILED`.
 
 ## ADR-007 — RBAC roles
 

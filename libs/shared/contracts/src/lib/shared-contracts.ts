@@ -505,3 +505,241 @@ export interface CartValidateResponse {
     quantity: number;
   }>;
 }
+
+export const convertCartRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ConvertCartRequest = z.infer<typeof convertCartRequestSchema>;
+
+/** Phí ship snapshot (VND integer) — không voucher. */
+export const ORDER_SHIPPING_FEE_VND = {
+  STANDARD: 30_000,
+  EXPRESS: 50_000,
+  STORE_PICKUP: 0,
+} as const;
+
+export const orderStatusSchema = z.enum([
+  'PENDING',
+  'AWAITING_PAYMENT',
+  'CONFIRMED',
+  'PROCESSING',
+  'READY_TO_SHIP',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELLED',
+  'RETURN_REQUESTED',
+  'RETURNED',
+  'FAILED',
+]);
+export type OrderStatus = z.infer<typeof orderStatusSchema>;
+
+export const deliveryMethodSchema = z.enum([
+  'STANDARD',
+  'EXPRESS',
+  'STORE_PICKUP',
+]);
+export type DeliveryMethod = z.infer<typeof deliveryMethodSchema>;
+
+export const paymentMethodSchema = z.enum(['COD', 'MOCK', 'VNPAY']);
+export type PaymentMethod = z.infer<typeof paymentMethodSchema>;
+
+export const paymentStatusSchema = z.enum([
+  'UNPAID',
+  'PENDING',
+  'PAID',
+  'FAILED',
+  'REFUNDED',
+  'REFUND_PENDING',
+]);
+export type PaymentStatus = z.infer<typeof paymentStatusSchema>;
+
+export const packageStatusSchema = z.enum([
+  'PENDING',
+  'ALLOCATED',
+  'READY_TO_SHIP',
+  'SHIPPED',
+  'DELIVERED',
+  'CANCELLED',
+]);
+export type PackageStatus = z.infer<typeof packageStatusSchema>;
+
+export const orderAddressSchema = z.object({
+  recipientName: z.string().trim().min(1).max(120),
+  recipientPhone: z.string().trim().min(8).max(20),
+  line1: z.string().trim().min(1).max(250),
+  line2: z.string().trim().max(250).optional(),
+  ward: z.string().trim().max(120).optional(),
+  district: z.string().trim().max(120).optional(),
+  city: z.string().trim().min(1).max(120),
+  province: z.string().trim().max(120).optional(),
+  postalCode: z.string().trim().max(20).optional(),
+  country: z.string().trim().max(80).default('VN'),
+});
+export type OrderAddressInput = z.infer<typeof orderAddressSchema>;
+
+export const createOrderRequestSchema = z
+  .object({
+    idempotencyKey: z.string().trim().min(8).max(120),
+    deliveryMethod: deliveryMethodSchema,
+    paymentMethod: paymentMethodSchema,
+    shippingAddress: orderAddressSchema.optional(),
+    pickupStoreId: z.string().uuid().optional(),
+    deliverySlot: z.string().trim().max(120).optional(),
+    city: z.string().trim().max(120).optional(),
+    customerDisplayName: z.string().trim().max(120).optional(),
+    customerEmail: z.string().email().optional(),
+    customerPhone: z.string().trim().max(20).optional(),
+  })
+  .superRefine((value, ctx) => {
+    if (value.deliveryMethod === 'STORE_PICKUP') {
+      if (!value.pickupStoreId) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: 'pickupStoreId bắt buộc khi nhận tại cửa hàng',
+          path: ['pickupStoreId'],
+        });
+      }
+    } else if (!value.shippingAddress) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'shippingAddress bắt buộc với giao hàng tận nơi',
+        path: ['shippingAddress'],
+      });
+    }
+  });
+export type CreateOrderRequest = z.infer<typeof createOrderRequestSchema>;
+
+export const cancelOrderRequestSchema = z.object({
+  reason: z.string().trim().min(1).max(500),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CancelOrderRequest = z.infer<typeof cancelOrderRequestSchema>;
+
+export const confirmOrderRequestSchema = z.object({
+  reason: z.string().trim().max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ConfirmOrderRequest = z.infer<typeof confirmOrderRequestSchema>;
+
+export const orderStatusTransitionRequestSchema = z.object({
+  toStatus: orderStatusSchema,
+  reason: z.string().trim().max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type OrderStatusTransitionRequest = z.infer<
+  typeof orderStatusTransitionRequestSchema
+>;
+
+export const listOrdersQuerySchema = paginationQuerySchema.extend({
+  status: orderStatusSchema.optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  orderCode: z.string().trim().min(1).max(40).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z
+    .enum([
+      'createdAt_desc',
+      'createdAt_asc',
+      'grandTotal_desc',
+      'grandTotal_asc',
+    ])
+    .default('createdAt_desc'),
+});
+export type ListOrdersQuery = z.infer<typeof listOrdersQuerySchema>;
+
+export interface OrderItemDto {
+  id: string;
+  skuId: string;
+  skuCode: string;
+  skuName: string;
+  productId: string;
+  productName: string;
+  variantAttributes: Record<string, string>;
+  unitPrice: number;
+  quantity: number;
+  lineSubtotal: number;
+  currency: string;
+}
+
+export interface OrderAddressDto {
+  recipientName: string;
+  recipientPhone: string;
+  line1: string;
+  line2?: string;
+  ward?: string;
+  district?: string;
+  city: string;
+  province?: string;
+  postalCode?: string;
+  country: string;
+  fullText: string;
+}
+
+export interface OrderPackageItemDto {
+  id: string;
+  orderItemId: string;
+  skuCode: string;
+  quantity: number;
+}
+
+export interface OrderPackageDto {
+  id: string;
+  packageCode: string;
+  status: PackageStatus;
+  sourceLocationType: 'warehouse' | 'store';
+  sourceLocationId: string;
+  shippingProvider?: string;
+  trackingCode?: string;
+  estimatedDeliveryAt?: string;
+  items: OrderPackageItemDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OrderStatusHistoryDto {
+  id: string;
+  fromStatus?: OrderStatus;
+  toStatus: OrderStatus;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export interface OrderDto {
+  id: string;
+  orderCode: string;
+  customerId: string;
+  customerSnapshot: {
+    displayName?: string;
+    email?: string;
+    phone?: string;
+  };
+  status: OrderStatus;
+  version: number;
+  cartId: string;
+  reservationId?: string;
+  deliveryMethod: DeliveryMethod;
+  deliverySlot?: string;
+  pickupStoreId?: string;
+  shippingAddress?: OrderAddressDto;
+  paymentMethod: PaymentMethod;
+  paymentStatus: PaymentStatus;
+  paymentReference?: string;
+  paidAt?: string;
+  currency: string;
+  merchandiseSubtotal: number;
+  shippingFee: number;
+  discountTotal: number;
+  grandTotal: number;
+  totalQuantity: number;
+  cancelReason?: string;
+  cancelledAt?: string;
+  inventoryReleased: boolean;
+  refundContractStatus?: 'NOT_REQUIRED' | 'PENDING' | 'COMPLETED';
+  items: OrderItemDto[];
+  packages: OrderPackageDto[];
+  createdAt: string;
+  updatedAt: string;
+}

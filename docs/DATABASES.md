@@ -8,7 +8,7 @@
 - Application role riêng (không dùng superuser `postgres` cho app)
 - Không FK cross-service
 
-## Trạng thái persistence sau M6
+## Trạng thái persistence sau M7
 
 | Thành phần                | Trạng thái                                                                 |
 | ------------------------- | -------------------------------------------------------------------------- |
@@ -18,33 +18,37 @@
 | Prisma schema media       | ✅ Có + migration `20260729130000_init_media`                              |
 | Prisma schema inventory   | ✅ Có + migration `20260729140000_init_inventory`                          |
 | Prisma schema cart        | ✅ Có + migration `20260729160000_init_cart`                               |
+| Prisma schema order       | ✅ Có + migration `20260730000000_init_order`                              |
 | Runtime identity/customer | In-memory (M3)                                                             |
 | Runtime catalog           | **Prisma** khi `CATALOG_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test`   |
 | Runtime media             | **Prisma** khi `MEDIA_DATABASE_URL`; MinIO khi `MINIO_*`                   |
 | Runtime inventory         | **Prisma** khi `INVENTORY_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` |
 | Runtime cart              | **Prisma** khi `CART_DATABASE_URL`; Redis hỗ trợ idempotency/lock/TTL      |
+| Runtime order             | **Prisma** khi `ORDER_DATABASE_URL`; outbox + RabbitMQ                     |
 | Redis                     | Compose sẵn; cart dùng cho idempotency/lock; identity chưa wire            |
 | MinIO                     | Compose + buckets init; media-service dùng thật                            |
 
 ## Env database
 
-| Biến                     | Mục đích              |
-| ------------------------ | --------------------- |
-| `IDENTITY_DATABASE_URL`  | Postgres identity     |
-| `CUSTOMER_DATABASE_URL`  | Postgres customer     |
-| `CATALOG_DATABASE_URL`   | Postgres catalog      |
-| `MEDIA_DATABASE_URL`     | Postgres media        |
-| `INVENTORY_DATABASE_URL` | Postgres inventory    |
-| `CART_DATABASE_URL`      | Postgres cart         |
-| `REDIS_URL`              | Redis                 |
-| `RABBITMQ_URL`           | RabbitMQ              |
-| `MINIO_*`                | Object storage        |
-| `CATALOG_SERVICE_URL`    | REST catalog (cart)   |
-| `INVENTORY_SERVICE_URL`  | REST inventory (cart) |
+| Biến                     | Mục đích           |
+| ------------------------ | ------------------ |
+| `IDENTITY_DATABASE_URL`  | Postgres identity  |
+| `CUSTOMER_DATABASE_URL`  | Postgres customer  |
+| `CATALOG_DATABASE_URL`   | Postgres catalog   |
+| `MEDIA_DATABASE_URL`     | Postgres media     |
+| `INVENTORY_DATABASE_URL` | Postgres inventory |
+| `CART_DATABASE_URL`      | Postgres cart      |
+| `ORDER_DATABASE_URL`     | Postgres order     |
+| `REDIS_URL`              | Redis              |
+| `RABBITMQ_URL`           | RabbitMQ           |
+| `MINIO_*`                | Object storage     |
+| `CATALOG_SERVICE_URL`    | REST catalog       |
+| `INVENTORY_SERVICE_URL`  | REST inventory     |
+| `CART_SERVICE_URL`       | REST cart (order)  |
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -57,7 +61,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | media-service        | `nexatech_media`        | Prisma + migration ✅ / Prisma repository runtime |
 | inventory-service    | `nexatech_inventory`    | Prisma + migration ✅ / Prisma repository runtime |
 | cart-service         | `nexatech_cart`         | Prisma + migration ✅ / Prisma + Redis assist     |
-| order-service        | `nexatech_order`        | Later                                             |
+| order-service        | `nexatech_order`        | Prisma + migration ✅ / Prisma + outbox runtime   |
 | payment-service      | `nexatech_payment`      | Later                                             |
 | shipping-service     | `nexatech_shipping`     | Later                                             |
 | review-service       | `nexatech_review`       | Later                                             |
@@ -108,6 +112,19 @@ Client: `apps/inventory-service/src/generated/prisma`. Optimistic lock: `UPDATE 
 - Partial unique indexes (SQL): một ACTIVE cart / customer; một ACTIVE cart / guestTokenHash
 
 Client: `apps/cart-service/src/generated/prisma`. Redis: idempotency NX, lock `cart:lock:*`, guest token meta TTL.
+
+## order — Prisma models (M7)
+
+- `Order` — `orderCode` unique (không dùng DB id thô), `customerId`, customer snapshot fields, status machine, `version` optimistic lock, `cartId`, `reservationId`, delivery/payment fields, totals (Int VND), `inventoryReleased`, `refundContractStatus`
+- `OrderItem` — snapshot SKU/product/attributes/unitPrice/quantity/lineSubtotal
+- `OrderAddressSnapshot` — địa chỉ giao hàng full text
+- `OrderStatusHistory` — from/to, actor, reason, timestamp
+- `OrderPackage` + `OrderPackageItem` — split theo nguồn kho/cửa hàng từ reservation
+- `OrderIdempotency` — create/cancel/transition
+- `OutboxEvent` — transactional outbox trước khi publish RabbitMQ
+- `AuditLog` — thao tác nhạy cảm
+
+Client: `apps/order-service/src/generated/prisma`.
 
 ## MinIO buckets
 

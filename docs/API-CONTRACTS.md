@@ -220,6 +220,7 @@ Env tích hợp: `CATALOG_SERVICE_URL`, `INVENTORY_SERVICE_URL`, `RABBITMQ_URL`.
 | POST            | `/api/v1/carts/merge`                | Gộp guest → customer (`guestCartToken`)             | User       |
 | POST            | `/api/v1/carts/current/refresh`      | Refresh giá/metadata từ catalog                     | Guest/User |
 | POST            | `/api/v1/carts/current/validate`     | Validate + issues + `reservationPreview`            | Guest/User |
+| POST            | `/api/v1/carts/convert`              | ACTIVE → CONVERTED + tạo giỏ ACTIVE mới (checkout)  | User       |
 | GET/POST/DELETE | `/api/v1/wishlist...`                | Wishlist theo customer                              | User       |
 | GET/POST/DELETE | `/api/v1/comparison...`              | So sánh tối đa 4 sản phẩm                           | User       |
 | GET/POST        | `/api/v1/recently-viewed`            | Sản phẩm đã xem                                     | Guest/User |
@@ -228,9 +229,49 @@ Giới hạn: tối đa **99** mỗi dòng; snapshot giá chỉ hiển thị; ad
 
 ---
 
-## Các service sau M6 (kế hoạch — chưa code)
+## order-service — **đã implement (M7)**
 
-Order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Port mặc định: `3007` (`ORDER_PORT`). Persistence: Prisma + `ORDER_DATABASE_URL`; outbox → RabbitMQ khi có `RABBITMQ_URL`; InMemory chỉ unit/`NODE_ENV=test`.
+
+Headers:
+
+- `x-user-id` — customer / actor (không tin customerId từ body)
+- `x-user-roles` — comma-separated roles (Staff+ cho admin)
+
+Env tích hợp: `CART_SERVICE_URL`, `CATALOG_SERVICE_URL`, `INVENTORY_SERVICE_URL`, `CUSTOMER_SERVICE_URL`, `PAYMENT_SERVICE_URL`, `SHIPPING_SERVICE_URL` (contract), `RABBITMQ_URL`.
+
+### Customer
+
+| Method | Path                                         | Mô tả                                                         |
+| ------ | -------------------------------------------- | ------------------------------------------------------------- |
+| POST   | `/api/v1/orders`                             | Tạo đơn từ cart (idempotencyKey bắt buộc; re-price + reserve) |
+| GET    | `/api/v1/orders`                             | Danh sách đơn của customer (filter/sort/pagination)           |
+| GET    | `/api/v1/orders/:orderId`                    | Chi tiết đơn (ownership)                                      |
+| POST   | `/api/v1/orders/:orderId/cancel`             | Hủy khi trạng thái cho phép                                   |
+| POST   | `/api/v1/orders/:orderId/confirm`            | Xác nhận (AWAITING_PAYMENT → CONFIRMED)                       |
+| POST   | `/api/v1/orders/:orderId/status-transitions` | Transition (staff qua admin; customer hạn chế)                |
+| GET    | `/api/v1/orders/:orderId/status-history`     | Lịch sử trạng thái                                            |
+| GET    | `/api/v1/orders/:orderId/packages`           | Danh sách kiện                                                |
+
+### Admin / Staff
+
+| Method | Path                                               | Mô tả                                    |
+| ------ | -------------------------------------------------- | ---------------------------------------- |
+| GET    | `/api/v1/admin/orders`                             | Tìm kiếm đơn (status/date/customer/code) |
+| GET    | `/api/v1/admin/orders/:orderId`                    | Chi tiết                                 |
+| POST   | `/api/v1/admin/orders/:orderId/status-transitions` | Transition hợp lệ + audit + event        |
+| POST   | `/api/v1/admin/orders/:orderId/cancel`             | Hủy (quyền rộng hơn customer)            |
+| POST   | `/api/v1/admin/orders/:orderId/confirm`            | Confirm thanh toán mock/staff            |
+
+Create order body chỉ nhận: `idempotencyKey`, `deliveryMethod`, `paymentMethod`, address/pickup/slot, customer display snapshot optional — **không** nhận giá, SKU list, customerId, totals.
+
+Money: integer VND; `discountTotal` luôn `0`.
+
+---
+
+## Các service sau M7 (kế hoạch — chưa code)
+
+Payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

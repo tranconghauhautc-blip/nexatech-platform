@@ -5,6 +5,7 @@ import {
   RECENTLY_VIEWED_MAX_ITEMS,
   WISHLIST_MAX_ITEMS,
   addCartItemRequestSchema,
+  convertCartRequestSchema,
   mergeCartRequestSchema,
   updateCartItemRequestSchema,
   type AddCartItemRequest,
@@ -12,6 +13,7 @@ import {
   type CartItemDto,
   type CartValidateResponse,
   type CartValidationIssue,
+  type ConvertCartRequest,
   type MergeCartRequest,
   type UpdateCartItemRequest,
 } from '@nexatech/shared-contracts';
@@ -505,6 +507,71 @@ export class CartService {
         quantity: item.quantity,
       })),
     };
+  }
+
+  async convertCart(
+    actor: CartActor,
+    raw: ConvertCartRequest = {},
+  ): Promise<CartDto> {
+    const customerId = actor.customerId ?? actor.userId;
+    if (!customerId) {
+      throw new AppError({
+        errorCode: ErrorCodes.UNAUTHORIZED,
+        message: 'Cần đăng nhập để chuyển đổi giỏ hàng',
+      });
+    }
+    const input = parseOrThrow(() => convertCartRequestSchema.parse(raw ?? {}));
+    const idemKey =
+      input.idempotencyKey ??
+      `convert:${customerId}:${input.orderId ?? 'none'}`;
+
+    return this.withIdempotency(idemKey, 'cart.convert', async () => {
+      return this.retryOptimistic(async () => {
+        const cart =
+          await this.repository.getActiveCartByCustomerId(customerId);
+
+        // Không còn ACTIVE hoặc ACTIVE trống (đã convert trước đó) — idempotent.
+        if (!cart || cart.items.length === 0) {
+          if (cart) {
+            return this.toDto(cart);
+          }
+          const fresh = await this.repository.createCustomerCart({
+            customerId,
+          });
+          return this.toDto(fresh);
+        }
+
+        await this.repository.updateStatus({
+          cartId: cart.id,
+          expectedVersion: cart.version,
+          status: 'CONVERTED',
+        });
+
+        const fresh = await this.repository.createCustomerCart({
+          customerId,
+        });
+
+        await this.repository.writeAudit('cart.converted', customerId, {
+          cartId: cart.id,
+          orderId: input.orderId,
+          newCartId: fresh.id,
+        });
+        await this.publisher.publish(
+          createEventEnvelope({
+            eventType: EventTypes.CART_CONVERTED,
+            producer: 'cart-service',
+            traceId: createTraceId(),
+            payload: {
+              cartId: cart.id,
+              customerId,
+              orderId: input.orderId,
+            },
+          }),
+        );
+
+        return this.toDto(fresh);
+      });
+    });
   }
 
   async cleanupExpiredCarts(now = new Date()): Promise<number> {

@@ -49,8 +49,17 @@
 | `cart.converted`                 | `cart.cart.converted`                    | cart                | reporting                                   |
 | `cart.expired`                   | `cart.cart.expired`                      | cart                | reporting                                   |
 | `order.created`                  | `order.order.created`                    | order               | payment, inventory, notification, reporting |
+| `order.confirmed`                | `order.order.confirmed`                  | order               | payment, notification, reporting            |
+| `order.status.changed`           | `order.order.status.changed`             | order               | notification, reporting                     |
 | `order.cancelled`                | `order.order.cancelled`                  | order               | inventory, payment, notification            |
-| `order.fulfilled`                | `order.order.fulfilled`                  | order               | notification, reporting, review-eligibility |
+| `order.package.created`          | `order.order.package.created`            | order               | shipping, reporting                         |
+| `order.ready-to-ship`            | `order.order.ready-to-ship`              | order               | shipping, notification                      |
+| `order.shipped`                  | `order.order.shipped`                    | order               | shipping, notification, reporting           |
+| `order.delivered`                | `order.order.delivered`                  | order               | notification, reporting, review-eligibility |
+| `order.return.requested`         | `order.order.return.requested`           | order               | warranty, notification                      |
+| `order.returned`                 | `order.order.returned`                   | order               | inventory, notification, reporting          |
+| `order.failed`                   | `order.order.failed`                     | order               | inventory, notification, reporting          |
+| `order.fulfilled`                | `order.order.fulfilled`                  | order               | alias legacy ≈ delivered                    |
 | `payment.initiated`              | `payment.payment.initiated`              | payment             | order, reporting                            |
 | `payment.succeeded`              | `payment.payment.succeeded`              | payment             | order, notification, reporting              |
 | `payment.failed`                 | `payment.payment.failed`                 | payment             | order, notification                         |
@@ -75,4 +84,10 @@
 
 ## Outbox pattern
 
-Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — ưu tiên cho order/payment/inventory.
+Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
+
+## Order consume / gọi sync (M7)
+
+- Sync REST: cart refresh/validate/convert; catalog SKU price; inventory reserve/release.
+- Events inventory (`reservation.created` / `released` / `stock.committed`) do inventory-service emit; order gọi REST reserve/release và lưu `reservationId`.
+- Cart convert emit `cart.converted` sau khi order local TX + reservation thành công.
