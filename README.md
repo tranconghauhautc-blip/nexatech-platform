@@ -4,7 +4,7 @@ NexaTech là nền tảng thương mại điện tử microservices bằng tiế
 
 ## Công nghệ
 
-Nx · pnpm · TypeScript · Next.js · NestJS · Prisma · PostgreSQL 16 · Redis · RabbitMQ · MinIO · Kong · Docker · Kubernetes · Helm
+Nx 22.7.7 · pnpm · TypeScript strict · Next.js · NestJS · Prisma · PostgreSQL 16 · Redis · RabbitMQ · MinIO · Kong · Docker · Kubernetes · Helm
 
 ## Tài liệu
 
@@ -22,11 +22,24 @@ Nx · pnpm · TypeScript · Next.js · NestJS · Prisma · PostgreSQL 16 · Redi
 
 ## Trạng thái
 
-Đang triển khai theo roadmap M0→M22. Xem tiến độ chi tiết tại `docs/PROGRESS.md`.
+- **M0** ✅ kiến trúc & docs
+- **M1** ✅ Nx monorepo + TypeScript strict + Jest
+- Tiếp theo: **M2** shared libraries
+
+Xem chi tiết tại `docs/PROGRESS.md`.
 
 ## Yêu cầu máy local
 
-- Node.js 22+ (khuyến nghị)
+- Node.js 22+
 - pnpm 10+
 - Docker + Docker Compose
 - Git
+
+## Lệnh thường dùng
+
+```bash
+pnpm format
+pnpm lint
+pnpm test
+pnpm build
+```

@@ -1,0 +1,19 @@
+{
+  "name": "shared-platform",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/platform/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/platform",
+        "main": "libs/shared/platform/src/index.ts",
+        "tsConfig": "libs/shared/platform/tsconfig.lib.json",
+        "assets": []
+      }
+    }
+  }
+}

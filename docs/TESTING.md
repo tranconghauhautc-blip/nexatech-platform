@@ -65,13 +65,20 @@ Luồng tối thiểu:
 - [ ] Docs cập nhật
 - [ ] Git commit cục bộ
 
-## Lệnh chuẩn (sau M1)
+## Lệnh chuẩn
 
 ```bash
 pnpm format
 pnpm lint
 pnpm test
 pnpm build
+pnpm typecheck
 ```
 
-Chi tiết Nx targets sẽ được bổ sung khi monorepo sẵn sàng.
+Scripts dùng `cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false` (xem ADR-018).
+
+## Unit tests hiện có
+
+| Project           | Coverage focus                                      |
+| ----------------- | --------------------------------------------------- |
+| `shared-platform` | ID generation, assertDefined, pagination, constants |

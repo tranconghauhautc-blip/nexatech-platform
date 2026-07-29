@@ -96,21 +96,28 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 
 ## ADR-017 — Version pin mục tiêu
 
-| Thành phần | Version mục tiêu |
-|------------|------------------|
-| Node.js | 22 LTS (engines); runtime local 24.x chấp nhận được |
-| pnpm | 10.x |
-| Nx | 21.x (latest compatible khi init) |
-| TypeScript | 5.8.x |
-| Next.js | 15.x |
-| NestJS | 11.x |
-| Prisma | 6.x |
-| PostgreSQL | 16 |
-| Redis | 7.x |
-| RabbitMQ | 3.13.x hoặc 4.x |
-| MinIO | RELEASE gần nhất ổn định |
-| Kong | 3.x OSS |
-| Zod | 3.x |
-| Jest | 29.x / Nx default |
+| Thành phần | Version mục tiêu                                                                           |
+| ---------- | ------------------------------------------------------------------------------------------ |
+| Node.js    | 22 LTS (engines); runtime local 24.x chấp nhận được                                        |
+| pnpm       | 10.x (`packageManager`: 10.34.5)                                                           |
+| Nx         | **22.7.7** (không dùng 23.1.0 trên Windows hiện tại — lỗi native cache `WorkspaceContext`) |
+| TypeScript | 5.8.3 (strict)                                                                             |
+| Next.js    | 15.x (từ M15)                                                                              |
+| NestJS     | 11.x (từ M3)                                                                               |
+| Prisma     | 6.x                                                                                        |
+| PostgreSQL | 16                                                                                         |
+| Redis      | 7.x                                                                                        |
+| RabbitMQ   | 3.13.x hoặc 4.x                                                                            |
+| MinIO      | RELEASE gần nhất ổn định                                                                   |
+| Kong       | 3.x OSS                                                                                    |
+| Jest       | 29.7.x                                                                                     |
+| ESLint     | 9.x flat config                                                                            |
+| Prettier   | 3.6.x                                                                                      |
 
-Phiên bản chính xác được khóa trong `package.json` / lockfile tại M1.
+Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
+
+## ADR-018 — Nx native file cache bypass trên Windows
+
+- **Quyết định:** Đặt `NX_SKIP_NATIVE_FILE_CACHE=true` và `NX_DAEMON=false` trong scripts + `.env.nx`.
+- **Lý do:** Nx 23.x lỗi `WorkspaceContext is not a constructor` khi load native binding từ temp; Nx 22.7.7 ổn định hơn nhưng vẫn cần bypass trên môi trường này.
+- **Hệ quả:** Scripts dùng `cross-env` để set biến này trên mọi OS.

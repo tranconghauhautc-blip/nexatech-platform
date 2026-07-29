@@ -1,0 +1,11 @@
+﻿packages:
+  - 'apps/*'
+  - 'libs/*'
+  - 'libs/*/*'
+autoInstallPeers: true
+onlyBuiltDependencies:
+  - nx
+  - '@swc/core'
+  - '@nestjs/core'
+  - esbuild
+  - unrs-resolver

@@ -1,0 +1,49 @@
+{
+  "name": "@nexatech/source",
+  "version": "0.0.0",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "format": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx format:write",
+    "format:check": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx format:check",
+    "lint": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t lint --all",
+    "test": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t test --all",
+    "build": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t build --all",
+    "typecheck": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t typecheck --all",
+    "graph": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx graph"
+  },
+  "engines": {
+    "node": ">=22.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.34.5",
+  "devDependencies": {
+    "@eslint/js": "^9.8.0",
+    "@nx/eslint": "22.7.7",
+    "@nx/eslint-plugin": "22.7.7",
+    "@nx/jest": "22.7.7",
+    "@nx/js": "22.7.7",
+    "@nx/node": "22.7.7",
+    "@nx/workspace": "22.7.7",
+    "@swc-node/register": "~1.11.1",
+    "@swc/core": "~1.15.5",
+    "@swc/helpers": "~0.5.18",
+    "@types/jest": "29.5.14",
+    "@types/node": "22.13.10",
+    "cross-env": "7.0.3",
+    "eslint": "9.22.0",
+    "eslint-config-prettier": "^10.0.0",
+    "jest": "29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "jest-util": "^29.7.0",
+    "jsonc-eslint-parser": "^2.1.0",
+    "nx": "22.7.7",
+    "prettier": "~3.6.2",
+    "ts-jest": "29.2.6",
+    "ts-node": "10.9.2",
+    "tslib": "2.8.1",
+    "typescript": "5.8.3",
+    "typescript-eslint": "^8.40.0"
+  },
+  "dependencies": {}
+}
