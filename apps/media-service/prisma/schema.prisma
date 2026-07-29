@@ -1,0 +1,84 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("MEDIA_DATABASE_URL")
+}
+
+enum MediaStatus {
+  PENDING
+  ACTIVE
+  DELETED
+}
+
+enum MediaOwnerType {
+  product
+  sku
+  review
+  user
+  misc
+}
+
+enum MediaRole {
+  thumbnail
+  gallery
+  video
+}
+
+enum MediaEntityType {
+  product
+  sku
+  review
+}
+
+model MediaObject {
+  id          String         @id @default(uuid())
+  bucket      String
+  objectKey   String
+  fileName    String
+  contentType String
+  sizeBytes   Int
+  status      MediaStatus    @default(PENDING)
+  ownerType   MediaOwnerType
+  ownerId     String
+  uploadedBy  String
+  etag        String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
+  links       MediaLink[]
+
+  @@unique([bucket, objectKey])
+  @@index([ownerType, ownerId])
+  @@index([status])
+  @@index([uploadedBy])
+}
+
+model MediaLink {
+  id         String          @id @default(uuid())
+  mediaId    String
+  media      MediaObject     @relation(fields: [mediaId], references: [id], onDelete: Cascade)
+  entityType MediaEntityType
+  entityId   String
+  role       MediaRole
+  sortOrder  Int             @default(0)
+  isPrimary  Boolean         @default(false)
+  createdAt  DateTime        @default(now())
+
+  @@unique([mediaId, entityType, entityId])
+  @@index([entityType, entityId])
+}
+
+model MediaAuditLog {
+  id        String   @id @default(uuid())
+  mediaId   String?
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+
+  @@index([mediaId])
+}

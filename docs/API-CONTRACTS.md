@@ -1,6 +1,6 @@
 # NexaTech API Contracts
 
-Tài liệu phản ánh **code hiện tại (sau M3)** và kế hoạch các service chưa implement.
+Tài liệu phản ánh **code hiện tại (sau M4)** và kế hoạch các service chưa implement.
 
 DTO TypeScript sống trong `libs/shared/contracts`. Error envelope: `libs/shared/errors`.
 
@@ -99,36 +99,69 @@ Identity tạm thời qua headers:
 
 ---
 
-## catalog-service — **kế hoạch M4 (chưa có code)**
+## catalog-service — **đã implement (M4)**
 
-| Method | Path                                   | Mô tả        | Auth   |
-| ------ | -------------------------------------- | ------------ | ------ |
-| GET    | `/api/v1/categories`                   | Cây danh mục | Public |
-| GET    | `/api/v1/brands`                       | Thương hiệu  | Public |
-| GET    | `/api/v1/products`                     | Tìm kiếm/lọc | Public |
-| GET    | `/api/v1/products/:slug`               | Chi tiết     | Public |
-| GET    | `/api/v1/skus/:skuCode`                | SKU          | Public |
-| GET    | `/api/v1/products/:id/recommendations` | Rule-based   | Public |
-| CRUD   | `/api/v1/admin/catalog/...`            | Quản trị     | Staff+ |
+Port mặc định: `3003` (`CATALOG_PORT`). Persistence: Prisma + `CATALOG_DATABASE_URL`.
 
-Category slugs đã chốt trong contracts: `dien-thoai`, `laptop`, `tablet`, `dong-ho-thong-minh`, `tai-nghe-loa`, `phu-kien`.
+Admin headers tạm: `x-user-roles` (ví dụ `Staff` hoặc `Manager,Admin`).
+
+### Public
+
+| Method | Path                                   | Mô tả                            | Auth   |
+| ------ | -------------------------------------- | -------------------------------- | ------ |
+| GET    | `/api/v1/categories`                   | Cây danh mục cha/con             | Public |
+| GET    | `/api/v1/brands`                       | Thương hiệu                      | Public |
+| GET    | `/api/v1/products`                     | Search/filter/sort/pagination    | Public |
+| GET    | `/api/v1/products/:slug`               | Chi tiết sản phẩm                | Public |
+| GET    | `/api/v1/skus/:skuCode`                | SKU + giá hiện tại               | Public |
+| GET    | `/api/v1/products/:id/recommendations` | Rule-based (cùng brand/category) | Public |
+
+Query `GET /products`: `q`, `categorySlug`, `brandSlug`, `status`, `minPrice`, `maxPrice`, `attributeKey`, `attributeValue`, `sort` (`relevance`\|`price_asc`\|`price_desc`\|`newest`\|`name`), `page`, `pageSize`.
+
+### Admin (Staff+)
+
+| Method | Path                                             | Mô tả                |
+| ------ | ------------------------------------------------ | -------------------- |
+| POST   | `/api/v1/admin/catalog/categories`               | Tạo danh mục         |
+| PATCH  | `/api/v1/admin/catalog/categories/:id`           | Cập nhật danh mục    |
+| POST   | `/api/v1/admin/catalog/brands`                   | Tạo thương hiệu      |
+| PATCH  | `/api/v1/admin/catalog/brands/:id`               | Cập nhật thương hiệu |
+| POST   | `/api/v1/admin/catalog/spec-templates`           | Template thông số    |
+| POST   | `/api/v1/admin/catalog/products`                 | Tạo sản phẩm         |
+| PATCH  | `/api/v1/admin/catalog/products/:id/status`      | Đổi trạng thái       |
+| POST   | `/api/v1/admin/catalog/skus`                     | Tạo SKU + giá        |
+| PATCH  | `/api/v1/admin/catalog/skus/:skuCode/price`      | Đổi giá + lịch sử    |
+| POST   | `/api/v1/admin/catalog/products/:id/media-links` | Liên kết media       |
+
+Category slugs scope: `dien-thoai`, `laptop`, `tablet`, `dong-ho-thong-minh`, `tai-nghe-loa`, `phu-kien`.
 
 ---
 
-## media-service — **kế hoạch M4 (chưa có code)**
+## media-service — **đã implement (M4)**
 
-| Method | Path                    | Mô tả                  | Auth        |
-| ------ | ----------------------- | ---------------------- | ----------- |
-| POST   | `/api/v1/media/presign` | Presigned upload MinIO | User/Staff  |
-| GET    | `/api/v1/media/:id`     | Metadata               | Depends     |
-| DELETE | `/api/v1/media/:id`     | Xóa                    | Owner/Staff |
+Port mặc định: `3004` (`MEDIA_PORT`). Persistence: Prisma + MinIO.
+
+Headers: `x-user-id`, `x-user-roles`.
+
+| Method | Path                                            | Mô tả                    | Auth                      |
+| ------ | ----------------------------------------------- | ------------------------ | ------------------------- |
+| POST   | `/api/v1/media/presign`                         | Presigned upload URL     | User                      |
+| POST   | `/api/v1/media/:id/confirm`                     | Xác nhận upload → active | Owner/Staff               |
+| GET    | `/api/v1/media/:id`                             | Metadata                 | Depends                   |
+| GET    | `/api/v1/media/:id/download-url`                | Presigned download       | Owner/Staff/public active |
+| DELETE | `/api/v1/media/:id`                             | Soft delete + xóa object | Owner/Staff               |
+| POST   | `/api/v1/media/:id/links`                       | Link product/sku/review  | Staff+                    |
+| GET    | `/api/v1/media/by-entity/:entityType/:entityId` | Gallery theo entity      | Public                    |
+| POST   | `/api/v1/media/admin/cleanup-orphans`           | Dọn orphan pending       | Manager+                  |
+
+Presign body: `fileName`, `contentType` (allowlist MIME), `sizeBytes` (max 20MB mặc định), `ownerType`, `ownerId`, `role`, `bucket?`.
 
 ---
 
 ## Các service sau M4 (kế hoạch — chưa code)
 
-Giữ nguyên thiết kế trong phiên bản docs trước: inventory, cart, order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem git history / ARCHITECTURE khi triển khai milestone tương ứng.
+Inventory, cart, order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 
-`/api/v2` được đăng ký song song từ M3 trên identity/customer. Hành vi hiện mirror v1.
+`/api/v2` đăng ký song song; hành vi hiện mirror v1.

@@ -1,0 +1,187 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CATALOG_DATABASE_URL")
+}
+
+enum ProductStatus {
+  DRAFT
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
+enum MediaRole {
+  thumbnail
+  gallery
+  video
+}
+
+model Category {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  name      String
+  parentId  String?
+  parent    Category?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children  Category[] @relation("CategoryTree")
+  sortOrder Int      @default(0)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  specTemplates SpecTemplate[]
+  products      Product[]
+
+  @@index([parentId])
+}
+
+model Brand {
+  id          String   @id @default(uuid())
+  slug        String   @unique
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products Product[]
+}
+
+model SpecTemplate {
+  id         String   @id @default(uuid())
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name       String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  groups     SpecGroup[]
+
+  @@unique([categoryId, name])
+}
+
+model SpecGroup {
+  id         String       @id @default(uuid())
+  templateId String
+  template   SpecTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  name       String
+  sortOrder  Int          @default(0)
+  attributes SpecAttribute[]
+}
+
+model SpecAttribute {
+  id           String   @id @default(uuid())
+  groupId      String
+  group        SpecGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  key          String
+  label        String
+  dataType     String   @default("string")
+  unit         String?
+  isFilterable Boolean  @default(true)
+  sortOrder    Int      @default(0)
+  specValues   ProductSpecValue[]
+
+  @@unique([groupId, key])
+}
+
+model Product {
+  id          String        @id @default(uuid())
+  slug        String        @unique
+  name        String
+  description String?
+  categoryId  String
+  category    Category      @relation(fields: [categoryId], references: [id])
+  brandId     String
+  brand       Brand         @relation(fields: [brandId], references: [id])
+  status      ProductStatus @default(DRAFT)
+  searchText  String        @default("")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  specValues ProductSpecValue[]
+  variants   Variant[]
+  skus       Sku[]
+  mediaLinks ProductMediaLink[]
+
+  @@index([categoryId])
+  @@index([brandId])
+  @@index([status])
+}
+
+model ProductSpecValue {
+  id          String        @id @default(uuid())
+  productId   String
+  product     Product       @relation(fields: [productId], references: [id], onDelete: Cascade)
+  attributeId String
+  attribute   SpecAttribute @relation(fields: [attributeId], references: [id], onDelete: Cascade)
+  value       String
+
+  @@unique([productId, attributeId])
+}
+
+model Variant {
+  id         String @id @default(uuid())
+  productId  String
+  product    Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  name       String
+  attributes Json   @default("{}")
+  skus       Sku[]
+}
+
+model Sku {
+  id         String   @id @default(uuid())
+  productId  String
+  product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  variantId  String?
+  variant    Variant? @relation(fields: [variantId], references: [id], onDelete: SetNull)
+  skuCode    String   @unique
+  name       String
+  attributes Json     @default("{}")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  price        Price?
+  priceHistory PriceHistory[]
+  mediaLinks   ProductMediaLink[]
+
+  @@index([productId])
+}
+
+model Price {
+  id            String   @id @default(uuid())
+  skuId         String   @unique
+  sku           Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  amount        Int
+  currency      String   @default("VND")
+  effectiveFrom DateTime @default(now())
+}
+
+model PriceHistory {
+  id        String   @id @default(uuid())
+  skuId     String
+  sku       Sku      @relation(fields: [skuId], references: [id], onDelete: Cascade)
+  amount    Int
+  currency  String   @default("VND")
+  reason    String?
+  changedBy String?
+  changedAt DateTime @default(now())
+
+  @@index([skuId])
+}
+
+model ProductMediaLink {
+  id        String    @id @default(uuid())
+  productId String
+  product   Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  mediaId   String
+  skuId     String?
+  sku       Sku?      @relation(fields: [skuId], references: [id], onDelete: SetNull)
+  role      MediaRole
+  sortOrder Int       @default(0)
+  isPrimary Boolean   @default(false)
+
+  @@unique([productId, mediaId])
+}

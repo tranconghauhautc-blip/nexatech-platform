@@ -27,6 +27,9 @@ export const EventTypes = {
   SUPPORT_TICKET_UPDATED: 'support.ticket_updated',
   AUDIT_RECORDED: 'audit.recorded',
   MEDIA_UPLOADED: 'media.uploaded',
+  MEDIA_DELETED: 'media.deleted',
+  CATALOG_CATEGORY_UPDATED: 'catalog.category_updated',
+  CATALOG_BRAND_UPDATED: 'catalog.brand_updated',
   NOTIFICATION_REQUESTED: 'notification.requested',
 } as const;
 
@@ -59,6 +62,9 @@ export const RoutingKeys: Record<EventType, string> = {
   [EventTypes.SUPPORT_TICKET_UPDATED]: 'support.ticket.updated',
   [EventTypes.AUDIT_RECORDED]: 'reporting.audit.recorded',
   [EventTypes.MEDIA_UPLOADED]: 'media.media.uploaded',
+  [EventTypes.MEDIA_DELETED]: 'media.media.deleted',
+  [EventTypes.CATALOG_CATEGORY_UPDATED]: 'catalog.category.updated',
+  [EventTypes.CATALOG_BRAND_UPDATED]: 'catalog.brand.updated',
   [EventTypes.NOTIFICATION_REQUESTED]: 'notification.message.requested',
 };
 

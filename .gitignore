@@ -51,6 +51,9 @@ Thumbs.db
 !.env.example
 !.env.nx
 
+# Prisma generated clients (run prisma generate per service)
+apps/*/src/generated/
+
 # Tests
 playwright-report/
 test-results/

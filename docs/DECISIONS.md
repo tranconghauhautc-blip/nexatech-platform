@@ -38,28 +38,39 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 
 ## ADR-019 — In-memory repository trước, Prisma schema sẵn
 
-- **Quyết định:** Service Nest dùng interface store (`IdentityStore`, `CustomerStore`) với implementation in-memory mặc định; Prisma schema nằm cạnh app.
+- **Quyết định (M3):** Service Nest dùng interface store (`IdentityStore`, `CustomerStore`) với implementation in-memory mặc định; Prisma schema nằm cạnh app.
 - **Lý do:** Lint/test/build xanh không phụ thuộc Postgres local; vẫn giữ contract DB cho migrate sau.
 - **Cấm:** Coi in-memory là persistence production.
+- **Cập nhật M4:** Xem ADR-023 — catalog/media bắt buộc Prisma repository thật.
 
 ## ADR-020 — Nest URI versioning + health ngoài prefix api
 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
 - **Quyết định tạm (M3):** `customer-service` nhận `x-user-id` / `x-user-name` header.
 - **Lý do:** Chưa có JWT guard/gateway shared giữa service.
+- **M4:** catalog admin và media dùng `x-user-id` + `x-user-roles` (comma-separated) tạm thời.
 - **Mục tiêu sau:** Guard JWT + Kong; bỏ header giả lập trước production.
 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL` (không hard-code).
-- App DB users: `nexatech_identity`, `nexatech_customer` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media` (không dùng role `postgres` cho app).
+- Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
+
+## ADR-023 — Persistence thật cho catalog/media (M4)
+
+- **Quyết định:** Business code phụ thuộc repository interface; runtime dùng Prisma + PostgreSQL khi có `*_DATABASE_URL`.
+- In-memory chỉ là test double (unit test / `NODE_ENV=test`).
+- Media object storage: MinIO thật qua adapter `ObjectStorage`; in-memory storage chỉ cho unit test.
+- Migrations committed; cấm `prisma db push` production và cấm agent tự `migrate reset`.
+- PostgreSQL full-text search catalog: cột `searchVector` (tsvector generated) + GIN index trong migration SQL.
 
 ## ADR-007 — RBAC roles
 

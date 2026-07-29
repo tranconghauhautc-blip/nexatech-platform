@@ -79,6 +79,21 @@ Scripts dùng `cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false` (xem AD
 
 ## Unit tests hiện có
 
-| Project           | Coverage focus                                      |
-| ----------------- | --------------------------------------------------- |
-| `shared-platform` | ID generation, assertDefined, pagination, constants |
+| Project            | Coverage focus                                                      |
+| ------------------ | ------------------------------------------------------------------- |
+| `shared-platform`  | ID generation, assertDefined, pagination, constants                 |
+| `shared-errors`    | Error envelope + AppError                                           |
+| `shared-contracts` | Pagination, auth schemas, category slugs                            |
+| `shared-auth`      | RBAC ranks                                                          |
+| `shared-events`    | Event envelope + routing keys                                       |
+| `shared-config`    | Zod env loading                                                     |
+| `shared-logging`   | Correlation + structured logger                                     |
+| `identity-service` | Register/login/OTP/refresh/reset                                    |
+| `customer-service` | Profile + addresses                                                 |
+| `catalog-service`  | Catalog business + controller smoke; Prisma/migration khi có DB URL |
+| `media-service`    | Presign/ownership/MIME; Prisma/MinIO/migration khi có env           |
+
+## Integration (M4)
+
+Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*` trước `pnpm test`.
+Tests tự skip nếu thiếu env.

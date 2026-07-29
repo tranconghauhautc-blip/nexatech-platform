@@ -8,78 +8,78 @@
 - Application role riêng (không dùng superuser `postgres` cho app)
 - Không FK cross-service
 
-## Trạng thái persistence sau M3
+## Trạng thái persistence sau M4
 
-| Thành phần                             | Trạng thái                                                       |
-| -------------------------------------- | ---------------------------------------------------------------- |
-| Prisma schema identity                 | ✅ Có — `apps/identity-service/prisma/schema.prisma`             |
-| Prisma schema customer                 | ✅ Có — `apps/customer-service/prisma/schema.prisma`             |
-| Prisma migrate / client wired vào Nest | ❌ Chưa                                                          |
-| Runtime store identity/customer        | **In-memory** (`InMemoryIdentityStore`, `InMemoryCustomerStore`) |
-| Redis                                  | Compose sẵn; **chưa** dùng trong code service                    |
-| MinIO                                  | Compose sẵn; **chưa** có media-service                           |
-| Catalog / media DB                     | ❌ Chưa (M4)                                                     |
+| Thành phần                | Trạng thái                                                               |
+| ------------------------- | ------------------------------------------------------------------------ |
+| Prisma schema identity    | ✅ Có — chưa wire runtime                                                |
+| Prisma schema customer    | ✅ Có — chưa wire runtime                                                |
+| Prisma schema catalog     | ✅ Có + migration `20260729120000_init_catalog`                          |
+| Prisma schema media       | ✅ Có + migration `20260729130000_init_media`                            |
+| Runtime identity/customer | In-memory (M3)                                                           |
+| Runtime catalog           | **Prisma** khi `CATALOG_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` |
+| Runtime media             | **Prisma** khi `MEDIA_DATABASE_URL`; MinIO khi `MINIO_*`                 |
+| Redis                     | Compose sẵn; identity chưa wire                                          |
+| MinIO                     | Compose + buckets init; media-service dùng thật                          |
 
 ## Env database
 
-| Biến                    | Mục đích                    |
-| ----------------------- | --------------------------- |
-| `IDENTITY_DATABASE_URL` | Postgres identity           |
-| `CUSTOMER_DATABASE_URL` | Postgres customer           |
-| `REDIS_URL`             | Redis (dự kiến session/OTP) |
+| Biến                    | Mục đích          |
+| ----------------------- | ----------------- |
+| `IDENTITY_DATABASE_URL` | Postgres identity |
+| `CUSTOMER_DATABASE_URL` | Postgres customer |
+| `CATALOG_DATABASE_URL`  | Postgres catalog  |
+| `MEDIA_DATABASE_URL`    | Postgres media    |
+| `REDIS_URL`             | Redis             |
+| `RABBITMQ_URL`          | RabbitMQ          |
+| `MINIO_*`               | Object storage    |
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer` (password dev `changeme`)
-- DBs: `nexatech_identity`, `nexatech_customer`
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media` (password dev `changeme`)
+- DBs cùng tên tương ứng
 
-## Danh sách database (mục tiêu toàn hệ thống)
+## Danh sách database
 
-| Service              | Database name           | Schema status                        |
-| -------------------- | ----------------------- | ------------------------------------ |
-| identity-service     | `nexatech_identity`     | Prisma schema ✅ / runtime in-memory |
-| customer-service     | `nexatech_customer`     | Prisma schema ✅ / runtime in-memory |
-| catalog-service      | `nexatech_catalog`      | M4                                   |
-| media-service        | `nexatech_media`        | M4                                   |
-| inventory-service    | `nexatech_inventory`    | Later                                |
-| cart-service         | `nexatech_cart`         | Later                                |
-| order-service        | `nexatech_order`        | Later                                |
-| payment-service      | `nexatech_payment`      | Later                                |
-| shipping-service     | `nexatech_shipping`     | Later                                |
-| review-service       | `nexatech_review`       | Later                                |
-| warranty-service     | `nexatech_warranty`     | Later                                |
-| notification-service | `nexatech_notification` | Later                                |
-| support-service      | `nexatech_support`      | Later                                |
-| reporting-service    | `nexatech_reporting`    | Later                                |
+| Service              | Database name           | Schema status                                     |
+| -------------------- | ----------------------- | ------------------------------------------------- |
+| identity-service     | `nexatech_identity`     | Prisma schema ✅ / runtime in-memory              |
+| customer-service     | `nexatech_customer`     | Prisma schema ✅ / runtime in-memory              |
+| catalog-service      | `nexatech_catalog`      | Prisma + migration ✅ / Prisma repository runtime |
+| media-service        | `nexatech_media`        | Prisma + migration ✅ / Prisma repository runtime |
+| inventory-service    | `nexatech_inventory`    | Later                                             |
+| cart-service         | `nexatech_cart`         | Later                                             |
+| order-service        | `nexatech_order`        | Later                                             |
+| payment-service      | `nexatech_payment`      | Later                                             |
+| shipping-service     | `nexatech_shipping`     | Later                                             |
+| review-service       | `nexatech_review`       | Later                                             |
+| warranty-service     | `nexatech_warranty`     | Later                                             |
+| notification-service | `nexatech_notification` | Later                                             |
+| support-service      | `nexatech_support`      | Later                                             |
+| reporting-service    | `nexatech_reporting`    | Later                                             |
 
-## identity — Prisma models (đã định nghĩa)
+## catalog — Prisma models (M4)
 
-- `User` — email unique, `passwordHash`, `roles String[]`, `status` enum (`PENDING_VERIFICATION` \| `ACTIVE` \| `DISABLED`), `emailVerifiedAt`
-- `OAuthAccount` — unique `(provider, providerUserId)`
-- `Device` — userAgent, ipHash
-- `Session` — `refreshTokenHash`, `expiresAt`, `revokedAt`
-- `OtpChallenge` — email, purpose, `codeHash`, expires/consumed
+- `Category` — tree `parentId`, slug unique
+- `Brand` — slug unique
+- `SpecTemplate` / `SpecGroup` / `SpecAttribute` — template thông số theo danh mục
+- `Product` — slug, status enum, `searchText` (+ `searchVector` tsvector trong migration SQL)
+- `ProductSpecValue` — giá trị thuộc tính
+- `Variant` / `Sku` — biến thể và SKU
+- `Price` + `PriceHistory`
+- `ProductMediaLink` — liên kết mediaId (thumbnail/gallery/video)
 
-Client generator output: `apps/identity-service/src/generated/prisma`.
+Client: `apps/catalog-service/src/generated/prisma` (gitignore; `pnpm exec nx run catalog-service:prisma-generate`).
 
-## customer — Prisma models (đã định nghĩa)
+## media — Prisma models (M4)
 
-- `CustomerProfile` — `userId` unique, fullName, phone
-- `Address` — shipping fields + `isDefault`
-- `CustomerPreference` — locale default `vi-VN`, `marketingOptIn`
+- `MediaObject` — bucket, objectKey, contentType, sizeBytes, status (`PENDING`/`ACTIVE`/`DELETED`), ownerType/ownerId, uploadedBy
+- `MediaLink` — entityType product/sku/review, role, isPrimary
+- `MediaAuditLog` — audit thao tác media
 
-Client generator output: `apps/customer-service/src/generated/prisma`.
+Client: `apps/media-service/src/generated/prisma`.
 
-## Redis (mục tiêu — chưa wire)
-
-| Key pattern               | Mục đích                |
-| ------------------------- | ----------------------- |
-| `session:{sessionId}`     | Refresh/session payload |
-| `user_sessions:{userId}`  | Index phiên             |
-| `otp:{purpose}:{subject}` | OTP                     |
-| `rate:{route}:{id}`       | Rate limit              |
-
-## MinIO buckets (mục tiêu M4+)
+## MinIO buckets
 
 | Bucket                | Nội dung           |
 | --------------------- | ------------------ |
@@ -89,22 +89,11 @@ Client generator output: `apps/customer-service/src/generated/prisma`.
 | `invoices`            | PDF hóa đơn        |
 | `misc`                | Khác               |
 
-## catalog / media (M4 — chưa có schema file)
-
-### catalog (dự kiến)
-
-- `Category` (tree `parentId`), `Brand`
-- `Product` (slug, categoryId, brandId, status, specs JSON)
-- `Sku` / variant attributes
-- `Price` + `PriceHistory`
-- `ProductMediaRef` (mediaId)
-
-### media (dự kiến)
-
-- `MediaObject` (bucket, objectKey, contentType, size, ownerType, ownerId, createdAt)
+Buckets được tạo bởi service `minio-init` trong Compose.
 
 ## Migration policy
 
 1. Mọi thay đổi schema → Prisma migration
 2. Cấm agent tự chạy `prisma migrate reset` / DROP DATABASE
 3. Production: migrate job trước rollout
+4. Local: `npx prisma migrate deploy` trong thư mục app sau khi Compose up
