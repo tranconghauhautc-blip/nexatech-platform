@@ -22,11 +22,10 @@ Nx 22.7.7 · pnpm · TypeScript strict · Next.js · NestJS · Prisma · Postgre
 
 ## Trạng thái
 
-- **M0** ✅ kiến trúc & docs
-- **M1** ✅ Nx monorepo + TypeScript strict + Jest
-- **M2** ✅ shared libraries
-- **M3** ✅ identity + customer services
-- Tiếp theo: **M4** catalog + media
+## Trạng thái
+
+- **M0–M3** ✅ (docs, Nx monorepo, shared libs, identity + customer)
+- **Tiếp theo:** M4 catalog + media — xem `docs/HANDOFF-M4.md`
 
 Xem chi tiết tại `docs/PROGRESS.md`.
 

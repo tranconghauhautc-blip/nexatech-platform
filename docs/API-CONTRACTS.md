@@ -1,164 +1,134 @@
 # NexaTech API Contracts
 
-Tài liệu này mô tả contract REST ở mức kiến trúc. Chi tiết DTO TypeScript sống trong `libs/shared/contracts` (từ M2 trở đi).
+Tài liệu phản ánh **code hiện tại (sau M3)** và kế hoạch các service chưa implement.
 
-## Quy ước chung
+DTO TypeScript sống trong `libs/shared/contracts`. Error envelope: `libs/shared/errors`.
 
-- Base path: `/api/v1/...` (primary), `/api/v2/...` (compat/evolution)
+## Quy ước chung (đã áp dụng)
+
+- Global prefix: `api`
+- Versioning URI: `/api/v1/...`, `/api/v2/...` (controller `version: ['1','2']`)
 - Content-Type: `application/json`
-- Auth: `Authorization: Bearer <accessToken>`
-- Correlation: `x-request-id`, `x-trace-id`
-- Phân trang: `page`, `pageSize` (mặc định 20, tối đa 100)
-- Lỗi: envelope thống nhất (`errorCode`, `message`, `details`, `traceId`, `timestamp`)
+- Correlation (shared): `x-request-id`, `x-trace-id`
+- Phân trang helpers: `page`, `pageSize` (default 20, max 100) trong contracts
+- Lỗi mục tiêu: `errorCode`, `message`, `details`, `traceId`, `timestamp` (`AppError` / `createErrorEnvelope`)
+- Health (không nằm dưới `/api`): `/health`, `/health/live`, `/health/ready`
+- Swagger UI: `/docs`
 
-## identity-service
+---
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/auth/register` | Đăng ký email | Public |
-| POST | `/api/v1/auth/login` | Đăng nhập | Public |
-| POST | `/api/v1/auth/google` | Google OAuth | Public |
-| POST | `/api/v1/auth/refresh` | Refresh token | Public (refresh) |
-| POST | `/api/v1/auth/logout` | Đăng xuất phiên hiện tại | User |
-| POST | `/api/v1/auth/verify-email` | Xác minh email | Public |
-| POST | `/api/v1/auth/forgot-password` | Quên mật khẩu | Public |
-| POST | `/api/v1/auth/reset-password` | Đặt lại mật khẩu | Public |
-| POST | `/api/v1/auth/otp/request` | Yêu cầu OTP | User/Public |
-| POST | `/api/v1/auth/otp/verify` | Xác minh OTP | User/Public |
-| GET | `/api/v1/sessions` | Danh sách phiên/thiết bị | User |
-| DELETE | `/api/v1/sessions/:id` | Thu hồi phiên | User |
-| GET | `/api/v1/users/me` | Thông tin user hiện tại | User |
-| GET/PATCH | `/api/v1/admin/users...` | Quản trị user/role | Admin+ |
+## identity-service — **đã implement (M3)**
 
-## customer-service
+Port mặc định: `3001` (`IDENTITY_PORT`).
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET/PUT | `/api/v1/customers/me` | Hồ sơ khách | Customer |
-| CRUD | `/api/v1/customers/me/addresses` | Địa chỉ giao hàng | Customer |
-| GET/PUT | `/api/v1/customers/me/preferences` | Preference | Customer |
+| Method | Path                               | Mô tả                               | Auth hiện tại |
+| ------ | ---------------------------------- | ----------------------------------- | ------------- |
+| POST   | `/api/v1/auth/register`            | Đăng ký email/password/fullName     | Public        |
+| POST   | `/api/v1/auth/login`               | Đăng nhập → access + refresh JWT    | Public        |
+| POST   | `/api/v1/auth/verify-email`        | Body `{ email, code }` OTP          | Public        |
+| POST   | `/api/v1/auth/refresh`             | Body `{ refreshToken }`             | Public        |
+| POST   | `/api/v1/auth/logout`              | Body `{ sessionId }`                | Public\*      |
+| POST   | `/api/v1/auth/forgot-password`     | Body `{ email }`                    | Public        |
+| POST   | `/api/v1/auth/reset-password`      | Body `{ email, code, newPassword }` | Public        |
+| GET    | `/api/v1/auth/sessions/:userId`    | Liệt kê phiên active                | Public\*      |
+| DELETE | `/api/v1/auth/sessions/:sessionId` | Thu hồi phiên                       | Public\*      |
+| GET    | `/health`                          | Health aggregate                    | Public        |
+| GET    | `/health/live`                     | Liveness                            | Public        |
+| GET    | `/health/ready`                    | Readiness                           | Public        |
 
-## catalog-service
+\* Chưa gắn JWT guard — phải bổ sung trước production.
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET | `/api/v1/categories` | Cây danh mục | Public |
-| GET | `/api/v1/brands` | Thương hiệu | Public |
-| GET | `/api/v1/products` | Tìm kiếm/lọc sản phẩm | Public |
-| GET | `/api/v1/products/:slug` | Chi tiết sản phẩm | Public |
-| GET | `/api/v1/skus/:skuCode` | Chi tiết SKU | Public |
-| GET | `/api/v1/products/:id/recommendations` | Gợi ý rule-based | Public |
-| CRUD | `/api/v1/admin/catalog/...` | Quản trị catalog/giá | Staff+ |
+### Chưa implement (kế hoạch)
 
-## media-service
+| Method            | Path                       | Ghi chú                          |
+| ----------------- | -------------------------- | -------------------------------- |
+| POST              | `/api/v1/auth/google`      | Chờ Google OAuth credentials     |
+| POST              | `/api/v1/auth/otp/request` | OTP đang gắn vào register/forgot |
+| GET               | `/api/v1/users/me`         |                                  |
+| Admin users/roles | `/api/v1/admin/users...`   |                                  |
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/media/presign` | Presigned upload | User/Staff |
-| GET | `/api/v1/media/:id` | Metadata | Depends |
-| DELETE | `/api/v1/media/:id` | Xóa object | Owner/Staff |
+### Register body (Zod `registerRequestSchema`)
 
-## inventory-service
+```json
+{ "email": "user@nexatech.vn", "password": "Secret123", "fullName": "Nguyễn Văn A" }
+```
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET | `/api/v1/inventory/availability` | Tồn khả dụng theo SKU | Public/Internal |
-| POST | `/api/v1/inventory/reservations` | Giữ tồn | Internal/Order |
-| POST | `/api/v1/inventory/reservations/:id/confirm` | Trừ tồn | Internal |
-| POST | `/api/v1/inventory/reservations/:id/release` | Hoàn giữ | Internal |
-| POST | `/api/v1/inventory/transfers` | Điều chuyển kho | Manager+ |
-| CRUD | `/api/v1/admin/warehouses`, `/stores` | Kho/cửa hàng | Manager+ |
+### Login response shape
 
-## cart-service
+```json
+{
+  "userId": "uuid",
+  "accessToken": "jwt",
+  "refreshToken": "jwt",
+  "expiresIn": 900,
+  "tokenType": "Bearer"
+}
+```
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET/PUT | `/api/v1/cart` | Giỏ hàng | Guest/User |
-| POST | `/api/v1/cart/merge` | Gộp giỏ khi login | User |
-| CRUD | `/api/v1/wishlist` | Wishlist | User |
-| CRUD | `/api/v1/comparisons` | So sánh sản phẩm | Guest/User |
-| POST/GET | `/api/v1/recently-viewed` | Đã xem | Guest/User |
+Access claims: `sub`, `email`, `roles`, `sessionId`, `typ: "access"`.  
+Refresh claims: `sub`, `sid`, `typ: "refresh"`.
 
-## order-service
+Non-production register/forgot có thể trả `debugOtp` (6 số) để test.
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/checkout` | Tạo đơn từ cart | User |
-| GET | `/api/v1/orders` | Đơn của tôi | User |
-| GET | `/api/v1/orders/:id` | Chi tiết đơn + kiện | User |
-| GET | `/api/v1/orders/:id/invoice` | Hóa đơn PDF | User |
-| PATCH | `/api/v1/admin/orders/:id/status` | Cập nhật fulfillment | Staff+ |
+Cùng routes mirror trên `/api/v2/auth/...`.
 
-## payment-service
+---
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/payments` | Khởi tạo thanh toán | User/Internal |
-| GET | `/api/v1/payments/:id` | Trạng thái | User |
-| POST | `/api/v1/payments/vnpay/ipn` | VNPay IPN | Public (signed) |
-| POST | `/api/v1/payments/mock/complete` | Hoàn tất mock | Dev/Test |
+## customer-service — **đã implement (M3)**
 
-Methods: `COD`, `MOCK`, `VNPAY_SANDBOX`.
+Port mặc định: `3002` (`CUSTOMER_PORT`).
 
-## shipping-service
+Identity tạm thời qua headers:
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/shipments` | Tạo vận đơn | Internal/Staff |
-| GET | `/api/v1/shipments/:id` | Chi tiết | User/Staff |
-| GET | `/api/v1/shipments/:id/tracking` | Tracking | User/Staff |
-| POST | `/api/v1/shipping/quote` | Báo phí (mock/real) | User |
+- `x-user-id` (bắt buộc cho các route `me`)
+- `x-user-name` (optional, default tên tiếng Việt)
 
-## review-service
+| Method | Path                                       | Mô tả                         | Auth hiện tại      |
+| ------ | ------------------------------------------ | ----------------------------- | ------------------ |
+| GET    | `/api/v1/customers/me`                     | Get-or-create profile         | Header `x-user-id` |
+| PUT    | `/api/v1/customers/me`                     | Cập nhật `fullName` / `phone` | Header             |
+| GET    | `/api/v1/customers/me/addresses`           | Danh sách địa chỉ             | Header             |
+| POST   | `/api/v1/customers/me/addresses`           | Thêm địa chỉ                  | Header             |
+| GET    | `/health`, `/health/live`, `/health/ready` | Health                        | Public             |
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET | `/api/v1/products/:productId/reviews` | Danh sách đánh giá | Public |
-| POST | `/api/v1/reviews` | Tạo đánh giá (đã mua) | User |
-| POST | `/api/v1/reviews/:id/media` | Gắn ảnh/video | User |
-| PATCH | `/api/v1/admin/reviews/:id/moderation` | Kiểm duyệt | Staff+ |
+### Chưa implement
 
-## warranty-service
+- PUT/DELETE address theo id
+- Preferences GET/PUT
+- JWT Bearer thay header
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/warranties/claims` | Yêu cầu BH/đổi trả | User |
-| GET | `/api/v1/warranties/claims` | Danh sách của tôi | User |
-| PATCH | `/api/v1/admin/warranties/claims/:id` | Xử lý | Staff+ |
+---
 
-## support-service
+## catalog-service — **kế hoạch M4 (chưa có code)**
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| POST | `/api/v1/support/tickets` | Tạo ticket | User |
-| GET | `/api/v1/support/tickets` | Ticket của tôi | User |
-| POST | `/api/v1/support/tickets/:id/messages` | Nhắn trong ticket | User/Staff |
-| PATCH | `/api/v1/admin/support/tickets/:id` | Đổi trạng thái | Staff+ |
+| Method | Path                                   | Mô tả        | Auth   |
+| ------ | -------------------------------------- | ------------ | ------ |
+| GET    | `/api/v1/categories`                   | Cây danh mục | Public |
+| GET    | `/api/v1/brands`                       | Thương hiệu  | Public |
+| GET    | `/api/v1/products`                     | Tìm kiếm/lọc | Public |
+| GET    | `/api/v1/products/:slug`               | Chi tiết     | Public |
+| GET    | `/api/v1/skus/:skuCode`                | SKU          | Public |
+| GET    | `/api/v1/products/:id/recommendations` | Rule-based   | Public |
+| CRUD   | `/api/v1/admin/catalog/...`            | Quản trị     | Staff+ |
 
-## notification-service
+Category slugs đã chốt trong contracts: `dien-thoai`, `laptop`, `tablet`, `dong-ho-thong-minh`, `tai-nghe-loa`, `phu-kien`.
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET | `/api/v1/notifications` | In-app | User |
-| POST | `/api/v1/notifications/:id/read` | Đánh dấu đã đọc | User |
-| POST | `/api/v1/admin/notifications/email/test` | Test email | Admin |
+---
 
-## reporting-service
+## media-service — **kế hoạch M4 (chưa có code)**
 
-| Method | Path | Mô tả | Auth |
-|--------|------|-------|------|
-| GET | `/api/v1/admin/reports/overview` | Dashboard | Manager+ |
-| GET | `/api/v1/admin/reports/sales` | Doanh số | Manager+ |
-| GET | `/api/v1/admin/audit-logs` | Audit log | Admin+ |
+| Method | Path                    | Mô tả                  | Auth        |
+| ------ | ----------------------- | ---------------------- | ----------- |
+| POST   | `/api/v1/media/presign` | Presigned upload MinIO | User/Staff  |
+| GET    | `/api/v1/media/:id`     | Metadata               | Depends     |
+| DELETE | `/api/v1/media/:id`     | Xóa                    | Owner/Staff |
 
-## Health endpoints (mọi service)
+---
 
-| Path | Mục đích |
-|------|----------|
-| `/health` | Liveness đơn giản |
-| `/health/live` | Liveness |
-| `/health/ready` | Readiness (DB/Redis/MQ) |
+## Các service sau M4 (kế hoạch — chưa code)
+
+Giữ nguyên thiết kế trong phiên bản docs trước: inventory, cart, order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem git history / ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 
-`/api/v2` được đăng ký song song từ đầu (Nest versioning). Ban đầu mirror hành vi v1 hoặc trả `501` có kiểm soát cho endpoint chưa migrate — tránh phá gateway routing.
+`/api/v2` được đăng ký song song từ M3 trên identity/customer. Hành vi hiện mirror v1.

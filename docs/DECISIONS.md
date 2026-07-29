@@ -29,10 +29,37 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** Mọi HTTP API public đi qua prefix version.
 - **Lý do:** Cho phép evolve contract mà không phá client cũ. Ban đầu `v1` là primary; `v2` sẵn sàng mirror/compat khi cần.
 
-## ADR-006 — Auth JWT + Redis session
+## ADR-006 — Auth JWT + session store
 
-- **Quyết định:** Access token JWT ngắn hạn; refresh token và session/device lưu Redis.
-- **Lý do:** Thu hồi phiên theo thiết bị; OTP và rate-limit dùng chung Redis.
+- **Quyết định mục tiêu:** Access token JWT ngắn hạn; refresh token + session/device lưu Redis.
+- **Trạng thái M3:** Session/OTP/user đang ở **InMemoryIdentityStore** để unit test/build không cần DB/Redis.
+- **Prisma schema** đã mô hình `User`, `Session`, `Device`, `OtpChallenge`, `OAuthAccount`.
+- **Bước tiếp:** Prisma repository + Redis session khi chạy Compose/migrate (không chặn M4 catalog).
+
+## ADR-019 — In-memory repository trước, Prisma schema sẵn
+
+- **Quyết định:** Service Nest dùng interface store (`IdentityStore`, `CustomerStore`) với implementation in-memory mặc định; Prisma schema nằm cạnh app.
+- **Lý do:** Lint/test/build xanh không phụ thuộc Postgres local; vẫn giữ contract DB cho migrate sau.
+- **Cấm:** Coi in-memory là persistence production.
+
+## ADR-020 — Nest URI versioning + health ngoài prefix api
+
+- **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
+- Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
+- Swagger: `/docs` mỗi service.
+- Ports mặc định: identity `3001`, customer `3002`.
+
+## ADR-021 — Customer auth tạm bằng header
+
+- **Quyết định tạm (M3):** `customer-service` nhận `x-user-id` / `x-user-name` header.
+- **Lý do:** Chưa có JWT guard/gateway shared giữa service.
+- **Mục tiêu sau:** Guard JWT + Kong; bỏ header giả lập trước production.
+
+## ADR-022 — Prisma client output trong app
+
+- **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL` (không hard-code).
+- App DB users: `nexatech_identity`, `nexatech_customer` (không dùng role `postgres` cho app).
 
 ## ADR-007 — RBAC roles
 
