@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CART_DATABASE_URL")
+}
+
+enum CartOwnerType {
+  GUEST
+  CUSTOMER
+}
+
+enum CartStatus {
+  ACTIVE
+  CONVERTED
+  EXPIRED
+  ABANDONED
+}
+
+model Cart {
+  id              String        @id @default(uuid())
+  ownerType       CartOwnerType
+  customerId      String?
+  guestTokenHash  String?
+  status          CartStatus    @default(ACTIVE)
+  version         Int           @default(0)
+  expiresAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  items CartItem[]
+
+  @@index([customerId, status])
+  @@index([guestTokenHash])
+  @@index([status, expiresAt])
+}
+
+model CartItem {
+  id                String   @id @default(uuid())
+  cartId            String
+  cart              Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  skuId             String
+  skuCode           String
+  quantity          Int
+  unitPriceSnapshot Int
+  currency          String   @default("VND")
+  productId         String
+  productName       String
+  productSlug       String
+  skuName           String
+  attributesJson    Json     @default("{}")
+  metadataJson      Json?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@unique([cartId, skuId])
+  @@index([skuCode])
+}
+
+model WishlistItem {
+  id         String   @id @default(uuid())
+  customerId String
+  productId  String
+  skuId      String?
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, productId])
+  @@index([customerId, createdAt])
+}
+
+model ComparisonItem {
+  id         String   @id @default(uuid())
+  customerId String
+  productId  String
+  createdAt  DateTime @default(now())
+
+  @@unique([customerId, productId])
+  @@index([customerId, createdAt])
+}
+
+model RecentlyViewedItem {
+  id             String   @id @default(uuid())
+  customerId     String?
+  guestTokenHash String?
+  productId      String
+  viewedAt       DateTime @default(now())
+
+  @@index([customerId, viewedAt])
+  @@index([guestTokenHash, viewedAt])
+}
+
+model IdempotencyRecord {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

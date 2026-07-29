@@ -8,7 +8,7 @@
 - Application role riêng (không dùng superuser `postgres` cho app)
 - Không FK cross-service
 
-## Trạng thái persistence sau M4
+## Trạng thái persistence sau M6
 
 | Thành phần                | Trạng thái                                                                 |
 | ------------------------- | -------------------------------------------------------------------------- |
@@ -17,29 +17,34 @@
 | Prisma schema catalog     | ✅ Có + migration `20260729120000_init_catalog`                            |
 | Prisma schema media       | ✅ Có + migration `20260729130000_init_media`                              |
 | Prisma schema inventory   | ✅ Có + migration `20260729140000_init_inventory`                          |
+| Prisma schema cart        | ✅ Có + migration `20260729160000_init_cart`                               |
 | Runtime identity/customer | In-memory (M3)                                                             |
 | Runtime catalog           | **Prisma** khi `CATALOG_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test`   |
 | Runtime media             | **Prisma** khi `MEDIA_DATABASE_URL`; MinIO khi `MINIO_*`                   |
 | Runtime inventory         | **Prisma** khi `INVENTORY_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` |
-| Redis                     | Compose sẵn; identity chưa wire                                            |
+| Runtime cart              | **Prisma** khi `CART_DATABASE_URL`; Redis hỗ trợ idempotency/lock/TTL      |
+| Redis                     | Compose sẵn; cart dùng cho idempotency/lock; identity chưa wire            |
 | MinIO                     | Compose + buckets init; media-service dùng thật                            |
 
 ## Env database
 
-| Biến                     | Mục đích           |
-| ------------------------ | ------------------ |
-| `IDENTITY_DATABASE_URL`  | Postgres identity  |
-| `CUSTOMER_DATABASE_URL`  | Postgres customer  |
-| `CATALOG_DATABASE_URL`   | Postgres catalog   |
-| `MEDIA_DATABASE_URL`     | Postgres media     |
-| `INVENTORY_DATABASE_URL` | Postgres inventory |
-| `REDIS_URL`              | Redis              |
-| `RABBITMQ_URL`           | RabbitMQ           |
-| `MINIO_*`                | Object storage     |
+| Biến                     | Mục đích              |
+| ------------------------ | --------------------- |
+| `IDENTITY_DATABASE_URL`  | Postgres identity     |
+| `CUSTOMER_DATABASE_URL`  | Postgres customer     |
+| `CATALOG_DATABASE_URL`   | Postgres catalog      |
+| `MEDIA_DATABASE_URL`     | Postgres media        |
+| `INVENTORY_DATABASE_URL` | Postgres inventory    |
+| `CART_DATABASE_URL`      | Postgres cart         |
+| `REDIS_URL`              | Redis                 |
+| `RABBITMQ_URL`           | RabbitMQ              |
+| `MINIO_*`                | Object storage        |
+| `CATALOG_SERVICE_URL`    | REST catalog (cart)   |
+| `INVENTORY_SERVICE_URL`  | REST inventory (cart) |
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -51,7 +56,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | catalog-service      | `nexatech_catalog`      | Prisma + migration ✅ / Prisma repository runtime |
 | media-service        | `nexatech_media`        | Prisma + migration ✅ / Prisma repository runtime |
 | inventory-service    | `nexatech_inventory`    | Prisma + migration ✅ / Prisma repository runtime |
-| cart-service         | `nexatech_cart`         | Later                                             |
+| cart-service         | `nexatech_cart`         | Prisma + migration ✅ / Prisma + Redis assist     |
 | order-service        | `nexatech_order`        | Later                                             |
 | payment-service      | `nexatech_payment`      | Later                                             |
 | shipping-service     | `nexatech_shipping`     | Later                                             |
@@ -93,6 +98,16 @@ Client: `apps/media-service/src/generated/prisma`.
 - `AuditLog` — nhật ký thao tác nhạy cảm (stocktake, tạo kho/cửa hàng)
 
 Client: `apps/inventory-service/src/generated/prisma`. Optimistic lock: `UPDATE ... WHERE id=? AND version=?`, retry tối đa 3 lần trước khi trả `INVENTORY_CONFLICT`.
+
+## cart — Prisma models (M6)
+
+- `Cart` — `ownerType` GUEST/CUSTOMER, `guestTokenHash`, `customerId`, `status` (ACTIVE/CONVERTED/EXPIRED/ABANDONED), `version` (optimistic lock), `expiresAt`
+- `CartItem` — `skuId`/`skuCode`, `quantity`, `unitPriceSnapshot` (hiển thị), product metadata; unique `(cartId, skuId)`
+- `WishlistItem` / `ComparisonItem` / `RecentlyViewedItem`
+- `IdempotencyRecord` / `AuditLog`
+- Partial unique indexes (SQL): một ACTIVE cart / customer; một ACTIVE cart / guestTokenHash
+
+Client: `apps/cart-service/src/generated/prisma`. Redis: idempotency NX, lock `cart:lock:*`, guest token meta TTL.
 
 ## MinIO buckets
 

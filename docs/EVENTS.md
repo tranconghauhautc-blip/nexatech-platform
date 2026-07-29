@@ -41,7 +41,13 @@
 | `inventory.transfer.created`     | `inventory.transfer.created`             | inventory           | reporting                                   |
 | `inventory.transfer.completed`   | `inventory.transfer.completed`           | inventory           | reporting                                   |
 | `inventory.low-stock.detected`   | `inventory.low-stock.detected`           | inventory           | notification, reporting                     |
+| `cart.created`                   | `cart.cart.created`                      | cart                | reporting                                   |
+| `cart.item.added`                | `cart.cart.item.added`                   | cart                | reporting                                   |
+| `cart.item.updated`              | `cart.cart.item.updated`                 | cart                | reporting                                   |
+| `cart.item.removed`              | `cart.cart.item.removed`                 | cart                | reporting                                   |
 | `cart.merged`                    | `cart.cart.merged`                       | cart                | reporting                                   |
+| `cart.converted`                 | `cart.cart.converted`                    | cart                | reporting                                   |
+| `cart.expired`                   | `cart.cart.expired`                      | cart                | reporting                                   |
 | `order.created`                  | `order.order.created`                    | order               | payment, inventory, notification, reporting |
 | `order.cancelled`                | `order.order.cancelled`                  | order               | inventory, payment, notification            |
 | `order.fulfilled`                | `order.order.fulfilled`                  | order               | notification, reporting, review-eligibility |

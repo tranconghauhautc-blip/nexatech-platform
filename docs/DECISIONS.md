@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -79,6 +79,16 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - `available = onHand - reserved`; cấm âm và cấm `reserved > onHand`.
 - Events publish qua RabbitMQ topic `nexatech.events` khi có `RABBITMQ_URL`; unit test dùng `InMemoryEventPublisher`.
 - Location: `warehouse` và `store` cùng model tồn theo `(skuCode, locationType, locationId)`.
+
+## ADR-025 — Cart persistence + Redis assist (M6)
+
+- **Quyết định:** Guest và customer cart lưu PostgreSQL (`nexatech_cart`) qua Prisma repository. Redis dùng hỗ trợ: idempotency NX, distributed lock theo cart owner, cache TTL guest token — **không** là nguồn sự thật duy nhất cho customer cart.
+- Guest nhận diện bằng `cart token` (random 32 bytes, lưu **hash SHA-256**); TTL mặc định 30 ngày; status lifecycle: `ACTIVE` → `CONVERTED` / `EXPIRED` / `ABANDONED`.
+- Mỗi customer có tối đa một cart `ACTIVE` (partial unique index SQL).
+- Snapshot giá trên cart item chỉ để hiển thị; checkout phải refresh/validate lại từ catalog + inventory. Add-to-cart chỉ soft pre-check availability, chưa reserve.
+- Optimistic locking qua `Cart.version`; mutation quan trọng hỗ trợ `idempotencyKey`.
+- Catalog/Inventory gọi REST qua `CATALOG_SERVICE_URL` / `INVENTORY_SERVICE_URL` (timeout + retry), không import Prisma schema của service khác.
+- Auth tạm: `x-user-id` (customer) và `x-cart-token` (guest) — không tin customerId từ body.
 
 ## ADR-007 — RBAC roles
 

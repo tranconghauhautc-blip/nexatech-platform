@@ -130,7 +130,17 @@ function mapPrice(row: PrismaPrice) {
   };
 }
 
-function mapSku(row: PrismaSku & { price?: PrismaPrice | null }): SkuWithPrice {
+function mapSku(
+  row: PrismaSku & {
+    price?: PrismaPrice | null;
+    product?: {
+      id: string;
+      slug: string;
+      name: string;
+      status: string;
+    } | null;
+  },
+): SkuWithPrice {
   return {
     id: row.id,
     productId: row.productId,
@@ -141,6 +151,14 @@ function mapSku(row: PrismaSku & { price?: PrismaPrice | null }): SkuWithPrice {
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
     price: row.price ? mapPrice(row.price) : undefined,
+    product: row.product
+      ? {
+          id: row.product.id,
+          slug: row.product.slug,
+          name: row.product.name,
+          status: toDomainStatus(row.product.status as PrismaProductStatus),
+        }
+      : undefined,
   };
 }
 
@@ -712,7 +730,7 @@ export class PrismaCatalogRepository implements CatalogRepository {
   async getSkuByCode(skuCode: string): Promise<SkuWithPrice | null> {
     const row = await this.prisma.sku.findUnique({
       where: { skuCode },
-      include: { price: true },
+      include: { price: true, product: true },
     });
     return row ? mapSku(row) : null;
   }

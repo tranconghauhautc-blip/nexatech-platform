@@ -606,7 +606,25 @@ export class InMemoryCatalogRepository implements CatalogRepository {
 
   async getSkuByCode(skuCode: string): Promise<SkuWithPrice | null> {
     const id = this.skuByCode.get(skuCode);
-    return id ? (this.skus.get(id) ?? null) : null;
+    if (!id) {
+      return null;
+    }
+    const sku = this.skus.get(id);
+    if (!sku) {
+      return null;
+    }
+    const product = this.products.get(sku.productId);
+    return {
+      ...sku,
+      product: product
+        ? {
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            status: product.status,
+          }
+        : undefined,
+    };
   }
 
   async listSkusByProduct(productId: string): Promise<SkuWithPrice[]> {

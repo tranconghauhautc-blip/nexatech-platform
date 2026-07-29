@@ -198,9 +198,39 @@ Optimistic locking: mỗi thay đổi `StockItem` tăng `version`; xung đột p
 
 ---
 
-## Các service sau M5 (kế hoạch — chưa code)
+## cart-service — **đã implement (M6)**
 
-Cart, order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Port mặc định: `3006` (`CART_PORT`). Persistence: Prisma + `CART_DATABASE_URL`; Redis (`REDIS_URL`) cho idempotency/lock/guest TTL; InMemory chỉ unit/`NODE_ENV=test`.
+
+Headers:
+
+- `x-user-id` — customer đã đăng nhập (không tin customerId từ body)
+- `x-cart-token` — guest cart token (trả về khi `POST /carts/guest`)
+
+Env tích hợp: `CATALOG_SERVICE_URL`, `INVENTORY_SERVICE_URL`, `RABBITMQ_URL`.
+
+| Method          | Path                                 | Mô tả                                               | Auth       |
+| --------------- | ------------------------------------ | --------------------------------------------------- | ---------- |
+| POST            | `/api/v1/carts/guest`                | Tạo guest cart + token                              | Public     |
+| GET             | `/api/v1/carts/current`              | Lấy giỏ hiện tại (guest token hoặc user)            | Guest/User |
+| POST            | `/api/v1/carts/current/items`        | Thêm SKU (`skuCode`, `quantity`, `idempotencyKey?`) | Guest/User |
+| PATCH           | `/api/v1/carts/current/items/:skuId` | Cập nhật số lượng                                   | Guest/User |
+| DELETE          | `/api/v1/carts/current/items/:skuId` | Xóa một dòng                                        | Guest/User |
+| DELETE          | `/api/v1/carts/current`              | Xóa toàn bộ dòng                                    | Guest/User |
+| POST            | `/api/v1/carts/merge`                | Gộp guest → customer (`guestCartToken`)             | User       |
+| POST            | `/api/v1/carts/current/refresh`      | Refresh giá/metadata từ catalog                     | Guest/User |
+| POST            | `/api/v1/carts/current/validate`     | Validate + issues + `reservationPreview`            | Guest/User |
+| GET/POST/DELETE | `/api/v1/wishlist...`                | Wishlist theo customer                              | User       |
+| GET/POST/DELETE | `/api/v1/comparison...`              | So sánh tối đa 4 sản phẩm                           | User       |
+| GET/POST        | `/api/v1/recently-viewed`            | Sản phẩm đã xem                                     | Guest/User |
+
+Giới hạn: tối đa **99** mỗi dòng; snapshot giá chỉ hiển thị; add-to-cart soft-check inventory, chưa reserve.
+
+---
+
+## Các service sau M6 (kế hoạch — chưa code)
+
+Order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

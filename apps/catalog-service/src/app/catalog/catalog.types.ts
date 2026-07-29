@@ -122,6 +122,12 @@ export interface PriceHistoryEntry {
 
 export interface SkuWithPrice extends Sku {
   price?: Price;
+  product?: {
+    id: string;
+    slug: string;
+    name: string;
+    status: ProductStatus;
+  };
 }
 
 export interface ProductMediaLink {

@@ -392,3 +392,116 @@ export const availabilityQuerySchema = z.object({
   city: z.string().trim().max(120).optional(),
 });
 export type AvailabilityQuery = z.infer<typeof availabilityQuerySchema>;
+
+/** Giới hạn số lượng mỗi dòng giỏ hàng (không phải tồn kho). */
+export const CART_ITEM_MAX_QUANTITY = 99;
+export const CART_GUEST_TTL_DAYS = 30;
+export const WISHLIST_MAX_ITEMS = 100;
+export const COMPARISON_MAX_ITEMS = 4;
+export const RECENTLY_VIEWED_MAX_ITEMS = 20;
+
+export const cartStatusSchema = z.enum([
+  'ACTIVE',
+  'CONVERTED',
+  'EXPIRED',
+  'ABANDONED',
+]);
+export type CartStatus = z.infer<typeof cartStatusSchema>;
+
+export const cartOwnerTypeSchema = z.enum(['GUEST', 'CUSTOMER']);
+export type CartOwnerType = z.infer<typeof cartOwnerTypeSchema>;
+
+export const addCartItemRequestSchema = z.object({
+  skuCode: z.string().trim().min(1).max(64),
+  quantity: z.number().int().positive().max(CART_ITEM_MAX_QUANTITY),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+  city: z.string().trim().max(120).optional(),
+});
+export type AddCartItemRequest = z.infer<typeof addCartItemRequestSchema>;
+
+export const updateCartItemRequestSchema = z.object({
+  quantity: z.number().int().positive().max(CART_ITEM_MAX_QUANTITY),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+  city: z.string().trim().max(120).optional(),
+});
+export type UpdateCartItemRequest = z.infer<typeof updateCartItemRequestSchema>;
+
+export const mergeCartRequestSchema = z.object({
+  guestCartToken: z.string().trim().min(16).max(256),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type MergeCartRequest = z.infer<typeof mergeCartRequestSchema>;
+
+export const wishlistAddRequestSchema = z.object({
+  productId: z.string().uuid(),
+  skuId: z.string().uuid().optional(),
+});
+export type WishlistAddRequest = z.infer<typeof wishlistAddRequestSchema>;
+
+export const comparisonAddRequestSchema = z.object({
+  productId: z.string().uuid(),
+});
+export type ComparisonAddRequest = z.infer<typeof comparisonAddRequestSchema>;
+
+export const recentlyViewedRequestSchema = z.object({
+  productId: z.string().uuid(),
+});
+export type RecentlyViewedRequest = z.infer<typeof recentlyViewedRequestSchema>;
+
+export interface CartItemDto {
+  id: string;
+  skuId: string;
+  skuCode: string;
+  quantity: number;
+  unitPriceSnapshot: number;
+  currentUnitPrice?: number;
+  priceChanged: boolean;
+  currency: string;
+  productId: string;
+  productName: string;
+  productSlug: string;
+  skuName: string;
+  attributes: Record<string, string>;
+  available?: boolean;
+  lineSubtotal: number;
+}
+
+export interface CartDto {
+  id: string;
+  ownerType: CartOwnerType;
+  customerId?: string;
+  status: CartStatus;
+  version: number;
+  itemCount: number;
+  totalQuantity: number;
+  subtotal: number;
+  currency: string;
+  expiresAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  items: CartItemDto[];
+  guestCartToken?: string;
+}
+
+export interface CartValidationIssue {
+  skuId: string;
+  skuCode: string;
+  code:
+    | 'SKU_NOT_FOUND'
+    | 'PRODUCT_NOT_SELLABLE'
+    | 'PRICE_CHANGED'
+    | 'INSUFFICIENT_STOCK'
+    | 'QUANTITY_LIMIT';
+  message: string;
+}
+
+export interface CartValidateResponse {
+  cart: CartDto;
+  valid: boolean;
+  issues: CartValidationIssue[];
+  /** Contract gợi ý cho checkout — chưa gọi reserve. */
+  reservationPreview: Array<{
+    skuCode: string;
+    quantity: number;
+  }>;
+}
