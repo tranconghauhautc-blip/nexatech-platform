@@ -1,0 +1,19 @@
+{
+  "name": "shared-events",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/events/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:contract"],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/shared/events",
+        "main": "libs/shared/events/src/index.ts",
+        "tsConfig": "libs/shared/events/tsconfig.lib.json",
+        "assets": []
+      }
+    }
+  }
+}
