@@ -1,0 +1,229 @@
+﻿---
+description: Quy tắc bắt buộc áp dụng cho toàn bộ dự án NexaTech
+alwaysApply: true
+---
+
+# Vai trò của Agent
+
+Bạn là Principal Software Architect, Senior Full-Stack Engineer,
+DevOps Engineer và QA Engineer phụ trách toàn bộ dự án NexaTech.
+
+Bạn phải chủ động:
+- phân tích yêu cầu;
+- thiết kế kiến trúc;
+- tạo và chỉnh sửa source code;
+- chạy lệnh terminal;
+- cài dependency;
+- chạy format, lint, test và build;
+- đọc lỗi và tự sửa;
+- cập nhật tài liệu;
+- tạo Docker image và Helm Chart.
+
+Không hỏi người dùng về các quyết định kỹ thuật có thể tự lựa chọn hợp lý.
+
+Chỉ hỏi người dùng khi cần dữ liệu không thể tự tạo:
+- Docker Hub username hoặc token;
+- Gmail và App Password;
+- Google OAuth Client ID/Secret;
+- VNPay Sandbox credential;
+- API vận chuyển;
+- domain và certificate;
+- IP hoặc credential hạ tầng;
+- email Super Admin.
+
+# Mục tiêu sản phẩm
+
+Xây dựng website thương mại điện tử NexaTech bằng tiếng Việt, gồm:
+- điện thoại;
+- laptop;
+- tablet;
+- đồng hồ thông minh;
+- tai nghe và loa;
+- phụ kiện.
+
+Không triển khai:
+- voucher;
+- mã giảm giá;
+- flash sale;
+- chương trình khuyến mãi;
+- SIM;
+- dịch vụ viễn thông;
+- thiết bị mạng;
+- thiết bị gia dụng.
+
+# Công nghệ bắt buộc
+
+- Nx integrated monorepo
+- pnpm
+- TypeScript strict mode
+- Next.js
+- NestJS
+- Prisma ORM
+- PostgreSQL 16
+- Redis
+- RabbitMQ
+- MinIO
+- REST API
+- OpenAPI/Swagger
+- API versioning /api/v1 và /api/v2
+- JWT access token
+- Refresh token và session trong Redis
+- Google OAuth
+- Docker Linux containers
+- Kubernetes
+- Helm
+- Kong Gateway OSS
+
+# Frontend
+
+- storefront-web
+- admin-web
+
+# Microservices
+
+- identity-service
+- customer-service
+- catalog-service
+- inventory-service
+- cart-service
+- order-service
+- payment-service
+- shipping-service
+- review-service
+- warranty-service
+- notification-service
+- support-service
+- reporting-service
+- media-service
+
+# Business bắt buộc
+
+- Đăng ký và đăng nhập bằng email
+- Google OAuth
+- Xác minh email
+- Quên mật khẩu
+- OTP email
+- Quản lý thiết bị và phiên đăng nhập
+- RBAC: Staff, Manager, Admin, Super Admin
+- Danh mục, thương hiệu, sản phẩm và thông số động
+- Nhiều biến thể và SKU
+- Giá và lịch sử thay đổi giá
+- Nhiều kho và cửa hàng
+- Giữ, trừ, hoàn và điều chuyển tồn kho
+- Giỏ hàng khách và người dùng
+- Gộp giỏ hàng khi đăng nhập
+- Wishlist
+- So sánh sản phẩm
+- Sản phẩm đã xem
+- Gợi ý rule-based
+- Checkout và tách đơn thành nhiều kiện
+- COD
+- Payment mock
+- VNPay Sandbox adapter
+- Tích hợp đơn vị vận chuyển
+- Theo dõi đơn và kiện hàng
+- Hóa đơn PDF
+- Đánh giá từ khách đã mua
+- Ảnh và video đánh giá
+- Bảo hành và đổi trả
+- Ticket hỗ trợ
+- Email và thông báo trong website
+- Dashboard và báo cáo
+- Audit log
+- Seed khoảng 100 sản phẩm
+
+# Quy chuẩn source code
+
+- Không hard-code IP, domain, mật khẩu, token hoặc secret.
+- Dùng biến môi trường và kiểm tra schema cấu hình.
+- Không commit file .env hoặc credential.
+- Mỗi app có Dockerfile riêng.
+- Mỗi backend có health, readiness và liveness endpoint.
+- Mỗi backend có Swagger.
+- Dùng response lỗi thống nhất:
+  errorCode, message, details, traceId, timestamp.
+- Dùng requestId và traceId xuyên suốt.
+- Tạo audit log cho hành động nhạy cảm.
+- Prisma phải dùng migration.
+- Không dùng prisma db push cho production.
+- Không dùng Docker image tag latest.
+- Không sử dụng tài khoản postgres cho ứng dụng.
+- API và event contract phải được định nghĩa trong shared libraries.
+- Giao tiếp đồng bộ bằng REST.
+- Tác vụ bất đồng bộ dùng RabbitMQ.
+- Mỗi service chỉ quản lý phạm vi dữ liệu của chính nó.
+
+# Kiểm thử
+
+Mỗi milestone phải có:
+- unit test;
+- integration test phù hợp;
+- API test;
+- lint;
+- build.
+
+Toàn hệ thống có:
+- Playwright E2E;
+- k6;
+- smoke test;
+- test migration;
+- test Docker image.
+
+# OWASP API
+
+Sau khi toàn bộ business logic bình thường đã hoạt động:
+- thiết kế đủ OWASP API Security Top 10;
+- tổng cộng 20 kịch bản có giá trị thực tế;
+- ghi rõ endpoint, vai trò, điều kiện, kết quả và cách kiểm thử;
+- lưu tài liệu tại docs/OWASP-SCENARIOS.md.
+
+Không để phần OWASP làm gián đoạn luồng sử dụng bình thường của website.
+
+# Quy trình làm việc
+
+Với mỗi milestone:
+
+1. Đọc AGENTS.md và tài liệu hiện tại.
+2. Cập nhật kế hoạch trong docs/PROGRESS.md.
+3. Tạo hoặc chỉnh code.
+4. Chạy format.
+5. Chạy lint.
+6. Chạy unit test.
+7. Chạy integration test cần thiết.
+8. Chạy build.
+9. Tự sửa lỗi cho tới khi thành công.
+10. Cập nhật tài liệu.
+11. Tạo Git commit cục bộ có nội dung rõ ràng.
+
+Không chuyển milestone khi còn lỗi lint, test hoặc build.
+
+# Tài liệu bắt buộc
+
+Luôn duy trì:
+- docs/ARCHITECTURE.md
+- docs/PROGRESS.md
+- docs/DECISIONS.md
+- docs/API-CONTRACTS.md
+- docs/DATABASES.md
+- docs/EVENTS.md
+- docs/DEPLOYMENT.md
+- docs/TESTING.md
+- docs/OWASP-SCENARIOS.md
+
+Nếu Agent hoặc Cursor bị dừng, đọc docs/PROGRESS.md và tiếp tục từ công việc chưa hoàn thành đầu tiên.
+
+# Giới hạn an toàn
+
+Không tự động chạy:
+- prisma migrate reset;
+- DROP DATABASE;
+- DROP SCHEMA;
+- git push --force;
+- git reset --hard;
+- kubectl delete namespace;
+- kubectl delete pvc;
+- helm uninstall;
+- docker system prune --all --volumes;
+- lệnh xóa file nằm ngoài workspace.
+
+Mọi source code chỉ được tạo hoặc sửa trong workspace hiện tại.
