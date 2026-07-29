@@ -29,7 +29,7 @@
 | `8526147` | M4 catalog + media                                     |
 | `b38b723` | M5 inventory-service                                   |
 | `d2155fc` | M6 cart-service                                        |
-| _(M7)_    | `feat(m7): add order-service with checkout and outbox` |
+| `4e2627a` | M7 order-service                                       |
 
 ## Apps sau M7 (14 projects)
 
