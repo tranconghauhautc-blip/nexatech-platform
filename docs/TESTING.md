@@ -79,21 +79,24 @@ Scripts dùng `cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false` (xem AD
 
 ## Unit tests hiện có
 
-| Project            | Coverage focus                                                      |
-| ------------------ | ------------------------------------------------------------------- |
-| `shared-platform`  | ID generation, assertDefined, pagination, constants                 |
-| `shared-errors`    | Error envelope + AppError                                           |
-| `shared-contracts` | Pagination, auth schemas, category slugs                            |
-| `shared-auth`      | RBAC ranks                                                          |
-| `shared-events`    | Event envelope + routing keys                                       |
-| `shared-config`    | Zod env loading                                                     |
-| `shared-logging`   | Correlation + structured logger                                     |
-| `identity-service` | Register/login/OTP/refresh/reset                                    |
-| `customer-service` | Profile + addresses                                                 |
-| `catalog-service`  | Catalog business + controller smoke; Prisma/migration khi có DB URL |
-| `media-service`    | Presign/ownership/MIME; Prisma/MinIO/migration khi có env           |
+| Project             | Coverage focus                                                                                                                            |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| `shared-platform`   | ID generation, assertDefined, pagination, constants                                                                                       |
+| `shared-errors`     | Error envelope + AppError                                                                                                                 |
+| `shared-contracts`  | Pagination, auth schemas, category slugs                                                                                                  |
+| `shared-auth`       | RBAC ranks                                                                                                                                |
+| `shared-events`     | Event envelope + routing keys                                                                                                             |
+| `shared-config`     | Zod env loading                                                                                                                           |
+| `shared-logging`    | Correlation + structured logger                                                                                                           |
+| `identity-service`  | Register/login/OTP/refresh/reset                                                                                                          |
+| `customer-service`  | Profile + addresses                                                                                                                       |
+| `catalog-service`   | Catalog business + controller smoke; Prisma/migration khi có DB URL                                                                       |
+| `media-service`     | Presign/ownership/MIME; Prisma/MinIO/migration khi có env                                                                                 |
+| `inventory-service` | Warehouse/store/stock lifecycle, idempotency, low-stock event, concurrency (parallel reserve/issue); Prisma/migration/RabbitMQ khi có env |
 
-## Integration (M4)
+## Integration (M4–M5)
 
-Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*` trước `pnpm test`.
+Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
 Tests tự skip nếu thiếu env.
+
+`inventory.concurrency.spec.ts` chạy song song nhiều lệnh `reserveStock`/`issueStock` bằng `InMemoryInventoryRepository` và khẳng định bất biến `reserved <= onHand` cùng `onHand >= 0` luôn đúng; các lần thất bại phải là `INVENTORY_INSUFFICIENT` hoặc `INVENTORY_CONFLICT`.

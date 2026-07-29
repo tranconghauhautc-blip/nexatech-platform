@@ -10,29 +10,32 @@
 
 ## Trạng thái persistence sau M4
 
-| Thành phần                | Trạng thái                                                               |
-| ------------------------- | ------------------------------------------------------------------------ |
-| Prisma schema identity    | ✅ Có — chưa wire runtime                                                |
-| Prisma schema customer    | ✅ Có — chưa wire runtime                                                |
-| Prisma schema catalog     | ✅ Có + migration `20260729120000_init_catalog`                          |
-| Prisma schema media       | ✅ Có + migration `20260729130000_init_media`                            |
-| Runtime identity/customer | In-memory (M3)                                                           |
-| Runtime catalog           | **Prisma** khi `CATALOG_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` |
-| Runtime media             | **Prisma** khi `MEDIA_DATABASE_URL`; MinIO khi `MINIO_*`                 |
-| Redis                     | Compose sẵn; identity chưa wire                                          |
-| MinIO                     | Compose + buckets init; media-service dùng thật                          |
+| Thành phần                | Trạng thái                                                                 |
+| ------------------------- | -------------------------------------------------------------------------- |
+| Prisma schema identity    | ✅ Có — chưa wire runtime                                                  |
+| Prisma schema customer    | ✅ Có — chưa wire runtime                                                  |
+| Prisma schema catalog     | ✅ Có + migration `20260729120000_init_catalog`                            |
+| Prisma schema media       | ✅ Có + migration `20260729130000_init_media`                              |
+| Prisma schema inventory   | ✅ Có + migration `20260729140000_init_inventory`                          |
+| Runtime identity/customer | In-memory (M3)                                                             |
+| Runtime catalog           | **Prisma** khi `CATALOG_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test`   |
+| Runtime media             | **Prisma** khi `MEDIA_DATABASE_URL`; MinIO khi `MINIO_*`                   |
+| Runtime inventory         | **Prisma** khi `INVENTORY_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` |
+| Redis                     | Compose sẵn; identity chưa wire                                            |
+| MinIO                     | Compose + buckets init; media-service dùng thật                            |
 
 ## Env database
 
-| Biến                    | Mục đích          |
-| ----------------------- | ----------------- |
-| `IDENTITY_DATABASE_URL` | Postgres identity |
-| `CUSTOMER_DATABASE_URL` | Postgres customer |
-| `CATALOG_DATABASE_URL`  | Postgres catalog  |
-| `MEDIA_DATABASE_URL`    | Postgres media    |
-| `REDIS_URL`             | Redis             |
-| `RABBITMQ_URL`          | RabbitMQ          |
-| `MINIO_*`               | Object storage    |
+| Biến                     | Mục đích           |
+| ------------------------ | ------------------ |
+| `IDENTITY_DATABASE_URL`  | Postgres identity  |
+| `CUSTOMER_DATABASE_URL`  | Postgres customer  |
+| `CATALOG_DATABASE_URL`   | Postgres catalog   |
+| `MEDIA_DATABASE_URL`     | Postgres media     |
+| `INVENTORY_DATABASE_URL` | Postgres inventory |
+| `REDIS_URL`              | Redis              |
+| `RABBITMQ_URL`           | RabbitMQ           |
+| `MINIO_*`                | Object storage     |
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
@@ -47,7 +50,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | customer-service     | `nexatech_customer`     | Prisma schema ✅ / runtime in-memory              |
 | catalog-service      | `nexatech_catalog`      | Prisma + migration ✅ / Prisma repository runtime |
 | media-service        | `nexatech_media`        | Prisma + migration ✅ / Prisma repository runtime |
-| inventory-service    | `nexatech_inventory`    | Later                                             |
+| inventory-service    | `nexatech_inventory`    | Prisma + migration ✅ / Prisma repository runtime |
 | cart-service         | `nexatech_cart`         | Later                                             |
 | order-service        | `nexatech_order`        | Later                                             |
 | payment-service      | `nexatech_payment`      | Later                                             |
@@ -78,6 +81,18 @@ Client: `apps/catalog-service/src/generated/prisma` (gitignore; `pnpm exec nx ru
 - `MediaAuditLog` — audit thao tác media
 
 Client: `apps/media-service/src/generated/prisma`.
+
+## inventory — Prisma models (M5)
+
+- `Warehouse` / `Store` — vị trí kho vật lý và cửa hàng (store có thể liên kết `warehouseId`)
+- `StockItem` — tồn theo `(skuCode, locationType, locationId)`, `onHand`/`reserved`/`version` (optimistic lock) + `lowStockThreshold`
+- `Reservation` + `ReservationLine` — giữ hàng theo idempotency key, nhiều dòng nhiều vị trí
+- `StockMovement` — nhật ký IN/OUT/RESERVE/RELEASE/COMMIT/RETURN/TRANSFER_OUT/TRANSFER_IN/ADJUST
+- `Transfer` — điều chuyển giữa hai vị trí (PENDING → COMPLETED trong cùng luồng M5)
+- `IdempotencyRecord` — lưu response theo key cho các API mutation
+- `AuditLog` — nhật ký thao tác nhạy cảm (stocktake, tạo kho/cửa hàng)
+
+Client: `apps/inventory-service/src/generated/prisma`. Optimistic lock: `UPDATE ... WHERE id=? AND version=?`, retry tối đa 3 lần trước khi trả `INVENTORY_CONFLICT`.
 
 ## MinIO buckets
 

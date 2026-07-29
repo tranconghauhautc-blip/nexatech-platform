@@ -158,9 +158,49 @@ Presign body: `fileName`, `contentType` (allowlist MIME), `sizeBytes` (max 20MB 
 
 ---
 
-## Các service sau M4 (kế hoạch — chưa code)
+## inventory-service — **đã implement (M5)**
 
-Inventory, cart, order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Port mặc định: `3005` (`INVENTORY_PORT`). Persistence: Prisma + `INVENTORY_DATABASE_URL` (InMemory chỉ `NODE_ENV=test`).
+
+Headers: `x-user-id`, `x-user-roles` (Staff+ cho mọi mutation; đọc tồn/khả dụng là public).
+
+### Public
+
+| Method | Path                         | Mô tả                                                 | Auth   |
+| ------ | ---------------------------- | ----------------------------------------------------- | ------ |
+| GET    | `/api/v1/warehouses`         | Danh sách kho                                         | Public |
+| GET    | `/api/v1/stores`             | Danh sách cửa hàng                                    | Public |
+| GET    | `/api/v1/stock`              | Tồn theo `skuCode`/`locationType`/`locationId`        | Public |
+| GET    | `/api/v1/stock/availability` | Vị trí có đủ khả dụng (`skuCode`,`quantity`,`city?`)  | Public |
+| GET    | `/api/v1/stock/sources`      | Vị trí nguồn tốt nhất cho `skuCode`/`quantity`        | Public |
+| GET    | `/api/v1/stock/low`          | Danh sách tồn thấp (`available <= lowStockThreshold`) | Public |
+| GET    | `/api/v1/movements`          | Nhật ký dịch chuyển tồn (phân trang)                  | Public |
+| GET    | `/api/v1/reservations/:id`   | Chi tiết yêu cầu giữ hàng                             | Public |
+
+### Admin (Staff+)
+
+| Method | Path                                               | Mô tả                                                         |
+| ------ | -------------------------------------------------- | ------------------------------------------------------------- |
+| POST   | `/api/v1/admin/inventory/warehouses`               | Tạo kho                                                       |
+| POST   | `/api/v1/admin/inventory/stores`                   | Tạo cửa hàng                                                  |
+| POST   | `/api/v1/admin/inventory/stock/receive`            | Nhập kho (idempotent theo `idempotencyKey`)                   |
+| POST   | `/api/v1/admin/inventory/stock/issue`              | Xuất kho (idempotent)                                         |
+| POST   | `/api/v1/admin/inventory/stock/reserve`            | Giữ hàng nhiều dòng, tự chọn vị trí nguồn                     |
+| POST   | `/api/v1/admin/inventory/stock/adjust`             | Kiểm kê — set `onHand` (không thấp hơn `reserved`)            |
+| POST   | `/api/v1/admin/inventory/stock/return`             | Hoàn tồn theo `reservationId` hoặc danh sách dòng             |
+| POST   | `/api/v1/admin/inventory/reservations/:id/release` | Hủy giữ hàng                                                  |
+| POST   | `/api/v1/admin/inventory/reservations/:id/commit`  | Xác nhận xuất theo giữ hàng (trừ onHand+reserved)             |
+| POST   | `/api/v1/admin/inventory/transfers`                | Điều chuyển giữa hai vị trí (PENDING→COMPLETED trong 1 luồng) |
+
+Idempotency: `receive`/`issue`/`reserve`/`adjust`/`transfer` yêu cầu `idempotencyKey` (≥8 ký tự) — gọi lại cùng key trả nguyên response đã lưu (`IdempotencyRecord`), khác `operation` sẽ trả lỗi `INVENTORY_IDEMPOTENCY_CONFLICT`.
+
+Optimistic locking: mỗi thay đổi `StockItem` tăng `version`; xung đột phiên bản sau 3 lần thử trả `INVENTORY_CONFLICT`. Không cho phép `reserved > onHand` hoặc âm — trả `INVENTORY_INSUFFICIENT`.
+
+---
+
+## Các service sau M5 (kế hoạch — chưa code)
+
+Cart, order, payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

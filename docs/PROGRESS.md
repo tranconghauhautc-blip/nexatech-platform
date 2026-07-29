@@ -2,8 +2,8 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone tiếp theo:** M5 — Inventory (nhiều kho, giữ/trừ/hoàn tồn)
-- **Milestone đã hoàn thành gần nhất:** M4
+- **Milestone tiếp theo:** M6 — Cart, wishlist, so sánh, recently viewed
+- **Milestone đã hoàn thành gần nhất:** M5
 - **Cập nhật lần cuối:** 2026-07-29
 - **Branch:** `main`
 - **Kiểm tra cuối phiên:** `pnpm format` / `pnpm lint` / `pnpm test` / `pnpm build` — xanh
@@ -17,62 +17,58 @@
 | M2     | Shared libraries và chuẩn nền tảng        | ✅ Done     | 7 shared libs                    |
 | M3     | Identity và customer                      | ✅ Done     | Auth flows + customer profile    |
 | M4     | Catalog, search và media                  | ✅ Done     | Prisma + FTS + MinIO             |
-| M5     | Inventory                                 | ⏳ **Next** | Xem `docs/HANDOFF-M5.md`         |
-| M6–M22 | …                                         | ⏳ Pending  | Roadmap gốc                      |
+| M5     | Inventory                                 | ✅ Done     | warehouse/store/stock + RabbitMQ |
+| M6     | Cart                                      | ⏳ **Next** | Xem `docs/HANDOFF-M6.md`         |
+| M7–M22 | …                                         | ⏳ Pending  | Roadmap gốc                      |
 
-## Commits cục bộ liên quan
+## Commits
 
-| Commit    | Nội dung                                               |
-| --------- | ------------------------------------------------------ |
-| `9cee965` | M0 docs architecture/roadmap                           |
-| `fad8cdb` | M1 Nx monorepo                                         |
-| `8df1332` | M2 shared libraries                                    |
-| `d40b758` | M3 identity + customer                                 |
-| `8703fa2` | Handoff chuẩn bị M4                                    |
-| _(M4)_    | `feat(m4): add catalog and media services with Prisma` |
+| Commit    | Nội dung                                                |
+| --------- | ------------------------------------------------------- |
+| `8526147` | M4 catalog + media                                      |
+| _(M5)_    | `feat(m5): add inventory-service with stock operations` |
 
-## Apps sau M4 (11 projects)
+## Apps sau M5 (12 projects)
 
-| App              | Port | Persistence            |
-| ---------------- | ---- | ---------------------- |
-| identity-service | 3001 | In-memory (schema sẵn) |
-| customer-service | 3002 | In-memory (schema sẵn) |
-| catalog-service  | 3003 | Prisma + Postgres FTS  |
-| media-service    | 3004 | Prisma + MinIO         |
+| App               | Port | Persistence              |
+| ----------------- | ---- | ------------------------ |
+| identity-service  | 3001 | In-memory (schema sẵn)   |
+| customer-service  | 3002 | In-memory (schema sẵn)   |
+| catalog-service   | 3003 | Prisma + Postgres FTS    |
+| media-service     | 3004 | Prisma + MinIO           |
+| inventory-service | 3005 | Prisma + optimistic lock |
 
-## M4 đã hoàn thành
+## M5 đã hoàn thành
 
-- [x] `catalog-service`: category tree, brand, spec template, product, SKU, price history, media link, FTS search/filter/sort/pagination, recommendations, audit events, RBAC Staff+
-- [x] `media-service`: presign upload/download, MIME/size validation, safe object key, ownership, links, orphan cleanup, audit, MinIO adapter
-- [x] Prisma migrations committed (không db push / không migrate reset)
-- [x] Compose: Postgres 16, Redis, RabbitMQ, MinIO + bucket init
-- [x] Unit + repository integration + API smoke + migration + MinIO integration tests
+- [x] Warehouse + Store CRUD
+- [x] Stock on-hand / reserved / available
+- [x] Receive, issue, reserve, release, commit, return, transfer, adjust
+- [x] Movement history + low-stock alert
+- [x] Availability check + source selection
+- [x] Idempotency + optimistic locking (chống oversell)
+- [x] RabbitMQ event publisher (`amqplib`)
+- [x] Unit + concurrency + API + repository + migration + RabbitMQ smoke tests
 - [x] format / lint / test / build xanh
-- [x] Docs + HANDOFF-M5
+- [x] Docs + HANDOFF-M6
 
-## Workaround bắt buộc (Windows)
+## Workaround
 
-1. **Nx = 22.7.7**
-2. `NX_SKIP_NATIVE_FILE_CACHE=true` + `NX_DAEMON=false`
-3. Không `Set-Content -Encoding utf8` (BOM)
+Nx **22.7.7**, `NX_SKIP_NATIVE_FILE_CACHE=true`, `NX_DAEMON=false`.
 
-## Local infra
+## Local note (Postgres volume đã init)
 
-```bash
-docker compose -f infra/docker/docker-compose.dev.yml up -d
-# copy .env.example → .env
-cd apps/catalog-service && npx prisma migrate deploy && npx prisma generate
-cd ../media-service && npx prisma migrate deploy && npx prisma generate
+Nếu DB `nexatech_inventory` chưa có (volume cũ):
+
+```sql
+CREATE USER nexatech_inventory WITH PASSWORD 'changeme';
+CREATE DATABASE nexatech_inventory OWNER nexatech_inventory;
 ```
 
-## Blockers cần người dùng (chưa chặn M5)
-
-- Docker Hub / Gmail / Google OAuth / VNPay / shipping API / domain / Super Admin email
+Rồi: `cd apps/inventory-service && npx prisma migrate deploy && npx prisma generate`
 
 ## Nhật ký
 
-### 2026-07-29 — M4 done
+### 2026-07-29 — M5 done
 
-- catalog-service + media-service với Prisma repository thật.
-- Integration tests chạy xanh với Compose local.
-- Handoff M5 sẵn sàng; **không bắt đầu M5 trong phiên này**.
+- inventory-service hoàn chỉnh; 19 tests xanh với Compose (Postgres + RabbitMQ).
+- Handoff M6 sẵn sàng; **không bắt đầu M6 trong phiên này**.

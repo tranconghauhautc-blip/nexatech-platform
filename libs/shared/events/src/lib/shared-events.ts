@@ -8,9 +8,13 @@ export const EventTypes = {
   CUSTOMER_PROFILE_CREATED: 'customer.profile_created',
   CATALOG_PRODUCT_UPDATED: 'catalog.product_updated',
   CATALOG_PRICE_CHANGED: 'catalog.price_changed',
-  INVENTORY_RESERVED: 'inventory.reserved',
-  INVENTORY_RESERVATION_RELEASED: 'inventory.reservation_released',
-  INVENTORY_STOCK_LOW: 'inventory.stock_low',
+  INVENTORY_RESERVATION_CREATED: 'inventory.reservation.created',
+  INVENTORY_RESERVATION_RELEASED: 'inventory.reservation.released',
+  INVENTORY_STOCK_COMMITTED: 'inventory.stock.committed',
+  INVENTORY_STOCK_RETURNED: 'inventory.stock.returned',
+  INVENTORY_TRANSFER_CREATED: 'inventory.transfer.created',
+  INVENTORY_TRANSFER_COMPLETED: 'inventory.transfer.completed',
+  INVENTORY_LOW_STOCK_DETECTED: 'inventory.low-stock.detected',
   CART_MERGED: 'cart.merged',
   ORDER_CREATED: 'order.created',
   ORDER_CANCELLED: 'order.cancelled',
@@ -33,6 +37,12 @@ export const EventTypes = {
   NOTIFICATION_REQUESTED: 'notification.requested',
 } as const;
 
+/** Aliases tương thích docs cũ */
+export const LegacyEventTypes = {
+  INVENTORY_RESERVED: EventTypes.INVENTORY_RESERVATION_CREATED,
+  INVENTORY_STOCK_LOW: EventTypes.INVENTORY_LOW_STOCK_DETECTED,
+} as const;
+
 export type EventType = (typeof EventTypes)[keyof typeof EventTypes];
 
 export const RoutingKeys: Record<EventType, string> = {
@@ -43,9 +53,13 @@ export const RoutingKeys: Record<EventType, string> = {
   [EventTypes.CUSTOMER_PROFILE_CREATED]: 'customer.profile.created',
   [EventTypes.CATALOG_PRODUCT_UPDATED]: 'catalog.product.updated',
   [EventTypes.CATALOG_PRICE_CHANGED]: 'catalog.price.changed',
-  [EventTypes.INVENTORY_RESERVED]: 'inventory.stock.reserved',
-  [EventTypes.INVENTORY_RESERVATION_RELEASED]: 'inventory.stock.released',
-  [EventTypes.INVENTORY_STOCK_LOW]: 'inventory.stock.low',
+  [EventTypes.INVENTORY_RESERVATION_CREATED]: 'inventory.reservation.created',
+  [EventTypes.INVENTORY_RESERVATION_RELEASED]: 'inventory.reservation.released',
+  [EventTypes.INVENTORY_STOCK_COMMITTED]: 'inventory.stock.committed',
+  [EventTypes.INVENTORY_STOCK_RETURNED]: 'inventory.stock.returned',
+  [EventTypes.INVENTORY_TRANSFER_CREATED]: 'inventory.transfer.created',
+  [EventTypes.INVENTORY_TRANSFER_COMPLETED]: 'inventory.transfer.completed',
+  [EventTypes.INVENTORY_LOW_STOCK_DETECTED]: 'inventory.low-stock.detected',
   [EventTypes.CART_MERGED]: 'cart.cart.merged',
   [EventTypes.ORDER_CREATED]: 'order.order.created',
   [EventTypes.ORDER_CANCELLED]: 'order.order.cancelled',

@@ -295,3 +295,100 @@ export function toSlug(input: string): string {
     .replace(/^-+|-+$/g, '')
     .slice(0, 160);
 }
+
+export const locationTypeSchema = z.enum(['warehouse', 'store']);
+export type LocationType = z.infer<typeof locationTypeSchema>;
+
+export const createWarehouseRequestSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(1)
+    .max(32)
+    .regex(/^[A-Z0-9_-]+$/),
+  name: z.string().trim().min(1).max(120),
+  address: z.string().trim().max(500).optional(),
+  isActive: z.boolean().default(true),
+});
+export type CreateWarehouseRequest = z.infer<
+  typeof createWarehouseRequestSchema
+>;
+
+export const createStoreRequestSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(1)
+    .max(32)
+    .regex(/^[A-Z0-9_-]+$/),
+  name: z.string().trim().min(1).max(120),
+  warehouseId: z.string().uuid().optional(),
+  address: z.string().trim().max(500).optional(),
+  city: z.string().trim().max(120).optional(),
+  isActive: z.boolean().default(true),
+});
+export type CreateStoreRequest = z.infer<typeof createStoreRequestSchema>;
+
+export const stockLocationRefSchema = z.object({
+  locationType: locationTypeSchema,
+  locationId: z.string().uuid(),
+});
+
+export const receiveStockRequestSchema = z.object({
+  skuCode: z.string().trim().min(1).max(64),
+  locationType: locationTypeSchema,
+  locationId: z.string().uuid(),
+  quantity: z.number().int().positive(),
+  idempotencyKey: z.string().trim().min(8).max(120),
+  note: z.string().trim().max(500).optional(),
+});
+export type ReceiveStockRequest = z.infer<typeof receiveStockRequestSchema>;
+
+export const issueStockRequestSchema = receiveStockRequestSchema;
+export type IssueStockRequest = z.infer<typeof issueStockRequestSchema>;
+
+export const reserveStockRequestSchema = z.object({
+  idempotencyKey: z.string().trim().min(8).max(120),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  lines: z
+    .array(
+      z.object({
+        skuCode: z.string().trim().min(1).max(64),
+        quantity: z.number().int().positive(),
+        preferredLocationType: locationTypeSchema.optional(),
+        preferredLocationId: z.string().uuid().optional(),
+      }),
+    )
+    .min(1),
+  expiresInSeconds: z.number().int().positive().max(86_400).default(900),
+});
+export type ReserveStockRequest = z.infer<typeof reserveStockRequestSchema>;
+
+export const transferStockRequestSchema = z.object({
+  idempotencyKey: z.string().trim().min(8).max(120),
+  skuCode: z.string().trim().min(1).max(64),
+  quantity: z.number().int().positive(),
+  fromLocationType: locationTypeSchema,
+  fromLocationId: z.string().uuid(),
+  toLocationType: locationTypeSchema,
+  toLocationId: z.string().uuid(),
+  note: z.string().trim().max(500).optional(),
+});
+export type TransferStockRequest = z.infer<typeof transferStockRequestSchema>;
+
+export const adjustStockRequestSchema = z.object({
+  idempotencyKey: z.string().trim().min(8).max(120),
+  skuCode: z.string().trim().min(1).max(64),
+  locationType: locationTypeSchema,
+  locationId: z.string().uuid(),
+  onHand: z.number().int().min(0),
+  reason: z.string().trim().min(1).max(500),
+});
+export type AdjustStockRequest = z.infer<typeof adjustStockRequestSchema>;
+
+export const availabilityQuerySchema = z.object({
+  skuCode: z.string().trim().min(1).max(64),
+  quantity: z.coerce.number().int().positive().default(1),
+  city: z.string().trim().max(120).optional(),
+});
+export type AvailabilityQuery = z.infer<typeof availabilityQuerySchema>;

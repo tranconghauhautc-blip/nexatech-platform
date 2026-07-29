@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -71,6 +71,14 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - Media object storage: MinIO thật qua adapter `ObjectStorage`; in-memory storage chỉ cho unit test.
 - Migrations committed; cấm `prisma db push` production và cấm agent tự `migrate reset`.
 - PostgreSQL full-text search catalog: cột `searchVector` (tsvector generated) + GIN index trong migration SQL.
+
+## ADR-024 — Inventory optimistic lock + idempotency (M5)
+
+- **Quyết định:** `StockItem.version` dùng optimistic locking (UPDATE có `WHERE version=?`, retry tối đa 3 lần).
+- Mọi thao tác biến động tồn (receive/issue/reserve/transfer/adjust) bắt buộc `idempotencyKey` lưu `IdempotencyRecord`.
+- `available = onHand - reserved`; cấm âm và cấm `reserved > onHand`.
+- Events publish qua RabbitMQ topic `nexatech.events` khi có `RABBITMQ_URL`; unit test dùng `InMemoryEventPublisher`.
+- Location: `warehouse` và `store` cùng model tồn theo `(skuCode, locationType, locationId)`.
 
 ## ADR-007 — RBAC roles
 

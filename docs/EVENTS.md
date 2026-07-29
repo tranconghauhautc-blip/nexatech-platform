@@ -34,9 +34,13 @@
 | `catalog.price_changed`          | `catalog.price.changed`                  | catalog             | reporting                                   |
 | `catalog.category_updated`       | `catalog.category.updated`               | catalog             | reporting                                   |
 | `catalog.brand_updated`          | `catalog.brand.updated`                  | catalog             | reporting                                   |
-| `inventory.reserved`             | `inventory.stock.reserved`               | inventory           | order                                       |
-| `inventory.reservation_released` | `inventory.stock.released`               | inventory           | order                                       |
-| `inventory.stock_low`            | `inventory.stock.low`                    | inventory           | notification, reporting                     |
+| `inventory.reservation.created`  | `inventory.reservation.created`          | inventory           | order                                       |
+| `inventory.reservation.released` | `inventory.reservation.released`         | inventory           | order                                       |
+| `inventory.stock.committed`      | `inventory.stock.committed`              | inventory           | order, reporting                            |
+| `inventory.stock.returned`       | `inventory.stock.returned`               | inventory           | order, reporting                            |
+| `inventory.transfer.created`     | `inventory.transfer.created`             | inventory           | reporting                                   |
+| `inventory.transfer.completed`   | `inventory.transfer.completed`           | inventory           | reporting                                   |
+| `inventory.low-stock.detected`   | `inventory.low-stock.detected`           | inventory           | notification, reporting                     |
 | `cart.merged`                    | `cart.cart.merged`                       | cart                | reporting                                   |
 | `order.created`                  | `order.order.created`                    | order               | payment, inventory, notification, reporting |
 | `order.cancelled`                | `order.order.cancelled`                  | order               | inventory, payment, notification            |
