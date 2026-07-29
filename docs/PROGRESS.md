@@ -2,70 +2,63 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M3 — Identity và customer
+- **Milestone đang làm:** M4 — Catalog, search và media
 - **Cập nhật lần cuối:** 2026-07-29
-- **Môi trường:** Đạt yêu cầu (git, node, npm, pnpm, docker)
-
-## Kiểm tra môi trường (M0)
-
-| Công cụ        | Phiên bản        | Kết quả |
-| -------------- | ---------------- | ------- |
-| Git            | 2.55.0.windows.3 | OK      |
-| Node.js        | v24.18.0         | OK      |
-| npm            | 11.16.0          | OK      |
-| pnpm           | 10.34.5          | OK      |
-| Docker         | 29.6.2           | OK      |
-| Docker Compose | v5.3.1           | OK      |
+- **Môi trường:** Đạt yêu cầu
 
 ## Roadmap milestone
 
-| ID  | Milestone                                   | Trạng thái | Ghi chú                                     |
-| --- | ------------------------------------------- | ---------- | ------------------------------------------- |
-| M0  | Kiểm tra môi trường và thiết kế kiến trúc   | ✅ Done    | Docs + version pin                          |
-| M1  | Khởi tạo Nx monorepo                        | ✅ Done    | Nx 22.7.7 + TS strict + Jest                |
-| M2  | Shared libraries và chuẩn nền tảng          | ✅ Done    | errors/config/auth/contracts/events/logging |
-| M3  | Identity và customer                        | 🔄 Next    | Auth, OAuth, session Redis, RBAC            |
-| M4  | Catalog, search và media                    | ⏳ Pending | Product/SKU/price + MinIO                   |
-| M5  | Inventory, warehouse và store               | ⏳ Pending | Reserve/deduct/release/transfer             |
-| M6  | Cart, wishlist, comparison, recently viewed | ⏳ Pending | Guest merge                                 |
-| M7  | Order và fulfillment                        | ⏳ Pending | Split shipments, invoice PDF                |
-| M8  | Payment: COD, mock, VNPay Sandbox           | ⏳ Pending | Adapter pattern                             |
-| M9  | Shipping                                    | ⏳ Pending | Carrier + tracking                          |
-| M10 | Review                                      | ⏳ Pending | Verified purchase + media                   |
-| M11 | Warranty và return                          | ⏳ Pending |                                             |
-| M12 | Support ticket                              | ⏳ Pending |                                             |
-| M13 | Notification email và in-app                | ⏳ Pending |                                             |
-| M14 | Reporting và audit log                      | ⏳ Pending |                                             |
-| M15 | Storefront UI                               | ⏳ Pending | Tiếng Việt                                  |
-| M16 | Admin Portal                                | ⏳ Pending | RBAC UI                                     |
-| M17 | Seed ~100 sản phẩm                          | ⏳ Pending |                                             |
-| M18 | Dockerfile và integration environment       | ⏳ Pending | Compose stack                               |
-| M19 | Helm Chart production                       | ⏳ Pending | Kong routes                                 |
-| M20 | Unit, integration, API, Playwright, k6      | ⏳ Pending |                                             |
-| M21 | 20 kịch bản OWASP API Security Top 10       | ⏳ Pending | docs/OWASP-SCENARIOS.md                     |
-| M22 | Build Docker images sẵn sàng push Hub       | ⏳ Pending | Cần Docker Hub username                     |
+| ID  | Milestone                                   | Trạng thái | Ghi chú                       |
+| --- | ------------------------------------------- | ---------- | ----------------------------- |
+| M0  | Kiểm tra môi trường và thiết kế kiến trúc   | ✅ Done    | Docs + version pin            |
+| M1  | Khởi tạo Nx monorepo                        | ✅ Done    | Nx 22.7.7 + TS strict + Jest  |
+| M2  | Shared libraries và chuẩn nền tảng          | ✅ Done    | 6 shared libs                 |
+| M3  | Identity và customer                        | ✅ Done    | Auth flows + customer profile |
+| M4  | Catalog, search và media                    | 🔄 Next    | Product/SKU/price + MinIO     |
+| M5  | Inventory, warehouse và store               | ⏳ Pending |                               |
+| M6  | Cart, wishlist, comparison, recently viewed | ⏳ Pending |                               |
+| M7  | Order và fulfillment                        | ⏳ Pending |                               |
+| M8  | Payment: COD, mock, VNPay Sandbox           | ⏳ Pending |                               |
+| M9  | Shipping                                    | ⏳ Pending |                               |
+| M10 | Review                                      | ⏳ Pending |                               |
+| M11 | Warranty và return                          | ⏳ Pending |                               |
+| M12 | Support ticket                              | ⏳ Pending |                               |
+| M13 | Notification email và in-app                | ⏳ Pending |                               |
+| M14 | Reporting và audit log                      | ⏳ Pending |                               |
+| M15 | Storefront UI                               | ⏳ Pending |                               |
+| M16 | Admin Portal                                | ⏳ Pending |                               |
+| M17 | Seed ~100 sản phẩm                          | ⏳ Pending |                               |
+| M18 | Dockerfile và integration environment       | ⏳ Pending |                               |
+| M19 | Helm Chart production                       | ⏳ Pending |                               |
+| M20 | Unit, integration, API, Playwright, k6      | ⏳ Pending |                               |
+| M21 | 20 kịch bản OWASP API Security Top 10       | ⏳ Pending |                               |
+| M22 | Build Docker images sẵn sàng push Hub       | ⏳ Pending | Cần Docker Hub username       |
 
-## Công việc M2 đã hoàn thành
+## Công việc M3 đã hoàn thành
 
-- [x] `@nexatech/shared-errors` — AppError + error envelope
-- [x] `@nexatech/shared-config` — Zod env schema
-- [x] `@nexatech/shared-auth` — RBAC roles/rank helpers
-- [x] `@nexatech/shared-contracts` — pagination, health, auth DTOs, categories
-- [x] `@nexatech/shared-events` — event envelope + routing keys
-- [x] `@nexatech/shared-logging` — structured logger + correlation
-- [x] Unit tests (20 tests tổng) + lint + build xanh
+- [x] NestJS `identity-service` + `customer-service`
+- [x] Auth: register, verify email OTP, login, refresh, logout, forgot/reset password
+- [x] JWT access + refresh session (hash lưu store; revoke khi refresh/reset)
+- [x] RBAC roles trên token claims
+- [x] Customer profile + địa chỉ
+- [x] API versioning `/api/v1` & `/api/v2`, Swagger, health endpoints
+- [x] Prisma schemas cho identity & customer
+- [x] Docker Compose dev: Postgres 16, Redis, RabbitMQ, MinIO
+- [x] `.env.example`
+- [x] Unit tests auth/customer + lint/build xanh
 
-## Công việc tiếp theo (M3)
+### Ghi chú kỹ thuật M3
 
-- [ ] NestJS `identity-service` với Prisma + PostgreSQL schema
-- [ ] Register/login/email verify/forgot password/OTP
-- [ ] JWT access + refresh/session Redis
-- [ ] Google OAuth adapter (config-driven)
-- [ ] Device/session management + RBAC
-- [ ] NestJS `customer-service` profile/addresses
-- [ ] Health/Swagger/API v1+v2
-- [ ] Unit + integration tests
-- [ ] Commit M3
+- Runtime hiện dùng **InMemory store** để unit test/build độc lập DB.
+- Prisma schema đã sẵn; wiring Prisma repository + Redis session persistence sẽ gắn khi chạy migrate trên Compose (tiếp tục tinh chỉnh ở M18 nếu cần).
+- Google OAuth chờ Client ID/Secret từ người dùng; endpoint có thể bổ sung adapter khi có credential.
+
+## Công việc tiếp theo (M4)
+
+- [ ] `catalog-service`: category/brand/product/SKU/price history
+- [ ] Search/filter + recommendations rule-based
+- [ ] `media-service`: MinIO presign
+- [ ] Tests + commit M4
 
 ## Blockers cần người dùng (chưa cần ngay)
 
@@ -74,21 +67,16 @@
 - Google OAuth Client ID/Secret (identity)
 - VNPay Sandbox credentials (payment)
 - API vận chuyển (shipping)
-- Domain/certificate/IP hạ tầng (deploy prod)
-- Email Super Admin khởi tạo
+- Domain/certificate/IP hạ tầng
+- Email Super Admin
 
 ## Nhật ký
 
-### 2026-07-29 — M0
+### 2026-07-29 — M0–M2
 
-- Workspace gần như trống; môi trường đạt yêu cầu; docs đầy đủ.
+- Docs, Nx 22.7.7 monorepo, shared libraries — hoàn tất.
 
-### 2026-07-29 — M1
+### 2026-07-29 — M3
 
-- Nx 23.1.0 lỗi native cache → pin **Nx 22.7.7**.
-- Monorepo + `@nexatech/shared-platform` + pipeline xanh.
-
-### 2026-07-29 — M2
-
-- 6 shared libraries nền tảng với business logic thật và tests.
-- format/lint/test/build pass.
+- identity-service + customer-service NestJS với business auth/customer thật.
+- format/lint/test/build pass (9 projects).

@@ -9,3 +9,6 @@ onlyBuiltDependencies:
   - '@nestjs/core'
   - esbuild
   - unrs-resolver
+  - '@prisma/engines'
+  - '@prisma/client'
+  - prisma

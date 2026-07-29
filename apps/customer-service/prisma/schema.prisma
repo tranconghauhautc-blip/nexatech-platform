@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("CUSTOMER_DATABASE_URL")
+}
+
+model CustomerProfile {
+  id        String   @id @default(uuid())
+  userId    String   @unique
+  fullName  String
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  addresses Address[]
+  preference CustomerPreference?
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  customerId  String
+  customer    CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label       String
+  recipient   String
+  phone       String
+  line1       String
+  line2       String?
+  ward        String?
+  district    String?
+  city        String
+  postalCode  String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([customerId])
+}
+
+model CustomerPreference {
+  id               String   @id @default(uuid())
+  customerId       String   @unique
+  customer         CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  locale           String   @default("vi-VN")
+  marketingOptIn   Boolean  @default(false)
+  updatedAt        DateTime @updatedAt
+}
