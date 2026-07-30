@@ -55,15 +55,17 @@ OUT_DIR="${BACKUP_DIR}/${DATE_DIR}"
 log() { echo "[backup-postgres] $*"; }
 fail() { echo "[backup-postgres] ERROR: $*" >&2; exit 1; }
 
-command -v pg_dump >/dev/null 2>&1 || fail "pg_dump not found in PATH"
-command -v sha256sum >/dev/null 2>&1 || fail "sha256sum not found in PATH"
-
 if [[ "$EXECUTE" -eq 1 ]]; then
+  command -v pg_dump >/dev/null 2>&1 || fail "pg_dump not found in PATH"
+  command -v sha256sum >/dev/null 2>&1 || command -v shasum >/dev/null 2>&1 || fail "sha256sum/shasum not found in PATH"
   [[ -n "${PGPASSWORD:-}" ]] || fail "PGPASSWORD must be set for --execute"
   export PGHOST PGPORT PGUSER PGPASSWORD
   mkdir -p "$OUT_DIR"
 else
   log "DRY-RUN mode (pass --execute to write backups)"
+  if ! command -v pg_dump >/dev/null 2>&1; then
+    log "NOTE: pg_dump not in PATH (OK for dry-run; required for --execute)"
+  fi
 fi
 
 log "Host=${PGHOST}:${PGPORT} User=${PGUSER} Dir=${OUT_DIR} Retention=${RETENTION_DAYS}d Databases=${#DATABASES[@]}"

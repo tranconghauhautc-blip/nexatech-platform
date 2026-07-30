@@ -65,7 +65,10 @@ function Fail([string]$Message) {
 }
 
 $pgDump = Get-Command pg_dump -ErrorAction SilentlyContinue
-if (-not $pgDump) { Fail 'pg_dump not found in PATH' }
+if ($doExecute -and -not $pgDump) { Fail 'pg_dump not found in PATH' }
+if (-not $doExecute -and -not $pgDump) {
+  Write-Log 'NOTE: pg_dump not in PATH (OK for dry-run; required for -Execute)'
+}
 
 if ($doExecute) {
   if (-not $env:PGPASSWORD) { Fail 'PGPASSWORD must be set for -Execute' }

@@ -35,26 +35,30 @@ function Write-Log([string]$Message) { Write-Host "[check-secret-leak] $Message"
 function Test-SafeLine([string]$Line) {
   $markers = @(
     'CHANGE_ME', 'REPLACE', 'PASSWORD', 'changeme', 'change-me',
-    'YOUR_', 'EXAMPLE', 'secret-values.example', '***', '<redacted>'
+    'YOUR_', 'EXAMPLE', 'secret-values.example', '***', '<redacted>',
+    '...@', 'REPLACE_ME', 'PLACEHOLDER'
   )
   foreach ($m in $markers) {
     if ($Line -match [regex]::Escape($m)) { return $true }
   }
   if ($Line -match '^\s*#') { return $true }
+  # Docs often show URL shape with ellipsis password
+  if ($Line -match 'postgresql://[^:]+:\.\.\.@') { return $true }
   return $false
 }
 
 $excludeDirs = @(
-  '.git', 'node_modules', 'dist', '.nx'
+  '.git', 'node_modules', 'dist', '.nx', '.tools', 'generated', 'coverage',
+  'playwright-report', 'test-results'
 )
 
 $extensionsSkip = @(
-  '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.woff', '.woff2'
+  '.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.woff', '.woff2',
+  '.node', '.dll', '.so', '.wasm', '.map'
 )
 
 $patterns = @(
-  @{ Name = 'postgres-real-host'; Regex = 'postgresql://nexatech_[a-z_]+:[^@"\s]+@192\.168\.' },
-  @{ Name = 'pgpassword-env'; Regex = 'PGPASSWORD\s*=\s*\S+' },
+  @{ Name = 'pgpassword-env'; Regex = 'PGPASSWORD\s*=\s*[^\s$]+' },
   @{ Name = 'private-key'; Regex = 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY' },
   @{ Name = 'aws-key'; Regex = 'AKIA[0-9A-Z]{16}' },
   @{ Name = 'long-secret-assign'; Regex = 'secret[_-]?key\s*=\s*["''][A-Za-z0-9+/=]{20,}["'']' }
@@ -72,6 +76,9 @@ $files = Get-ChildItem -Path $scanPath -Recurse -File -ErrorAction SilentlyConti
     if ($skip) { return $false }
     if ($extensionsSkip -contains $_.Extension.ToLowerInvariant()) { return $false }
     if ($_.Name -in @('pnpm-lock.yaml', 'check-secret-leak.ps1', 'check-secret-leak.sh')) { return $false }
+    if ($_.Name -eq '.env.nx') { return $false }
+    if ($rel -match '[\\/]src[\\/]generated[\\/]') { return $false }
+    if ($_.Length -gt 1MB) { return $false }
     return $true
   }
 

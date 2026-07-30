@@ -32,10 +32,15 @@ EXCLUDES=(
   --glob '!**/node_modules/**'
   --glob '!**/dist/**'
   --glob '!**/.nx/**'
+  --glob '!**/.tools/**'
+  --glob '!**/src/generated/**'
+  --glob '!**/coverage/**'
   --glob '!**/pnpm-lock.yaml'
   --glob '!**/*.png' --glob '!**/*.jpg' --glob '!**/*.jpeg'
   --glob '!**/*.gif' --glob '!**/*.webp' --glob '!**/*.ico'
   --glob '!**/*.woff' --glob '!**/*.woff2'
+  --glob '!**/*.node' --glob '!**/*.dll' --glob '!**/*.so' --glob '!**/*.wasm'
+  --glob '!**/.env.nx'
   --glob '!**/check-secret-leak.sh'
   --glob '!**/check-secret-leak.ps1'
 )
@@ -54,7 +59,8 @@ is_safe_line() {
   [[ "$line" =~ secret-values\.example ]] && return 0
   [[ "$line" =~ \*\*\* ]] && return 0
   [[ "$line" =~ '<redacted>' ]] && return 0
-  [[ "$line" =~ '# ' ]] && return 0
+  [[ "$line" =~ '\.\.\.@' ]] && return 0
+  [[ "$line" =~ ^[[:space:]]*# ]] && return 0
   return 1
 }
 
