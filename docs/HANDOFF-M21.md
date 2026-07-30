@@ -15,9 +15,10 @@ Ngày bàn giao: **2026-07-30**
 | Milestone xong | M0–**M20**                                 |
 | Milestone tiếp | **M21** — Security lab / OWASP             |
 | Feat M19       | `2fad006` (docs `f202367`)                 |
-| Feat M20       | _(điền sau commit)_                        |
+| Feat M20       | `53247e4`                                  |
+| Feat M21       | `20e98bb`                                  |
 | Nx / Next.js   | **22.7.7** / **15.2.4**                    |
-| Image tag      | **0.17.0** (prod); lab sẽ dùng `*-sec-lab` |
+| Image tag      | **0.17.0** (prod); **0.21.0-sec-lab** (lab)|
 
 ---
 

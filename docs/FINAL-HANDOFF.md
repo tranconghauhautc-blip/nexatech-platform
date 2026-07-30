@@ -6,13 +6,15 @@ Ngày: **2026-07-30**
 
 M0–M21 **complete** (see `docs/PROGRESS.md`). **Do not start M22** in this handoff.
 
-## Commits (fill exact hashes at close)
+## Commits
 
-| Milestone | Feat commit           |
-| --------- | --------------------- |
-| M19       | `2fad006`             |
-| M20       | `53247e4`             |
-| M21       | _(after feat commit)_ |
+| Milestone | Feat commit |
+| --------- | ----------- |
+| M19       | `2fad006`   |
+| M20       | `53247e4`   |
+| M21       | `20e98bb`   |
+
+HEAD after docs hash commit will be recorded in PROGRESS.
 
 ## Security lab summary
 
@@ -57,4 +59,4 @@ helm template nexatech-lab deploy/helm/nexatech -f deploy/helm/nexatech/values-s
 
 ## Working tree
 
-Must be clean after M21 docs hash commit. HEAD on `main`. No new milestone started.
+Must be clean after M21 docs hash commit. HEAD on `main`. **Roadmap M0–M21 complete. Do not start a new milestone.**

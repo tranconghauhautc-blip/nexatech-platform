@@ -24,7 +24,7 @@
 | `2fad006` | M19 preflight/release          |
 | `f202367` | M19 docs hash                  |
 | `53247e4` | M20 performance/reliability/DR |
-| _(TBD)_   | M21 security lab               |
+| `20e98bb` | M21 security lab / OWASP       |
 
 ## M21 checklist (Done)
 
@@ -34,7 +34,7 @@
 - [x] PoC + secure regression tests
 - [x] Lab isolation docs + NetworkPolicy path
 - [x] OWASP-SCENARIOS + FINAL-HANDOFF + checklists
-- [ ] Feature commit + docs hash _(in progress)_
+- [x] Feature commit `20e98bb`
 
 ## BLOCKED_EXTERNAL
 
