@@ -206,3 +206,17 @@ helm template nexatech deploy/helm/nexatech -f deploy/helm/nexatech/values-produ
 Smoke scripts refuse non-private targets (localhost / RFC1918 / `ENTRY_VIP` only). Tokens are never logged.
 
 k6 load scenarios remain M20 (`tests/k6/`).
+
+## Performance / reliability validation (M20)
+
+```powershell
+.\scripts\k6-validate.ps1
+.\scripts\resilience-dry-run.ps1
+.\scripts\backup-restore-validate.ps1
+.\scripts\validate-alerts.ps1
+# optional if k6 installed and stack up:
+# $env:BASE_URL='http://127.0.0.1:3000'; k6 run tests/k6/storefront-browse.js
+```
+
+Docs: `PERFORMANCE-TESTING.md`, `RESILIENCE-TESTING.md`, `SLO-SLI.md`, `DISASTER-RECOVERY.md`, `INCIDENT-RESPONSE.md`.
+Alerts: `deploy/observability/alerts/nexatech-alerts.yaml` (static; Grafana remains ClusterIP).

@@ -26,11 +26,16 @@ Nx 22.7.7 · pnpm · TypeScript strict · Next.js 15.2.4 · NestJS · Prisma · 
 | [docs/IMAGE-MATRIX.md](docs/IMAGE-MATRIX.md)                           | Docker image matrix       |
 | [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)                 | Release gate checklist    |
 | [docs/DEPLOYMENT-ORDER.md](docs/DEPLOYMENT-ORDER.md)                   | Deploy order              |
+| [docs/PERFORMANCE-TESTING.md](docs/PERFORMANCE-TESTING.md)             | k6 / performance (M20)    |
+| [docs/RESILIENCE-TESTING.md](docs/RESILIENCE-TESTING.md)               | Failure modes (M20)       |
+| [docs/SLO-SLI.md](docs/SLO-SLI.md)                                     | SLI/SLO draft (M20)       |
+| [docs/DISASTER-RECOVERY.md](docs/DISASTER-RECOVERY.md)                 | DR assumptions (M20)      |
+| [docs/INCIDENT-RESPONSE.md](docs/INCIDENT-RESPONSE.md)                 | Incident runbook (M20)    |
 
 ## Trạng thái
 
-- **M0–M18** ✅ — monorepo, business services, frontends, Docker/Kong, Helm packaging, observability/ops packaging
-- **M19** 🔄 — deployment preflight / release readiness (`docs/PROGRESS.md`)
+- **M0–M19** ✅
+- **M20** 🔄 — performance / reliability / DR (`docs/PROGRESS.md`)
 
 Chi tiết: `docs/PROGRESS.md`.
 

@@ -168,6 +168,7 @@ MinIO dùng object storage cho media.
 - Build/push: `scripts/docker-build-all.ps1|.sh` (ADR-036)
 - Deploy thật lên cluster: operator + M18 runbook (agent unattended không `helm upgrade`/`kubectl apply`)
 - **M19:** preflight `scripts/deploy-preflight.*`, smoke `scripts/smoke-release.*`, image matrix `docs/IMAGE-MATRIX.md`, order `docs/DEPLOYMENT-ORDER.md`, checklist `docs/RELEASE-CHECKLIST.md` (ADR-038)
+- **M20:** k6 `tests/k6/`, resilience/DR/SLO docs, alert drafts `deploy/observability/alerts/nexatech-alerts.yaml` (ADR-039)
 
 ## 12. Nguyên tắc thiết kế
 

@@ -189,5 +189,7 @@ Restore order: namespace → Secrets → ConfigMaps → Helm release → verify 
 
 - `docs/MIGRATIONS.md` — schema deploy; rollback via restore not ad-hoc down migrations
 - `docs/K8S-OPS.md` — PVC snapshot, disaster recovery
+- `docs/DISASTER-RECOVERY.md` — RPO/RTO draft (M20)
 - `docs/DEPLOY-RUNBOOK-PRODUCTION.md` — deploy order
 - `scripts/backup-postgres.sh` / `scripts/backup-postgres.ps1`
+- `scripts/backup-restore-validate.ps1` / `.sh` — isolated dry-run gate (never prod DB)

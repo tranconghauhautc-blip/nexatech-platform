@@ -2,41 +2,39 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M20 — Performance / reliability / disaster recovery
-- **Milestone đã hoàn thành gần nhất:** M19 (deployment preflight / release readiness)
+- **Milestone đang làm:** _(sẵn sàng M21 — M20 hoàn tất)_
+- **Milestone đã hoàn thành gần nhất:** M20 (performance / reliability / DR)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **HEAD baseline trước M20:** `2fad006` (docs hash follow-up)
-- **Kiểm tra DoD M20:** k6 scenarios, resilience/DR docs, SLI/SLO, alerts static, backup dry-run, format/lint/test/build/e2e
+- **Kiểm tra DoD M20:** k6 assets + validate; resilience/backup/alerts dry-run; format/lint/test/build/e2e; secret-leak
 
 ## Roadmap milestone
 
-| ID     | Milestone                                        | Trạng thái     | Ghi chú               |
-| ------ | ------------------------------------------------ | -------------- | --------------------- |
-| M0–M19 | …                                                | ✅ Done        | M19 feat `2fad006`    |
-| M20    | Performance / reliability / DR                   | 🔄 In progress | ADR-039               |
-| M21    | Security lab / OWASP intentional vulnerabilities | ⏳ Pending     | Sau DoD M20           |
+| ID     | Milestone                                        | Trạng thái | Ghi chú               |
+| ------ | ------------------------------------------------ | ---------- | --------------------- |
+| M0–M19 | …                                                | ✅ Done    | M19 `2fad006`         |
+| M20    | Performance / reliability / DR                   | ✅ Done    | ADR-039               |
+| M21    | Security lab / OWASP intentional vulnerabilities | ⏳ Pending | `docs/HANDOFF-M21.md` |
 
 ## Commits
 
 | Commit    | Nội dung                        |
 | --------- | ------------------------------- |
 | `2fad006` | M19 preflight/release readiness |
-| _(TBD)_   | M19 docs hash                   |
+| `f202367` | M19 docs hash                   |
 | _(TBD)_   | M20 performance/reliability/DR  |
 
-## M20 checklist (In progress)
+## M20 checklist (Done)
 
-- [ ] k6 performance scenarios + thresholds
-- [ ] Resilience test plans / failure-mode expectations
-- [ ] Backup/restore validation (isolated / dry-run)
-- [ ] DR RPO/RTO draft
-- [ ] SLI/SLO draft
-- [ ] Alert readiness (static rules/docs)
-- [ ] Incident / performance / resilience / DR runbooks
-- [ ] Validation pipeline
-- [ ] Docs + ADR-039 + HANDOFF-M21
-- [ ] Feature commit + docs hash
+- [x] k6 performance scenarios + thresholds
+- [x] Resilience test plans / failure-mode expectations
+- [x] Backup/restore validation (isolated / dry-run)
+- [x] DR RPO/RTO draft
+- [x] SLI/SLO draft
+- [x] Alert readiness (static rules/docs)
+- [x] Incident / performance / resilience / DR runbooks
+- [x] Docs + ADR-039 + HANDOFF-M21
+- [ ] Feature commit + docs hash _(in progress)_
 
 ## BLOCKED_EXTERNAL
 
@@ -54,12 +52,11 @@ Next.js **15.2.4**.
 
 ## Nhật ký
 
-### 2026-07-30 — M20 started
+### 2026-07-30 — M20 done
 
-- Baseline after M19 feature `2fad006`.
-- Scope: k6, resilience, DR, SLI/SLO, alerts, incident docs.
-- **Không** bắt đầu OWASP lab (M21).
+- k6 scenarios, resilience/DR/SLO/incident docs, alert YAML, dry-run scripts, ADR-039, HANDOFF-M21.
+- **Không** bắt đầu intentional OWASP lab trong commit M20.
 
 ### 2026-07-30 — M19 done
 
-- Feat `2fad006`. Preflight/smoke/image matrix/release checklist.
+- Feat `2fad006` / docs `f202367`.

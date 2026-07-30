@@ -322,3 +322,10 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Exit codes:** `0` = OK hoặc OK+BLOCKED (offline-friendly); `1` = FAIL; `-Strict`/`--strict` nâng BLOCKED → FAIL.
 - **Lý do:** Tách packaging (M17) và observability (M18) khỏi bước “sẵn sàng release” có kiểm tra lặp lại được trước khi operator chạy Helm/Kong thật.
 - **Hệ quả:** M20 tập trung k6/performance, resilience, DR validation, SLI/SLO; M21 OWASP security lab sau khi M19–M20 xanh.
+
+## ADR-039 — Performance, resilience và DR readiness (M20)
+
+- **Quyết định:** Thêm bộ k6 lab scenarios (`tests/k6/`) với private target guard, lab thresholds (không hard-code SLO production thiếu căn cứ), resilience failure-mode catalog (`docs/RESILIENCE-TESTING.md`), SLI/SLO draft (`docs/SLO-SLI.md`), DR RPO/RTO draft (`docs/DISASTER-RECOVERY.md`), incident runbook (`docs/INCIDENT-RESPONSE.md`), Prometheus alert rule drafts (`deploy/observability/alerts/nexatech-alerts.yaml`), và dry-run scripts (`k6-validate`, `resilience-dry-run`, `backup-restore-validate`, `validate-alerts`).
+- **Cấm:** chaos/pod-kill trên cluster thật unattended; restore vào DB production; k6 nhắm Internet công cộng mặc định; log secret/token trong k6.
+- **Lý do:** Đo hiệu năng và sẵn sàng vận hành trước security lab (M21).
+- **Hệ quả:** M21 xây security-lab profile tách biệt production với intentional vulnerabilities có kiểm soát.
