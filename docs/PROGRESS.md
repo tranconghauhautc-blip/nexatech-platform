@@ -51,7 +51,7 @@
 | `5c365a3`   | M13 docs hash            |
 | `8f86457`   | M14 reporting-service    |
 | `b65e901`   | M14 docs hash            |
-| _(pending)_ | M15 storefront + admin   |
+| `2105088`   | M15 storefront + admin   |
 
 ## Apps sau M15 (24 projects)
 
@@ -123,6 +123,7 @@ Rồi: `cd apps/reporting-service && npx prisma migrate deploy && npx prisma gen
 - storefront-web (3000) + admin-web (3100) + shared-web; Next.js **15.2.4**; ADR-034 BFF/session.
 - UI tiếng Việt, VND; không voucher/flash sale; admin `robots` disallow.
 - Test FE: storefront 28, admin 3, shared-web 8; lint 0 errors; build monorepo xanh (24 projects).
+- Commit `2105088`.
 - HANDOFF-M16 sẵn sàng; **không bắt đầu M16**.
 
 ### 2026-07-30 — M15 start

@@ -14,6 +14,7 @@ Ngày bàn giao: **2026-07-30**
 | Branch         | `main`                                                          |
 | Milestone xong | M0–**M15** (storefront-web + admin-web)                         |
 | Milestone tiếp | **M16** — xem roadmap (Docker images từng backend / Kong / E2E) |
+| Feat commit    | `2105088`                                                       |
 | Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`                   |
 | Next.js        | **15.2.4** (pin M15; cân nhắc patch CVE khi nâng trong patch)   |
 
