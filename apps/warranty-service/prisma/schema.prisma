@@ -1,0 +1,203 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("WARRANTY_DATABASE_URL")
+}
+
+enum WarrantyClaimStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ReturnRequestStatus {
+  REQUESTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  AWAITING_RETURN
+  RECEIVED
+  COMPLETED
+  CANCELLED
+}
+
+enum ReturnReason {
+  DEFECTIVE
+  WRONG_ITEM
+  CHANGED_MIND
+  DAMAGED_SHIPPING
+  OTHER
+}
+
+enum WarrantyIssueType {
+  DEFECT
+  MALFUNCTION
+  MISSING_PARTS
+  OTHER
+}
+
+enum WarrantyMediaKind {
+  IMAGE
+}
+
+enum DesiredResolution {
+  REFUND
+  EXCHANGE
+  STORE_CREDIT
+}
+
+model WarrantyClaim {
+  id             String              @id @default(uuid())
+  claimCode      String              @unique
+  orderId        String
+  orderCode      String
+  orderItemId    String
+  customerId     String
+  productId      String
+  skuId          String?
+  skuCode        String?
+  productName    String
+  issueType      WarrantyIssueType
+  description    String
+  serialNumber   String?
+  status         WarrantyClaimStatus @default(SUBMITTED)
+  /// "customerId:orderItemId" khi active, "<status>:<uuid>" sau khi vào trạng thái kết thúc
+  activeKey      String              @unique
+  version        Int                 @default(0)
+  orderSyncedStatus String?
+  orderSyncedAt     DateTime?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  media   WarrantyClaimMedia[]
+  history WarrantyClaimHistory[]
+
+  @@index([customerId])
+  @@index([orderId])
+  @@index([orderItemId])
+  @@index([status])
+}
+
+model WarrantyClaimMedia {
+  id        String            @id @default(uuid())
+  claimId   String
+  claim     WarrantyClaim     @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  mediaId   String
+  kind      WarrantyMediaKind @default(IMAGE)
+  deletedAt DateTime?
+  createdAt DateTime          @default(now())
+
+  @@index([claimId])
+  @@index([mediaId])
+}
+
+model WarrantyClaimHistory {
+  id         String               @id @default(uuid())
+  claimId    String
+  claim      WarrantyClaim        @relation(fields: [claimId], references: [id], onDelete: Cascade)
+  fromStatus WarrantyClaimStatus?
+  toStatus   WarrantyClaimStatus
+  action     String
+  actorId    String
+  actorType  String
+  reason     String?
+  createdAt  DateTime             @default(now())
+
+  @@index([claimId])
+}
+
+model ReturnRequest {
+  id                String              @id @default(uuid())
+  returnCode        String              @unique
+  orderId           String
+  orderCode         String
+  orderItemId       String
+  customerId        String
+  productId         String
+  skuId             String?
+  skuCode           String?
+  productName       String
+  reason            ReturnReason
+  description       String
+  quantity          Int                 @default(1)
+  desiredResolution DesiredResolution   @default(REFUND)
+  status            ReturnRequestStatus @default(REQUESTED)
+  /// "customerId:orderItemId" khi active, "<status>:<uuid>" sau khi vào trạng thái kết thúc
+  activeKey         String              @unique
+  version           Int                 @default(0)
+  orderSyncedStatus String?
+  orderSyncedAt     DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  media   ReturnRequestMedia[]
+  history ReturnRequestHistory[]
+
+  @@index([customerId])
+  @@index([orderId])
+  @@index([orderItemId])
+  @@index([status])
+}
+
+model ReturnRequestMedia {
+  id        String            @id @default(uuid())
+  returnId  String
+  returnRequest ReturnRequest @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  mediaId   String
+  kind      WarrantyMediaKind @default(IMAGE)
+  deletedAt DateTime?
+  createdAt DateTime          @default(now())
+
+  @@index([returnId])
+  @@index([mediaId])
+}
+
+model ReturnRequestHistory {
+  id            String               @id @default(uuid())
+  returnId      String
+  returnRequest ReturnRequest        @relation(fields: [returnId], references: [id], onDelete: Cascade)
+  fromStatus    ReturnRequestStatus?
+  toStatus      ReturnRequestStatus
+  action        String
+  actorId       String
+  actorType     String
+  reason        String?
+  createdAt     DateTime             @default(now())
+
+  @@index([returnId])
+}
+
+model WarrantyIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  routingKey  String
+  payloadJson Json
+  traceId     String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([publishedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

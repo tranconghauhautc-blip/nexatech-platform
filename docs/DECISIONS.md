@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`, warranty `3011`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -158,6 +158,19 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - Privacy: mask displayName; public DTO không trả customerId/email/phone; sanitize content.
 - Outbox + RabbitMQ sau local TX; clients REST tới order/catalog/media với timeout/retry.
 - Auth tạm: `x-user-id` / `x-user-roles`.
+
+## ADR-030 — Warranty claim + return + order sync (M11)
+
+- **Quyết định:** `warranty-service` sở hữu DB `nexatech_warranty` (port `3011`). Hai domain riêng: **WarrantyClaim** và **ReturnRequest**, mỗi loại có state machine riêng.
+- Verified purchase: `ORDER_SERVICE_URL` — ownership từ header, `order.status === DELIVERED`, `orderItemId` thuộc order; package chứa item (nếu có) cũng `DELIVERED`. SKU/productId lấy từ order item snapshot — **không** tin body.
+- Một claim active và một return active / `(customerId, orderItemId)` qua `activeKey`; terminal state rotate key.
+- Claim: `SUBMITTED → UNDER_REVIEW → APPROVED → IN_PROGRESS → COMPLETED` (+ REJECTED/CANCELLED). Return: `REQUESTED → UNDER_REVIEW → APPROVED → AWAITING_RETURN → RECEIVED → COMPLETED` (+ REJECTED/CANCELLED).
+- Evidence: chỉ reference `mediaId`; tối đa 5 ảnh; verify ownership + MIME `image/*` qua media-service; không nhận file raw; không truy cập DB media.
+- Optimistic `version` + idempotency key + AuditLog.
+- Order sync REST `POST /orders/:id/return-sync` (Staff+): APPROVED → `RETURN_REQUESTED`; COMPLETED → `RETURNED`; REJECTED/CANCELLED sau khi đã sync RETURN_REQUESTED → `DELIVERED`. Idempotent (đã đúng status thì no-op); retry HTTP giới hạn; `x-trace-id`; không distributed TX; warranty ghi `orderSyncedStatus`/`orderSyncedAt`.
+- Sync gọi bằng service actor Staff (`WARRANTY_SERVICE_ACTOR_ID`), không phụ thuộc role customer.
+- **Không** gọi payment refund / inventory return HTTP trong M11 — chỉ publish `warranty.refund_requested` / `warranty.inventory_return_requested` để milestone sau consume.
+- Outbox + RabbitMQ; auth tạm `x-user-id` / `x-user-roles`.
 
 ## ADR-011 — Kong Gateway OSS
 

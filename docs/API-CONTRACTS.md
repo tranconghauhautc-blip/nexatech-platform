@@ -242,17 +242,18 @@ Env tích hợp: `CART_SERVICE_URL`, `CATALOG_SERVICE_URL`, `INVENTORY_SERVICE_U
 
 ### Customer
 
-| Method | Path                                         | Mô tả                                                         |
-| ------ | -------------------------------------------- | ------------------------------------------------------------- |
-| POST   | `/api/v1/orders`                             | Tạo đơn từ cart (idempotencyKey bắt buộc; re-price + reserve) |
-| GET    | `/api/v1/orders`                             | Danh sách đơn của customer (filter/sort/pagination)           |
-| GET    | `/api/v1/orders/:orderId`                    | Chi tiết đơn (ownership)                                      |
-| POST   | `/api/v1/orders/:orderId/cancel`             | Hủy khi trạng thái cho phép                                   |
-| POST   | `/api/v1/orders/:orderId/confirm`            | Xác nhận (AWAITING_PAYMENT → CONFIRMED)                       |
-| POST   | `/api/v1/orders/:orderId/payment-sync`       | Đồng bộ paymentStatus từ payment-service (Staff+)             |
-| POST   | `/api/v1/orders/:orderId/status-transitions` | Transition (staff qua admin; customer hạn chế)                |
-| GET    | `/api/v1/orders/:orderId/status-history`     | Lịch sử trạng thái                                            |
-| GET    | `/api/v1/orders/:orderId/packages`           | Danh sách kiện                                                |
+| Method | Path                                         | Mô tả                                                            |
+| ------ | -------------------------------------------- | ---------------------------------------------------------------- |
+| POST   | `/api/v1/orders`                             | Tạo đơn từ cart (idempotencyKey bắt buộc; re-price + reserve)    |
+| GET    | `/api/v1/orders`                             | Danh sách đơn của customer (filter/sort/pagination)              |
+| GET    | `/api/v1/orders/:orderId`                    | Chi tiết đơn (ownership)                                         |
+| POST   | `/api/v1/orders/:orderId/cancel`             | Hủy khi trạng thái cho phép                                      |
+| POST   | `/api/v1/orders/:orderId/confirm`            | Xác nhận (AWAITING_PAYMENT → CONFIRMED)                          |
+| POST   | `/api/v1/orders/:orderId/payment-sync`       | Đồng bộ paymentStatus từ payment-service (Staff+)                |
+| POST   | `/api/v1/orders/:orderId/return-sync`        | Đồng bộ RETURN_REQUESTED/RETURNED/DELIVERED từ warranty (Staff+) |
+| POST   | `/api/v1/orders/:orderId/status-transitions` | Transition (staff qua admin; customer hạn chế)                   |
+| GET    | `/api/v1/orders/:orderId/status-history`     | Lịch sử trạng thái                                               |
+| GET    | `/api/v1/orders/:orderId/packages`           | Danh sách kiện                                                   |
 
 ### Admin / Staff
 
@@ -269,6 +270,8 @@ Create order body chỉ nhận: `idempotencyKey`, `deliveryMethod`, `paymentMeth
 Money: integer VND; `discountTotal` luôn `0`.
 
 `payment-sync` body: `paymentStatus`, `paymentReference?`, `paidAt?`, `confirmOrder?`, `idempotencyKey?`. Khi `confirmOrder=true` + `PAID` và order đang `AWAITING_PAYMENT` → chuyển `CONFIRMED`.
+
+`return-sync` body: `toStatus` (`RETURN_REQUESTED` \| `RETURNED` \| `DELIVERED`), `returnRequestId?`, `orderItemId?`, `reason?`, `idempotencyKey?`. Idempotent nếu order đã ở `toStatus`; chỉ cho phép transition hợp lệ của order state machine.
 
 ---
 
@@ -431,9 +434,55 @@ List query: `rating`, `hasMedia`, `verifiedOnly`, `sort=newest|highest|lowest|mo
 
 ---
 
-## Các service sau M10 (kế hoạch — chưa code)
+## warranty-service (M11) — port 3011
 
-Warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Auth tạm: `x-user-id`, `x-user-roles`. CustomerId/ownership/eligibility luôn xác định từ header + `OrderClient`, không tin body.
+
+### Customer
+
+| Method | Path                                      | Mô tả                                           | Auth     |
+| ------ | ----------------------------------------- | ----------------------------------------------- | -------- |
+| POST   | `/api/v1/warranty/claims`                 | Tạo yêu cầu bảo hành (verified buyer)           | Customer |
+| GET    | `/api/v1/warranty/claims`                 | List của tôi + filter/pagination                | Customer |
+| GET    | `/api/v1/warranty/claims/:claimId`        | Chi tiết (owner hoặc Staff+)                    | Customer |
+| POST   | `/api/v1/warranty/claims/:claimId/media`  | Gắn media reference (ownership + MIME image/\*) | Owner    |
+| POST   | `/api/v1/warranty/claims/:claimId/cancel` | Hủy yêu cầu (rotate activeKey)                  | Owner    |
+| POST   | `/api/v1/returns`                         | Tạo yêu cầu đổi trả (verified buyer)            | Customer |
+| GET    | `/api/v1/returns`                         | List của tôi + filter/pagination                | Customer |
+| GET    | `/api/v1/returns/:returnId`               | Chi tiết (owner hoặc Staff+)                    | Customer |
+| POST   | `/api/v1/returns/:returnId/media`         | Gắn media reference                             | Owner    |
+| POST   | `/api/v1/returns/:returnId/cancel`        | Hủy yêu cầu (rotate activeKey)                  | Owner    |
+
+Create claim body: `orderId`, `orderItemId`, `issueType` (DEFECT/MALFUNCTION/MISSING_PARTS/OTHER), `description` (10–5000 ký tự), `serialNumber?`, `mediaIds?` (≤5 ảnh), `idempotencyKey?`.
+
+Create return body: `orderId`, `orderItemId`, `reason` (DEFECTIVE/WRONG_ITEM/CHANGED_MIND/DAMAGED_SHIPPING/OTHER), `description`, `quantity?` (≤ số lượng đã mua), `desiredResolution?` (REFUND/EXCHANGE/STORE_CREDIT, mặc định REFUND — không kích hoạt payment/inventory), `mediaIds?`, `idempotencyKey?`.
+
+### Admin
+
+| Method | Path                                                | Mô tả                                                                          | Auth   |
+| ------ | --------------------------------------------------- | ------------------------------------------------------------------------------ | ------ |
+| GET    | `/api/v1/admin/warranty/claims`                     | Queue + filter status/customer/order/date                                      | Staff+ |
+| GET    | `/api/v1/admin/warranty/claims/:claimId`            | Chi tiết + history                                                             | Staff+ |
+| POST   | `/api/v1/admin/warranty/claims/:claimId/transition` | start_review/approve/reject/start_repair/complete/cancel                       | Staff+ |
+| GET    | `/api/v1/admin/returns`                             | Queue + filter                                                                 | Staff+ |
+| GET    | `/api/v1/admin/returns/:returnId`                   | Chi tiết + history                                                             | Staff+ |
+| POST   | `/api/v1/admin/returns/:returnId/transition`        | start_review/approve/reject/mark_awaiting_return/mark_received/complete/cancel | Staff+ |
+
+Transition body: `action`, `reason?`, `expectedVersion?` (optimistic lock), `idempotencyKey?`.
+
+### Verified buyer / domain rules
+
+- Order phải `DELIVERED` và thuộc customer (header); `orderItemId` tồn tại trong order; package chứa item (nếu có) cũng `DELIVERED`.
+- SKU/productId lấy từ order item snapshot, không từ body.
+- Một active claim và một active return / `(customerId, orderItemId)` (`activeKey`); soft cancel rotate key để cho phép yêu cầu mới.
+- Return APPROVED/COMPLETED/REJECTED (sau khi đã sync)/CANCELLED (sau khi đã sync) đồng bộ trạng thái sang order-service qua `OrderClient.syncReturn`; không distributed TX.
+- `mark_received` chỉ publish `warranty.inventory_return_requested`; `complete` với `desiredResolution=REFUND` chỉ publish `warranty.refund_requested` — **không** gọi HTTP payment/inventory trực tiếp.
+
+---
+
+## Các service sau M11 (kế hoạch — chưa code)
+
+Support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

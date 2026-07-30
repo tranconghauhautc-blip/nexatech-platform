@@ -103,6 +103,20 @@ export class OrderController {
     );
   }
 
+  @Post(':orderId/return-sync')
+  returnSync(
+    @Param('orderId') orderId: string,
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-roles') roles?: string,
+    @Body() body?: unknown,
+  ) {
+    return this.orderService.syncReturn(
+      parseActor(userId, roles),
+      orderId,
+      body,
+    );
+  }
+
   @Get(':orderId/status-history')
   statusHistory(
     @Param('orderId') orderId: string,

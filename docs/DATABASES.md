@@ -48,7 +48,7 @@
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -65,7 +65,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | payment-service      | `nexatech_payment`      | Prisma + migration ✅ / Prisma + outbox runtime   |
 | shipping-service     | `nexatech_shipping`     | Prisma + migration ✅ / Prisma + outbox runtime   |
 | review-service       | `nexatech_review`       | Prisma + migration ✅ / Prisma + outbox runtime   |
-| warranty-service     | `nexatech_warranty`     | Later                                             |
+| warranty-service     | `nexatech_warranty`     | Prisma + migration ✅ / Prisma + outbox runtime   |
 | notification-service | `nexatech_notification` | Later                                             |
 | support-service      | `nexatech_support`      | Later                                             |
 | reporting-service    | `nexatech_reporting`    | Later                                             |
@@ -161,6 +161,17 @@ Client: `apps/shipping-service/src/generated/prisma`. Money: integer VND.
 - `ReviewIdempotency`, `OutboxEvent`, `AuditLog`
 
 Client: `apps/review-service/src/generated/prisma`. Aggregate: `averageRatingCents = round(sumRating * 100 / totalReviews)`.
+
+## warranty — Prisma models (M11)
+
+- `WarrantyClaim` — order/orderItem/customer/product/sku snapshot, `claimCode` unique (`NT-W-YYYYMMDD-XXXXXX`), `issueType`, status machine (SUBMITTED→UNDER_REVIEW→APPROVED→IN_PROGRESS→COMPLETED, REJECTED/CANCELLED), `activeKey` unique (`customerId:orderItemId`, rotates on terminal), `version` optimistic lock, `orderSyncedStatus`/`orderSyncedAt` (không dùng cho claim, chỉ return)
+- `WarrantyClaimMedia` — mediaId reference, kind IMAGE only, soft `deletedAt`
+- `WarrantyClaimHistory` — from/to/action/actor/reason
+- `ReturnRequest` — tương tự claim + `returnCode` (`NT-R-YYYYMMDD-XXXXXX`), `reason`, `quantity`, `desiredResolution` (REFUND/EXCHANGE/STORE_CREDIT — placeholder, không gọi payment), status machine (REQUESTED→UNDER_REVIEW→APPROVED→AWAITING_RETURN→RECEIVED→COMPLETED, REJECTED/CANCELLED), `orderSyncedStatus`/`orderSyncedAt`
+- `ReturnRequestMedia`, `ReturnRequestHistory`
+- `WarrantyIdempotency`, `OutboxEvent`, `AuditLog`
+
+Client: `apps/warranty-service/src/generated/prisma`. Order sync: APPROVED→`RETURN_REQUESTED`, COMPLETED→`RETURNED`, REJECTED/CANCELLED (nếu đã sync RETURN_REQUESTED)→`DELIVERED` qua `OrderClient.syncReturn` (`POST /api/v1/orders/:id/return-sync`), retry giới hạn, không distributed TX. Refund/inventory return chỉ publish event (`warranty.refund_requested`, `warranty.inventory_return_requested`) — không gọi HTTP payment/inventory.
 
 ## MinIO buckets
 

@@ -7,6 +7,7 @@ import {
   listOrdersQuerySchema,
   orderStatusTransitionRequestSchema,
   syncOrderPaymentRequestSchema,
+  syncOrderReturnRequestSchema,
   syncOrderShippingRequestSchema,
   type CancelOrderRequest,
   type ConfirmOrderRequest,
@@ -21,6 +22,7 @@ import {
   type OrderStatusTransitionRequest,
   type PaginatedResponse,
   type SyncOrderPaymentRequest,
+  type SyncOrderReturnRequest,
   type SyncOrderShippingRequest,
 } from '@nexatech/shared-contracts';
 import {
@@ -670,6 +672,74 @@ export class OrderService {
       'order.shipping-sync',
       () => this.doSyncShipping(actor, orderId, input),
     );
+  }
+
+  async syncReturn(
+    actor: OrderActor,
+    orderId: string,
+    raw: unknown,
+  ): Promise<OrderDto> {
+    this.requireStaff(actor);
+    const input = parseOrThrow(() => syncOrderReturnRequestSchema.parse(raw));
+    return this.maybeIdempotent(input.idempotencyKey, 'order.return-sync', () =>
+      this.doSyncReturn(actor, orderId, input),
+    );
+  }
+
+  private async doSyncReturn(
+    actor: OrderActor,
+    orderId: string,
+    input: SyncOrderReturnRequest,
+  ): Promise<OrderDto> {
+    const order = await this.requireOrder(orderId);
+    const toStatus = input.toStatus as OrderStatus;
+
+    // Idempotent: đã ở trạng thái đích → không cập nhật lần hai
+    if (order.status === toStatus) {
+      return this.toDto(order);
+    }
+
+    assertTransition(order.status, toStatus);
+
+    const traceId = createTraceId();
+    const specificEvent = this.eventForTransition(toStatus);
+    const outboxEvents: OutboxEventInput[] = [
+      this.buildEvent(specificEvent, traceId, {
+        orderId: order.id,
+        toStatus,
+        returnRequestId: input.returnRequestId,
+        orderItemId: input.orderItemId,
+      }),
+    ];
+    if (specificEvent !== EventTypes.ORDER_STATUS_CHANGED) {
+      outboxEvents.push(
+        this.buildEvent(EventTypes.ORDER_STATUS_CHANGED, traceId, {
+          orderId: order.id,
+          fromStatus: order.status,
+          toStatus,
+          returnRequestId: input.returnRequestId,
+        }),
+      );
+    }
+
+    const updated = await this.repository.updateStatus({
+      orderId: order.id,
+      expectedVersion: order.version,
+      toStatus,
+      actorId: actorIdOf(actor),
+      actorType: 'staff',
+      reason: input.reason ?? 'warranty-service return-sync',
+      outboxEvents,
+    });
+    await this.repository.writeAudit('order.return.synced', actorIdOf(actor), {
+      orderId: order.id,
+      fromStatus: order.status,
+      toStatus,
+      returnRequestId: input.returnRequestId,
+      orderItemId: input.orderItemId,
+    });
+    await this.outbox.dispatchPending();
+    return this.toDto(updated);
   }
 
   private async doSyncShipping(

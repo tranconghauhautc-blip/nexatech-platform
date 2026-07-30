@@ -1003,6 +1003,18 @@ export type SyncOrderShippingRequest = z.infer<
   typeof syncOrderShippingRequestSchema
 >;
 
+/** warranty-service → order: đồng bộ RETURN_REQUESTED / RETURNED / rollback DELIVERED */
+export const syncOrderReturnRequestSchema = z.object({
+  returnRequestId: z.string().trim().min(1).max(120).optional(),
+  orderItemId: z.string().trim().min(1).max(120).optional(),
+  toStatus: z.enum(['RETURN_REQUESTED', 'RETURNED', 'DELIVERED']),
+  reason: z.string().trim().min(1).max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type SyncOrderReturnRequest = z.infer<
+  typeof syncOrderReturnRequestSchema
+>;
+
 export interface ShippingQuotePackageFeeDto {
   packageId: string;
   fee: number;
@@ -1403,4 +1415,286 @@ export interface AdminReviewDetailDto extends ReviewDto {
   customerId: string;
   moderationHistory: ReviewModerationHistoryDto[];
   reports?: ReviewReportDto[];
+}
+
+/** Warranty claim & return (warranty-service owned) */
+export const warrantyClaimStatusSchema = z.enum([
+  'SUBMITTED',
+  'UNDER_REVIEW',
+  'APPROVED',
+  'REJECTED',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'CANCELLED',
+]);
+export type WarrantyClaimStatus = z.infer<typeof warrantyClaimStatusSchema>;
+
+export const returnRequestStatusSchema = z.enum([
+  'REQUESTED',
+  'UNDER_REVIEW',
+  'APPROVED',
+  'REJECTED',
+  'AWAITING_RETURN',
+  'RECEIVED',
+  'COMPLETED',
+  'CANCELLED',
+]);
+export type ReturnRequestStatus = z.infer<typeof returnRequestStatusSchema>;
+
+export const returnReasonSchema = z.enum([
+  'DEFECTIVE',
+  'WRONG_ITEM',
+  'CHANGED_MIND',
+  'DAMAGED_SHIPPING',
+  'OTHER',
+]);
+export type ReturnReason = z.infer<typeof returnReasonSchema>;
+
+export const warrantyIssueTypeSchema = z.enum([
+  'DEFECT',
+  'MALFUNCTION',
+  'MISSING_PARTS',
+  'OTHER',
+]);
+export type WarrantyIssueType = z.infer<typeof warrantyIssueTypeSchema>;
+
+/** Warranty/return chỉ chấp nhận bằng chứng dạng ảnh */
+export const warrantyMediaKindSchema = z.enum(['IMAGE']);
+export type WarrantyMediaKind = z.infer<typeof warrantyMediaKindSchema>;
+
+/** Placeholder mong muốn xử lý — không kích hoạt payment/inventory trực tiếp */
+export const desiredResolutionSchema = z.enum([
+  'REFUND',
+  'EXCHANGE',
+  'STORE_CREDIT',
+]);
+export type DesiredResolution = z.infer<typeof desiredResolutionSchema>;
+
+export const WARRANTY_LIMITS = {
+  MAX_IMAGES: 5,
+  DESCRIPTION_MIN: 10,
+  DESCRIPTION_MAX: 5000,
+} as const;
+
+export const createWarrantyClaimRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120),
+  orderItemId: z.string().trim().min(1).max(120),
+  issueType: warrantyIssueTypeSchema,
+  description: z
+    .string()
+    .trim()
+    .min(WARRANTY_LIMITS.DESCRIPTION_MIN)
+    .max(WARRANTY_LIMITS.DESCRIPTION_MAX),
+  serialNumber: z.string().trim().min(1).max(120).optional(),
+  mediaIds: z
+    .array(z.string().trim().min(1).max(120))
+    .max(WARRANTY_LIMITS.MAX_IMAGES)
+    .optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CreateWarrantyClaimRequest = z.infer<
+  typeof createWarrantyClaimRequestSchema
+>;
+
+export const createReturnRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120),
+  orderItemId: z.string().trim().min(1).max(120),
+  reason: returnReasonSchema,
+  description: z
+    .string()
+    .trim()
+    .min(WARRANTY_LIMITS.DESCRIPTION_MIN)
+    .max(WARRANTY_LIMITS.DESCRIPTION_MAX),
+  quantity: z.number().int().positive().max(999).default(1),
+  desiredResolution: desiredResolutionSchema.default('REFUND'),
+  mediaIds: z
+    .array(z.string().trim().min(1).max(120))
+    .max(WARRANTY_LIMITS.MAX_IMAGES)
+    .optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CreateReturnRequest = z.infer<typeof createReturnRequestSchema>;
+
+export const attachWarrantyEvidenceRequestSchema = z.object({
+  mediaId: z.string().trim().min(1).max(120),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type AttachWarrantyEvidenceRequest = z.infer<
+  typeof attachWarrantyEvidenceRequestSchema
+>;
+
+export const warrantyClaimTransitionActionSchema = z.enum([
+  'start_review',
+  'approve',
+  'reject',
+  'start_repair',
+  'complete',
+  'cancel',
+]);
+export type WarrantyClaimTransitionAction = z.infer<
+  typeof warrantyClaimTransitionActionSchema
+>;
+
+export const transitionWarrantyClaimRequestSchema = z.object({
+  action: warrantyClaimTransitionActionSchema,
+  reason: z.string().trim().max(500).optional(),
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type TransitionWarrantyClaimRequest = z.infer<
+  typeof transitionWarrantyClaimRequestSchema
+>;
+
+export const returnRequestTransitionActionSchema = z.enum([
+  'start_review',
+  'approve',
+  'reject',
+  'mark_awaiting_return',
+  'mark_received',
+  'complete',
+  'cancel',
+]);
+export type ReturnRequestTransitionAction = z.infer<
+  typeof returnRequestTransitionActionSchema
+>;
+
+export const transitionReturnRequestSchema = z.object({
+  action: returnRequestTransitionActionSchema,
+  reason: z.string().trim().max(500).optional(),
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type TransitionReturnRequest = z.infer<
+  typeof transitionReturnRequestSchema
+>;
+
+export const listWarrantyClaimsQuerySchema = paginationQuerySchema.extend({
+  status: warrantyClaimStatusSchema.optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListWarrantyClaimsQuery = z.infer<
+  typeof listWarrantyClaimsQuerySchema
+>;
+
+export const listReturnRequestsQuerySchema = paginationQuerySchema.extend({
+  status: returnRequestStatusSchema.optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListReturnRequestsQuery = z.infer<
+  typeof listReturnRequestsQuerySchema
+>;
+
+export const listAdminWarrantyClaimsQuerySchema = paginationQuerySchema.extend({
+  status: warrantyClaimStatusSchema.optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListAdminWarrantyClaimsQuery = z.infer<
+  typeof listAdminWarrantyClaimsQuerySchema
+>;
+
+export const listAdminReturnRequestsQuerySchema = paginationQuerySchema.extend({
+  status: returnRequestStatusSchema.optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListAdminReturnRequestsQuery = z.infer<
+  typeof listAdminReturnRequestsQuerySchema
+>;
+
+export interface WarrantyClaimMediaDto {
+  id: string;
+  mediaId: string;
+  kind: WarrantyMediaKind;
+  createdAt: string;
+}
+
+export interface WarrantyClaimHistoryDto {
+  id: string;
+  fromStatus?: WarrantyClaimStatus;
+  toStatus: WarrantyClaimStatus;
+  action: string;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export interface WarrantyClaimDto {
+  id: string;
+  claimCode: string;
+  orderId: string;
+  orderCode: string;
+  orderItemId: string;
+  customerId?: string;
+  productId: string;
+  skuId?: string;
+  skuCode?: string;
+  productName: string;
+  issueType: WarrantyIssueType;
+  description: string;
+  serialNumber?: string;
+  status: WarrantyClaimStatus;
+  media: WarrantyClaimMediaDto[];
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminWarrantyClaimDetailDto extends WarrantyClaimDto {
+  customerId: string;
+  history: WarrantyClaimHistoryDto[];
+}
+
+export interface ReturnRequestMediaDto {
+  id: string;
+  mediaId: string;
+  kind: WarrantyMediaKind;
+  createdAt: string;
+}
+
+export interface ReturnRequestHistoryDto {
+  id: string;
+  fromStatus?: ReturnRequestStatus;
+  toStatus: ReturnRequestStatus;
+  action: string;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export interface ReturnRequestDto {
+  id: string;
+  returnCode: string;
+  orderId: string;
+  orderCode: string;
+  orderItemId: string;
+  customerId?: string;
+  productId: string;
+  skuId?: string;
+  skuCode?: string;
+  productName: string;
+  reason: ReturnReason;
+  description: string;
+  quantity: number;
+  desiredResolution: DesiredResolution;
+  status: ReturnRequestStatus;
+  media: ReturnRequestMediaDto[];
+  orderSyncedStatus?: string;
+  orderSyncedAt?: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminReturnRequestDetailDto extends ReturnRequestDto {
+  customerId: string;
+  history: ReturnRequestHistoryDto[];
 }
