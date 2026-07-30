@@ -33,7 +33,7 @@
 | `d2155fc`   | M6 cart-service      |
 | `4e2627a`   | M7 order-service     |
 | `1245aff`   | M8 payment-service   |
-| _(pending)_ | M9 shipping-service  |
+| `882320f`   | M9 shipping-service  |
 
 ## Apps sau M9 (16 projects)
 
