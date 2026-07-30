@@ -1,0 +1,192 @@
+{{- if .Values.platform.minio.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech.fullname" . }}-minio
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+spec:
+  type: ClusterIP
+  ports:
+    - name: api
+      port: {{ .Values.platform.minio.apiPort }}
+      targetPort: api
+    # Console ClusterIP only — never public
+    - name: console
+      port: {{ .Values.platform.minio.consolePort }}
+      targetPort: console
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "nexatech.name" . }}-minio
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech.fullname" . }}-minio
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "nexatech.name" . }}-minio
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech.labels" . | nindent 8 }}
+        app.kubernetes.io/component: minio
+        app.kubernetes.io/name: {{ include "nexatech.name" . }}-minio
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        fsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: minio
+          image: {{ .Values.platform.minio.image }}
+          imagePullPolicy: IfNotPresent
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":{{ .Values.platform.minio.consolePort }}"
+          ports:
+            - name: api
+              containerPort: {{ .Values.platform.minio.apiPort }}
+            - name: console
+              containerPort: {{ .Values.platform.minio.consolePort }}
+          env:
+            - name: MINIO_ROOT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: minio-access-key
+            - name: MINIO_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: minio-secret-key
+          startupProbe:
+            httpGet:
+              path: /minio/health/live
+              port: api
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /minio/health/live
+              port: api
+            periodSeconds: 20
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: api
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.platform.minio.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            runAsUser: 1000
+          {{- if .Values.platform.minio.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+      {{- if .Values.platform.minio.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "nexatech.fullname" . }}-minio
+      {{- end }}
+{{- if .Values.platform.minio.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "nexatech.fullname" . }}-minio
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: {{ .Values.platform.minio.persistence.size }}
+  {{- if .Values.platform.minio.persistence.storageClass }}
+  storageClassName: {{ .Values.platform.minio.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
+{{- if .Values.platform.minio.bucketInit.enabled }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "nexatech.fullname" . }}-minio-bucket-init
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: minio-bucket-init
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/hook-weight: "5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: minio-bucket-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: mc
+          image: {{ .Values.platform.minio.bucketInit.image }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: minio-access-key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: minio-secret-key
+            - name: MINIO_ENDPOINT
+              value: {{ printf "%s-minio" (include "nexatech.fullname" .) }}
+            - name: MINIO_PORT
+              value: {{ .Values.platform.minio.apiPort | quote }}
+            - name: BUCKET
+              value: {{ .Values.platform.minio.bucket | quote }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              echo "Waiting for MinIO..."
+              i=0
+              until mc alias set nexatech "http://${MINIO_ENDPOINT}:${MINIO_PORT}" "$MINIO_ACCESS_KEY" "$MINIO_SECRET_KEY"; do
+                i=$((i+1))
+                if [ "$i" -gt 60 ]; then exit 1; fi
+                sleep 2
+              done
+              mc mb --ignore-existing "nexatech/${BUCKET}"
+              echo "Bucket ${BUCKET} ready"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+{{- end }}
+{{- end }}

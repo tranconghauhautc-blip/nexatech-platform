@@ -36,7 +36,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/identity-service/Dockerfile
-    image: nexatech/identity-service:0.16.0
+    image: nexatech/identity-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3001
@@ -50,7 +50,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/customer-service/Dockerfile
-    image: nexatech/customer-service:0.16.0
+    image: nexatech/customer-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3002
@@ -62,7 +62,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/catalog-service/Dockerfile
-    image: nexatech/catalog-service:0.16.0
+    image: nexatech/catalog-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3003
@@ -74,7 +74,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/media-service/Dockerfile
-    image: nexatech/media-service:0.16.0
+    image: nexatech/media-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3004
@@ -91,7 +91,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/inventory-service/Dockerfile
-    image: nexatech/inventory-service:0.16.0
+    image: nexatech/inventory-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3005
@@ -103,7 +103,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/cart-service/Dockerfile
-    image: nexatech/cart-service:0.16.0
+    image: nexatech/cart-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3006
@@ -117,7 +117,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/order-service/Dockerfile
-    image: nexatech/order-service:0.16.0
+    image: nexatech/order-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3007
@@ -132,7 +132,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/payment-service/Dockerfile
-    image: nexatech/payment-service:0.16.0
+    image: nexatech/payment-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3008
@@ -146,7 +146,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/shipping-service/Dockerfile
-    image: nexatech/shipping-service:0.16.0
+    image: nexatech/shipping-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3009
@@ -159,7 +159,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/review-service/Dockerfile
-    image: nexatech/review-service:0.16.0
+    image: nexatech/review-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3010
@@ -171,7 +171,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/warranty-service/Dockerfile
-    image: nexatech/warranty-service:0.16.0
+    image: nexatech/warranty-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3011
@@ -183,7 +183,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/support-service/Dockerfile
-    image: nexatech/support-service:0.16.0
+    image: nexatech/support-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3012
@@ -195,7 +195,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/notification-service/Dockerfile
-    image: nexatech/notification-service:0.16.0
+    image: nexatech/notification-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3013
@@ -207,7 +207,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/reporting-service/Dockerfile
-    image: nexatech/reporting-service:0.16.0
+    image: nexatech/reporting-service:0.17.0
     environment:
       <<: *backend-env
       PORT: 3014
@@ -219,7 +219,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/storefront-web/Dockerfile
-    image: nexatech/storefront-web:0.16.0
+    image: nexatech/storefront-web:0.17.0
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -248,7 +248,7 @@ services:
     build:
       context: ../..
       dockerfile: apps/admin-web/Dockerfile
-    image: nexatech/admin-web:0.16.0
+    image: nexatech/admin-web:0.17.0
     environment:
       NODE_ENV: production
       PORT: 3100

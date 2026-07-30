@@ -1,0 +1,42 @@
+{{- range $key, $app := .Values.apps }}
+{{- if and $app.enabled $app.autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $app.name }}
+  labels:
+    {{- include "nexatech.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $app.name }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $app.name }}
+  minReplicas: {{ $app.autoscaling.minReplicas }}
+  maxReplicas: {{ $app.autoscaling.maxReplicas }}
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ $app.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
+{{- if and $app.enabled $app.podDisruptionBudget.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ $app.name }}
+  labels:
+    {{- include "nexatech.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $app.name }}
+spec:
+  minAvailable: {{ $app.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+      app.kubernetes.io/name: {{ $app.name }}
+{{- end }}
+{{- end }}

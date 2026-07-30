@@ -39,6 +39,9 @@ testem.log
 .DS_Store
 Thumbs.db
 
+# Local tooling binaries (helm, etc.)
+.tools/
+
 # Nx
 .nx/cache
 .nx/workspace-data

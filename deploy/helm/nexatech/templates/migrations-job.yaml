@@ -1,0 +1,79 @@
+{{- if .Values.migrations.enabled }}
+{{- range $key, $app := .Values.apps }}
+{{- if and $app.enabled $app.dbEnv }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ printf "%s-migrate" $app.name | trunc 63 | trimSuffix "-" }}
+  labels:
+    {{- include "nexatech.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: migrate
+    app.kubernetes.io/name: {{ $app.name }}-migrate
+  annotations:
+    # Run once per release revision; helm hook pre-upgrade/pre-install
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: {{ $.Values.migrations.backoffLimit }}
+  ttlSecondsAfterFinished: {{ $.Values.migrations.ttlSecondsAfterFinished }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+        app.kubernetes.io/name: {{ $app.name }}-migrate
+        app.kubernetes.io/component: migrate
+    spec:
+      restartPolicy: Never
+      serviceAccountName: {{ include "nexatech.serviceAccountName" $ }}
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: migrate
+          {{- $registry := $.Values.global.imageRegistry }}
+          {{- $repo := $.Values.global.imageRepository }}
+          {{- $baseTag := default $.Values.global.imageTag $app.image.tag }}
+          {{- $migrateTag := printf "%s-migrate" $baseTag }}
+          {{- $imgName := $app.image.name }}
+          {{- if $registry }}
+          image: {{ printf "%s/%s/%s:%s" $registry $repo $imgName $migrateTag }}
+          {{- else }}
+          image: {{ printf "%s/%s:%s" $repo $imgName $migrateTag }}
+          {{- end }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -euo pipefail
+              echo "Running prisma migrate deploy for {{ $app.name }}"
+              if [ -x /app/migrate.sh ]; then
+                exec /app/migrate.sh
+              fi
+              if command -v prisma >/dev/null 2>&1; then
+                exec prisma migrate deploy --schema=/app/prisma/schema.prisma
+              fi
+              echo "FATAL: migrate entrypoint missing in image" >&2
+              exit 1
+          env:
+            - name: {{ $app.dbEnv }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: {{ printf "%s-database-url" $key }}
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: {{ printf "%s-database-url" $key }}
+          resources:
+            {{- toYaml $.Values.migrations.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $.Values.containerSecurityContext | nindent 12 }}
+{{- end }}
+{{- end }}
+{{- end }}

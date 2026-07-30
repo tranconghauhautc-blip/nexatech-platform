@@ -1,0 +1,105 @@
+{{- if .Values.platform.redis.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech.fullname" . }}-redis
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  type: ClusterIP
+  ports:
+    - name: redis
+      port: {{ .Values.platform.redis.port }}
+      targetPort: redis
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "nexatech.name" . }}-redis
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech.fullname" . }}-redis
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "nexatech.name" . }}-redis
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech.labels" . | nindent 8 }}
+        app.kubernetes.io/component: redis
+        app.kubernetes.io/name: {{ include "nexatech.name" . }}-redis
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: redis
+          image: {{ .Values.platform.redis.image }}
+          imagePullPolicy: IfNotPresent
+          args: ["redis-server", "--appendonly", "yes"]
+          ports:
+            - name: redis
+              containerPort: {{ .Values.platform.redis.port }}
+          startupProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 15
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.platform.redis.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            runAsUser: 999
+          {{- if .Values.platform.redis.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          {{- end }}
+      {{- if .Values.platform.redis.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "nexatech.fullname" . }}-redis
+      {{- end }}
+{{- if .Values.platform.redis.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "nexatech.fullname" . }}-redis
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: redis
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: {{ .Values.platform.redis.persistence.size }}
+  {{- if .Values.platform.redis.persistence.storageClass }}
+  storageClassName: {{ .Values.platform.redis.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}

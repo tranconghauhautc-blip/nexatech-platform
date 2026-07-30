@@ -1,0 +1,175 @@
+{{/*
+NexaTech application Deployments — one per enabled app in values.apps
+*/}}
+{{- range $key, $app := .Values.apps }}
+{{- if $app.enabled }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $app.name }}
+  labels:
+    {{- include "nexatech.labels" $ | nindent 4 }}
+    app.kubernetes.io/component: {{ $app.name }}
+    app.kubernetes.io/name: {{ $app.name }}
+spec:
+  replicas: {{ $app.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ $.Release.Name }}
+      app.kubernetes.io/name: {{ $app.name }}
+  strategy:
+    type: {{ $.Values.strategy.type }}
+    {{- if eq $.Values.strategy.type "RollingUpdate" }}
+    rollingUpdate:
+      maxUnavailable: {{ $.Values.strategy.rollingUpdate.maxUnavailable }}
+      maxSurge: {{ $.Values.strategy.rollingUpdate.maxSurge }}
+    {{- end }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech.labels" $ | nindent 8 }}
+        app.kubernetes.io/component: {{ $app.name }}
+        app.kubernetes.io/name: {{ $app.name }}
+        app.kubernetes.io/instance: {{ $.Release.Name }}
+    spec:
+      serviceAccountName: {{ include "nexatech.serviceAccountName" $ }}
+      terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
+      {{- with $.Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml $.Values.podSecurityContext | nindent 8 }}
+      {{- with $.Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with $.Values.topologySpreadConstraints }}
+      topologySpreadConstraints:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ $app.name }}
+          image: {{ include "nexatech.appImage" (list $ $app) }}
+          imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ $app.port }}
+              protocol: TCP
+          env:
+            - name: NODE_ENV
+              value: {{ $.Values.config.nodeEnv | quote }}
+            - name: LOG_LEVEL
+              value: {{ $.Values.config.logLevel | quote }}
+            - name: PORT
+              value: {{ $app.port | quote }}
+            {{- if $app.dbEnv }}
+            - name: {{ $app.dbEnv }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: {{ printf "%s-database-url" $key }}
+            {{- end }}
+            {{- if not (or (eq $key "storefront") (eq $key "admin")) }}
+            - name: REDIS_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: {{ $.Values.global.redisUrlSecretKey }}
+                  optional: true
+            - name: RABBITMQ_URL
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: {{ $.Values.global.rabbitmqUrlSecretKey }}
+                  optional: true
+            - name: JWT_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: jwt-access-secret
+                  optional: true
+            - name: JWT_REFRESH_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: jwt-refresh-secret
+                  optional: true
+            {{- end }}
+            {{- if eq $key "media" }}
+            - name: MINIO_ENDPOINT
+              value: {{ printf "%s-minio" (include "nexatech.fullname" $) }}
+            - name: MINIO_PORT
+              value: {{ $.Values.platform.minio.apiPort | quote }}
+            - name: MINIO_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: minio-access-key
+            - name: MINIO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: minio-secret-key
+            - name: MINIO_USE_SSL
+              value: "false"
+            {{- end }}
+            {{- if eq $key "storefront" }}
+            - name: APP_BASE_URL
+              value: {{ $.Values.config.publicStorefrontUrl | quote }}
+            - name: INTERNAL_API_BASE_URL
+              value: {{ printf "http://%s-entry" (include "nexatech.fullname" $) }}
+            {{- end }}
+            {{- if eq $key "admin" }}
+            - name: ADMIN_BASE_URL
+              value: {{ $.Values.config.publicAdminUrl | quote }}
+            - name: ADMIN_SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: admin-session-secret
+            - name: JWT_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.global.secretsName }}
+                  key: jwt-access-secret
+            {{- end }}
+            {{- range $ek, $ev := $app.env }}
+            - name: {{ $ek }}
+              value: {{ $ev | quote }}
+            {{- end }}
+          startupProbe:
+            httpGet:
+              path: {{ if or (eq $key "storefront") (eq $key "admin") }}/{{ else }}/health/live{{ end }}
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: {{ if or (eq $key "storefront") (eq $key "admin") }}/{{ else }}/health/live{{ end }}
+              port: http
+            periodSeconds: 15
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: {{ if or (eq $key "storefront") (eq $key "admin") }}/{{ else }}/health/ready{{ end }}
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            {{- toYaml $app.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml $.Values.containerSecurityContext | nindent 12 }}
+{{- end }}
+{{- end }}

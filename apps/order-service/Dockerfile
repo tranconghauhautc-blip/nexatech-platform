@@ -6,6 +6,7 @@ RUN corepack enable \
   && apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json ./
+COPY eslint.config.mjs ./
 COPY libs ./libs
 COPY apps ./apps
 RUN pnpm install --frozen-lockfile
@@ -19,7 +20,7 @@ FROM node:22-bookworm-slim AS runner
 WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates curl \
   && rm -rf /var/lib/apt/lists/* \
-  && groupadd -r nexatech && useradd -r -g nexatech nexatech
+  && groupadd -g 10001 nexatech && useradd -u 10001 -g nexatech -m nexatech
 ENV NODE_ENV=production
 ENV PORT=3007
 COPY --from=build /app/dist/apps/order-service/ ./

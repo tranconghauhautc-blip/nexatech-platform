@@ -1,0 +1,25 @@
+# Keep Docker build context small and free of secrets
+.git
+.nx
+.tools
+.vscode
+.cursor
+**/node_modules
+**/dist
+**/.next
+**/coverage
+**/playwright-report
+**/test-results
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.nx
+apps/*/src/generated
+*.md
+!README.md
+docs
+e2e
+agent-transcripts
+**/*.log
+Thumbs.db
+.DS_Store

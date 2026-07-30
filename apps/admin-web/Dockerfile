@@ -21,7 +21,7 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3100
-RUN groupadd -r nexatech && useradd -r -g nexatech nexatech
+RUN groupadd -g 10001 nexatech && useradd -u 10001 -g nexatech -m nexatech
 COPY --from=build /app/apps/admin-web/.next/standalone ./
 COPY --from=build /app/apps/admin-web/.next/static ./apps/admin-web/.next/static
 COPY --from=build /app/apps/admin-web/public ./apps/admin-web/public

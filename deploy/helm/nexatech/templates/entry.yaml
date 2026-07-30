@@ -1,0 +1,191 @@
+{{- if .Values.entry.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech.fullname" . }}-entry
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: entry
+  {{- with .Values.entry.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.entry.serviceType }}
+  {{- if and (eq .Values.entry.serviceType "LoadBalancer") .Values.entry.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.entry.loadBalancerIP | quote }}
+  {{- end }}
+  # MetalLB shared VIP: Kong VM reaches this Service only.
+  # Frontend/admin/API Deployments remain ClusterIP; ports are published here for Kong upstreams.
+  ports:
+    - name: storefront
+      port: 80
+      targetPort: {{ .Values.apps.storefront.port }}
+      protocol: TCP
+    - name: admin
+      port: 3100
+      targetPort: {{ .Values.apps.admin.port }}
+      protocol: TCP
+    {{- if .Values.entry.exposeApiPorts }}
+    {{- range $key, $app := .Values.apps }}
+    {{- if and $app.enabled $app.dbEnv }}
+    - name: {{ trunc 15 $app.name | trimSuffix "-" }}
+      port: {{ $app.port }}
+      targetPort: {{ $app.port }}
+      protocol: TCP
+    {{- end }}
+    {{- end }}
+    {{- end }}
+  # Entry uses Endpoints assembled via externalName-like pattern is not possible for multi-backend.
+  # Instead we deploy a thin nginx entry that path/port-forwards; selector points to entry pods.
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "nexatech.name" . }}-entry
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech.fullname" . }}-entry
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: entry
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "nexatech.name" . }}-entry
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech.labels" . | nindent 8 }}
+        app.kubernetes.io/component: entry
+        app.kubernetes.io/name: {{ include "nexatech.name" . }}-entry
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      terminationGracePeriodSeconds: 30
+      securityContext:
+        fsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: entry-nginx
+          image: nginxinc/nginx-unprivileged:1.27.3-alpine
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: storefront
+              containerPort: {{ .Values.apps.storefront.port }}
+            - name: admin
+              containerPort: {{ .Values.apps.admin.port }}
+            {{- if .Values.entry.exposeApiPorts }}
+            {{- range $key, $app := .Values.apps }}
+            {{- if and $app.enabled $app.dbEnv }}
+            - name: {{ trunc 15 $app.name | trimSuffix "-" }}
+              containerPort: {{ $app.port }}
+            {{- end }}
+            {{- end }}
+            {{- end }}
+          volumeMounts:
+            - name: nginx-conf
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+              readOnly: true
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: storefront
+            failureThreshold: 30
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: storefront
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: storefront
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 25m
+              memory: 32Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            runAsUser: 101
+            readOnlyRootFilesystem: true
+      volumes:
+        - name: nginx-conf
+          configMap:
+            name: {{ include "nexatech.fullname" . }}-entry-nginx
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nexatech.fullname" . }}-entry-nginx
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: entry
+data:
+  nginx.conf: |
+    worker_processes auto;
+    error_log /tmp/error.log warn;
+    pid /tmp/nginx.pid;
+    events { worker_connections 1024; }
+    http {
+      access_log /tmp/access.log;
+      client_max_body_size 25m;
+      proxy_connect_timeout 5s;
+      proxy_send_timeout 60s;
+      proxy_read_timeout 60s;
+      proxy_set_header Host $host;
+      proxy_set_header X-Real-IP $remote_addr;
+      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+      proxy_set_header X-Request-ID $http_x_request_id;
+      proxy_set_header X-Trace-ID $http_x_trace_id;
+
+      # Storefront (Kong / → VIP:80)
+      server {
+        listen {{ .Values.apps.storefront.port }};
+        location = /healthz { return 200 'ok'; add_header Content-Type text/plain; }
+        location / {
+          proxy_pass http://storefront-web:{{ .Values.apps.storefront.port }};
+        }
+      }
+
+      # Admin (Kong /admin → VIP:3100)
+      server {
+        listen {{ .Values.apps.admin.port }};
+        location = /healthz { return 200 'ok'; add_header Content-Type text/plain; }
+        location / {
+          proxy_pass http://admin-web:{{ .Values.apps.admin.port }};
+        }
+      }
+
+{{- if .Values.entry.exposeApiPorts }}
+{{- range $key, $app := .Values.apps }}
+{{- if and $app.enabled $app.dbEnv }}
+      # {{ $app.name }} API (Kong upstream VIP:{{ $app.port }})
+      server {
+        listen {{ $app.port }};
+        location = /healthz { return 200 'ok'; add_header Content-Type text/plain; }
+        location / {
+          proxy_pass http://{{ $app.name }}:{{ $app.port }};
+        }
+      }
+{{- end }}
+{{- end }}
+{{- end }}
+    }
+{{- end }}

@@ -1,0 +1,25 @@
+# Example local/kind values — no production IPs required.
+global:
+  imageRepository: nexatech
+  imageTag: '0.17.0'
+  postgresql:
+    host: 'postgres.nexatech.svc.cluster.local'
+    port: 5432
+    sslMode: disable
+
+entry:
+  enabled: true
+  loadBalancerIP: ''
+  serviceType: ClusterIP
+  exposeApiPorts: true
+
+platform:
+  redis:
+    persistence:
+      enabled: false
+  rabbitmq:
+    persistence:
+      enabled: false
+  minio:
+    persistence:
+      enabled: false

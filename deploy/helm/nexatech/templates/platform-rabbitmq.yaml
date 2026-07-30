@@ -1,0 +1,121 @@
+{{- if .Values.platform.rabbitmq.enabled }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech.fullname" . }}-rabbitmq
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  type: ClusterIP
+  ports:
+    - name: amqp
+      port: {{ .Values.platform.rabbitmq.amqpPort }}
+      targetPort: amqp
+    # Management UI ClusterIP only — never public / LoadBalancer
+    - name: management
+      port: {{ .Values.platform.rabbitmq.managementPort }}
+      targetPort: management
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/name: {{ include "nexatech.name" . }}-rabbitmq
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech.fullname" . }}-rabbitmq
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "nexatech.name" . }}-rabbitmq
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech.labels" . | nindent 8 }}
+        app.kubernetes.io/component: rabbitmq
+        app.kubernetes.io/name: {{ include "nexatech.name" . }}-rabbitmq
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      securityContext:
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: rabbitmq
+          image: {{ .Values.platform.rabbitmq.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: amqp
+              containerPort: {{ .Values.platform.rabbitmq.amqpPort }}
+            - name: management
+              containerPort: {{ .Values.platform.rabbitmq.managementPort }}
+          env:
+            - name: RABBITMQ_DEFAULT_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: rabbitmq-user
+            - name: RABBITMQ_DEFAULT_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.secretsName }}
+                  key: rabbitmq-password
+          startupProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            failureThreshold: 36
+            periodSeconds: 5
+          livenessProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "ping"]
+            periodSeconds: 20
+          readinessProbe:
+            exec:
+              command: ["rabbitmq-diagnostics", "-q", "check_running"]
+            periodSeconds: 15
+          resources:
+            {{- toYaml .Values.platform.rabbitmq.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsNonRoot: true
+            runAsUser: 999
+          {{- if .Values.platform.rabbitmq.persistence.enabled }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/rabbitmq
+          {{- end }}
+      {{- if .Values.platform.rabbitmq.persistence.enabled }}
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "nexatech.fullname" . }}-rabbitmq
+      {{- end }}
+{{- if .Values.platform.rabbitmq.persistence.enabled }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "nexatech.fullname" . }}-rabbitmq
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+    app.kubernetes.io/component: rabbitmq
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: {{ .Values.platform.rabbitmq.persistence.size }}
+  {{- if .Values.platform.rabbitmq.persistence.storageClass }}
+  storageClassName: {{ .Values.platform.rabbitmq.persistence.storageClass | quote }}
+  {{- end }}
+{{- end }}
+{{- end }}

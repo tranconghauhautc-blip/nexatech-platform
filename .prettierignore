@@ -3,3 +3,9 @@
 /coverage
 /.nx/cache
 /.nx/workspace-data
+
+# Helm Go templates are not valid YAML for Prettier
+/deploy/helm/**/templates/**
+
+# Local tooling
+/.tools/**

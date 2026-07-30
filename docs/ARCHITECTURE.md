@@ -155,10 +155,17 @@ MinIO dùng object storage cho media.
 
 ## 11. Deployment
 
-- Mỗi app có Dockerfile riêng (Linux)
-- Image tag theo version/semver (không dùng `latest`)
-- Local: Docker Compose (Postgres, Redis, RabbitMQ, MinIO, services)
-- Production: Kubernetes + Helm + Kong
+- Mỗi app có Dockerfile riêng (Linux multi-stage, non-root UID 10001)
+- Image tag semver/git-sha — không dùng `latest` (M17: **0.17.0**)
+- **Local:** Docker Compose — Postgres, Redis, RabbitMQ, MinIO, app stack + Kong declarative (`infra/kong/kong.yml`); routes `/`, `/admin`, `/api/v1`, `/api/v2`
+- **Production (M17):** Kubernetes + Helm chart `deploy/helm/nexatech` v0.17.0
+  - PostgreSQL external VM (`192.168.4.208`); app/platform Services **ClusterIP**
+  - MetalLB VIP **`192.168.4.204`** → entry nginx (`LoadBalancer`) fan-out tới storefront, admin, APIs
+  - Kong Gateway OSS trên **VM riêng** (`192.168.4.209`); upstream chỉ VIP — `infra/kong/kong.production.yml`
+  - Prisma migrate qua Helm pre-upgrade Jobs; image `${tag}-migrate`
+  - Redis, RabbitMQ, MinIO in-cluster; không expose management/console ra ngoài
+- Build/push: `scripts/docker-build-all.ps1|.sh` (ADR-036)
+- Deploy thật lên cluster: operator + M18 runbook (agent unattended không `helm upgrade`/`kubectl apply`)
 
 ## 12. Nguyên tắc thiết kế
 

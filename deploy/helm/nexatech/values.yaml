@@ -1,0 +1,537 @@
+# Default values — small cluster friendly. Override with values-production.yaml.
+nameOverride: ''
+fullnameOverride: ''
+
+global:
+  imageRegistry: ''
+  imageRepository: nexatech
+  imageTag: '0.17.0'
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets: []
+  # External PostgreSQL (production). Passwords via Secret only.
+  postgresql:
+    host: ''
+    port: 5432
+    sslMode: prefer
+    poolMax: '10'
+    connectTimeout: '10'
+  redisUrlSecretKey: redis-url
+  rabbitmqUrlSecretKey: rabbitmq-url
+  secretsName: nexatech-secrets
+
+serviceAccount:
+  create: true
+  name: ''
+  annotations: {}
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 10001
+  fsGroup: 10001
+  seccompProfile:
+    type: RuntimeDefault
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
+
+terminationGracePeriodSeconds: 30
+
+strategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxUnavailable: 0
+    maxSurge: 1
+
+nodeSelector: {}
+affinity: {}
+tolerations: []
+topologySpreadConstraints: []
+
+apps:
+  storefront:
+    enabled: true
+    name: storefront-web
+    replicaCount: 1
+    image:
+      name: storefront-web
+      tag: ''
+    port: 3000
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  admin:
+    enabled: true
+    name: admin-web
+    replicaCount: 1
+    image:
+      name: admin-web
+      tag: ''
+    port: 3100
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  identity:
+    enabled: true
+    name: identity-service
+    replicaCount: 1
+    image:
+      name: identity-service
+      tag: ''
+    port: 3001
+    dbEnv: IDENTITY_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  customer:
+    enabled: true
+    name: customer-service
+    replicaCount: 1
+    image:
+      name: customer-service
+      tag: ''
+    port: 3002
+    dbEnv: CUSTOMER_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  catalog:
+    enabled: true
+    name: catalog-service
+    replicaCount: 1
+    image:
+      name: catalog-service
+      tag: ''
+    port: 3003
+    dbEnv: CATALOG_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  media:
+    enabled: true
+    name: media-service
+    replicaCount: 1
+    image:
+      name: media-service
+      tag: ''
+    port: 3004
+    dbEnv: MEDIA_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  inventory:
+    enabled: true
+    name: inventory-service
+    replicaCount: 1
+    image:
+      name: inventory-service
+      tag: ''
+    port: 3005
+    dbEnv: INVENTORY_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  cart:
+    enabled: true
+    name: cart-service
+    replicaCount: 1
+    image:
+      name: cart-service
+      tag: ''
+    port: 3006
+    dbEnv: CART_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  order:
+    enabled: true
+    name: order-service
+    replicaCount: 1
+    image:
+      name: order-service
+      tag: ''
+    port: 3007
+    dbEnv: ORDER_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  payment:
+    enabled: true
+    name: payment-service
+    replicaCount: 1
+    image:
+      name: payment-service
+      tag: ''
+    port: 3008
+    dbEnv: PAYMENT_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  shipping:
+    enabled: true
+    name: shipping-service
+    replicaCount: 1
+    image:
+      name: shipping-service
+      tag: ''
+    port: 3009
+    dbEnv: SHIPPING_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  review:
+    enabled: true
+    name: review-service
+    replicaCount: 1
+    image:
+      name: review-service
+      tag: ''
+    port: 3010
+    dbEnv: REVIEW_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  warranty:
+    enabled: true
+    name: warranty-service
+    replicaCount: 1
+    image:
+      name: warranty-service
+      tag: ''
+    port: 3011
+    dbEnv: WARRANTY_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  support:
+    enabled: true
+    name: support-service
+    replicaCount: 1
+    image:
+      name: support-service
+      tag: ''
+    port: 3012
+    dbEnv: SUPPORT_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  notification:
+    enabled: true
+    name: notification-service
+    replicaCount: 1
+    image:
+      name: notification-service
+      tag: ''
+    port: 3013
+    dbEnv: NOTIFICATION_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  reporting:
+    enabled: true
+    name: reporting-service
+    replicaCount: 1
+    image:
+      name: reporting-service
+      tag: ''
+    port: 3014
+    dbEnv: REPORTING_DATABASE_URL
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    env: {}
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+
+migrations:
+  enabled: true
+  backoffLimit: 1
+  ttlSecondsAfterFinished: 86400
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+platform:
+  redis:
+    enabled: true
+    image: redis:7.4.2-alpine
+    port: 6379
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ''
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+  rabbitmq:
+    enabled: true
+    image: rabbitmq:3.13.7-management-alpine
+    amqpPort: 5672
+    managementPort: 15672
+    persistence:
+      enabled: true
+      size: 5Gi
+      storageClass: ''
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+  minio:
+    enabled: true
+    image: minio/minio:RELEASE.2025-01-20T14-49-07Z
+    apiPort: 9000
+    consolePort: 9001
+    bucket: nexatech-media
+    persistence:
+      enabled: true
+      size: 20Gi
+      storageClass: ''
+    resources:
+      requests:
+        cpu: 50m
+        memory: 128Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+    bucketInit:
+      enabled: true
+      image: minio/mc:RELEASE.2025-01-17T23-25-50Z
+
+entry:
+  enabled: true
+  # MetalLB VIP — Kong VM (192.168.4.209) calls this address only.
+  loadBalancerIP: ''
+  annotations: {}
+  # Expose storefront :80, admin :3100, API ports for Kong upstreams.
+  exposeApiPorts: true
+  serviceType: LoadBalancer
+
+networkPolicy:
+  enabled: false
+
+config:
+  logLevel: info
+  nodeEnv: production
+  publicStorefrontUrl: ''
+  publicAdminUrl: ''
+  publicApiUrl: ''

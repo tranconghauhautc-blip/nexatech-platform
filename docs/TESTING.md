@@ -131,3 +131,52 @@ reporting-service M14 dự kiến **56+ test** (unit domain/metric mapping + con
 `cart.concurrency.spec.ts` thêm cùng SKU song song vào customer cart; tổng số lượng cuối cùng phải bằng số lần add (không lost update nhờ lock + optimistic version).
 
 `payment.concurrency.spec.ts` xử lý callback trùng / song song; chỉ một lần chuyển `PAID`.
+
+## Packaging validation (M17)
+
+M17 bổ sung kiểm tra deploy artifact ngoài format/lint/test/build:
+
+### Helm
+
+```powershell
+helm lint deploy/helm/nexatech
+helm template nexatech deploy/helm/nexatech `
+  -f deploy/helm/nexatech/values-production.yaml `
+  --namespace nexatech
+```
+
+- `helm lint` phải pass (0 errors)
+- `helm template` render đủ: apps, entry LoadBalancer, platform ClusterIP, migrate Jobs hooks
+- Agent **không** chạy `helm upgrade` lên cluster thật (BLOCKED_EXTERNAL)
+
+### Docker smoke
+
+```powershell
+.\scripts\docker-build-all.ps1 -Image storefront-web
+.\scripts\docker-build-all.ps1 -Image identity-service
+# migrate image built automatically as identity-service:0.17.0-migrate
+docker run --rm nexatech/storefront-web:0.17.0 node -e "console.log('ok')"
+docker run --rm -e IDENTITY_DATABASE_URL='postgresql://...' nexatech/identity-service:0.17.0-migrate --help 2>$null; echo $LASTEXITCODE
+```
+
+Smoke tối thiểu M17: build thành công **storefront-web**, **identity-service**, và **identity-service:0.17.0-migrate**; container start không crash ngay.
+
+### Secret scan
+
+Trước commit M17:
+
+- Không file `.env` / credential thật trong git
+- `secret-values.example.yaml` chỉ placeholder `REPLACE_*` / `CHANGE_ME_*`
+- `values-production.yaml` có IP infra (`.208`, `.204`) nhưng **không** password
+- Grep nhanh: `jwt-access-secret`, `postgresql://.*:.*@` trong tracked files → chỉ example
+
+### kubectl (optional, dry-run only)
+
+Nếu operator cung cấp kubeconfig read-only:
+
+```powershell
+helm template nexatech deploy/helm/nexatech -f deploy/helm/nexatech/values-production.yaml |
+  kubectl apply --dry-run=client -f -
+```
+
+Không `kubectl apply` thật trong agent unattended.

@@ -1,0 +1,64 @@
+# Production overlays — IP only in deployment values (not app source).
+# Secrets: use --set-file / sealed-secrets / external secret — never commit real passwords.
+
+global:
+  imageRegistry: docker.io
+  imageRepository: CHANGE_ME_DOCKERHUB_USER
+  imageTag: '0.17.0'
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: dockerhub-pull
+  postgresql:
+    # External PostgreSQL VM
+    host: '192.168.4.208'
+    port: 5432
+    sslMode: prefer
+    poolMax: '20'
+    connectTimeout: '10'
+  secretsName: nexatech-secrets
+
+apps:
+  storefront:
+    replicaCount: 2
+    podDisruptionBudget:
+      enabled: true
+      minAvailable: 1
+  admin:
+    replicaCount: 1
+  identity:
+    replicaCount: 2
+    podDisruptionBudget:
+      enabled: true
+      minAvailable: 1
+  catalog:
+    replicaCount: 2
+  cart:
+    replicaCount: 2
+  order:
+    replicaCount: 2
+
+platform:
+  redis:
+    persistence:
+      storageClass: ''
+  rabbitmq:
+    persistence:
+      storageClass: ''
+  minio:
+    persistence:
+      storageClass: ''
+
+entry:
+  enabled: true
+  loadBalancerIP: '192.168.4.204'
+  serviceType: LoadBalancer
+  annotations:
+    metallb.universe.tf/allow-shared-ip: nexatech-entry
+  exposeApiPorts: true
+
+config:
+  logLevel: info
+  nodeEnv: production
+  publicStorefrontUrl: 'https://CHANGE_ME_PUBLIC_HOST'
+  publicAdminUrl: 'https://CHANGE_ME_PUBLIC_HOST/admin'
+  publicApiUrl: 'https://CHANGE_ME_PUBLIC_HOST'

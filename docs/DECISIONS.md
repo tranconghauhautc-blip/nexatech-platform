@@ -292,3 +292,15 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - Playwright E2E smoke: `e2e/` + `pnpm e2e` (tự `nx dev` storefront/admin nếu chưa có URL override).
 - BFF hardening: whitelist service + `sanitizeBffPathParts`, timeout `BFF_UPSTREAM_TIMEOUT_MS`, không lộ URL nội bộ trong lỗi 502.
 - Next.js giữ **15.2.4** (không nâng CVE patch trong M16).
+
+## ADR-036 — Helm chart + MetalLB entry + Kong VIP + migrate Jobs (M17)
+
+- **Quyết định:** Đóng gói production qua Helm chart `deploy/helm/nexatech` **version 0.17.0** (appVersion `0.17.0`). PostgreSQL nằm ngoài cluster (VM `192.168.4.208`) — host chỉ khai báo trong `values-production.yaml`, không hard-code trong source app. MetalLB cấp VIP **`192.168.4.204`** cho Service `entry` (nginx reverse-proxy + `LoadBalancer`); mọi Deployment app/platform khác dùng **ClusterIP**. Kong production (VM `192.168.4.209`) upstream **chỉ** tới VIP; config declarative `infra/kong/kong.production.yml`. Kong local `infra/kong/kong.yml` giữ route `/` (storefront) và `/admin` (admin-web) cùng `/api/v1`/`/api/v2`.
+- **Migrate:** Mỗi backend Prisma có image riêng tag `${IMAGE_TAG}-migrate`, build từ `deploy/docker/prisma-migrate.Dockerfile`; Helm Job hook `pre-install,pre-upgrade` (`migrations-job.yaml`), `backoffLimit: 1`, `prisma migrate deploy` only — xem `docs/MIGRATIONS.md`.
+- **Build:** Scripts `scripts/docker-build-all.ps1` và `scripts/docker-build-all.sh` build/push tất cả hoặc một image; **không** gọi `docker login` (operator login thủ công trước khi `-Push`). Tag mặc định `0.17.0` hoặc git SHA (`-UseGitSha` / `--use-git-sha`).
+- **Runtime:** Container Nest/Next chạy non-root **UID 10001**; `app.enableShutdownHooks()` trên mọi Nest service (graceful shutdown khi pod terminate). Frontend/backend Dockerfiles multi-stage giữ pattern M16, bump tag `0.17.0`.
+- **Secrets:** Không commit secret thật; mẫu `deploy/helm/nexatech/secret-values.example.yaml` + `values-production.yaml` dùng placeholder `CHANGE_ME_*`. Secret K8s tạo thủ công / Sealed Secrets / External Secrets trước `helm upgrade`.
+- **Platform in-cluster:** Redis, RabbitMQ, MinIO (+ bucket-init Job) deploy qua chart, **ClusterIP only** — không LoadBalancer/Ingress public cho management/console.
+- **Agent boundary (BLOCKED_EXTERNAL):** Agent không chạy `kubectl apply`, `helm upgrade --install` lên cluster thật khi chưa xác minh kube-context và phê duyệt operator. Validation unattended giới hạn: `helm lint`, `helm template`, Docker build/smoke local, `kubectl apply --dry-run=client` nếu có kubeconfig — không mutate production.
+- **Lý do:** Tách packaging K8s khỏi business logic M0–M16; một VIP ổn định cho Kong VM; migrate an toàn qua hook Job; giữ secret và deploy thật ngoài git/CI unattended.
+- **Hệ quả:** M18 tập trung observability, backup/runbook, security baseline và deploy thật lên infra `.208/.209/.205–.207/.204`. OWASP 20 scenarios vẫn sau M18 (M21 roadmap).
