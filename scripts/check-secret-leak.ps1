@@ -117,6 +117,7 @@ if ($git) {
   try {
     Get-ChildItem -Path $scanPath -Recurse -Filter '.env*' -File -ErrorAction SilentlyContinue | ForEach-Object {
       if ($_.Name -match '\.(example|sample|template)$') { return }
+      if ($_.Name -eq '.env.nx') { return } # intentionally tracked Nx workaround flags
       $rel = $_.FullName.Substring($root.Path.Length).TrimStart('\', '/')
       & git ls-files --error-unmatch $rel 2>$null | Out-Null
       if ($LASTEXITCODE -eq 0) {
