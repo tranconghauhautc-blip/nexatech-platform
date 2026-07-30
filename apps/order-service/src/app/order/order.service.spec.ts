@@ -516,6 +516,48 @@ describe('OrderService', () => {
     expect(again.version).toBe(synced.version);
   });
 
+  it('syncs package shipping info from shipping-service without double-updating', async () => {
+    const { catalog, cart, inventory, service } = setup();
+    const sku = seedSku(catalog);
+    inventory.seed(sku.skuCode, 5);
+    seedCartForSku(cart, 'cust-ship-sync', sku, 1);
+    const dto = await service.createOrder(
+      customerActor('cust-ship-sync'),
+      createRequest({ idempotencyKey: 'idem-ship-create' }),
+    );
+    const ready = await service.transitionStatus(staffActor(), dto.id, {
+      toStatus: 'PROCESSING',
+    });
+    const readyToShip = await service.transitionStatus(staffActor(), ready.id, {
+      toStatus: 'READY_TO_SHIP',
+    });
+    const pkg = readyToShip.packages[0];
+    expect(pkg).toBeDefined();
+
+    const synced = await service.syncShipping(staffActor(), readyToShip.id, {
+      packageId: pkg.id,
+      shipmentId: 'ship-1',
+      trackingCode: 'TRK-001',
+      shippingProvider: 'MOCK',
+      packageStatus: 'SHIPPED',
+      idempotencyKey: 'idem-shipping-sync-1',
+    });
+    expect(synced.status).toBe('SHIPPED');
+    expect(synced.packages[0]?.trackingCode).toBe('TRK-001');
+    expect(synced.packages[0]?.shippingProvider).toBe('MOCK');
+    expect(synced.packages[0]?.status).toBe('SHIPPED');
+
+    const again = await service.syncShipping(staffActor(), readyToShip.id, {
+      packageId: pkg.id,
+      shipmentId: 'ship-1',
+      trackingCode: 'TRK-001',
+      shippingProvider: 'MOCK',
+      packageStatus: 'SHIPPED',
+      idempotencyKey: 'idem-shipping-sync-1',
+    });
+    expect(again.version).toBe(synced.version);
+  });
+
   it('lets staff move a confirmed order through processing -> ready -> shipped -> delivered', async () => {
     const { catalog, cart, inventory, publisher, service } = setup();
     const sku = seedSku(catalog);

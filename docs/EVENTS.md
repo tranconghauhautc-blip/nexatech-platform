@@ -24,65 +24,77 @@
 
 ## Routing keys chính
 
-| Event type                       | Routing key                              | Producer            | Consumers                                   |
-| -------------------------------- | ---------------------------------------- | ------------------- | ------------------------------------------- |
-| `user.registered`                | `identity.user.registered`               | identity            | customer, notification                      |
-| `user.email_verified`            | `identity.user.email_verified`           | identity            | notification                                |
-| `user.password_reset_requested`  | `identity.user.password_reset_requested` | identity            | notification                                |
-| `customer.profile_created`       | `customer.profile.created`               | customer            | reporting                                   |
-| `catalog.product_updated`        | `catalog.product.updated`                | catalog             | reporting, search cache (nếu có)            |
-| `catalog.price_changed`          | `catalog.price.changed`                  | catalog             | reporting                                   |
-| `catalog.category_updated`       | `catalog.category.updated`               | catalog             | reporting                                   |
-| `catalog.brand_updated`          | `catalog.brand.updated`                  | catalog             | reporting                                   |
-| `inventory.reservation.created`  | `inventory.reservation.created`          | inventory           | order                                       |
-| `inventory.reservation.released` | `inventory.reservation.released`         | inventory           | order                                       |
-| `inventory.stock.committed`      | `inventory.stock.committed`              | inventory           | order, reporting                            |
-| `inventory.stock.returned`       | `inventory.stock.returned`               | inventory           | order, reporting                            |
-| `inventory.transfer.created`     | `inventory.transfer.created`             | inventory           | reporting                                   |
-| `inventory.transfer.completed`   | `inventory.transfer.completed`           | inventory           | reporting                                   |
-| `inventory.low-stock.detected`   | `inventory.low-stock.detected`           | inventory           | notification, reporting                     |
-| `cart.created`                   | `cart.cart.created`                      | cart                | reporting                                   |
-| `cart.item.added`                | `cart.cart.item.added`                   | cart                | reporting                                   |
-| `cart.item.updated`              | `cart.cart.item.updated`                 | cart                | reporting                                   |
-| `cart.item.removed`              | `cart.cart.item.removed`                 | cart                | reporting                                   |
-| `cart.merged`                    | `cart.cart.merged`                       | cart                | reporting                                   |
-| `cart.converted`                 | `cart.cart.converted`                    | cart                | reporting                                   |
-| `cart.expired`                   | `cart.cart.expired`                      | cart                | reporting                                   |
-| `order.created`                  | `order.order.created`                    | order               | payment, inventory, notification, reporting |
-| `order.confirmed`                | `order.order.confirmed`                  | order               | payment, notification, reporting            |
-| `order.status.changed`           | `order.order.status.changed`             | order               | notification, reporting                     |
-| `order.cancelled`                | `order.order.cancelled`                  | order               | inventory, payment, notification            |
-| `order.package.created`          | `order.order.package.created`            | order               | shipping, reporting                         |
-| `order.ready-to-ship`            | `order.order.ready-to-ship`              | order               | shipping, notification                      |
-| `order.shipped`                  | `order.order.shipped`                    | order               | shipping, notification, reporting           |
-| `order.delivered`                | `order.order.delivered`                  | order               | notification, reporting, review-eligibility |
-| `order.return.requested`         | `order.order.return.requested`           | order               | warranty, notification                      |
-| `order.returned`                 | `order.order.returned`                   | order               | inventory, notification, reporting          |
-| `order.failed`                   | `order.order.failed`                     | order               | inventory, notification, reporting          |
-| `order.fulfilled`                | `order.order.fulfilled`                  | order               | alias legacy ≈ delivered                    |
-| `payment.initiated`              | `payment.payment.initiated`              | payment             | order, reporting (legacy alias)             |
-| `payment.created`                | `payment.payment.created`                | payment             | order, reporting                            |
-| `payment.pending`                | `payment.payment.pending`                | payment             | order, reporting                            |
-| `payment.processing`             | `payment.payment.processing`             | payment             | order, reporting                            |
-| `payment.paid`                   | `payment.payment.paid`                   | payment             | order, notification, reporting              |
-| `payment.succeeded`              | `payment.payment.succeeded`              | payment             | order, notification, reporting (legacy)     |
-| `payment.failed`                 | `payment.payment.failed`                 | payment             | order, notification                         |
-| `payment.cancelled`              | `payment.payment.cancelled`              | payment             | order, reporting                            |
-| `payment.expired`                | `payment.payment.expired`                | payment             | order, reporting                            |
-| `payment.refund.requested`       | `payment.payment.refund.requested`       | payment             | order, notification, reporting              |
-| `payment.refunded`               | `payment.payment.refunded`               | payment             | order, notification, reporting              |
-| `payment.partially-refunded`     | `payment.payment.partially-refunded`     | payment             | order, notification, reporting              |
-| `shipment.created`               | `shipping.shipment.created`              | shipping            | order, notification                         |
-| `shipment.in_transit`            | `shipping.shipment.in_transit`           | shipping            | order, notification                         |
-| `shipment.delivered`             | `shipping.shipment.delivered`            | shipping            | order, notification, warranty               |
-| `review.created`                 | `review.review.created`                  | review              | notification, reporting                     |
-| `warranty.claim_created`         | `warranty.claim.created`                 | warranty            | notification, support (optional)            |
-| `support.ticket_created`         | `support.ticket.created`                 | support             | notification                                |
-| `support.ticket_updated`         | `support.ticket.updated`                 | support             | notification                                |
-| `audit.recorded`                 | `reporting.audit.recorded`               | various → reporting | reporting                                   |
-| `media.uploaded`                 | `media.media.uploaded`                   | media               | catalog/review/support (bind by ownerType)  |
-| `media.deleted`                  | `media.media.deleted`                    | media               | catalog/review/support                      |
-| `notification.requested`         | `notification.message.requested`         | various             | notification                                |
+| Event type                       | Routing key                              | Producer            | Consumers                                    |
+| -------------------------------- | ---------------------------------------- | ------------------- | -------------------------------------------- |
+| `user.registered`                | `identity.user.registered`               | identity            | customer, notification                       |
+| `user.email_verified`            | `identity.user.email_verified`           | identity            | notification                                 |
+| `user.password_reset_requested`  | `identity.user.password_reset_requested` | identity            | notification                                 |
+| `customer.profile_created`       | `customer.profile.created`               | customer            | reporting                                    |
+| `catalog.product_updated`        | `catalog.product.updated`                | catalog             | reporting, search cache (nếu có)             |
+| `catalog.price_changed`          | `catalog.price.changed`                  | catalog             | reporting                                    |
+| `catalog.category_updated`       | `catalog.category.updated`               | catalog             | reporting                                    |
+| `catalog.brand_updated`          | `catalog.brand.updated`                  | catalog             | reporting                                    |
+| `inventory.reservation.created`  | `inventory.reservation.created`          | inventory           | order                                        |
+| `inventory.reservation.released` | `inventory.reservation.released`         | inventory           | order                                        |
+| `inventory.stock.committed`      | `inventory.stock.committed`              | inventory           | order, reporting                             |
+| `inventory.stock.returned`       | `inventory.stock.returned`               | inventory           | order, reporting                             |
+| `inventory.transfer.created`     | `inventory.transfer.created`             | inventory           | reporting                                    |
+| `inventory.transfer.completed`   | `inventory.transfer.completed`           | inventory           | reporting                                    |
+| `inventory.low-stock.detected`   | `inventory.low-stock.detected`           | inventory           | notification, reporting                      |
+| `cart.created`                   | `cart.cart.created`                      | cart                | reporting                                    |
+| `cart.item.added`                | `cart.cart.item.added`                   | cart                | reporting                                    |
+| `cart.item.updated`              | `cart.cart.item.updated`                 | cart                | reporting                                    |
+| `cart.item.removed`              | `cart.cart.item.removed`                 | cart                | reporting                                    |
+| `cart.merged`                    | `cart.cart.merged`                       | cart                | reporting                                    |
+| `cart.converted`                 | `cart.cart.converted`                    | cart                | reporting                                    |
+| `cart.expired`                   | `cart.cart.expired`                      | cart                | reporting                                    |
+| `order.created`                  | `order.order.created`                    | order               | payment, inventory, notification, reporting  |
+| `order.confirmed`                | `order.order.confirmed`                  | order               | payment, notification, reporting             |
+| `order.status.changed`           | `order.order.status.changed`             | order               | notification, reporting                      |
+| `order.cancelled`                | `order.order.cancelled`                  | order               | inventory, payment, notification             |
+| `order.package.created`          | `order.order.package.created`            | order               | shipping, reporting                          |
+| `order.ready-to-ship`            | `order.order.ready-to-ship`              | order               | shipping, notification                       |
+| `order.shipped`                  | `order.order.shipped`                    | order               | shipping, notification, reporting            |
+| `order.delivered`                | `order.order.delivered`                  | order               | notification, reporting, review-eligibility  |
+| `order.return.requested`         | `order.order.return.requested`           | order               | warranty, notification                       |
+| `order.returned`                 | `order.order.returned`                   | order               | inventory, notification, reporting           |
+| `order.failed`                   | `order.order.failed`                     | order               | inventory, notification, reporting           |
+| `order.fulfilled`                | `order.order.fulfilled`                  | order               | alias legacy ≈ delivered                     |
+| `payment.initiated`              | `payment.payment.initiated`              | payment             | order, reporting (legacy alias)              |
+| `payment.created`                | `payment.payment.created`                | payment             | order, reporting                             |
+| `payment.pending`                | `payment.payment.pending`                | payment             | order, reporting                             |
+| `payment.processing`             | `payment.payment.processing`             | payment             | order, reporting                             |
+| `payment.paid`                   | `payment.payment.paid`                   | payment             | order, notification, reporting               |
+| `payment.succeeded`              | `payment.payment.succeeded`              | payment             | order, notification, reporting (legacy)      |
+| `payment.failed`                 | `payment.payment.failed`                 | payment             | order, notification                          |
+| `payment.cancelled`              | `payment.payment.cancelled`              | payment             | order, reporting                             |
+| `payment.expired`                | `payment.payment.expired`                | payment             | order, reporting                             |
+| `payment.refund.requested`       | `payment.payment.refund.requested`       | payment             | order, notification, reporting               |
+| `payment.refunded`               | `payment.payment.refunded`               | payment             | order, notification, reporting               |
+| `payment.partially-refunded`     | `payment.payment.partially-refunded`     | payment             | order, notification, reporting               |
+| `shipping.quote.created`         | `shipping.quote.created`                 | shipping            | notification                                 |
+| `shipping.slot.reserved`         | `shipping.slot.reserved`                 | shipping            | notification                                 |
+| `shipping.slot.released`         | `shipping.slot.released`                 | shipping            | notification                                 |
+| `shipment.created`               | `shipping.shipment.created`              | shipping            | order, notification                          |
+| `shipment.booked`                | `shipping.shipment.booked`               | shipping            | order, notification                          |
+| `shipment.ready-for-pickup`      | `shipping.shipment.ready-for-pickup`     | shipping            | order, notification                          |
+| `shipment.picked-up`             | `shipping.shipment.picked-up`            | shipping            | inventory, order, notification               |
+| `shipment.in-transit`            | `shipping.shipment.in-transit`           | shipping            | order, notification                          |
+| `shipment.out-for-delivery`      | `shipping.shipment.out-for-delivery`     | shipping            | order, notification                          |
+| `shipment.delivered`             | `shipping.shipment.delivered`            | shipping            | order, payment (COD), notification, warranty |
+| `shipment.delivery-failed`       | `shipping.shipment.delivery-failed`      | shipping            | order, notification                          |
+| `shipment.cancelled`             | `shipping.shipment.cancelled`            | shipping            | order, notification                          |
+| `shipment.return-to-sender`      | `shipping.shipment.return-to-sender`     | shipping            | order, notification                          |
+| `shipment.returned`              | `shipping.shipment.returned`             | shipping            | order, notification                          |
+| `shipment.tracking.updated`      | `shipping.shipment.tracking.updated`     | shipping            | notification                                 |
+| `review.created`                 | `review.review.created`                  | review              | notification, reporting                      |
+| `warranty.claim_created`         | `warranty.claim.created`                 | warranty            | notification, support (optional)             |
+| `support.ticket_created`         | `support.ticket.created`                 | support             | notification                                 |
+| `support.ticket_updated`         | `support.ticket.updated`                 | support             | notification                                 |
+| `audit.recorded`                 | `reporting.audit.recorded`               | various → reporting | reporting                                    |
+| `media.uploaded`                 | `media.media.uploaded`                   | media               | catalog/review/support (bind by ownerType)   |
+| `media.deleted`                  | `media.media.deleted`                    | media               | catalog/review/support                       |
+| `notification.requested`         | `notification.message.requested`         | various             | notification                                 |
 
 ## Consumer guidelines
 
@@ -93,7 +105,7 @@
 
 ## Outbox pattern
 
-Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)** và **payment-service (M8)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
+Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)**, **payment-service (M8)** và **shipping-service (M9)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
 
 ## Order consume / gọi sync (M7)
 
@@ -105,6 +117,13 @@ Các service ghi sự kiện quan trọng dùng transactional outbox (cùng tran
 
 - Sync REST tới order: `GET /orders/:id`, `POST /orders/:id/payment-sync` (Staff+).
 - Khi `payment.paid`: cập nhật order `paymentStatus=PAID` + `confirmOrder` nếu cần; không distributed TX — local outbox + retry-safe (`orderSyncedAt`).
+
+## Shipping integrate (M9)
+
+- Sync REST tới order: `GET /orders/:id`, `POST /orders/:id/shipping-sync` (Staff+).
+- Khi `shipment.delivered`: cập nhật package + có thể `orderStatus=DELIVERED`; COD có thể consume event để thu tiền.
+- Inventory: commit stock khi `shipment.picked-up` (một lần qua `stockCommittedAt`).
+- Mock provider mặc định; GHN skeleton cần `GHN_TOKEN` / `GHN_SHOP_ID` / `GHN_BASE_URL`.
 - Khi fail/expire: cập nhật payment status + event; **không** tự huỷ order.
 - Consume hooks (method): `order.cancelled`, `order.delivered` (COD thu tiền khi giao).
 - Publish chỉ sau local transaction thành công (outbox).

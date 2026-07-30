@@ -96,8 +96,9 @@ Scripts dùng `cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false` (xem AD
 | `cart-service`      | Guest/user cart, merge, ownership, idempotency, concurrency add, price refresh, inventory pre-check, convert; Prisma/migration/Redis khi có env                                                           |
 | `order-service`     | Create from cart, re-price, reserve, snapshot, packages, state machine, cancel/confirm, ownership/RBAC, idempotency, concurrency, outbox; Prisma/migration khi có `ORDER_DATABASE_URL`                    |
 | `payment-service`   | Payment intent COD/MOCK/VNPay, ownership, state machine, mock succeed/fail, VNPay signature/amount/replay, refund full/partial/double, outbox, order sync; Prisma/migration khi có `PAYMENT_DATABASE_URL` |
+| `shipping-service`  | Quote/slot/shipment state machine, mock provider, webhook signature/replay, store pickup code, ownership/RBAC, outbox, order sync (`orderSyncedAt`); Prisma/migration khi có `SHIPPING_DATABASE_URL`      |
 
-## Integration (M4–M8)
+## Integration (M4–M9)
 
 Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
 Tests tự skip nếu thiếu env.

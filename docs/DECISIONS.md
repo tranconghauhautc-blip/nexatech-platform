@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -128,8 +128,21 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 
 ## ADR-010 — Shipping adapters
 
-- **Quyết định:** Interface `ShippingProvider` với mock carrier mặc định; adapter thật khi có API key.
-- **Lý do:** Dev/test không phụ thuộc vendor bên ngoài.
+- **Quyết định:** Interface `ShippingProvider` với **MOCK mặc định**; **GHN skeleton** (throw/`SHIPPING_PROVIDER_DISABLED` khi thiếu `GHN_TOKEN`/`GHN_SHOP_ID`/`GHN_BASE_URL` — không fake gọi API thật). Fallback phí rule-based `ORDER_SHIPPING_FEE_VND` khi provider unavailable.
+- **Lý do:** Dev/test không phụ thuộc vendor; production chỉ bật GHN khi có credential người dùng.
+
+## ADR-028 — Shipping lifecycle + quote/slot/outbox + order sync (M9)
+
+- **Quyết định:** shipping-service sở hữu quote, delivery slot, shipment state machine, tracking, webhook; đồng bộ order qua `POST /orders/:id/shipping-sync`.
+- Quote: lấy package thật từ order; phí từ Mock provider (deterministic) hoặc fallback `ORDER_SHIPPING_FEE_VND`; không tin fee client; TTL ~30 phút; Int VND.
+- STANDARD/EXPRESS cần address; STORE_PICKUP cần storeId; không đồng thời address+pickup.
+- Slot: capacity + optimistic version; idempotent reserve; release khi cancel.
+- Shipment per package; chỉ transition hợp lệ; audit + outbox sau TX local.
+- STORE_PICKUP: ready-for-pickup sinh mã (hash lưu, không log raw); confirm-pickup bắt buộc trước DELIVERED.
+- Inventory: BOOKED chỉ khi package ALLOCATED/READY_TO_SHIP; PICKED_UP publish `inventory.stock.committed` / commit client một lần (`stockCommittedAt`).
+- Webhook: verify HMAC/token (`SHIPPING_WEBHOOK_SECRET`); payloadHash chống replay.
+- Order sync: `orderSyncedAt` chống double update; emit `shipment.delivered` (COD có thể consume).
+- Auth tạm: `x-user-id` / `x-user-roles`; webhook không JWT.
 
 ## ADR-011 — Kong Gateway OSS
 

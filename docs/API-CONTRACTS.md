@@ -341,9 +341,54 @@ $env:NODE_ENV='development'
 
 ---
 
-## Các service sau M8 (kế hoạch — chưa code)
+## shipping-service (M9)
 
-Shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Base: `/api/v1` (mirror `/api/v2`). Port **3009**. Auth tạm: `x-user-id` / `x-user-roles`. Webhook: không JWT — verify `x-shipping-signature` / `x-webhook-token`.
+
+### Quotes / slots / shipments
+
+| Method | Path                                              | Mô tả                                               |
+| ------ | ------------------------------------------------- | --------------------------------------------------- |
+| POST   | `/api/v1/shipping/quotes`                         | Tạo báo giá từ order packages                       |
+| GET    | `/api/v1/shipping/slots`                          | List slot còn chỗ                                   |
+| POST   | `/api/v1/shipping/slots/reserve`                  | Reserve slot (idempotent)                           |
+| POST   | `/api/v1/shipping/shipments`                      | Tạo shipment / package                              |
+| GET    | `/api/v1/shipping/shipments/:id`                  | Chi tiết (ownership)                                |
+| GET    | `/api/v1/shipping/shipments/by-order/:orderId`    | List theo đơn                                       |
+| POST   | `/api/v1/shipping/shipments/:id/book`             | Book (staff+) — cần package ALLOCATED/READY_TO_SHIP |
+| POST   | `/api/v1/shipping/shipments/:id/status`           | Transition trạng thái (staff+)                      |
+| POST   | `/api/v1/shipping/shipments/:id/cancel`           | Huỷ                                                 |
+| POST   | `/api/v1/shipping/shipments/:id/ready-for-pickup` | STORE_PICKUP — sinh mã nhận                         |
+| POST   | `/api/v1/shipping/shipments/:id/confirm-pickup`   | Xác nhận mã → DELIVERED                             |
+| GET    | `/api/v1/shipping/tracking/:trackingCode`         | Public tracking (field giới hạn)                    |
+| POST   | `/api/v1/shipping/webhooks/:provider`             | Provider webhook (MOCK/GHN)                         |
+
+### Admin
+
+| Method | Path                               | Mô tả                       |
+| ------ | ---------------------------------- | --------------------------- |
+| GET    | `/api/v1/admin/shipping/shipments` | List filter/sort/pagination |
+
+### Order sync
+
+| Method | Path                                    | Mô tả                                                                            |
+| ------ | --------------------------------------- | -------------------------------------------------------------------------------- |
+| POST   | `/api/v1/orders/:orderId/shipping-sync` | Staff+ — cập nhật package tracking/status; order → SHIPPED/DELIVERED khi đủ kiện |
+
+Body shipping-sync: `packageId`, `shipmentId`, `trackingCode?`, `shippingProvider?`, `packageStatus?`, `estimatedDeliveryAt?`, `orderStatus?`, `idempotencyKey?`.
+
+Create quote body: `orderId`, `idempotencyKey`, `deliveryMethod?`, `packageIds?` — **không** nhận fee từ client.
+
+### Mock / GHN
+
+- `SHIPPING_PROVIDER=MOCK` (mặc định) + `MOCK_SHIPPING_ENABLED=true` non-prod.
+- GHN: skeleton — cần `GHN_TOKEN`, `GHN_SHOP_ID`, `GHN_BASE_URL`; thiếu thì `SHIPPING_PROVIDER_DISABLED` / fallback rule-based fee.
+
+---
+
+## Các service sau M9 (kế hoạch — chưa code)
+
+Review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

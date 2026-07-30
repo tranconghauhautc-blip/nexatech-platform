@@ -12,6 +12,7 @@ import type {
   OutboxEventInput,
   OutboxEventRecord,
   UpdateOrderPaymentInput,
+  UpdateOrderShippingInput,
   UpdateOrderStatusInput,
 } from './order.types';
 
@@ -26,6 +27,7 @@ export interface OrderRepository {
   list(filter: ListOrdersFilter): Promise<ListOrdersResult>;
   updateStatus(input: UpdateOrderStatusInput): Promise<Order>;
   updatePayment(input: UpdateOrderPaymentInput): Promise<Order>;
+  updateShipping(input: UpdateOrderShippingInput): Promise<Order>;
   markInventoryReleased(
     orderId: string,
     expectedVersion: number,
@@ -334,6 +336,66 @@ export class InMemoryOrderRepository implements OrderRepository {
     if (input.refundContractStatus !== undefined) {
       order.refundContractStatus = input.refundContractStatus;
     }
+    order.version += 1;
+    order.updatedAt = new Date();
+
+    if (input.outboxEvents?.length) {
+      await this.addOutbox(input.outboxEvents);
+    }
+
+    return cloneOrder(order);
+  }
+
+  async updateShipping(input: UpdateOrderShippingInput): Promise<Order> {
+    const order = this.orders.get(input.orderId);
+    if (!order) {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_NOT_FOUND,
+        message: 'Không tìm thấy đơn hàng',
+      });
+    }
+    assertVersion(order, input.expectedVersion);
+
+    const pkg = order.packages.find((p) => p.id === input.packageId);
+    if (!pkg) {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_NOT_FOUND,
+        message: 'Không tìm thấy kiện hàng trong đơn',
+        details: { packageId: input.packageId },
+      });
+    }
+
+    if (input.packageStatus) {
+      pkg.status = input.packageStatus;
+    }
+    if (input.trackingCode !== undefined) {
+      pkg.trackingCode = input.trackingCode;
+    }
+    if (input.shippingProvider !== undefined) {
+      pkg.shippingProvider = input.shippingProvider;
+    }
+    if (input.estimatedDeliveryAt !== undefined) {
+      pkg.estimatedDeliveryAt = input.estimatedDeliveryAt ?? undefined;
+    }
+    pkg.updatedAt = new Date();
+
+    const fromStatus = order.status;
+    if (input.toStatus && input.toStatus !== order.status) {
+      order.status = input.toStatus;
+      const entries = this.history.get(order.id) ?? [];
+      entries.push({
+        id: createId(),
+        orderId: order.id,
+        fromStatus,
+        toStatus: input.toStatus,
+        actorId: input.actorId,
+        actorType: input.actorType,
+        reason: input.reason ?? `shipment:${input.shipmentId}`,
+        createdAt: new Date(),
+      });
+      this.history.set(order.id, entries);
+    }
+
     order.version += 1;
     order.updatedAt = new Date();
 

@@ -1,0 +1,247 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SHIPPING_DATABASE_URL")
+}
+
+enum ShipmentStatus {
+  CREATED
+  QUOTED
+  BOOKED
+  READY_FOR_PICKUP
+  PICKED_UP
+  IN_TRANSIT
+  OUT_FOR_DELIVERY
+  DELIVERED
+  DELIVERY_FAILED
+  CANCELLED
+  RETURN_TO_SENDER
+  RETURNED
+}
+
+enum ShippingProvider {
+  MOCK
+  GHN
+}
+
+enum DeliveryMethod {
+  STANDARD
+  EXPRESS
+  STORE_PICKUP
+}
+
+enum QuoteStatus {
+  ACTIVE
+  CONSUMED
+  EXPIRED
+  CANCELLED
+}
+
+enum SlotReservationStatus {
+  HELD
+  RELEASED
+  CONSUMED
+}
+
+enum CallbackStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
+model ShippingQuote {
+  id             String         @id @default(uuid())
+  orderId        String
+  orderCode      String
+  customerId     String
+  deliveryMethod DeliveryMethod
+  currency       String         @default("VND")
+  totalFee       Int
+  packageFees    Json
+  provider       ShippingProvider
+  expiresAt      DateTime
+  snapshotJson   Json
+  status         QuoteStatus    @default(ACTIVE)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  shipments Shipment[]
+
+  @@index([orderId])
+  @@index([customerId])
+  @@index([expiresAt])
+}
+
+model DeliverySlot {
+  id             String         @id @default(uuid())
+  deliveryDate   DateTime       @db.Date
+  windowStart    String
+  windowEnd      String
+  deliveryMethod DeliveryMethod
+  locationType   String
+  locationId     String
+  capacity       Int
+  reservedCount  Int            @default(0)
+  cutoffAt       DateTime
+  timezone       String         @default("Asia/Ho_Chi_Minh")
+  active         Boolean        @default(true)
+  version        Int            @default(0)
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  reservations DeliverySlotReservation[]
+
+  @@index([deliveryDate, deliveryMethod])
+  @@index([locationType, locationId])
+}
+
+model DeliverySlotReservation {
+  id             String                @id @default(uuid())
+  slotId         String
+  slot           DeliverySlot          @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  orderId        String?
+  shipmentId     String?
+  customerId     String
+  status         SlotReservationStatus @default(HELD)
+  expiresAt      DateTime
+  idempotencyKey String                @unique
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  shipments Shipment[]
+
+  @@index([slotId])
+  @@index([orderId])
+  @@index([customerId])
+}
+
+model Shipment {
+  id                 String            @id @default(uuid())
+  orderId            String
+  orderCode          String
+  packageId          String
+  customerId         String
+  deliveryMethod     DeliveryMethod
+  provider           ShippingProvider
+  status             ShipmentStatus    @default(CREATED)
+  sourceLocationType String
+  sourceLocationId   String
+  destinationJson    Json?
+  shippingFee        Int
+  currency           String            @default("VND")
+  quoteId            String?
+  quote              ShippingQuote?    @relation(fields: [quoteId], references: [id])
+  slotReservationId  String?
+  slotReservation    DeliverySlotReservation? @relation(fields: [slotReservationId], references: [id])
+  providerShipmentRef String?
+  trackingCode       String?
+  estimatedDeliveryAt DateTime?
+  pickupCodeHash     String?
+  pickupCodeHint     String?
+  failureAttempts    Int               @default(0)
+  orderSyncedAt      DateTime?
+  stockCommittedAt   DateTime?
+  version            Int               @default(0)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  items       ShipmentItem[]
+  history     ShipmentStatusHistory[]
+  tracking    TrackingEvent[]
+  callbacks   ProviderCallback[]
+
+  @@unique([packageId])
+  @@index([orderId])
+  @@index([customerId])
+  @@index([status])
+  @@index([trackingCode])
+}
+
+model ShipmentItem {
+  id          String   @id @default(uuid())
+  shipmentId  String
+  shipment    Shipment @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  skuCode     String
+  quantity    Int
+  orderItemId String?
+  createdAt   DateTime @default(now())
+
+  @@index([shipmentId])
+}
+
+model ShipmentStatusHistory {
+  id         String          @id @default(uuid())
+  shipmentId String
+  shipment   Shipment        @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  fromStatus ShipmentStatus?
+  toStatus   ShipmentStatus
+  actorId    String
+  actorType  String
+  reason     String?
+  createdAt  DateTime        @default(now())
+
+  @@index([shipmentId])
+}
+
+model TrackingEvent {
+  id               String         @id @default(uuid())
+  shipmentId       String
+  shipment         Shipment       @relation(fields: [shipmentId], references: [id], onDelete: Cascade)
+  providerStatus   String
+  normalizedStatus ShipmentStatus
+  eventTime        DateTime
+  locationText     String?
+  note             String?
+  source           String
+  createdAt        DateTime       @default(now())
+
+  @@index([shipmentId])
+}
+
+model ProviderCallback {
+  id             String           @id @default(uuid())
+  provider       ShippingProvider
+  payloadHash    String
+  signatureValid Boolean
+  rawPayloadJson Json
+  processed      Boolean          @default(false)
+  resultStatus   CallbackStatus   @default(RECEIVED)
+  shipmentId     String?
+  shipment       Shipment?        @relation(fields: [shipmentId], references: [id])
+  createdAt      DateTime         @default(now())
+
+  @@unique([provider, payloadHash])
+  @@index([shipmentId])
+}
+
+model ShipmentIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  routingKey  String
+  payloadJson Json
+  traceId     String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([publishedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

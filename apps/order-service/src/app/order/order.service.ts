@@ -7,6 +7,7 @@ import {
   listOrdersQuerySchema,
   orderStatusTransitionRequestSchema,
   syncOrderPaymentRequestSchema,
+  syncOrderShippingRequestSchema,
   type CancelOrderRequest,
   type ConfirmOrderRequest,
   type CreateOrderRequest,
@@ -20,6 +21,7 @@ import {
   type OrderStatusTransitionRequest,
   type PaginatedResponse,
   type SyncOrderPaymentRequest,
+  type SyncOrderShippingRequest,
 } from '@nexatech/shared-contracts';
 import {
   hasMinimumRole,
@@ -652,6 +654,123 @@ export class OrderService {
       paymentStatus: input.paymentStatus,
       paymentReference: input.paymentReference,
     });
+    await this.outbox.dispatchPending();
+    return this.toDto(updated);
+  }
+
+  async syncShipping(
+    actor: OrderActor,
+    orderId: string,
+    raw: unknown,
+  ): Promise<OrderDto> {
+    this.requireStaff(actor);
+    const input = parseOrThrow(() => syncOrderShippingRequestSchema.parse(raw));
+    return this.maybeIdempotent(
+      input.idempotencyKey,
+      'order.shipping-sync',
+      () => this.doSyncShipping(actor, orderId, input),
+    );
+  }
+
+  private async doSyncShipping(
+    actor: OrderActor,
+    orderId: string,
+    input: SyncOrderShippingRequest,
+  ): Promise<OrderDto> {
+    const order = await this.requireOrder(orderId);
+    const pkg = order.packages.find((p) => p.id === input.packageId);
+    if (!pkg) {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_NOT_FOUND,
+        message: 'Không tìm thấy kiện hàng trong đơn',
+        details: { packageId: input.packageId },
+      });
+    }
+
+    const samePackage =
+      pkg.trackingCode === (input.trackingCode ?? pkg.trackingCode) &&
+      pkg.shippingProvider ===
+        (input.shippingProvider ?? pkg.shippingProvider) &&
+      (!input.packageStatus || pkg.status === input.packageStatus);
+
+    if (
+      samePackage &&
+      (!input.orderStatus || order.status === input.orderStatus)
+    ) {
+      return this.toDto(order);
+    }
+
+    let toStatus = input.orderStatus;
+    const outboxEvents: OutboxEventInput[] = [];
+    const traceId = createTraceId();
+
+    if (toStatus && toStatus !== order.status) {
+      assertTransition(order.status, toStatus);
+      outboxEvents.push(
+        this.buildEvent(this.eventForTransition(toStatus), traceId, {
+          orderId: order.id,
+          toStatus,
+          packageId: input.packageId,
+          shipmentId: input.shipmentId,
+        }),
+      );
+    } else if (!toStatus && input.packageStatus === 'SHIPPED') {
+      if (order.status === 'READY_TO_SHIP') {
+        toStatus = 'SHIPPED';
+        assertTransition(order.status, toStatus);
+        outboxEvents.push(
+          this.buildEvent(EventTypes.ORDER_SHIPPED, traceId, {
+            orderId: order.id,
+            packageId: input.packageId,
+            shipmentId: input.shipmentId,
+          }),
+        );
+      }
+    } else if (!toStatus && input.packageStatus === 'DELIVERED') {
+      const otherPackagesDelivered = order.packages
+        .filter((p) => p.id !== input.packageId)
+        .every((p) => p.status === 'DELIVERED' || p.status === 'CANCELLED');
+      if (otherPackagesDelivered && order.status === 'SHIPPED') {
+        toStatus = 'DELIVERED';
+        assertTransition(order.status, toStatus);
+        outboxEvents.push(
+          this.buildEvent(EventTypes.ORDER_DELIVERED, traceId, {
+            orderId: order.id,
+            packageId: input.packageId,
+            shipmentId: input.shipmentId,
+          }),
+        );
+      }
+    }
+
+    const updated = await this.repository.updateShipping({
+      orderId: order.id,
+      expectedVersion: order.version,
+      packageId: input.packageId,
+      shipmentId: input.shipmentId,
+      trackingCode: input.trackingCode,
+      shippingProvider: input.shippingProvider,
+      packageStatus: input.packageStatus,
+      estimatedDeliveryAt: input.estimatedDeliveryAt
+        ? new Date(input.estimatedDeliveryAt)
+        : undefined,
+      toStatus,
+      actorId: actorIdOf(actor),
+      actorType: 'staff',
+      reason: 'shipping-service sync',
+      outboxEvents,
+    });
+
+    await this.repository.writeAudit(
+      'order.shipping.synced',
+      actorIdOf(actor),
+      {
+        orderId: order.id,
+        packageId: input.packageId,
+        shipmentId: input.shipmentId,
+        packageStatus: input.packageStatus,
+      },
+    );
     await this.outbox.dispatchPending();
     return this.toDto(updated);
   }

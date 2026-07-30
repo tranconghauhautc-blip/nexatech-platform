@@ -17,6 +17,7 @@ import type {
   OutboxEventRecord,
   RefundContractStatus,
   UpdateOrderPaymentInput,
+  UpdateOrderShippingInput,
   UpdateOrderStatusInput,
 } from './order.types';
 import { PrismaService } from './prisma.service';
@@ -442,6 +443,101 @@ export class PrismaOrderRepository implements OrderRepository {
             actorId: input.actorId,
             actorType: input.actorType,
             reason: input.reason,
+          },
+        });
+      }
+
+      if (input.outboxEvents?.length) {
+        await tx.outboxEvent.createMany({
+          data: input.outboxEvents.map((event) => ({
+            id: createId(),
+            eventType: event.eventType,
+            routingKey: event.routingKey,
+            payloadJson: event.payload as Prisma.InputJsonValue,
+            traceId: event.traceId,
+          })),
+        });
+      }
+
+      const row = await tx.order.findUniqueOrThrow({
+        where: { id: input.orderId },
+        include: ORDER_INCLUDE,
+      });
+      return mapOrder(row);
+    });
+  }
+
+  async updateShipping(input: UpdateOrderShippingInput): Promise<Order> {
+    return this.prisma.$transaction(async (tx) => {
+      const current = await tx.order.findUnique({
+        where: { id: input.orderId },
+        include: { packages: true },
+      });
+      if (!current) {
+        throw new AppError({
+          errorCode: ErrorCodes.ORDER_NOT_FOUND,
+          message: 'Không tìm thấy đơn hàng',
+        });
+      }
+
+      const pkg = current.packages.find((p) => p.id === input.packageId);
+      if (!pkg) {
+        throw new AppError({
+          errorCode: ErrorCodes.ORDER_NOT_FOUND,
+          message: 'Không tìm thấy kiện hàng trong đơn',
+          details: { packageId: input.packageId },
+        });
+      }
+
+      await tx.orderPackage.update({
+        where: { id: input.packageId },
+        data: {
+          ...(input.packageStatus !== undefined && {
+            status: input.packageStatus,
+          }),
+          ...(input.trackingCode !== undefined && {
+            trackingCode: input.trackingCode,
+          }),
+          ...(input.shippingProvider !== undefined && {
+            shippingProvider: input.shippingProvider,
+          }),
+          ...(input.estimatedDeliveryAt !== undefined && {
+            estimatedDeliveryAt: input.estimatedDeliveryAt,
+          }),
+          updatedAt: new Date(),
+        },
+      });
+
+      const nextStatus = input.toStatus ?? current.status;
+      const updated = await tx.order.updateMany({
+        where: { id: input.orderId, version: input.expectedVersion },
+        data: {
+          status: nextStatus,
+          version: { increment: 1 },
+          updatedAt: new Date(),
+        },
+      });
+      if (updated.count !== 1) {
+        throw new AppError({
+          errorCode: ErrorCodes.ORDER_CONFLICT,
+          message: 'Đơn hàng đã được cập nhật bởi thao tác khác',
+          details: {
+            expectedVersion: input.expectedVersion,
+            actualVersion: current.version,
+          },
+        });
+      }
+
+      if (input.toStatus && input.toStatus !== current.status) {
+        await tx.orderStatusHistory.create({
+          data: {
+            id: createId(),
+            orderId: input.orderId,
+            fromStatus: current.status,
+            toStatus: input.toStatus,
+            actorId: input.actorId,
+            actorType: input.actorType,
+            reason: input.reason ?? `shipment:${input.shipmentId}`,
           },
         });
       }

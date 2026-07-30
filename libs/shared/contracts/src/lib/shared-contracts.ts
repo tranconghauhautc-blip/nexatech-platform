@@ -876,3 +876,235 @@ export interface PaymentDto {
   createdAt: string;
   updatedAt: string;
 }
+
+/** Shipping lifecycle status (shipping-service owned) */
+export const shipmentStatusSchema = z.enum([
+  'CREATED',
+  'QUOTED',
+  'BOOKED',
+  'READY_FOR_PICKUP',
+  'PICKED_UP',
+  'IN_TRANSIT',
+  'OUT_FOR_DELIVERY',
+  'DELIVERED',
+  'DELIVERY_FAILED',
+  'CANCELLED',
+  'RETURN_TO_SENDER',
+  'RETURNED',
+]);
+export type ShipmentStatus = z.infer<typeof shipmentStatusSchema>;
+
+export const shippingProviderSchema = z.enum(['MOCK', 'GHN']);
+export type ShippingProviderCode = z.infer<typeof shippingProviderSchema>;
+
+export const createShippingQuoteRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120),
+  idempotencyKey: z.string().trim().min(8).max(120),
+  deliveryMethod: deliveryMethodSchema.optional(),
+  packageIds: z.array(z.string().trim().min(1).max(120)).max(50).optional(),
+});
+export type CreateShippingQuoteRequest = z.infer<
+  typeof createShippingQuoteRequestSchema
+>;
+
+export const createShipmentRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120),
+  packageId: z.string().trim().min(1).max(120),
+  quoteId: z.string().trim().min(1).max(120).optional(),
+  slotReservationId: z.string().trim().min(1).max(120).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120),
+  deliveryMethod: deliveryMethodSchema.optional(),
+});
+export type CreateShipmentRequest = z.infer<typeof createShipmentRequestSchema>;
+
+export const bookShipmentRequestSchema = z.object({
+  reason: z.string().trim().max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type BookShipmentRequest = z.infer<typeof bookShipmentRequestSchema>;
+
+export const cancelShipmentRequestSchema = z.object({
+  reason: z.string().trim().min(1).max(500),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CancelShipmentRequest = z.infer<typeof cancelShipmentRequestSchema>;
+
+export const shipmentStatusTransitionRequestSchema = z.object({
+  toStatus: shipmentStatusSchema,
+  reason: z.string().trim().max(500).optional(),
+  locationText: z.string().trim().max(250).optional(),
+  note: z.string().trim().max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ShipmentStatusTransitionRequest = z.infer<
+  typeof shipmentStatusTransitionRequestSchema
+>;
+
+export const reserveDeliverySlotRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120),
+});
+export type ReserveDeliverySlotRequest = z.infer<
+  typeof reserveDeliverySlotRequestSchema
+>;
+
+export const readyForPickupRequestSchema = z.object({
+  reason: z.string().trim().max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ReadyForPickupRequest = z.infer<typeof readyForPickupRequestSchema>;
+
+export const confirmPickupRequestSchema = z.object({
+  pickupCode: z.string().trim().min(4).max(32),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ConfirmPickupRequest = z.infer<typeof confirmPickupRequestSchema>;
+
+export const listShipmentsQuerySchema = paginationQuerySchema.extend({
+  status: shipmentStatusSchema.optional(),
+  provider: shippingProviderSchema.optional(),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  packageId: z.string().trim().min(1).max(120).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z
+    .enum([
+      'createdAt_desc',
+      'createdAt_asc',
+      'shippingFee_desc',
+      'shippingFee_asc',
+    ])
+    .default('createdAt_desc'),
+});
+export type ListShipmentsQuery = z.infer<typeof listShipmentsQuerySchema>;
+
+export const listDeliverySlotsQuerySchema = z.object({
+  deliveryDate: z.string().trim().min(8).max(20).optional(),
+  deliveryMethod: deliveryMethodSchema.optional(),
+  locationType: z.enum(['warehouse', 'store', 'city']).optional(),
+  locationId: z.string().trim().min(1).max(120).optional(),
+});
+export type ListDeliverySlotsQuery = z.infer<
+  typeof listDeliverySlotsQuerySchema
+>;
+
+export const syncOrderShippingRequestSchema = z.object({
+  packageId: z.string().trim().min(1).max(120),
+  shipmentId: z.string().trim().min(1).max(120),
+  trackingCode: z.string().trim().min(1).max(120).optional(),
+  shippingProvider: z.string().trim().min(1).max(40).optional(),
+  packageStatus: packageStatusSchema.optional(),
+  estimatedDeliveryAt: z.string().datetime().optional(),
+  orderStatus: orderStatusSchema.optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type SyncOrderShippingRequest = z.infer<
+  typeof syncOrderShippingRequestSchema
+>;
+
+export interface ShippingQuotePackageFeeDto {
+  packageId: string;
+  fee: number;
+}
+
+export interface ShippingQuoteDto {
+  id: string;
+  orderId: string;
+  orderCode: string;
+  customerId: string;
+  deliveryMethod: DeliveryMethod;
+  currency: 'VND';
+  totalFee: number;
+  packageFees: ShippingQuotePackageFeeDto[];
+  provider: ShippingProviderCode;
+  expiresAt: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface DeliverySlotDto {
+  id: string;
+  deliveryDate: string;
+  windowStart: string;
+  windowEnd: string;
+  deliveryMethod: DeliveryMethod;
+  locationType: string;
+  locationId: string;
+  capacity: number;
+  reservedCount: number;
+  available: number;
+  cutoffAt: string;
+  timezone: string;
+  active: boolean;
+}
+
+export interface SlotReservationDto {
+  id: string;
+  slotId: string;
+  orderId?: string;
+  shipmentId?: string;
+  customerId: string;
+  status: 'HELD' | 'RELEASED' | 'CONSUMED';
+  expiresAt: string;
+  createdAt: string;
+}
+
+export interface TrackingEventDto {
+  id: string;
+  shipmentId: string;
+  providerStatus: string;
+  normalizedStatus: ShipmentStatus;
+  eventTime: string;
+  locationText?: string;
+  note?: string;
+  source: string;
+}
+
+export interface ShipmentItemDto {
+  id: string;
+  skuCode: string;
+  quantity: number;
+  orderItemId?: string;
+}
+
+export interface ShipmentDto {
+  id: string;
+  orderId: string;
+  orderCode: string;
+  packageId: string;
+  customerId: string;
+  deliveryMethod: DeliveryMethod;
+  provider: ShippingProviderCode;
+  status: ShipmentStatus;
+  sourceLocationType: string;
+  sourceLocationId: string;
+  destination?: Record<string, unknown>;
+  shippingFee: number;
+  currency: 'VND';
+  quoteId?: string;
+  slotReservationId?: string;
+  providerShipmentRef?: string;
+  trackingCode?: string;
+  estimatedDeliveryAt?: string;
+  pickupCodeHint?: string;
+  failureAttempts: number;
+  version: number;
+  items?: ShipmentItemDto[];
+  trackingEvents?: TrackingEventDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PublicTrackingDto {
+  trackingCode: string;
+  status: ShipmentStatus;
+  deliveryMethod: DeliveryMethod;
+  estimatedDeliveryAt?: string;
+  events: Array<{
+    status: ShipmentStatus;
+    eventTime: string;
+    locationText?: string;
+    note?: string;
+  }>;
+}

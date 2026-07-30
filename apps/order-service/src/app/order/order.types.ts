@@ -253,6 +253,22 @@ export interface UpdateOrderPaymentInput {
   outboxEvents?: OutboxEventInput[];
 }
 
+export interface UpdateOrderShippingInput {
+  orderId: string;
+  expectedVersion: number;
+  packageId: string;
+  shipmentId: string;
+  trackingCode?: string;
+  shippingProvider?: string;
+  packageStatus?: PackageStatus;
+  estimatedDeliveryAt?: Date | null;
+  toStatus?: OrderStatus;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  outboxEvents?: OutboxEventInput[];
+}
+
 export interface ListOrdersFilter {
   customerId?: string;
   status?: OrderStatus;

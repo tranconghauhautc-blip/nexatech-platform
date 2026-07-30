@@ -63,7 +63,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | cart-service         | `nexatech_cart`         | Prisma + migration ✅ / Prisma + Redis assist     |
 | order-service        | `nexatech_order`        | Prisma + migration ✅ / Prisma + outbox runtime   |
 | payment-service      | `nexatech_payment`      | Prisma + migration ✅ / Prisma + outbox runtime   |
-| shipping-service     | `nexatech_shipping`     | Later                                             |
+| shipping-service     | `nexatech_shipping`     | Prisma + migration ✅ / Prisma + outbox runtime   |
 | review-service       | `nexatech_review`       | Later                                             |
 | warranty-service     | `nexatech_warranty`     | Later                                             |
 | notification-service | `nexatech_notification` | Later                                             |
@@ -136,6 +136,18 @@ Client: `apps/order-service/src/generated/prisma`.
 - `PaymentIdempotency` / `OutboxEvent` / `AuditLog`
 
 Client: `apps/payment-service/src/generated/prisma`. Money: integer VND; VNPay `vnp_Amount = amount * 100`.
+
+## shipping — Prisma models (M9)
+
+- `ShippingQuote` — order snapshot, deliveryMethod, totalFee/packageFees (Int VND), provider, expiresAt, status
+- `DeliverySlot` — date/window, capacity/reservedCount, cutoffAt, version optimistic
+- `DeliverySlotReservation` — HELD/RELEASED/CONSUMED, idempotencyKey unique
+- `Shipment` — per packageId unique, status machine, trackingCode, pickupCodeHash/hint, orderSyncedAt, stockCommittedAt, version
+- `ShipmentItem`, `ShipmentStatusHistory`, `TrackingEvent`
+- `ProviderCallback` — unique (provider, payloadHash)
+- `ShipmentIdempotency`, `OutboxEvent`, `AuditLog`
+
+Client: `apps/shipping-service/src/generated/prisma`. Money: integer VND.
 
 ## MinIO buckets
 
