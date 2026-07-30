@@ -33,6 +33,13 @@ Confirm:
 
 Wrong context → **STOP**. Do not proceed.
 
+Automated read-only suite (M19):
+
+```powershell
+.\scripts\deploy-preflight.ps1
+.\scripts\smoke-release.ps1 -ViaEntry   # from network that can reach VIP
+```
+
 ## Rollout
 
 Helm upgrade triggers RollingUpdate on Deployments (default `maxUnavailable: 0`, `maxSurge: 1`).
@@ -328,5 +335,10 @@ helm get manifest nexatech -n nexatech | Select-String "kind: Deployment"
 - `docs/MIGRATIONS.md`
 - `docs/BACKUP-RESTORE.md`
 - `docs/DEPLOY-RUNBOOK-PRODUCTION.md`
+- `docs/DEPLOYMENT-ORDER.md`
+- `docs/RELEASE-CHECKLIST.md`
+- `docs/IMAGE-MATRIX.md`
 - `docs/SECURITY-BASELINE.md`
 - `scripts/validate-production.sh` / `.ps1`
+- `scripts/deploy-preflight.sh` / `.ps1`
+- `scripts/smoke-release.sh` / `.ps1`

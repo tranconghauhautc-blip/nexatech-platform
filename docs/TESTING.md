@@ -180,3 +180,29 @@ helm template nexatech deploy/helm/nexatech -f deploy/helm/nexatech/values-produ
 ```
 
 Không `kubectl apply` thật trong agent unattended.
+
+## Release readiness validation (M19)
+
+```powershell
+$env:NX_SKIP_NATIVE_FILE_CACHE='true'
+$env:NX_DAEMON='false'
+$env:PATH = "$PWD\.tools\bin;$env:PATH"
+.\scripts\deploy-preflight.ps1 -DryRun
+.\scripts\smoke-release.ps1 -DryRun
+.\scripts\validate-production.ps1
+.\scripts\check-secret-leak.ps1
+helm lint deploy/helm/nexatech
+helm lint deploy/helm/nexatech-observability
+helm template nexatech deploy/helm/nexatech -f deploy/helm/nexatech/values-production.yaml --namespace nexatech | Out-Null
+```
+
+| Asset                                             | Role                         |
+| ------------------------------------------------- | ---------------------------- |
+| `docs/IMAGE-MATRIX.md` / `docs/image-matrix.json` | Image inventory              |
+| `docs/DEPLOYMENT-ORDER.md`                        | Install/upgrade order        |
+| `docs/RELEASE-CHECKLIST.md`                       | Operator gate                |
+| `docs/MIGRATIONS.md`                              | migrate deploy orchestration |
+
+Smoke scripts refuse non-private targets (localhost / RFC1918 / `ENTRY_VIP` only). Tokens are never logged.
+
+k6 load scenarios remain M20 (`tests/k6/`).

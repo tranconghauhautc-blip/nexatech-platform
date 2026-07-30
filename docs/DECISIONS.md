@@ -314,3 +314,11 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - NetworkPolicy production: `networkPolicy.enabled: true` trong `values-production.yaml` (default-deny + allow entry/intra-namespace).
 - Ops: `docs/BACKUP-RESTORE.md`, `docs/K8S-OPS.md`, `docs/DEPLOY-RUNBOOK-PRODUCTION.md`, `docs/SECURITY-BASELINE.md`; scripts validate/backup/seed-production/secret-leak.
 - **Cấm:** intentional OWASP vulnerabilities; restore vào DB prod từ agent unattended; `helm upgrade`/`kubectl apply` thật khi kube-context chưa verified.
+
+## ADR-038 — Deployment preflight và release readiness (M19)
+
+- **Quyết định:** Chuẩn hóa release readiness trước deploy thật bằng scripts read-only + tài liệu matrix/order/checklist. Scripts: `scripts/deploy-preflight.ps1|.sh` (kube-context, nodes, StorageClass, MetalLB, Secrets/ConfigMaps names, image tag policy, Helm lint/template apps+obs, Kong static VIP mapping, TCP Postgres khi reachable) và `scripts/smoke-release.ps1|.sh` (private/local target guard, health/catalog smoke, optional mutate). Machine-readable `docs/image-matrix.json` + `docs/IMAGE-MATRIX.md`. Deployment order `docs/DEPLOYMENT-ORDER.md`. Release gate `docs/RELEASE-CHECKLIST.md`. Migration orchestration bổ sung trong `docs/MIGRATIONS.md` (deploy-only, failure blocks rollout, retry/cleanup/rollback).
+- **Cấm:** mutate cluster/Kong từ preflight; in secret values; dùng tag `latest`; seed production trong unattended mode; `prisma migrate reset` / `db push`.
+- **Exit codes:** `0` = OK hoặc OK+BLOCKED (offline-friendly); `1` = FAIL; `-Strict`/`--strict` nâng BLOCKED → FAIL.
+- **Lý do:** Tách packaging (M17) và observability (M18) khỏi bước “sẵn sàng release” có kiểm tra lặp lại được trước khi operator chạy Helm/Kong thật.
+- **Hệ quả:** M20 tập trung k6/performance, resilience, DR validation, SLI/SLO; M21 OWASP security lab sau khi M19–M20 xanh.

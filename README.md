@@ -23,11 +23,14 @@ Nx 22.7.7 · pnpm · TypeScript strict · Next.js 15.2.4 · NestJS · Prisma · 
 | [docs/SECURITY-BASELINE.md](docs/SECURITY-BASELINE.md)                 | Security baseline         |
 | [docs/TESTING.md](docs/TESTING.md)                                     | Chiến lược kiểm thử       |
 | [docs/OWASP-SCENARIOS.md](docs/OWASP-SCENARIOS.md)                     | Kịch bản OWASP API (sau)  |
+| [docs/IMAGE-MATRIX.md](docs/IMAGE-MATRIX.md)                           | Docker image matrix       |
+| [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)                 | Release gate checklist    |
+| [docs/DEPLOYMENT-ORDER.md](docs/DEPLOYMENT-ORDER.md)                   | Deploy order              |
 
 ## Trạng thái
 
 - **M0–M18** ✅ — monorepo, business services, frontends, Docker/Kong, Helm packaging, observability/ops packaging
-- **Tiếp theo:** M19 — xem `docs/HANDOFF-M19.md` (chưa bắt đầu trong phiên M17–M18)
+- **M19** 🔄 — deployment preflight / release readiness (`docs/PROGRESS.md`)
 
 Chi tiết: `docs/PROGRESS.md`.
 

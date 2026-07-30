@@ -1,0 +1,455 @@
+﻿{
+  "schemaVersion": 1,
+  "milestone": "M19",
+  "defaultTag": "0.17.0",
+  "registryNotes": "With DOCKERHUB_USER: {user}/nexatech/{name}:{tag}. Helm prod: {registry}/{imageRepository}/{name}:{tag}.",
+  "forbiddenTags": ["latest"],
+  "images": [
+    {
+      "name": "storefront-web",
+      "kind": "frontend",
+      "repository": "nexatech/storefront-web",
+      "tag": "0.17.0",
+      "dockerfile": "apps/storefront-web/Dockerfile",
+      "buildContext": ".",
+      "port": 3000,
+      "healthEndpoint": "/",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "admin-web",
+      "kind": "frontend",
+      "repository": "nexatech/admin-web",
+      "tag": "0.17.0",
+      "dockerfile": "apps/admin-web/Dockerfile",
+      "buildContext": ".",
+      "port": 3100,
+      "healthEndpoint": "/",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "identity-service",
+      "kind": "backend",
+      "repository": "nexatech/identity-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/identity-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3001,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "identity-service",
+      "kind": "migration",
+      "repository": "nexatech/identity-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "identity-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "customer-service",
+      "kind": "backend",
+      "repository": "nexatech/customer-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/customer-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3002,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "customer-service",
+      "kind": "migration",
+      "repository": "nexatech/customer-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "customer-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "catalog-service",
+      "kind": "backend",
+      "repository": "nexatech/catalog-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/catalog-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3003,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "catalog-service",
+      "kind": "migration",
+      "repository": "nexatech/catalog-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "catalog-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "media-service",
+      "kind": "backend",
+      "repository": "nexatech/media-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/media-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3004,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "media-service",
+      "kind": "migration",
+      "repository": "nexatech/media-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "media-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "inventory-service",
+      "kind": "backend",
+      "repository": "nexatech/inventory-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/inventory-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3005,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "inventory-service",
+      "kind": "migration",
+      "repository": "nexatech/inventory-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "inventory-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "cart-service",
+      "kind": "backend",
+      "repository": "nexatech/cart-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/cart-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3006,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "cart-service",
+      "kind": "migration",
+      "repository": "nexatech/cart-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "cart-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "order-service",
+      "kind": "backend",
+      "repository": "nexatech/order-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/order-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3007,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "order-service",
+      "kind": "migration",
+      "repository": "nexatech/order-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "order-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "payment-service",
+      "kind": "backend",
+      "repository": "nexatech/payment-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/payment-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3008,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "payment-service",
+      "kind": "migration",
+      "repository": "nexatech/payment-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "payment-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "shipping-service",
+      "kind": "backend",
+      "repository": "nexatech/shipping-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/shipping-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3009,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "shipping-service",
+      "kind": "migration",
+      "repository": "nexatech/shipping-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "shipping-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "review-service",
+      "kind": "backend",
+      "repository": "nexatech/review-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/review-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3010,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "review-service",
+      "kind": "migration",
+      "repository": "nexatech/review-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "review-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "warranty-service",
+      "kind": "backend",
+      "repository": "nexatech/warranty-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/warranty-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3011,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "warranty-service",
+      "kind": "migration",
+      "repository": "nexatech/warranty-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "warranty-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "support-service",
+      "kind": "backend",
+      "repository": "nexatech/support-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/support-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3012,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "support-service",
+      "kind": "migration",
+      "repository": "nexatech/support-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "support-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "notification-service",
+      "kind": "backend",
+      "repository": "nexatech/notification-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/notification-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3013,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "notification-service",
+      "kind": "migration",
+      "repository": "nexatech/notification-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "notification-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    },
+    {
+      "name": "reporting-service",
+      "kind": "backend",
+      "repository": "nexatech/reporting-service",
+      "tag": "0.17.0",
+      "dockerfile": "apps/reporting-service/Dockerfile",
+      "buildContext": ".",
+      "port": 3014,
+      "healthEndpoint": "/health/live",
+      "readinessEndpoint": "/health/ready",
+      "migrationCommand": null,
+      "architecture": "linux/amd64",
+      "versionStrategy": "semver or git SHA; never latest"
+    },
+    {
+      "name": "reporting-service",
+      "kind": "migration",
+      "repository": "nexatech/reporting-service",
+      "tag": "0.17.0-migrate",
+      "dockerfile": "deploy/docker/prisma-migrate.Dockerfile",
+      "buildContext": ".",
+      "buildArgs": {
+        "SERVICE_NAME": "reporting-service"
+      },
+      "port": null,
+      "healthEndpoint": null,
+      "migrationCommand": "prisma migrate deploy",
+      "architecture": "linux/amd64",
+      "versionStrategy": "appTag-migrate; never latest"
+    }
+  ]
+}

@@ -246,7 +246,7 @@ Kong: restore previous declarative file from git tag.
 | Backup restore to prod                                         | Destructive if mis-targeted               |
 | `seed-catalog-production.cjs` without `CONFIRM_PRODUCTION=YES` | Guard intentional                         |
 
-Agent **may** run: `helm lint`, `helm template`, `validate-production -DryRun`, `backup-postgres -DryRun`, `check-secret-leak`, local docker smoke, format/lint/test/build.
+Agent **may** run: `helm lint`, `helm template`, `validate-production -DryRun`, `deploy-preflight -DryRun`, `smoke-release -DryRun`, `backup-postgres -DryRun`, `check-secret-leak`, local docker smoke, format/lint/test/build.
 
 ## Post-deploy
 
@@ -254,12 +254,18 @@ Agent **may** run: `helm lint`, `helm template`, `validate-production -DryRun`, 
 - [ ] Confirm backup cron on `.208` ran successfully
 - [ ] Schedule restore drill (test DB)
 - [ ] Archive rendered manifest: `helm get manifest nexatech -n nexatech > release-<tag>.yaml`
+- [ ] Complete `docs/RELEASE-CHECKLIST.md` sign-off
 
 ## Related documents
 
 - `docs/DEPLOYMENT.md`
+- `docs/DEPLOYMENT-ORDER.md`
+- `docs/RELEASE-CHECKLIST.md`
+- `docs/IMAGE-MATRIX.md`
 - `docs/MIGRATIONS.md`
 - `docs/K8S-OPS.md`
 - `docs/BACKUP-RESTORE.md`
 - `docs/SECURITY-BASELINE.md`
-- `docs/HANDOFF-M18.md`
+- `docs/HANDOFF-M19.md`
+- `scripts/deploy-preflight.ps1` / `.sh`
+- `scripts/smoke-release.ps1` / `.sh`
