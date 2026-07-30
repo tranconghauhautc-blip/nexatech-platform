@@ -25,13 +25,13 @@
 
 ## Commits
 
-| Commit      | Nội dung             |
-| ----------- | -------------------- |
-| `8526147`   | M4 catalog + media   |
-| `b38b723`   | M5 inventory-service |
-| `d2155fc`   | M6 cart-service      |
-| `4e2627a`   | M7 order-service     |
-| _(pending)_ | M8 payment-service   |
+| Commit    | Nội dung             |
+| --------- | -------------------- |
+| `8526147` | M4 catalog + media   |
+| `b38b723` | M5 inventory-service |
+| `d2155fc` | M6 cart-service      |
+| `4e2627a` | M7 order-service     |
+| `1245aff` | M8 payment-service   |
 
 ## Apps sau M8 (15 projects)
 
