@@ -1,0 +1,164 @@
+{{- if .Values.promtail.enabled }}
+{{- if not .Values.loki.enabled }}
+{{- fail "promtail requires loki.enabled=true" }}
+{{- end }}
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-promtail
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "promtail") | nindent 4 }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-promtail
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "promtail") | nindent 4 }}
+rules:
+  - apiGroups: ['']
+    resources: [nodes, nodes/proxy, services, pods]
+    verbs: [get, list, watch]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-promtail
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "promtail") | nindent 4 }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "nexatech-observability.fullname" . }}-promtail
+subjects:
+  - kind: ServiceAccount
+    name: {{ include "nexatech-observability.fullname" . }}-promtail
+    namespace: {{ .Release.Namespace }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-promtail
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "promtail") | nindent 4 }}
+data:
+  promtail.yaml: |
+    server:
+      http_listen_port: 9080
+      grpc_listen_port: 0
+    positions:
+      filename: /run/promtail/positions.yaml
+    clients:
+      - url: http://{{ include "nexatech-observability.fullname" . }}-loki:{{ .Values.loki.service.port }}/loki/api/v1/push
+    scrape_configs:
+      - job_name: kubernetes-pods
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_controller_name]
+            regex: ([0-9a-z-.]+?)(-[0-9a-f]{8,10})?
+            action: replace
+            target_label: __tmp_controller_name
+          - source_labels: [__meta_kubernetes_pod_label_app_kubernetes_io_name, __meta_kubernetes_pod_label_app, __tmp_controller_name, __meta_kubernetes_pod_name]
+            regex: ^;*([^;]+)(;.*)?$
+            action: replace
+            target_label: app
+          - source_labels: [__meta_kubernetes_namespace]
+            action: replace
+            target_label: namespace
+          - source_labels: [__meta_kubernetes_pod_name]
+            action: replace
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_container_name]
+            action: replace
+            target_label: container
+          - replacement: /var/log/pods/*/*/*.log
+            target_label: __path__
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-promtail
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "promtail") | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "nexatech-observability.selectorLabels" (list . "promtail") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech-observability.selectorLabels" (list . "promtail") | nindent 8 }}
+    spec:
+      serviceAccountName: {{ include "nexatech-observability.fullname" . }}-promtail
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if .Values.promtail.securityContext.runAsNonRoot }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        runAsUser: {{ .Values.promtail.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.promtail.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.promtail.securityContext.runAsGroup }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: promtail
+          image: {{ .Values.promtail.image.repository }}:{{ .Values.promtail.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args:
+            - -config.file=/etc/promtail/promtail.yaml
+          ports:
+            - name: http
+              containerPort: 9080
+          env:
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          volumeMounts:
+            - name: config
+              mountPath: /etc/promtail
+            - name: run
+              mountPath: /run/promtail
+            {{- with .Values.promtail.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.promtail.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: [ALL]
+            {{- if .Values.promtail.securityContext.runAsNonRoot }}
+            runAsNonRoot: true
+            runAsUser: {{ .Values.promtail.securityContext.runAsUser }}
+            {{- else }}
+            runAsNonRoot: false
+            runAsUser: 0
+            {{- end }}
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "nexatech-observability.fullname" . }}-promtail
+        - name: run
+          emptyDir: {}
+        {{- with .Values.promtail.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+{{- end }}

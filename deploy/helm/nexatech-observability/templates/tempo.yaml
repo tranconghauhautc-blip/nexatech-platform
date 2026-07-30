@@ -1,0 +1,149 @@
+{{- if .Values.tempo.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-tempo
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "tempo") | nindent 4 }}
+data:
+  tempo.yaml: |
+    server:
+      http_listen_port: {{ .Values.tempo.service.port }}
+    distributor:
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:{{ .Values.tempo.service.otlpGrpcPort }}
+            http:
+              endpoint: 0.0.0.0:{{ .Values.tempo.service.otlpHttpPort }}
+    ingester:
+      trace_idle_period: 10s
+      max_block_bytes: 1048576
+      max_block_duration: 5m
+    compactor:
+      compaction:
+        block_retention: 168h
+    storage:
+      trace:
+        backend: local
+        local:
+          path: /var/tempo/traces
+        wal:
+          path: /var/tempo/wal
+---
+{{- if .Values.tempo.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-tempo
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "tempo") | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.tempo.persistence.size }}
+  {{- $sc := include "nexatech-observability.storageClass" (dict "storageClass" .Values.tempo.persistence.storageClass "Values" .Values) }}
+  {{- if $sc }}
+  storageClassName: {{ $sc }}
+  {{- end }}
+---
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-tempo
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "tempo") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "nexatech-observability.selectorLabels" (list . "tempo") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech-observability.selectorLabels" (list . "tempo") | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: {{ .Values.podSecurityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.tempo.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.tempo.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.tempo.securityContext.fsGroup }}
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: tempo
+          image: {{ .Values.tempo.image.repository }}:{{ .Values.tempo.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args:
+            - -config.file=/etc/tempo/tempo.yaml
+          ports:
+            - name: http
+              containerPort: {{ .Values.tempo.service.port }}
+            - name: otlp-grpc
+              containerPort: {{ .Values.tempo.service.otlpGrpcPort }}
+            - name: otlp-http
+              containerPort: {{ .Values.tempo.service.otlpHttpPort }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/tempo
+            - name: data
+              mountPath: /var/tempo
+          resources:
+            {{- toYaml .Values.tempo.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+            runAsUser: {{ .Values.tempo.securityContext.runAsUser }}
+            runAsNonRoot: true
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "nexatech-observability.fullname" . }}-tempo
+        - name: data
+          {{- if .Values.tempo.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "nexatech-observability.fullname" . }}-tempo
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-tempo
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "tempo") | nindent 4 }}
+spec:
+  type: {{ .Values.tempo.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.tempo.service.port }}
+      targetPort: http
+    - name: otlp-grpc
+      port: {{ .Values.tempo.service.otlpGrpcPort }}
+      targetPort: otlp-grpc
+    - name: otlp-http
+      port: {{ .Values.tempo.service.otlpHttpPort }}
+      targetPort: otlp-http
+  selector:
+    {{- include "nexatech-observability.selectorLabels" (list . "tempo") | nindent 4 }}
+{{- end }}

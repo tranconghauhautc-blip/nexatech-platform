@@ -32,6 +32,12 @@ spec:
         app.kubernetes.io/component: {{ $app.name }}
         app.kubernetes.io/name: {{ $app.name }}
         app.kubernetes.io/instance: {{ $.Release.Name }}
+      {{- if $.Values.observability.prometheusScrape.enabled }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: {{ $app.port | quote }}
+        prometheus.io/path: {{ $.Values.observability.prometheusScrape.path | quote }}
+      {{- end }}
     spec:
       serviceAccountName: {{ include "nexatech.serviceAccountName" $ }}
       terminationGracePeriodSeconds: {{ $.Values.terminationGracePeriodSeconds }}
@@ -72,6 +78,14 @@ spec:
               value: {{ $.Values.config.logLevel | quote }}
             - name: PORT
               value: {{ $app.port | quote }}
+            {{- if and $.Values.config.otel $.Values.config.otel.enabled }}
+            - name: OTEL_SERVICE_NAME
+              value: {{ $app.name | quote }}
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: {{ $.Values.config.otel.exporterEndpoint | quote }}
+            - name: OTEL_EXPORTER_OTLP_PROTOCOL
+              value: {{ $.Values.config.otel.protocol | default "http/protobuf" | quote }}
+            {{- end }}
             {{- if $app.dbEnv }}
             - name: {{ $app.dbEnv }}
               valueFrom:

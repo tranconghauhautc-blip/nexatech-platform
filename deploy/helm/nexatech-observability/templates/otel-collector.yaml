@@ -1,0 +1,160 @@
+{{- if .Values.otelCollector.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-otel-collector
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "otel-collector") | nindent 4 }}
+data:
+  config.yaml: |
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:{{ .Values.otelCollector.service.otlpGrpcPort }}
+          http:
+            endpoint: 0.0.0.0:{{ .Values.otelCollector.service.otlpHttpPort }}
+
+    processors:
+      batch:
+        timeout: 5s
+        send_batch_size: 1024
+      memory_limiter:
+        check_interval: 1s
+        limit_mib: 128
+
+    exporters:
+      {{- if .Values.tempo.enabled }}
+      otlp/tempo:
+        endpoint: {{ include "nexatech-observability.fullname" . }}-tempo:{{ .Values.tempo.service.otlpGrpcPort }}
+        tls:
+          insecure: true
+      {{- end }}
+      {{- if .Values.loki.enabled }}
+      loki:
+        endpoint: http://{{ include "nexatech-observability.fullname" . }}-loki:{{ .Values.loki.service.port }}/loki/api/v1/push
+        tls:
+          insecure: true
+      {{- end }}
+      debug:
+        verbosity: basic
+
+    extensions:
+      health_check:
+        endpoint: 0.0.0.0:13133
+
+    service:
+      extensions: [health_check]
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters:
+            {{- if .Values.tempo.enabled }}
+            - otlp/tempo
+            {{- else }}
+            - debug
+            {{- end }}
+        logs:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters:
+            {{- if .Values.loki.enabled }}
+            - loki
+            {{- end }}
+            - debug
+        metrics:
+          receivers: [otlp]
+          processors: [memory_limiter, batch]
+          exporters:
+            {{- if .Values.prometheus.enabled }}
+            - debug
+            {{- else }}
+            - debug
+            {{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-otel-collector
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "otel-collector") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "nexatech-observability.selectorLabels" (list . "otel-collector") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech-observability.selectorLabels" (list . "otel-collector") | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: {{ .Values.podSecurityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.otelCollector.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.otelCollector.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.otelCollector.securityContext.fsGroup }}
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: otel-collector
+          image: {{ .Values.otelCollector.image.repository }}:{{ .Values.otelCollector.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args:
+            - --config=/etc/otelcol/config.yaml
+          ports:
+            - name: otlp-grpc
+              containerPort: {{ .Values.otelCollector.service.otlpGrpcPort }}
+            - name: otlp-http
+              containerPort: {{ .Values.otelCollector.service.otlpHttpPort }}
+            - name: health
+              containerPort: 13133
+          volumeMounts:
+            - name: config
+              mountPath: /etc/otelcol
+          resources:
+            {{- toYaml .Values.otelCollector.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+            runAsUser: {{ .Values.otelCollector.securityContext.runAsUser }}
+            runAsNonRoot: true
+          livenessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /
+              port: health
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "nexatech-observability.fullname" . }}-otel-collector
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-otel-collector
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "otel-collector") | nindent 4 }}
+spec:
+  type: {{ .Values.otelCollector.service.type }}
+  ports:
+    - name: otlp-grpc
+      port: {{ .Values.otelCollector.service.otlpGrpcPort }}
+      targetPort: otlp-grpc
+    - name: otlp-http
+      port: {{ .Values.otelCollector.service.otlpHttpPort }}
+      targetPort: otlp-http
+  selector:
+    {{- include "nexatech-observability.selectorLabels" (list . "otel-collector") | nindent 4 }}
+{{- end }}

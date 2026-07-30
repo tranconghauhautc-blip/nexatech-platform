@@ -1,4 +1,5 @@
 {{- if .Values.networkPolicy.enabled }}
+---
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
@@ -9,6 +10,50 @@ spec:
   podSelector: {}
   policyTypes:
     - Ingress
-  # When enabled: deny all ingress by default. Add allow policies per component.
-  # Off by default for small clusters (networkPolicy.enabled: false).
+---
+# Allow entry nginx to reach app pods on HTTP ports.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "nexatech.fullname" . }}-allow-entry-to-apps
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app.kubernetes.io/component
+        operator: Exists
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/component: entry
+      ports:
+        - protocol: TCP
+          port: 3000
+        - protocol: TCP
+          port: 3100
+        {{- range $key, $app := .Values.apps }}
+        {{- if and $app.enabled $app.port }}
+        - protocol: TCP
+          port: {{ $app.port }}
+        {{- end }}
+        {{- end }}
+---
+# Allow same-namespace app-to-app REST and platform AMQP/Redis/MinIO.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "nexatech.fullname" . }}-allow-intra-namespace
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector: {}
 {{- end }}

@@ -56,9 +56,22 @@ entry:
     metallb.universe.tf/allow-shared-ip: nexatech-entry
   exposeApiPorts: true
 
+observability:
+  enabled: false
+  prometheusScrape:
+    enabled: true
+    path: /health/live
+
+networkPolicy:
+  enabled: true
+
 config:
   logLevel: info
   nodeEnv: production
   publicStorefrontUrl: 'https://CHANGE_ME_PUBLIC_HOST'
   publicAdminUrl: 'https://CHANGE_ME_PUBLIC_HOST/admin'
   publicApiUrl: 'https://CHANGE_ME_PUBLIC_HOST'
+  otel:
+    enabled: true
+    exporterEndpoint: 'http://nexatech-obs-otel-collector:4318'
+    protocol: 'http/protobuf'

@@ -1,0 +1,24 @@
+# Example local/kind values — persistence disabled where possible.
+global:
+  storageClass: ''
+
+prometheus:
+  persistence:
+    enabled: false
+
+grafana:
+  persistence:
+    enabled: false
+
+loki:
+  persistence:
+    enabled: false
+
+tempo:
+  persistence:
+    enabled: false
+
+# Promtail file scraping needs node log mounts — leave empty on kind; use OTLP -> otel-collector -> Loki.
+promtail:
+  extraVolumes: []
+  extraVolumeMounts: []

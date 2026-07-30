@@ -1,0 +1,43 @@
+NexaTech Observability (M18) — release {{ .Release.Name }}
+
+All UI endpoints are ClusterIP only. Use kubectl port-forward; never expose Grafana via LoadBalancer.
+
+1. Create Grafana admin Secret (required before install):
+   kubectl create secret generic {{ .Values.grafanaAdmin.existingSecret }} \
+     --namespace {{ .Release.Namespace }} \
+     --from-literal={{ .Values.grafanaAdmin.userKey }}=admin \
+     --from-literal={{ .Values.grafanaAdmin.passwordKey }}='CHANGE_ME'
+
+2. Install sibling app chart with Prometheus scrape annotations:
+   helm upgrade --install nexatech ../nexatech \
+     --set observability.prometheusScrape.enabled=true
+
+3. Prometheus pod discovery:
+   Annotate pods with prometheus.io/scrape=true, prometheus.io/port, prometheus.io/path.
+   NexaTech apps default to /health/live until /metrics is implemented.
+
+4. Port-forward (from your workstation):
+{{- if .Values.grafana.enabled }}
+   Grafana:    kubectl port-forward svc/{{ include "nexatech-observability.fullname" . }}-grafana {{ .Values.grafana.service.port }}:{{ .Values.grafana.service.port }} -n {{ .Release.Namespace }}
+{{- end }}
+{{- if .Values.prometheus.enabled }}
+   Prometheus: kubectl port-forward svc/{{ include "nexatech-observability.fullname" . }}-prometheus {{ .Values.prometheus.service.port }}:{{ .Values.prometheus.service.port }} -n {{ .Release.Namespace }}
+{{- end }}
+
+5. OpenTelemetry (ClusterIP — configure apps to send OTLP internally):
+{{- if .Values.otelCollector.enabled }}
+   gRPC: {{ include "nexatech-observability.fullname" . }}-otel-collector:{{ .Values.otelCollector.service.otlpGrpcPort }}
+   HTTP: {{ include "nexatech-observability.fullname" . }}-otel-collector:{{ .Values.otelCollector.service.otlpHttpPort }}
+{{- end }}
+
+6. Promtail DaemonSet ships container logs to Loki when extraVolumes/extraVolumeMounts
+   provide node log directory access. Chart defaults use emptyDir only (no hostPath).
+   On kind/local, prefer OTLP logs via otel-collector; add log volume overlays in production.
+
+Components enabled:
+{{- if .Values.prometheus.enabled }}  - Prometheus{{ end }}
+{{- if .Values.grafana.enabled }}  - Grafana{{ end }}
+{{- if .Values.loki.enabled }}  - Loki{{ end }}
+{{- if .Values.promtail.enabled }}  - Promtail{{ end }}
+{{- if .Values.tempo.enabled }}  - Tempo{{ end }}
+{{- if .Values.otelCollector.enabled }}  - OpenTelemetry Collector{{ end }}

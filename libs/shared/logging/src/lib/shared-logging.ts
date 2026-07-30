@@ -32,6 +32,58 @@ const LEVEL_WEIGHT: Record<LogLevel, number> = {
   trace: 10,
 };
 
+/** Keys that must never appear in structured logs (token, password, OTP, payment signature, etc.). */
+const SENSITIVE_KEY_PATTERN =
+  /(password|passwd|secret|token|authorization|api[_-]?key|otp|refresh|access[_-]?token|vnp[_-]?secure|hash[_-]?secret|signature|private[_-]?key|cookie|session)/i;
+
+export function redactSensitiveData(
+  input: Record<string, unknown> | undefined,
+): Record<string, unknown> | undefined {
+  if (!input) {
+    return undefined;
+  }
+  const out: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(input)) {
+    if (SENSITIVE_KEY_PATTERN.test(key)) {
+      out[key] = '[REDACTED]';
+      continue;
+    }
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      out[key] = redactSensitiveData(value as Record<string, unknown>);
+      continue;
+    }
+    out[key] = value;
+  }
+  return out;
+}
+
+/** Resolve min log level from env (LOG_LEVEL), default info. */
+export function resolveLogLevelFromEnv(
+  env: NodeJS.ProcessEnv = process.env,
+): LogLevel {
+  const raw = (env['LOG_LEVEL'] ?? 'info').toLowerCase();
+  if (raw in LEVEL_WEIGHT) {
+    return raw as LogLevel;
+  }
+  return 'info';
+}
+
+/** OpenTelemetry / collector env (no hard-coded production host). */
+export function readOpenTelemetryEnv(env: NodeJS.ProcessEnv = process.env): {
+  enabled: boolean;
+  endpoint?: string;
+  serviceName?: string;
+  protocol?: string;
+} {
+  const endpoint = env['OTEL_EXPORTER_OTLP_ENDPOINT'];
+  return {
+    enabled: Boolean(endpoint) || env['OTEL_SDK_DISABLED'] === 'false',
+    endpoint,
+    serviceName: env['OTEL_SERVICE_NAME'],
+    protocol: env['OTEL_EXPORTER_OTLP_PROTOCOL'] ?? 'http/protobuf',
+  };
+}
+
 export function createCorrelationIds(input?: {
   requestId?: string;
   traceId?: string;
@@ -90,7 +142,7 @@ export function createLogger(
       service,
       requestId,
       traceId,
-      data: { ...rest, ...data },
+      data: redactSensitiveData({ ...rest, ...data }),
     });
   };
 

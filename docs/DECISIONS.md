@@ -304,3 +304,13 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Agent boundary (BLOCKED_EXTERNAL):** Agent không chạy `kubectl apply`, `helm upgrade --install` lên cluster thật khi chưa xác minh kube-context và phê duyệt operator. Validation unattended giới hạn: `helm lint`, `helm template`, Docker build/smoke local, `kubectl apply --dry-run=client` nếu có kubeconfig — không mutate production.
 - **Lý do:** Tách packaging K8s khỏi business logic M0–M16; một VIP ổn định cho Kong VM; migrate an toàn qua hook Job; giữ secret và deploy thật ngoài git/CI unattended.
 - **Hệ quả:** M18 tập trung observability, backup/runbook, security baseline và deploy thật lên infra `.208/.209/.205–.207/.204`. OWASP 20 scenarios vẫn sau M18 (M21 roadmap).
+
+## ADR-037 — Observability stack + log redaction (M18)
+
+- **Quyết định:** Observability tách chart `deploy/helm/nexatech-observability` **0.18.0**: Prometheus, Grafana, Loki, Promtail, Tempo, OpenTelemetry Collector. Tất cả Service **ClusterIP** (Grafana/management không public). Resource requests/limits thấp cho cluster 3 node.
+- App chart annotate Prometheus scrape (`/health/live` path sẵn; `/metrics` có thể bổ sung sau). Env OTEL (`OTEL_EXPORTER_OTLP_ENDPOINT`, `OTEL_SERVICE_NAME`) inject khi `config.otel.enabled` — **không** hard-code host production trong source.
+- Structured logging (`@nexatech/shared-logging`): redaction tự động password/token/OTP/signature; `LOG_LEVEL` configurable.
+- **Không** thêm OpenTelemetry SDK npm lớn trong M18 (tránh nâng dependency lớn); collector + env sẵn sàng để gắn SDK sau.
+- NetworkPolicy production: `networkPolicy.enabled: true` trong `values-production.yaml` (default-deny + allow entry/intra-namespace).
+- Ops: `docs/BACKUP-RESTORE.md`, `docs/K8S-OPS.md`, `docs/DEPLOY-RUNBOOK-PRODUCTION.md`, `docs/SECURITY-BASELINE.md`; scripts validate/backup/seed-production/secret-leak.
+- **Cấm:** intentional OWASP vulnerabilities; restore vào DB prod từ agent unattended; `helm upgrade`/`kubectl apply` thật khi kube-context chưa verified.

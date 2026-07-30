@@ -1,0 +1,151 @@
+{{- if .Values.loki.enabled }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-loki
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "loki") | nindent 4 }}
+data:
+  loki.yaml: |
+    auth_enabled: false
+    server:
+      http_listen_port: {{ .Values.loki.service.port }}
+      grpc_listen_port: 9096
+    common:
+      path_prefix: /loki
+      storage:
+        filesystem:
+          chunks_directory: /loki/chunks
+          rules_directory: /loki/rules
+      replication_factor: 1
+      ring:
+        kvstore:
+          store: inmemory
+    schema_config:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: index_
+            period: 24h
+    storage_config:
+      tsdb_shipper:
+        active_index_directory: /loki/index
+        cache_location: /loki/index_cache
+      filesystem:
+        directory: /loki/chunks
+    limits_config:
+      retention_period: 168h
+      reject_old_samples: true
+      reject_old_samples_max_age: 168h
+    compactor:
+      working_directory: /loki/compactor
+---
+{{- if .Values.loki.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-loki
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "loki") | nindent 4 }}
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: {{ .Values.loki.persistence.size }}
+  {{- $sc := include "nexatech-observability.storageClass" (dict "storageClass" .Values.loki.persistence.storageClass "Values" .Values) }}
+  {{- if $sc }}
+  storageClassName: {{ $sc }}
+  {{- end }}
+---
+{{- end }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-loki
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "loki") | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "nexatech-observability.selectorLabels" (list . "loki") | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech-observability.selectorLabels" (list . "loki") | nindent 8 }}
+    spec:
+      {{- with .Values.global.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        runAsNonRoot: {{ .Values.podSecurityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.loki.securityContext.runAsUser }}
+        runAsGroup: {{ .Values.loki.securityContext.runAsGroup }}
+        fsGroup: {{ .Values.loki.securityContext.fsGroup }}
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: loki
+          image: {{ .Values.loki.image.repository }}:{{ .Values.loki.image.tag }}
+          imagePullPolicy: {{ .Values.global.imagePullPolicy }}
+          args:
+            - -config.file=/etc/loki/loki.yaml
+            - -target=all
+          ports:
+            - name: http
+              containerPort: {{ .Values.loki.service.port }}
+          volumeMounts:
+            - name: config
+              mountPath: /etc/loki
+            - name: data
+              mountPath: /loki
+          resources:
+            {{- toYaml .Values.loki.resources | nindent 12 }}
+          securityContext:
+            {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+            runAsUser: {{ .Values.loki.securityContext.runAsUser }}
+            runAsNonRoot: true
+          livenessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 45
+            periodSeconds: 15
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: {{ include "nexatech-observability.fullname" . }}-loki
+        - name: data
+          {{- if .Values.loki.persistence.enabled }}
+          persistentVolumeClaim:
+            claimName: {{ include "nexatech-observability.fullname" . }}-loki
+          {{- else }}
+          emptyDir: {}
+          {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech-observability.fullname" . }}-loki
+  labels:
+    {{- include "nexatech-observability.componentLabels" (list . "loki") | nindent 4 }}
+spec:
+  type: {{ .Values.loki.service.type }}
+  ports:
+    - name: http
+      port: {{ .Values.loki.service.port }}
+      targetPort: http
+  selector:
+    {{- include "nexatech-observability.selectorLabels" (list . "loki") | nindent 4 }}
+{{- end }}

@@ -529,9 +529,22 @@ entry:
 networkPolicy:
   enabled: false
 
+# Observability is provided by the sibling Helm chart (not bundled here):
+#   deploy/helm/nexatech-observability
+# Install separately and enable prometheusScrape so app pods expose metrics annotations.
+observability:
+  enabled: false
+  prometheusScrape:
+    enabled: true
+    path: /health/live
+
 config:
   logLevel: info
   nodeEnv: production
   publicStorefrontUrl: ''
   publicAdminUrl: ''
   publicApiUrl: ''
+  otel:
+    enabled: false
+    exporterEndpoint: ''
+    protocol: http/protobuf

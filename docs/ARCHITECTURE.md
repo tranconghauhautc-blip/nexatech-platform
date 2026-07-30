@@ -146,12 +146,13 @@ MinIO dùng object storage cho media.
 - JWT plugin (identity-issued)
 - Health upstream checks
 
-## 10. Observability tối thiểu
+## 10. Observability
 
-- Structured logging với `requestId`, `traceId`
+- Structured JSON logging với `requestId`, `traceId` (`@nexatech/shared-logging`); redaction secret/token/OTP
 - Unified error envelope
 - Health/readiness/liveness mỗi service
 - Audit log cho hành động nhạy cảm (reporting-service + emit event)
+- **M18:** chart `deploy/helm/nexatech-observability` — Prometheus, Grafana, Loki, Tempo, OTel Collector (ClusterIP); scrape annotations trên app pods; OTEL env khi bật
 
 ## 11. Deployment
 
