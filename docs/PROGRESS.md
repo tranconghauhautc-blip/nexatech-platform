@@ -54,7 +54,7 @@
 | `b65e901`   | M14 docs hash            |
 | `2105088`   | M15 storefront + admin   |
 | `811075a`   | M15 docs hash            |
-| _(pending)_ | M16 Docker/Kong/E2E      |
+| `042d846`   | M16 Docker/Kong/E2E      |
 
 ## M16 đã hoàn thành
 
@@ -79,6 +79,7 @@ Next.js **15.2.4**.
 
 - Docker backends + Kong + Playwright + catalog seed + identity/customer Prisma.
 - E2E 11/11; lint/test/build monorepo xanh.
+- Commit `042d846`.
 - HANDOFF-M17 sẵn sàng; **không bắt đầu M17**.
 
 ### 2026-07-30 — M16 start
