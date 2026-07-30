@@ -99,7 +99,7 @@ done < <(rg -n --no-heading -i \
 while IFS= read -r envfile; do
   [[ -z "$envfile" ]] && continue
   case "$envfile" in
-    *.example|*.sample|*.template) continue ;;
+    *.example|*.sample|*.template|.env.nx|*/.env.nx) continue ;;
   esac
   if git -C "$ROOT" ls-files --error-unmatch "$envfile" >/dev/null 2>&1; then
     log "TRACKED ENV FILE: ${envfile} (should be gitignored)"
