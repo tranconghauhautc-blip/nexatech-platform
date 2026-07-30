@@ -12,7 +12,7 @@ Ngày bàn giao: **2026-07-30**
 | -------------- | ---------------------------------------------- |
 | Path           | `d:\NexaTech\nexatech-platform`                |
 | Branch         | `main`                                         |
-| Milestone xong | M0–**M13** (sau khi format/lint/test/build OK) |
+| Milestone xong | M0–**M13** (`b353d67`, sau format/lint/test/build OK) |
 | Milestone tiếp | **M14** — reporting-service (dự kiến)          |
 | Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`  |
 

@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M13 — hoàn tất (chờ commit hash docs)
+- **Milestone đang làm:** M14 — chưa bắt đầu
 - **Milestone đã hoàn thành gần nhất:** M13 (notification-service)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — đang chạy
+- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (20 projects; notification 61/61 incl. Prisma integration Postgres Compose)
 
 ## Roadmap milestone
 
@@ -45,6 +45,7 @@
 | `c5a1627` | M11 docs hash        |
 | `7c1a582` | M12 support-service  |
 | `194cdec` | M12 docs hash        |
+| `b353d67` | M13 notification-service |
 
 ## Apps sau M13 (20 projects)
 
@@ -113,7 +114,8 @@ Rồi: `cd apps/notification-service && npx prisma migrate deploy && npx prisma 
 
 - notification-service hoàn chỉnh: in-app + email, RabbitMQ consumer/inbox, templates tiếng Việt, SMTP env.
 - Shared contracts/errors + ADR-032; support outbox payload enrichment; docs + HANDOFF-M14.
-- Test notification 61/61 (integration Postgres Compose); format/lint/test/build monorepo.
+- Test notification 61/61 (integration Postgres Compose); format/lint/test/build monorepo xanh.
+- Commit `b353d67`.
 - **Không bắt đầu M14 trong phiên này**.
 
 ### 2026-07-30 — M13 start
