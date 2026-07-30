@@ -743,3 +743,136 @@ export interface OrderDto {
   createdAt: string;
   updatedAt: string;
 }
+
+/** Payment lifecycle status (payment-service owned) */
+export const paymentLifecycleStatusSchema = z.enum([
+  'CREATED',
+  'PENDING',
+  'PROCESSING',
+  'PAID',
+  'FAILED',
+  'CANCELLED',
+  'EXPIRED',
+  'REFUND_PENDING',
+  'REFUNDED',
+  'PARTIALLY_REFUNDED',
+]);
+export type PaymentLifecycleStatus = z.infer<
+  typeof paymentLifecycleStatusSchema
+>;
+
+export const paymentProviderSchema = z.enum(['COD', 'MOCK', 'VNPAY']);
+export type PaymentProviderCode = z.infer<typeof paymentProviderSchema>;
+
+export const refundStatusSchema = z.enum([
+  'REQUESTED',
+  'PENDING',
+  'SUCCEEDED',
+  'FAILED',
+  'CANCELLED',
+]);
+export type RefundStatus = z.infer<typeof refundStatusSchema>;
+
+export const createPaymentRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120),
+  idempotencyKey: z.string().trim().min(8).max(120),
+  /** Optional — nếu bỏ trống dùng paymentMethod của order */
+  method: paymentMethodSchema.optional(),
+  returnUrl: z.string().url().optional(),
+});
+export type CreatePaymentRequest = z.infer<typeof createPaymentRequestSchema>;
+
+export const cancelPaymentRequestSchema = z.object({
+  reason: z.string().trim().min(1).max(500).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CancelPaymentRequest = z.infer<typeof cancelPaymentRequestSchema>;
+
+export const createRefundRequestSchema = z.object({
+  amount: z.number().int().positive().max(Number.MAX_SAFE_INTEGER),
+  reason: z.string().trim().min(1).max(500),
+  idempotencyKey: z.string().trim().min(8).max(120),
+});
+export type CreateRefundRequest = z.infer<typeof createRefundRequestSchema>;
+
+export const listPaymentsQuerySchema = paginationQuerySchema.extend({
+  status: paymentLifecycleStatusSchema.optional(),
+  provider: paymentProviderSchema.optional(),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z
+    .enum(['createdAt_desc', 'createdAt_asc', 'amount_desc', 'amount_asc'])
+    .default('createdAt_desc'),
+});
+export type ListPaymentsQuery = z.infer<typeof listPaymentsQuerySchema>;
+
+export const syncOrderPaymentRequestSchema = z.object({
+  paymentStatus: paymentStatusSchema,
+  paymentReference: z.string().trim().min(1).max(120).optional(),
+  paidAt: z.string().datetime().optional(),
+  confirmOrder: z.boolean().optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type SyncOrderPaymentRequest = z.infer<
+  typeof syncOrderPaymentRequestSchema
+>;
+
+export interface PaymentAttemptDto {
+  id: string;
+  attemptNumber: number;
+  status: string;
+  providerReference?: string;
+  failureCode?: string;
+  failureMessage?: string;
+  createdAt: string;
+}
+
+export interface PaymentTransactionDto {
+  id: string;
+  type: string;
+  amount: number;
+  currency: string;
+  providerTxnId?: string;
+  status: string;
+  createdAt: string;
+}
+
+export interface RefundDto {
+  id: string;
+  paymentId: string;
+  amount: number;
+  currency: string;
+  reason: string;
+  status: RefundStatus;
+  refundReference: string;
+  providerRefundId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentDto {
+  id: string;
+  paymentReference: string;
+  orderId: string;
+  orderCode: string;
+  customerId: string;
+  provider: PaymentProviderCode;
+  method: PaymentMethod;
+  status: PaymentLifecycleStatus;
+  amount: number;
+  currency: 'VND';
+  amountRefunded: number;
+  checkoutUrl?: string;
+  expiresAt?: string;
+  paidAt?: string;
+  failureCode?: string;
+  failureMessage?: string;
+  version: number;
+  attempts?: PaymentAttemptDto[];
+  transactions?: PaymentTransactionDto[];
+  refunds?: RefundDto[];
+  createdAt: string;
+  updatedAt: string;
+}

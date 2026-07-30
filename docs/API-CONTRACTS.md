@@ -249,6 +249,7 @@ Env tích hợp: `CART_SERVICE_URL`, `CATALOG_SERVICE_URL`, `INVENTORY_SERVICE_U
 | GET    | `/api/v1/orders/:orderId`                    | Chi tiết đơn (ownership)                                      |
 | POST   | `/api/v1/orders/:orderId/cancel`             | Hủy khi trạng thái cho phép                                   |
 | POST   | `/api/v1/orders/:orderId/confirm`            | Xác nhận (AWAITING_PAYMENT → CONFIRMED)                       |
+| POST   | `/api/v1/orders/:orderId/payment-sync`       | Đồng bộ paymentStatus từ payment-service (Staff+)             |
 | POST   | `/api/v1/orders/:orderId/status-transitions` | Transition (staff qua admin; customer hạn chế)                |
 | GET    | `/api/v1/orders/:orderId/status-history`     | Lịch sử trạng thái                                            |
 | GET    | `/api/v1/orders/:orderId/packages`           | Danh sách kiện                                                |
@@ -267,11 +268,82 @@ Create order body chỉ nhận: `idempotencyKey`, `deliveryMethod`, `paymentMeth
 
 Money: integer VND; `discountTotal` luôn `0`.
 
+`payment-sync` body: `paymentStatus`, `paymentReference?`, `paidAt?`, `confirmOrder?`, `idempotencyKey?`. Khi `confirmOrder=true` + `PAID` và order đang `AWAITING_PAYMENT` → chuyển `CONFIRMED`.
+
 ---
 
-## Các service sau M7 (kế hoạch — chưa code)
+## payment-service — **đã implement (M8)**
 
-Payment, shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Port mặc định: `3008` (`PAYMENT_PORT`). Persistence: Prisma + `PAYMENT_DATABASE_URL`; outbox → RabbitMQ khi có `RABBITMQ_URL`; InMemory chỉ unit/`NODE_ENV=test`.
+
+Headers:
+
+- `x-user-id` — customer / actor (không tin customerId từ body)
+- `x-user-roles` — comma-separated roles (Staff+ cho admin)
+
+Env: `ORDER_SERVICE_URL`, `RABBITMQ_URL`, `REDIS_URL` (optional), `PAYMENT_PUBLIC_BASE_URL`, `PAYMENT_RETURN_URL`, `PAYMENT_IPN_URL`, `MOCK_PAYMENT_ENABLED`, `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_PAYMENT_URL`, `VNPAY_RETURN_URL`, `VNPAY_IPN_URL`.
+
+### Customer
+
+| Method | Path                                  | Mô tả                                                            |
+| ------ | ------------------------------------- | ---------------------------------------------------------------- |
+| POST   | `/api/v1/payments`                    | Tạo payment intent từ order (amount lấy từ order, không từ body) |
+| GET    | `/api/v1/payments/:paymentId`         | Chi tiết (ownership)                                             |
+| GET    | `/api/v1/payments/order/:orderId`     | Payment theo order                                               |
+| POST   | `/api/v1/payments/:paymentId/cancel`  | Huỷ payment đang active                                          |
+| POST   | `/api/v1/payments/:paymentId/refunds` | Yêu cầu refund (full/partial)                                    |
+| GET    | `/api/v1/payments/:paymentId/refunds` | Danh sách refund                                                 |
+
+### Mock (chỉ khi `MOCK_PAYMENT_ENABLED` cho phép)
+
+| Method | Path                                       | Mô tả                 |
+| ------ | ------------------------------------------ | --------------------- |
+| POST   | `/api/v1/payments/mock/:paymentId/succeed` | Giả lập thanh toán OK |
+| POST   | `/api/v1/payments/mock/:paymentId/fail`    | Giả lập thất bại      |
+| POST   | `/api/v1/payments/mock/:paymentId/cancel`  | Giả lập huỷ           |
+
+### VNPay Sandbox
+
+| Method   | Path                            | Mô tả                                 |
+| -------- | ------------------------------- | ------------------------------------- |
+| GET/POST | `/api/v1/payments/vnpay/return` | Return URL sau khi khách thanh toán   |
+| GET/POST | `/api/v1/payments/vnpay/ipn`    | IPN callback — verify chữ ký + amount |
+
+IPN response: `{ "RspCode": "00", "Message": "Confirm Success" }` (hoặc mã lỗi theo contract VNPay).
+
+### Admin / Staff
+
+| Method | Path                                        | Mô tả                       |
+| ------ | ------------------------------------------- | --------------------------- |
+| GET    | `/api/v1/admin/payments`                    | List filter/sort/pagination |
+| GET    | `/api/v1/admin/payments/:paymentId`         | Chi tiết                    |
+| POST   | `/api/v1/admin/payments/:paymentId/refunds` | Refund (staff)              |
+
+Create payment body: `orderId`, `idempotencyKey`, `method?`, `returnUrl?` — **không** nhận amount/customerId.
+
+### VNPay Sandbox cấu hình
+
+1. Đăng ký merchant sandbox tại VNPay, lấy `vnp_TmnCode` và `vnp_HashSecret`.
+2. Set `VNPAY_TMN_CODE`, `VNPAY_HASH_SECRET`, `VNPAY_PAYMENT_URL` (sandbox URL).
+3. `VNPAY_RETURN_URL` / `VNPAY_IPN_URL` trỏ về payment-service (public URL khi test thật).
+4. **Amount:** `vnp_Amount = grandTotalVND * 100` (VNPay không có phần thập phân VND nhưng vẫn ×100 theo contract).
+5. Chữ ký HMAC-SHA512 trên query đã sort; không tin callback nếu chữ ký sai; không log secret.
+6. Local không có credential: dùng MOCK (`MOCK_PAYMENT_ENABLED=true`).
+
+### Mock local
+
+```powershell
+$env:MOCK_PAYMENT_ENABLED='true'
+$env:NODE_ENV='development'
+# POST /api/v1/payments { orderId, idempotencyKey, method: "MOCK" }
+# POST /api/v1/payments/mock/:paymentId/succeed
+```
+
+---
+
+## Các service sau M8 (kế hoạch — chưa code)
+
+Shipping, review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

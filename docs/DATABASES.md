@@ -62,7 +62,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | inventory-service    | `nexatech_inventory`    | Prisma + migration ✅ / Prisma repository runtime |
 | cart-service         | `nexatech_cart`         | Prisma + migration ✅ / Prisma + Redis assist     |
 | order-service        | `nexatech_order`        | Prisma + migration ✅ / Prisma + outbox runtime   |
-| payment-service      | `nexatech_payment`      | Later                                             |
+| payment-service      | `nexatech_payment`      | Prisma + migration ✅ / Prisma + outbox runtime   |
 | shipping-service     | `nexatech_shipping`     | Later                                             |
 | review-service       | `nexatech_review`       | Later                                             |
 | warranty-service     | `nexatech_warranty`     | Later                                             |
@@ -125,6 +125,17 @@ Client: `apps/cart-service/src/generated/prisma`. Redis: idempotency NX, lock `c
 - `AuditLog` — thao tác nhạy cảm
 
 Client: `apps/order-service/src/generated/prisma`.
+
+## payment — Prisma models (M8)
+
+- `Payment` — `paymentReference` unique, `orderId`/`orderCode`/`customerId`, provider/method, lifecycle status, `amount`/`amountRefunded` (Int VND), `checkoutUrl`, `expiresAt`, `paidAt`, `version`, `orderSyncedAt`
+- `PaymentAttempt` — lần thử với provider
+- `PaymentTransaction` — CHARGE/REFUND/ADJUSTMENT
+- `PaymentCallback` — payloadHash unique theo provider (chống replay), `signatureValid`, sanitized payload
+- `Refund` — amount/reason/status/`refundReference`, idempotencyKey
+- `PaymentIdempotency` / `OutboxEvent` / `AuditLog`
+
+Client: `apps/payment-service/src/generated/prisma`. Money: integer VND; VNPay `vnp_Amount = amount * 100`.
 
 ## MinIO buckets
 

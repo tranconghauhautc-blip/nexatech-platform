@@ -75,6 +75,20 @@ export class OrderController {
     );
   }
 
+  @Post(':orderId/payment-sync')
+  paymentSync(
+    @Param('orderId') orderId: string,
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-roles') roles?: string,
+    @Body() body?: unknown,
+  ) {
+    return this.orderService.syncPayment(
+      parseActor(userId, roles),
+      orderId,
+      body,
+    );
+  }
+
   @Get(':orderId/status-history')
   statusHistory(
     @Param('orderId') orderId: string,

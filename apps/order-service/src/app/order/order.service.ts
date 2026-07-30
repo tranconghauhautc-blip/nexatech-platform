@@ -6,6 +6,7 @@ import {
   createPaginatedResponse,
   listOrdersQuerySchema,
   orderStatusTransitionRequestSchema,
+  syncOrderPaymentRequestSchema,
   type CancelOrderRequest,
   type ConfirmOrderRequest,
   type CreateOrderRequest,
@@ -18,6 +19,7 @@ import {
   type OrderStatusHistoryDto,
   type OrderStatusTransitionRequest,
   type PaginatedResponse,
+  type SyncOrderPaymentRequest,
 } from '@nexatech/shared-contracts';
 import {
   hasMinimumRole,
@@ -558,6 +560,97 @@ export class OrderService {
     });
     await this.repository.writeAudit('order.confirmed', actorIdOf(actor), {
       orderId: order.id,
+    });
+    await this.outbox.dispatchPending();
+    return this.toDto(updated);
+  }
+
+  async syncPayment(
+    actor: OrderActor,
+    orderId: string,
+    raw: unknown,
+  ): Promise<OrderDto> {
+    this.requireStaff(actor);
+    const input = parseOrThrow(() => syncOrderPaymentRequestSchema.parse(raw));
+    return this.maybeIdempotent(
+      input.idempotencyKey,
+      'order.payment-sync',
+      () => this.doSyncPayment(actor, orderId, input),
+    );
+  }
+
+  private async doSyncPayment(
+    actor: OrderActor,
+    orderId: string,
+    input: SyncOrderPaymentRequest,
+  ): Promise<OrderDto> {
+    const order = await this.requireOrder(orderId);
+
+    const alreadyPaid =
+      order.paymentStatus === 'PAID' && input.paymentStatus === 'PAID';
+    const alreadySame =
+      order.paymentStatus === input.paymentStatus &&
+      (!input.paymentReference ||
+        order.paymentReference === input.paymentReference);
+
+    if (alreadyPaid && alreadySame && !input.confirmOrder) {
+      return this.toDto(order);
+    }
+
+    let toStatus: OrderStatus | undefined;
+    const outboxEvents: OutboxEventInput[] = [];
+    const traceId = createTraceId();
+
+    if (
+      input.confirmOrder &&
+      input.paymentStatus === 'PAID' &&
+      order.status === 'AWAITING_PAYMENT'
+    ) {
+      assertTransition(order.status, 'CONFIRMED');
+      toStatus = 'CONFIRMED';
+      outboxEvents.push(
+        this.buildEvent(EventTypes.ORDER_CONFIRMED, traceId, {
+          orderId: order.id,
+        }),
+      );
+    }
+
+    if (
+      input.paymentStatus === 'REFUNDED' ||
+      input.paymentStatus === 'REFUND_PENDING'
+    ) {
+      // payment-service owns refund; order chỉ ghi nhận contract status
+    }
+
+    const refundContractStatus =
+      input.paymentStatus === 'REFUNDED'
+        ? ('COMPLETED' as const)
+        : input.paymentStatus === 'REFUND_PENDING'
+          ? ('PENDING' as const)
+          : undefined;
+
+    const updated = await this.repository.updatePayment({
+      orderId: order.id,
+      expectedVersion: order.version,
+      paymentStatus: input.paymentStatus,
+      paymentReference: input.paymentReference,
+      paidAt: input.paidAt
+        ? new Date(input.paidAt)
+        : input.paymentStatus === 'PAID'
+          ? new Date()
+          : undefined,
+      refundContractStatus,
+      toStatus,
+      actorId: actorIdOf(actor),
+      actorType: 'staff',
+      reason: 'payment-service sync',
+      outboxEvents,
+    });
+
+    await this.repository.writeAudit('order.payment.synced', actorIdOf(actor), {
+      orderId: order.id,
+      paymentStatus: input.paymentStatus,
+      paymentReference: input.paymentReference,
     });
     await this.outbox.dispatchPending();
     return this.toDto(updated);

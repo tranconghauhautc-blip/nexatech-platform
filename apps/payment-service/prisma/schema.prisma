@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("PAYMENT_DATABASE_URL")
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  PROCESSING
+  PAID
+  FAILED
+  CANCELLED
+  EXPIRED
+  REFUND_PENDING
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentProvider {
+  COD
+  MOCK
+  VNPAY
+}
+
+enum PaymentMethod {
+  COD
+  MOCK
+  VNPAY
+}
+
+enum AttemptStatus {
+  CREATED
+  PENDING
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+enum TransactionType {
+  CHARGE
+  REFUND
+  ADJUSTMENT
+}
+
+enum CallbackStatus {
+  RECEIVED
+  PROCESSED
+  IGNORED
+  FAILED
+}
+
+enum RefundStatus {
+  REQUESTED
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+}
+
+model Payment {
+  id               String          @id @default(uuid())
+  paymentReference String          @unique
+  orderId          String
+  orderCode        String
+  customerId       String
+  provider         PaymentProvider
+  method           PaymentMethod
+  status           PaymentStatus   @default(CREATED)
+  amount           Int
+  currency         String          @default("VND")
+  amountRefunded   Int             @default(0)
+  checkoutUrl      String?
+  expiresAt        DateTime?
+  paidAt           DateTime?
+  failureCode      String?
+  failureMessage   String?
+  version          Int             @default(0)
+  orderSyncedAt    DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  attempts     PaymentAttempt[]
+  transactions PaymentTransaction[]
+  callbacks    PaymentCallback[]
+  refunds      Refund[]
+
+  @@index([orderId])
+  @@index([customerId])
+  @@index([status])
+}
+
+model PaymentAttempt {
+  id                String        @id @default(uuid())
+  paymentId         String
+  payment           Payment       @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  attemptNumber     Int
+  status            AttemptStatus @default(CREATED)
+  providerReference String?
+  failureCode       String?
+  failureMessage    String?
+  createdAt         DateTime      @default(now())
+
+  @@index([paymentId])
+}
+
+model PaymentTransaction {
+  id            String          @id @default(uuid())
+  paymentId     String
+  payment       Payment         @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  type          TransactionType
+  amount        Int
+  currency      String          @default("VND")
+  providerTxnId String?
+  status        String
+  createdAt     DateTime        @default(now())
+
+  @@index([paymentId])
+}
+
+model PaymentCallback {
+  id              String         @id @default(uuid())
+  paymentId       String
+  payment         Payment        @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  provider        PaymentProvider
+  payloadHash     String
+  signatureValid  Boolean
+  rawPayloadJson  Json
+  providerTxnId   String?
+  processed       Boolean        @default(false)
+  resultStatus    CallbackStatus @default(RECEIVED)
+  createdAt       DateTime       @default(now())
+
+  @@unique([provider, payloadHash])
+  @@index([paymentId])
+}
+
+model Refund {
+  id               String       @id @default(uuid())
+  paymentId        String
+  payment          Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount           Int
+  currency         String       @default("VND")
+  reason           String
+  status           RefundStatus @default(REQUESTED)
+  refundReference  String       @unique
+  providerRefundId String?
+  idempotencyKey   String?      @unique
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([paymentId])
+}
+
+model PaymentIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  routingKey  String
+  payloadJson Json
+  traceId     String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([publishedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

@@ -238,6 +238,21 @@ export interface UpdateOrderStatusInput {
   outboxEvents?: OutboxEventInput[];
 }
 
+export interface UpdateOrderPaymentInput {
+  orderId: string;
+  expectedVersion: number;
+  paymentStatus: PaymentStatus;
+  paymentReference?: string;
+  paidAt?: Date | null;
+  refundContractStatus?: RefundContractStatus;
+  /** Khi set, chuyển trạng thái đơn (ví dụ AWAITING_PAYMENT → CONFIRMED) */
+  toStatus?: OrderStatus;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  outboxEvents?: OutboxEventInput[];
+}
+
 export interface ListOrdersFilter {
   customerId?: string;
   status?: OrderStatus;

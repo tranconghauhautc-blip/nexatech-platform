@@ -16,6 +16,7 @@ import type {
   OutboxEventInput,
   OutboxEventRecord,
   RefundContractStatus,
+  UpdateOrderPaymentInput,
   UpdateOrderStatusInput,
 } from './order.types';
 import { PrismaService } from './prisma.service';
@@ -370,6 +371,80 @@ export class PrismaOrderRepository implements OrderRepository {
           reason: input.reason,
         },
       });
+
+      if (input.outboxEvents?.length) {
+        await tx.outboxEvent.createMany({
+          data: input.outboxEvents.map((event) => ({
+            id: createId(),
+            eventType: event.eventType,
+            routingKey: event.routingKey,
+            payloadJson: event.payload as Prisma.InputJsonValue,
+            traceId: event.traceId,
+          })),
+        });
+      }
+
+      const row = await tx.order.findUniqueOrThrow({
+        where: { id: input.orderId },
+        include: ORDER_INCLUDE,
+      });
+      return mapOrder(row);
+    });
+  }
+
+  async updatePayment(input: UpdateOrderPaymentInput): Promise<Order> {
+    return this.prisma.$transaction(async (tx) => {
+      const current = await tx.order.findUnique({
+        where: { id: input.orderId },
+      });
+      if (!current) {
+        throw new AppError({
+          errorCode: ErrorCodes.ORDER_NOT_FOUND,
+          message: 'Không tìm thấy đơn hàng',
+        });
+      }
+
+      const nextStatus = input.toStatus ?? current.status;
+      const updated = await tx.order.updateMany({
+        where: { id: input.orderId, version: input.expectedVersion },
+        data: {
+          status: nextStatus,
+          version: { increment: 1 },
+          updatedAt: new Date(),
+          paymentStatus: input.paymentStatus,
+          ...(input.paymentReference !== undefined && {
+            paymentReference: input.paymentReference,
+          }),
+          ...(input.paidAt !== undefined && { paidAt: input.paidAt }),
+          ...(input.refundContractStatus !== undefined && {
+            refundContractStatus: input.refundContractStatus,
+          }),
+        },
+      });
+      if (updated.count !== 1) {
+        throw new AppError({
+          errorCode: ErrorCodes.ORDER_CONFLICT,
+          message: 'Đơn hàng đã được cập nhật bởi thao tác khác',
+          details: {
+            expectedVersion: input.expectedVersion,
+            actualVersion: current.version,
+          },
+        });
+      }
+
+      if (input.toStatus && input.toStatus !== current.status) {
+        await tx.orderStatusHistory.create({
+          data: {
+            id: createId(),
+            orderId: input.orderId,
+            fromStatus: current.status,
+            toStatus: input.toStatus,
+            actorId: input.actorId,
+            actorType: input.actorType,
+            reason: input.reason,
+          },
+        });
+      }
 
       if (input.outboxEvents?.length) {
         await tx.outboxEvent.createMany({

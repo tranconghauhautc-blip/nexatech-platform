@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -115,6 +115,16 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 
 - **Quyết định:** Interface `PaymentProvider`: `cod`, `mock`, `vnpay-sandbox`.
 - **Lý do:** Thêm cổng mới không đụng core order flow. VNPay chỉ Sandbox cho tới khi có credential production.
+
+## ADR-027 — Payment lifecycle + outbox + order sync (M8)
+
+- **Quyết định:** `payment-service` sở hữu DB `nexatech_payment`. Tạo payment intent từ order thật qua `ORDER_SERVICE_URL` — không tin amount/customerId từ client. State machine: CREATED→PENDING→PROCESSING→PAID/FAILED/CANCELLED/EXPIRED + refund states. Money: Int VND; VNPay amount = VND × 100.
+- COD: PENDING khi tạo; PAID khi thu tiền (giao hàng), chống double mark.
+- MOCK: chỉ khi `MOCK_PAYMENT_ENABLED` (tắt mặc định ở production).
+- VNPay: HMAC-SHA512, verify signature/amount/reference, callback idempotent + payloadHash chống replay; không log secret.
+- Refund: domain full/partial + mock adapter; VNPay refund thật để sau khi có sandbox contract/credential.
+- Order sync: REST `POST /orders/:id/payment-sync` (Staff+); local TX + outbox; `orderSyncedAt` chống cập nhật hai lần. Không tự huỷ order khi payment fail/expire.
+- Auth tạm: `x-user-id` / `x-user-roles` (giống M4–M7).
 
 ## ADR-010 — Shipping adapters
 

@@ -11,6 +11,7 @@ import type {
   OrderStatusHistoryEntry,
   OutboxEventInput,
   OutboxEventRecord,
+  UpdateOrderPaymentInput,
   UpdateOrderStatusInput,
 } from './order.types';
 
@@ -24,6 +25,7 @@ export interface OrderRepository {
   findByCode(orderCode: string): Promise<Order | null>;
   list(filter: ListOrdersFilter): Promise<ListOrdersResult>;
   updateStatus(input: UpdateOrderStatusInput): Promise<Order>;
+  updatePayment(input: UpdateOrderPaymentInput): Promise<Order>;
   markInventoryReleased(
     orderId: string,
     expectedVersion: number,
@@ -287,6 +289,53 @@ export class InMemoryOrderRepository implements OrderRepository {
       createdAt: order.updatedAt,
     });
     this.history.set(order.id, entries);
+
+    if (input.outboxEvents?.length) {
+      await this.addOutbox(input.outboxEvents);
+    }
+
+    return cloneOrder(order);
+  }
+
+  async updatePayment(input: UpdateOrderPaymentInput): Promise<Order> {
+    const order = this.orders.get(input.orderId);
+    if (!order) {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_NOT_FOUND,
+        message: 'Không tìm thấy đơn hàng',
+      });
+    }
+    assertVersion(order, input.expectedVersion);
+
+    const fromStatus = order.status;
+    if (input.toStatus && input.toStatus !== order.status) {
+      order.status = input.toStatus;
+      const entries = this.history.get(order.id) ?? [];
+      entries.push({
+        id: createId(),
+        orderId: order.id,
+        fromStatus,
+        toStatus: input.toStatus,
+        actorId: input.actorId,
+        actorType: input.actorType,
+        reason: input.reason,
+        createdAt: new Date(),
+      });
+      this.history.set(order.id, entries);
+    }
+
+    order.paymentStatus = input.paymentStatus;
+    if (input.paymentReference !== undefined) {
+      order.paymentReference = input.paymentReference;
+    }
+    if (input.paidAt !== undefined) {
+      order.paidAt = input.paidAt ?? undefined;
+    }
+    if (input.refundContractStatus !== undefined) {
+      order.refundContractStatus = input.refundContractStatus;
+    }
+    order.version += 1;
+    order.updatedAt = new Date();
 
     if (input.outboxEvents?.length) {
       await this.addOutbox(input.outboxEvents);

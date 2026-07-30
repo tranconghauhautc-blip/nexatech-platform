@@ -486,6 +486,36 @@ describe('OrderService', () => {
     expect(confirmed.status).toBe('CONFIRMED');
   });
 
+  it('syncs payment status from payment-service and confirms AWAITING_PAYMENT order', async () => {
+    const { catalog, cart, inventory, service } = setup();
+    const sku = seedSku(catalog);
+    inventory.seed(sku.skuCode, 5);
+    seedCartForSku(cart, 'cust-sync', sku, 1);
+    const dto = await service.createOrder(
+      customerActor('cust-sync'),
+      createRequest({ idempotencyKey: 'idem-sync', paymentMethod: 'MOCK' }),
+    );
+    expect(dto.status).toBe('AWAITING_PAYMENT');
+
+    const synced = await service.syncPayment(staffActor(), dto.id, {
+      paymentStatus: 'PAID',
+      paymentReference: 'PAY-REF-1',
+      confirmOrder: true,
+      idempotencyKey: 'idem-payment-sync-1',
+    });
+    expect(synced.status).toBe('CONFIRMED');
+    expect(synced.paymentStatus).toBe('PAID');
+    expect(synced.paymentReference).toBe('PAY-REF-1');
+    expect(synced.paidAt).toBeDefined();
+
+    const again = await service.syncPayment(staffActor(), dto.id, {
+      paymentStatus: 'PAID',
+      paymentReference: 'PAY-REF-1',
+      idempotencyKey: 'idem-payment-sync-1',
+    });
+    expect(again.version).toBe(synced.version);
+  });
+
   it('lets staff move a confirmed order through processing -> ready -> shipped -> delivered', async () => {
     const { catalog, cart, inventory, publisher, service } = setup();
     const sku = seedSku(catalog);

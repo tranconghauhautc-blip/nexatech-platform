@@ -60,9 +60,18 @@
 | `order.returned`                 | `order.order.returned`                   | order               | inventory, notification, reporting          |
 | `order.failed`                   | `order.order.failed`                     | order               | inventory, notification, reporting          |
 | `order.fulfilled`                | `order.order.fulfilled`                  | order               | alias legacy ≈ delivered                    |
-| `payment.initiated`              | `payment.payment.initiated`              | payment             | order, reporting                            |
-| `payment.succeeded`              | `payment.payment.succeeded`              | payment             | order, notification, reporting              |
+| `payment.initiated`              | `payment.payment.initiated`              | payment             | order, reporting (legacy alias)             |
+| `payment.created`                | `payment.payment.created`                | payment             | order, reporting                            |
+| `payment.pending`                | `payment.payment.pending`                | payment             | order, reporting                            |
+| `payment.processing`             | `payment.payment.processing`             | payment             | order, reporting                            |
+| `payment.paid`                   | `payment.payment.paid`                   | payment             | order, notification, reporting              |
+| `payment.succeeded`              | `payment.payment.succeeded`              | payment             | order, notification, reporting (legacy)     |
 | `payment.failed`                 | `payment.payment.failed`                 | payment             | order, notification                         |
+| `payment.cancelled`              | `payment.payment.cancelled`              | payment             | order, reporting                            |
+| `payment.expired`                | `payment.payment.expired`                | payment             | order, reporting                            |
+| `payment.refund.requested`       | `payment.payment.refund.requested`       | payment             | order, notification, reporting              |
+| `payment.refunded`               | `payment.payment.refunded`               | payment             | order, notification, reporting              |
+| `payment.partially-refunded`     | `payment.payment.partially-refunded`     | payment             | order, notification, reporting              |
 | `shipment.created`               | `shipping.shipment.created`              | shipping            | order, notification                         |
 | `shipment.in_transit`            | `shipping.shipment.in_transit`           | shipping            | order, notification                         |
 | `shipment.delivered`             | `shipping.shipment.delivered`            | shipping            | order, notification, warranty               |
@@ -84,10 +93,18 @@
 
 ## Outbox pattern
 
-Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
+Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)** và **payment-service (M8)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
 
 ## Order consume / gọi sync (M7)
 
 - Sync REST: cart refresh/validate/convert; catalog SKU price; inventory reserve/release.
 - Events inventory (`reservation.created` / `released` / `stock.committed`) do inventory-service emit; order gọi REST reserve/release và lưu `reservationId`.
 - Cart convert emit `cart.converted` sau khi order local TX + reservation thành công.
+
+## Payment integrate (M8)
+
+- Sync REST tới order: `GET /orders/:id`, `POST /orders/:id/payment-sync` (Staff+).
+- Khi `payment.paid`: cập nhật order `paymentStatus=PAID` + `confirmOrder` nếu cần; không distributed TX — local outbox + retry-safe (`orderSyncedAt`).
+- Khi fail/expire: cập nhật payment status + event; **không** tự huỷ order.
+- Consume hooks (method): `order.cancelled`, `order.delivered` (COD thu tiền khi giao).
+- Publish chỉ sau local transaction thành công (outbox).
