@@ -6,7 +6,7 @@
 - **Milestone đã hoàn thành gần nhất:** M8
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — (đang chạy sau M8)
+- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (sau M8)
 
 ## Roadmap milestone
 
