@@ -39,6 +39,7 @@
 | `7c203c6` | M9 docs hash         |
 | `631cd88` | M10 review-service   |
 | `d7d4905` | M10 docs hash        |
+| `a60e754` | M11 warranty-service |
 
 ## Apps sau M11 (18 projects)
 
