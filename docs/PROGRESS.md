@@ -2,61 +2,56 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** _(sẵn sàng M21 — M20 hoàn tất)_
-- **Milestone đã hoàn thành gần nhất:** M20 (performance / reliability / DR)
+- **Milestone đang làm:** _(roadmap M0–M21 hoàn tất — không bắt đầu milestone mới)_
+- **Milestone đã hoàn thành gần nhất:** M21 (security lab / OWASP)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra DoD M20:** k6 assets + validate; resilience/backup/alerts dry-run; format/lint/test/build/e2e; secret-leak
+- **Kiểm tra DoD M21:** format/lint/test/build/e2e; security secure+lab+validate; helm prod+lab; secret-leak; preflight dry-run
 
 ## Roadmap milestone
 
-| ID     | Milestone                                        | Trạng thái | Ghi chú               |
-| ------ | ------------------------------------------------ | ---------- | --------------------- |
-| M0–M19 | …                                                | ✅ Done    | M19 `2fad006`         |
-| M20    | Performance / reliability / DR                   | ✅ Done    | ADR-039               |
-| M21    | Security lab / OWASP intentional vulnerabilities | ⏳ Pending | `docs/HANDOFF-M21.md` |
+| ID     | Milestone                                        | Trạng thái | Ghi chú                |
+| ------ | ------------------------------------------------ | ---------- | ---------------------- |
+| M0–M18 | …                                                | ✅ Done    |                        |
+| M19    | Deployment preflight / release readiness         | ✅ Done    | `2fad006`              |
+| M20    | Performance / reliability / DR                   | ✅ Done    | `53247e4`              |
+| M21    | Security lab / OWASP intentional vulnerabilities | ✅ Done    | ADR-040                |
 
 ## Commits
 
-| Commit    | Nội dung                        |
-| --------- | ------------------------------- |
-| `2fad006` | M19 preflight/release readiness |
-| `f202367` | M19 docs hash                   |
-| _(TBD)_   | M20 performance/reliability/DR  |
+| Commit    | Nội dung                       |
+| --------- | ------------------------------ |
+| `2fad006` | M19 preflight/release          |
+| `f202367` | M19 docs hash                  |
+| `53247e4` | M20 performance/reliability/DR |
+| _(TBD)_   | M21 security lab               |
 
-## M20 checklist (Done)
+## M21 checklist (Done)
 
-- [x] k6 performance scenarios + thresholds
-- [x] Resilience test plans / failure-mode expectations
-- [x] Backup/restore validation (isolated / dry-run)
-- [x] DR RPO/RTO draft
-- [x] SLI/SLO draft
-- [x] Alert readiness (static rules/docs)
-- [x] Incident / performance / resilience / DR runbooks
-- [x] Docs + ADR-039 + HANDOFF-M21
+- [x] Production vs security-lab Helm profiles
+- [x] Lab image tags / build args (identity + build script)
+- [x] 22 intentional vulnerabilities (lab-only gate)
+- [x] PoC + secure regression tests
+- [x] Lab isolation docs + NetworkPolicy path
+- [x] OWASP-SCENARIOS + FINAL-HANDOFF + checklists
 - [ ] Feature commit + docs hash _(in progress)_
 
 ## BLOCKED_EXTERNAL
 
-- helm upgrade / kubectl apply cluster thật
-- docker push
-- Kong apply VM `.209`
-- Live chaos / pod kill trên cluster thật
-- Restore vào DB production
-- Citrix ADC / Imperva
-
-## Workaround
-
-Nx **22.7.7**, `NX_SKIP_NATIVE_FILE_CACHE=true`, `NX_DAEMON=false`.
-Next.js **15.2.4**.
+- Citrix ADC whitelist / Imperva lab policy
+- Live K8s/Kong deploy
+- Docker Hub push
+- Production credentials / restore drills
 
 ## Nhật ký
 
+### 2026-07-30 — M21 done
+
+- shared-security-lab policies; wired into order/payment/review/shipping/warranty/support/media/identity/BFF
+- values-security-lab.yaml; lab marker `/health/lab`; security test runners
+- Docs: OWASP-SCENARIOS, SECURITY-LAB-*, FINAL-HANDOFF, DEPLOYMENT-CHECKLIST, KNOWN-LIMITATIONS
+- **Roadmap M0–M21 complete. Do not start a new milestone.**
+
 ### 2026-07-30 — M20 done
 
-- k6 scenarios, resilience/DR/SLO/incident docs, alert YAML, dry-run scripts, ADR-039, HANDOFF-M21.
-- **Không** bắt đầu intentional OWASP lab trong commit M20.
-
-### 2026-07-30 — M19 done
-
-- Feat `2fad006` / docs `f202367`.
+- Feat `53247e4`

@@ -33,6 +33,7 @@ import {
   type Role,
 } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { enforceResourceOwnership } from '@nexatech/shared-security-lab';
 import {
   EventTypes,
   routingKeyFor,
@@ -409,7 +410,14 @@ export class OrderService {
   async getMyOrder(actor: OrderActor, orderId: string): Promise<OrderDto> {
     const customerId = requireCustomerId(actor);
     const order = await this.requireOrder(orderId);
-    if (order.customerId !== customerId) {
+    if (
+      enforceResourceOwnership({
+        resourceOwnerId: order.customerId,
+        actorId: customerId,
+        actorIsStaff: isStaff(actor.roles),
+        staffAllowed: true,
+      }) === 'deny'
+    ) {
       throw new AppError({
         errorCode: ErrorCodes.ORDER_FORBIDDEN,
         message: 'Không có quyền truy cập đơn hàng này',
@@ -1039,11 +1047,14 @@ export class OrderService {
   }
 
   private assertOwnershipOrStaff(order: Order, actor: OrderActor): void {
-    if (isStaff(actor.roles)) {
-      return;
-    }
-    const customerId = actor.customerId ?? actor.userId;
-    if (!customerId || order.customerId !== customerId) {
+    if (
+      enforceResourceOwnership({
+        resourceOwnerId: order.customerId,
+        actorId: actor.customerId ?? actor.userId,
+        actorIsStaff: isStaff(actor.roles),
+        staffAllowed: true,
+      }) === 'deny'
+    ) {
       throw new AppError({
         errorCode: ErrorCodes.ORDER_FORBIDDEN,
         message: 'Không có quyền truy cập đơn hàng này',

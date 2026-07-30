@@ -18,11 +18,15 @@ RUN pnpm exec nx build identity-service --configuration=production
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
+ARG NEXATECH_SECURITY_LAB=0
+ARG NEXATECH_DEPLOY_PROFILE=production
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates curl \
   && rm -rf /var/lib/apt/lists/* \
   && groupadd -g 10001 nexatech && useradd -u 10001 -g nexatech -m nexatech
 ENV NODE_ENV=production
 ENV PORT=3001
+ENV NEXATECH_SECURITY_LAB=${NEXATECH_SECURITY_LAB}
+ENV NEXATECH_DEPLOY_PROFILE=${NEXATECH_DEPLOY_PROFILE}
 COPY --from=build /app/dist/apps/identity-service/ ./
 COPY --from=build /app/apps/identity-service/src/generated/prisma/schema.prisma ./schema.prisma
 COPY --from=build /app/apps/identity-service/src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node ./libquery_engine-debian-openssl-3.0.x.so.node

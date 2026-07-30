@@ -1,7 +1,13 @@
+import { shouldEnforceBffPathSanitize } from '@nexatech/shared-security-lab';
+
 const DEFAULT_TIMEOUT_MS = 15_000;
 
 /** Reject path segments that could enable traversal or SSRF-style abuse. */
 export function sanitizeBffPathParts(parts: string[]): string[] | null {
+  // INTENTIONAL (lab-only): skip sanitization when security-lab profile is active.
+  if (!shouldEnforceBffPathSanitize()) {
+    return parts.map((p) => p || '');
+  }
   if (parts.length === 0) {
     return [];
   }

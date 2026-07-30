@@ -23,6 +23,7 @@ import {
   type SupportTicketTransitionAction,
 } from '@nexatech/shared-contracts';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { enforceResourceOwnership } from '@nexatech/shared-security-lab';
 import {
   EventTypes,
   createEventEnvelope,
@@ -393,7 +394,14 @@ export class SupportService {
       });
     }
     const staff = isStaff(actor);
-    if (ticket.customerId !== actor.userId && !staff) {
+    if (
+      enforceResourceOwnership({
+        resourceOwnerId: ticket.customerId,
+        actorId: actor.userId,
+        actorIsStaff: staff,
+        staffAllowed: true,
+      }) === 'deny'
+    ) {
       throw new AppError({
         errorCode: ErrorCodes.SUPPORT_FORBIDDEN,
         message: 'Không có quyền xem yêu cầu hỗ trợ này',

@@ -1,5 +1,10 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, NotFoundException } from '@nestjs/common';
 import { createHealthResponse } from '@nexatech/shared-contracts';
+import {
+  isSecurityLabEnabled,
+  LAB_MARKER_BODY,
+  LAB_MARKER_PATH,
+} from '@nexatech/shared-security-lab';
 
 @Controller()
 export class HealthController {
@@ -16,5 +21,18 @@ export class HealthController {
   @Get('health/ready')
   ready() {
     return { status: 'ok' };
+  }
+
+  /** Lab marker — only present when security-lab deploy profile is active. */
+  @Get('health/lab')
+  labMarker() {
+    if (!isSecurityLabEnabled()) {
+      throw new NotFoundException();
+    }
+    return {
+      ...LAB_MARKER_BODY,
+      path: LAB_MARKER_PATH,
+      service: 'identity-service',
+    };
   }
 }

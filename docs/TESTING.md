@@ -214,9 +214,15 @@ k6 load scenarios remain M20 (`tests/k6/`).
 .\scripts\resilience-dry-run.ps1
 .\scripts\backup-restore-validate.ps1
 .\scripts\validate-alerts.ps1
-# optional if k6 installed and stack up:
-# $env:BASE_URL='http://127.0.0.1:3000'; k6 run tests/k6/storefront-browse.js
 ```
 
-Docs: `PERFORMANCE-TESTING.md`, `RESILIENCE-TESTING.md`, `SLO-SLI.md`, `DISASTER-RECOVERY.md`, `INCIDENT-RESPONSE.md`.
-Alerts: `deploy/observability/alerts/nexatech-alerts.yaml` (static; Grafana remains ClusterIP).
+## Security lab validation (M21)
+
+```powershell
+pnpm security:test:secure
+$env:SECURITY_LAB_ACK='YES'; pnpm security:test:lab
+pnpm security:validate
+helm template nexatech-lab deploy/helm/nexatech -f deploy/helm/nexatech/values-security-lab.yaml -n nexatech-security-lab | Out-Null
+```
+
+Docs: `OWASP-SCENARIOS.md`, `SECURITY-LAB-ARCHITECTURE.md`, `FINAL-HANDOFF.md`.

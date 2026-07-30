@@ -21,6 +21,12 @@ import {
 } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
 import {
+  acceptPaymentAmount,
+  acceptWebhookSignature,
+  enforceResourceOwnership,
+  shouldRejectDuplicateCallback,
+} from '@nexatech/shared-security-lab';
+import {
   EventTypes,
   routingKeyFor,
   type EventType,
@@ -620,7 +626,10 @@ export class PaymentService {
       payloadHash,
     );
     if (existing?.processed) {
-      return { payment };
+      if (shouldRejectDuplicateCallback({ alreadyProcessed: true })) {
+        return { payment };
+      }
+      // lab: fall through and re-process (intentional replay)
     }
 
     const signatureValid = verifyVnpaySignature(
@@ -639,14 +648,25 @@ export class PaymentService {
       resultStatus: 'RECEIVED',
     });
 
-    if (!signatureValid) {
+    if (!acceptWebhookSignature({ signatureValid })) {
       throw new AppError({
         errorCode: ErrorCodes.PAYMENT_SIGNATURE_INVALID,
         message: 'Chữ ký VNPay không hợp lệ',
       });
     }
 
-    if (!this.vnpayProvider.verifyAmount(params, payment.amount)) {
+    const amountOk = this.vnpayProvider.verifyAmount(params, payment.amount);
+    const callbackAmtRaw = Number(params['vnp_Amount'] ?? NaN);
+    const callbackAmountVnd = Number.isFinite(callbackAmtRaw)
+      ? Math.round(callbackAmtRaw / 100)
+      : -1;
+    if (
+      !amountOk &&
+      !acceptPaymentAmount({
+        expectedAmount: payment.amount,
+        callbackAmount: callbackAmountVnd,
+      })
+    ) {
       throw new AppError({
         errorCode: ErrorCodes.PAYMENT_AMOUNT_MISMATCH,
         message: 'Số tiền VNPay không khớp',
@@ -1093,9 +1113,14 @@ export class PaymentService {
   }
 
   private assertOwnership(actor: PaymentActor, payment: Payment): void {
-    if (isStaff(actor.roles)) return;
-    const customerId = actor.customerId ?? actor.userId;
-    if (!customerId || payment.customerId !== customerId) {
+    if (
+      enforceResourceOwnership({
+        resourceOwnerId: payment.customerId,
+        actorId: actor.customerId ?? actor.userId,
+        actorIsStaff: isStaff(actor.roles),
+        staffAllowed: true,
+      }) === 'deny'
+    ) {
       throw new AppError({
         errorCode: ErrorCodes.PAYMENT_FORBIDDEN,
         message: 'Không có quyền truy cập thanh toán này',

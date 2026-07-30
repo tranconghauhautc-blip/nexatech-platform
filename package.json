@@ -14,7 +14,11 @@
     "e2e": "playwright test",
     "e2e:storefront": "playwright test --project=storefront-chromium",
     "e2e:admin": "playwright test --project=admin-chromium",
-    "seed:catalog": "node scripts/seed-catalog.cjs"
+    "seed:catalog": "node scripts/seed-catalog.cjs",
+    "security:test:secure": "node tests/security/run.cjs secure",
+    "security:test:lab": "cross-env SECURITY_LAB_ACK=YES node tests/security/run.cjs lab",
+    "security:smoke": "cross-env SECURITY_LAB_ACK=YES node tests/security/smoke.cjs",
+    "security:validate": "node tests/security/validate.cjs"
   },
   "engines": {
     "node": ">=22.0.0",

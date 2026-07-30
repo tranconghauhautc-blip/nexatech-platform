@@ -5,6 +5,10 @@ import { Injectable } from '@nestjs/common';
 import { Roles } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
 import {
+  issueVerificationToken,
+  shouldRateLimitAuth,
+} from '@nexatech/shared-security-lab';
+import {
   loginRequestSchema,
   registerRequestSchema,
 } from '@nexatech/shared-contracts';
@@ -24,6 +28,10 @@ const DEFAULT_CONFIG: AuthConfig = {
   accessTtlSeconds: 900,
   refreshTtlSeconds: 60 * 60 * 24 * 30,
 };
+
+const loginAttempts = new Map<string, { count: number; resetAt: number }>();
+const LOGIN_MAX_ATTEMPTS = 5;
+const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
 export interface RegisterResult {
   userId: string;
@@ -62,7 +70,10 @@ export class AuthService {
       roles: [Roles.Customer],
     });
 
-    const otp = String(randomInt(100000, 999999));
+    const otp = issueVerificationToken({
+      secureToken: String(randomInt(100000, 999999)),
+      predictableToken: '000000',
+    });
     await this.store.createOtp({
       email: user.email,
       purpose: 'email_verify',
@@ -96,8 +107,25 @@ export class AuthService {
     userAgent?: string,
   ): Promise<TokenPair & { userId: string }> {
     const data = loginRequestSchema.parse(input);
+    const key = data.email.toLowerCase();
+    const now = Date.now();
+    const bucket = loginAttempts.get(key);
+    const attempts = bucket && bucket.resetAt > now ? bucket.count : 0;
+    if (
+      shouldRateLimitAuth({
+        attempts,
+        maxAttempts: LOGIN_MAX_ATTEMPTS,
+      })
+    ) {
+      throw new AppError({
+        errorCode: ErrorCodes.RATE_LIMITED,
+        message: 'Quá nhiều lần đăng nhập thất bại. Thử lại sau.',
+      });
+    }
+
     const user = await this.store.findUserByEmail(data.email);
     if (!user?.passwordHash) {
+      this.recordLoginFailure(key, now);
       throw new AppError({
         errorCode: ErrorCodes.UNAUTHORIZED,
         message: 'Email hoặc mật khẩu không đúng',
@@ -111,12 +139,24 @@ export class AuthService {
     }
     const ok = await bcrypt.compare(data.password, user.passwordHash);
     if (!ok) {
+      this.recordLoginFailure(key, now);
       throw new AppError({
         errorCode: ErrorCodes.UNAUTHORIZED,
         message: 'Email hoặc mật khẩu không đúng',
       });
     }
+    loginAttempts.delete(key);
     return this.issueTokens(user.id, user.email, user.roles, userAgent);
+  }
+
+  private recordLoginFailure(key: string, now: number): void {
+    const bucket = loginAttempts.get(key);
+    if (!bucket || bucket.resetAt <= now) {
+      loginAttempts.set(key, { count: 1, resetAt: now + LOGIN_WINDOW_MS });
+      return;
+    }
+    bucket.count += 1;
+    loginAttempts.set(key, bucket);
   }
 
   async refresh(refreshToken: string): Promise<TokenPair & { userId: string }> {
@@ -179,7 +219,10 @@ export class AuthService {
     if (!user) {
       return { accepted: true };
     }
-    const otp = String(randomInt(100000, 999999));
+    const otp = issueVerificationToken({
+      secureToken: String(randomInt(100000, 999999)),
+      predictableToken: '000000',
+    });
     await this.store.createOtp({
       email: user.email,
       purpose: 'password_reset',

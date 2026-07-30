@@ -329,3 +329,11 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Cấm:** chaos/pod-kill trên cluster thật unattended; restore vào DB production; k6 nhắm Internet công cộng mặc định; log secret/token trong k6.
 - **Lý do:** Đo hiệu năng và sẵn sàng vận hành trước security lab (M21).
 - **Hệ quả:** M21 xây security-lab profile tách biệt production với intentional vulnerabilities có kiểm soát.
+
+## ADR-040 — Security lab intentional vulnerabilities (M21)
+
+- **Quyết định:** Giữ một repo với hai deploy profile. Production (`values-production.yaml`): `deployProfile=production`, `securityLab.enabled=false`, `NEXATECH_SECURITY_LAB=0`. Security lab (`values-security-lab.yaml`): namespace `nexatech-security-lab`, image tag `0.21.0-sec-lab`, `deployProfile=security-lab`, `securityLab.enabled=true`. Gate tập trung trong `@nexatech/shared-security-lab` (`isSecurityLabEnabled` đòi hỏi **cả hai** env). Không bật lab qua HTTP header/cookie/query.
+- **Vulnerabilities:** ≥20 kịch bản thật (BOLA, BFLA, mass assignment, price trust, webhook signature/amount, replay, rate limit missing, predictable OTP, insecure cookie/CORS, excessive data, BFF path sanitize skip, media ownership, pageSize) — xem `docs/OWASP-SCENARIOS.md`.
+- **Tests:** `pnpm security:test:secure|lab`, `security:smoke`, `security:validate`; lab runners yêu cầu `SECURITY_LAB_ACK=YES` + private target guard.
+- **Cấm:** weaken production path để lab xanh; secret thật; public lab không allowlist; PoC Internet.
+- **Hệ quả:** Roadmap M0–M21 hoàn tất; không tự bắt đầu milestone mới.

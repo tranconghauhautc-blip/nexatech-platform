@@ -1,0 +1,17 @@
+{
+  "name": "shared-security-lab",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/shared/security-lab/src",
+  "projectType": "library",
+  "tags": ["scope:shared", "type:util", "security-lab"],
+  "targets": {
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/shared/security-lab/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  }
+}

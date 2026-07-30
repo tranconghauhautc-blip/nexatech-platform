@@ -1,6 +1,6 @@
 # Security Baseline — NexaTech M18
 
-Production security defaults for Kubernetes packaging (M17/M18). **OWASP API intentional vulnerability scenarios are out of scope for M18** — planned for a later milestone (M21 roadmap). M18 does not introduce deliberate weaknesses for penetration testing.
+Production security defaults for Kubernetes packaging (M17/M18). **M21** adds an isolated security-lab profile (`values-security-lab.yaml`) with intentional vulnerabilities — production profile must keep `securityLab.enabled: false` and `deployProfile: production`.
 
 ## Container hardening
 

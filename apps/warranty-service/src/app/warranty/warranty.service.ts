@@ -20,6 +20,7 @@ import {
   type WarrantyMediaKind,
 } from '@nexatech/shared-contracts';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { enforceResourceOwnership } from '@nexatech/shared-security-lab';
 import {
   EventTypes,
   createEventEnvelope,
@@ -476,7 +477,14 @@ export class WarrantyService {
       });
     }
     const staff = isStaff(actor);
-    if (claim.customerId !== actor.userId && !staff) {
+    if (
+      enforceResourceOwnership({
+        resourceOwnerId: claim.customerId,
+        actorId: actor.userId,
+        actorIsStaff: staff,
+        staffAllowed: true,
+      }) === 'deny'
+    ) {
       throw new AppError({
         errorCode: ErrorCodes.WARRANTY_FORBIDDEN,
         message: 'Không có quyền xem yêu cầu bảo hành này',

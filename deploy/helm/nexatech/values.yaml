@@ -541,6 +541,9 @@ observability:
 config:
   logLevel: info
   nodeEnv: production
+  deployProfile: production
+  securityLab:
+    enabled: false
   publicStorefrontUrl: ''
   publicAdminUrl: ''
   publicApiUrl: ''

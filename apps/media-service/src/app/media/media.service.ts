@@ -12,6 +12,7 @@ import {
   type MediaPresignRequest,
 } from '@nexatech/shared-contracts';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { allowMediaAccess } from '@nexatech/shared-security-lab';
 import {
   createEventEnvelope,
   EventTypes,
@@ -79,10 +80,11 @@ export class MediaService {
   }
 
   private isOwnerOrStaff(media: MediaRecord, actor: MediaActor): boolean {
-    if (media.uploadedBy === actor.userId) {
-      return true;
-    }
-    return hasMinimumRole(actor.roles, Roles.Staff);
+    return allowMediaAccess({
+      secureAllowed:
+        media.uploadedBy === actor.userId ||
+        hasMinimumRole(actor.roles, Roles.Staff),
+    });
   }
 
   private canDownload(media: MediaRecord, actor: MediaActor): boolean {
@@ -95,7 +97,7 @@ export class MediaService {
     ) {
       return true;
     }
-    return false;
+    return allowMediaAccess({ secureAllowed: false });
   }
 
   private async getMediaOrThrow(id: string): Promise<MediaRecord> {

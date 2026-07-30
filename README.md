@@ -26,16 +26,13 @@ Nx 22.7.7 · pnpm · TypeScript strict · Next.js 15.2.4 · NestJS · Prisma · 
 | [docs/IMAGE-MATRIX.md](docs/IMAGE-MATRIX.md)                           | Docker image matrix       |
 | [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)                 | Release gate checklist    |
 | [docs/DEPLOYMENT-ORDER.md](docs/DEPLOYMENT-ORDER.md)                   | Deploy order              |
-| [docs/PERFORMANCE-TESTING.md](docs/PERFORMANCE-TESTING.md)             | k6 / performance (M20)    |
-| [docs/RESILIENCE-TESTING.md](docs/RESILIENCE-TESTING.md)               | Failure modes (M20)       |
-| [docs/SLO-SLI.md](docs/SLO-SLI.md)                                     | SLI/SLO draft (M20)       |
-| [docs/DISASTER-RECOVERY.md](docs/DISASTER-RECOVERY.md)                 | DR assumptions (M20)      |
-| [docs/INCIDENT-RESPONSE.md](docs/INCIDENT-RESPONSE.md)                 | Incident runbook (M20)    |
+| [docs/KNOWN-LIMITATIONS.md](docs/KNOWN-LIMITATIONS.md)                 | Known limitations         |
+| [docs/FINAL-HANDOFF.md](docs/FINAL-HANDOFF.md)                         | Final project handoff     |
+| [docs/OWASP-SCENARIOS.md](docs/OWASP-SCENARIOS.md)                     | OWASP / security lab      |
 
 ## Trạng thái
 
-- **M0–M19** ✅
-- **M20** 🔄 — performance / reliability / DR (`docs/PROGRESS.md`)
+- **M0–M21** 🔄 hoàn tất trong phiên hiện tại (`docs/PROGRESS.md`)
 
 Chi tiết: `docs/PROGRESS.md`.
 

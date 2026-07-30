@@ -78,6 +78,10 @@ spec:
               value: {{ $.Values.config.logLevel | quote }}
             - name: PORT
               value: {{ $app.port | quote }}
+            - name: NEXATECH_DEPLOY_PROFILE
+              value: {{ $.Values.config.deployProfile | default "production" | quote }}
+            - name: NEXATECH_SECURITY_LAB
+              value: {{ if and $.Values.config.securityLab $.Values.config.securityLab.enabled }}"1"{{ else }}"0"{{ end }}
             {{- if and $.Values.config.otel $.Values.config.otel.enabled }}
             - name: OTEL_SERVICE_NAME
               value: {{ $app.name | quote }}

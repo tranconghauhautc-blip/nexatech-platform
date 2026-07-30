@@ -1,0 +1,79 @@
+# Security-lab overlay — INTENTIONAL vulnerabilities enabled.
+# NEVER use for production traffic. Isolated namespace + fake data only.
+#
+# helm upgrade --install nexatech-lab deploy/helm/nexatech \
+#   -n nexatech-security-lab -f values-security-lab.yaml
+#
+# Requires operator-created secrets pointing at LAB databases only.
+
+fullnameOverride: nexatech-lab
+
+global:
+  imageRegistry: docker.io
+  imageRepository: CHANGE_ME_DOCKERHUB_USER
+  # Lab images must be built with SECURITY_LAB=1 baked in where applicable.
+  imageTag: '0.21.0-sec-lab'
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: dockerhub-pull-lab
+  postgresql:
+    # LAB postgres only — never production .208 app DBs
+    host: 'CHANGE_ME_LAB_POSTGRES_HOST'
+    port: 5432
+    sslMode: prefer
+    poolMax: '10'
+    connectTimeout: '10'
+  secretsName: nexatech-lab-secrets
+
+apps:
+  storefront:
+    replicaCount: 1
+  admin:
+    replicaCount: 1
+  identity:
+    replicaCount: 1
+  catalog:
+    replicaCount: 1
+  cart:
+    replicaCount: 1
+  order:
+    replicaCount: 1
+
+platform:
+  redis:
+    enabled: true
+  rabbitmq:
+    enabled: true
+  minio:
+    enabled: true
+    # Lab bucket prefix expected in secret/config — not production buckets
+
+entry:
+  enabled: true
+  # Lab VIP placeholder — operator assigns non-prod MetalLB IP
+  loadBalancerIP: 'CHANGE_ME_LAB_METALLB_VIP'
+  serviceType: LoadBalancer
+  exposeApiPorts: true
+
+observability:
+  enabled: false
+
+networkPolicy:
+  enabled: true
+
+config:
+  logLevel: debug
+  nodeEnv: production
+  deployProfile: security-lab
+  securityLab:
+    enabled: true
+  publicStorefrontUrl: 'http://CHANGE_ME_LAB_HOST'
+  publicAdminUrl: 'http://CHANGE_ME_LAB_HOST/admin'
+  publicApiUrl: 'http://CHANGE_ME_LAB_HOST'
+  otel:
+    enabled: false
+    exporterEndpoint: ''
+    protocol: http/protobuf
+
+migrations:
+  enabled: true

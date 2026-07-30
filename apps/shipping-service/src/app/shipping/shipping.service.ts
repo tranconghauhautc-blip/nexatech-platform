@@ -36,6 +36,7 @@ import {
   type Role,
 } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { enforceResourceOwnership } from '@nexatech/shared-security-lab';
 import {
   EventTypes,
   routingKeyFor,
@@ -140,9 +141,15 @@ function requireStaff(actor: ShippingActor): void {
 }
 
 function assertOwnership(actor: ShippingActor, customerId: string): void {
-  if (isStaff(actor.roles) || hasMinimumRole(actor.roles, Roles.Staff)) return;
-  const id = requireCustomerId(actor);
-  if (id !== customerId) {
+  if (
+    enforceResourceOwnership({
+      resourceOwnerId: customerId,
+      actorId: actor.customerId ?? actor.userId,
+      actorIsStaff:
+        isStaff(actor.roles) || hasMinimumRole(actor.roles, Roles.Staff),
+      staffAllowed: true,
+    }) === 'deny'
+  ) {
     throw new AppError({
       errorCode: ErrorCodes.SHIPPING_FORBIDDEN,
       message: 'Không có quyền truy cập vận chuyển này',
