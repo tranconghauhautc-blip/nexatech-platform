@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M14 — chưa bắt đầu
-- **Milestone đã hoàn thành gần nhất:** M13 (notification-service)
+- **Milestone đang làm:** M15 — chưa bắt đầu
+- **Milestone đã hoàn thành gần nhất:** M14 (reporting-service)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (20 projects; notification 61/61 incl. Prisma integration Postgres Compose)
+- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (21 projects; reporting 56/56 incl. Prisma integration Postgres Compose)
 
 ## Roadmap milestone
 
@@ -26,44 +26,58 @@
 | M11     | Warranty                                  | ✅ Done    | warranty-service                 |
 | M12     | Support                                   | ✅ Done    | support-service                  |
 | M13     | Notification                              | ✅ Done    | notification-service             |
-| M14–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M14.md`        |
+| M14     | Reporting                                 | ✅ Done    | reporting-service                |
+| M15–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M15.md`        |
 
 ## Commits
 
-| Commit    | Nội dung             |
-| --------- | -------------------- |
-| `8526147` | M4 catalog + media   |
-| `b38b723` | M5 inventory-service |
-| `d2155fc` | M6 cart-service      |
-| `4e2627a` | M7 order-service     |
-| `1245aff` | M8 payment-service   |
-| `882320f` | M9 shipping-service  |
-| `7c203c6` | M9 docs hash         |
-| `631cd88` | M10 review-service   |
-| `d7d4905` | M10 docs hash        |
-| `a60e754` | M11 warranty-service |
-| `c5a1627` | M11 docs hash        |
-| `7c1a582` | M12 support-service  |
-| `194cdec` | M12 docs hash        |
+| Commit    | Nội dung                 |
+| --------- | ------------------------ |
+| `8526147` | M4 catalog + media       |
+| `b38b723` | M5 inventory-service     |
+| `d2155fc` | M6 cart-service          |
+| `4e2627a` | M7 order-service         |
+| `1245aff` | M8 payment-service       |
+| `882320f` | M9 shipping-service      |
+| `7c203c6` | M9 docs hash             |
+| `631cd88` | M10 review-service       |
+| `d7d4905` | M10 docs hash            |
+| `a60e754` | M11 warranty-service     |
+| `c5a1627` | M11 docs hash            |
+| `7c1a582` | M12 support-service      |
+| `194cdec` | M12 docs hash            |
 | `b353d67` | M13 notification-service |
+| `5c365a3` | M13 docs hash            |
 
-## Apps sau M13 (20 projects)
+## Apps sau M14 (21 projects)
 
-| App                  | Port | Persistence                      |
-| -------------------- | ---- | -------------------------------- |
-| identity-service     | 3001 | In-memory (schema sẵn)           |
-| customer-service     | 3002 | In-memory (schema sẵn)           |
-| catalog-service      | 3003 | Prisma + Postgres FTS            |
-| media-service        | 3004 | Prisma + MinIO                   |
-| inventory-service    | 3005 | Prisma + optimistic lock         |
-| cart-service         | 3006 | Prisma + Redis assist + RabbitMQ |
-| order-service        | 3007 | Prisma + outbox + RabbitMQ       |
-| payment-service      | 3008 | Prisma + outbox + RabbitMQ       |
-| shipping-service     | 3009 | Prisma + outbox + RabbitMQ       |
-| review-service       | 3010 | Prisma + outbox + RabbitMQ       |
-| warranty-service     | 3011 | Prisma + outbox + RabbitMQ       |
-| support-service      | 3012 | Prisma + outbox + RabbitMQ       |
-| notification-service | 3013 | Prisma + inbox consumer + SMTP   |
+| App                  | Port | Persistence                       |
+| -------------------- | ---- | --------------------------------- |
+| identity-service     | 3001 | In-memory (schema sẵn)            |
+| customer-service     | 3002 | In-memory (schema sẵn)            |
+| catalog-service      | 3003 | Prisma + Postgres FTS             |
+| media-service        | 3004 | Prisma + MinIO                    |
+| inventory-service    | 3005 | Prisma + optimistic lock          |
+| cart-service         | 3006 | Prisma + Redis assist + RabbitMQ  |
+| order-service        | 3007 | Prisma + outbox + RabbitMQ        |
+| payment-service      | 3008 | Prisma + outbox + RabbitMQ        |
+| shipping-service     | 3009 | Prisma + outbox + RabbitMQ        |
+| review-service       | 3010 | Prisma + outbox + RabbitMQ        |
+| warranty-service     | 3011 | Prisma + outbox + RabbitMQ        |
+| support-service      | 3012 | Prisma + outbox + RabbitMQ        |
+| notification-service | 3013 | Prisma + inbox consumer + SMTP    |
+| reporting-service    | 3014 | Prisma + inbox consumer + metrics |
+
+## M14 đã hoàn thành
+
+- [x] Shared contracts / errors cho reporting
+- [x] reporting-service Prisma + migration `nexatech_reporting` (`20260730140000_init_reporting`)
+- [x] Projection tables (order/payment/shipment/review/warranty/support) + DailyMetric + AuditLogProjection
+- [x] RabbitMQ consumer + ProcessedEvent inbox idempotency + DLX (nack requeue=false)
+- [x] Staff+ REST dashboard / metrics / lists / audit
+- [x] Unit + controller + handlers + migration + Prisma integration + consumer (56/56 pass)
+- [x] Docker DB init (`nexatech_reporting`) + docs + HANDOFF-M15
+- [x] format / lint / test / build (chạy cuối M14)
 
 ## M13 đã hoàn thành
 
@@ -97,18 +111,32 @@ Nx **22.7.7**, `NX_SKIP_NATIVE_FILE_CACHE=true`, `NX_DAEMON=false`.
 
 ## Local note (Postgres volume đã init)
 
-Nếu DB `nexatech_notification` chưa có (volume cũ):
+Nếu DB `nexatech_reporting` chưa có (volume cũ):
 
 ```sql
-CREATE USER nexatech_notification WITH PASSWORD 'changeme';
-CREATE DATABASE nexatech_notification OWNER nexatech_notification;
+CREATE USER nexatech_reporting WITH PASSWORD 'changeme';
+CREATE DATABASE nexatech_reporting OWNER nexatech_reporting;
 ```
 
-Rồi trong DB đó: `GRANT ALL ON SCHEMA public TO nexatech_notification;`
+Rồi trong DB đó: `GRANT ALL ON SCHEMA public TO nexatech_reporting;`
 
-Rồi: `cd apps/notification-service && npx prisma migrate deploy && npx prisma generate`
+Rồi: `cd apps/reporting-service && npx prisma migrate deploy && npx prisma generate`
 
 ## Nhật ký
+
+### 2026-07-30 — M14 done
+
+- reporting-service hoàn chỉnh: dashboard metrics + audit projection, RabbitMQ consumer/inbox, DailyMetric atomic increment, Staff+ REST.
+- Shared contracts/errors + ADR-033; Docker DB init; docs + HANDOFF-M15.
+- Test reporting 56/56 (integration Postgres Compose); format/lint/test/build monorepo xanh (21 projects).
+- **Không bắt đầu M15 trong phiên này**.
+
+### 2026-07-30 — M14 start
+
+- Working tree sạch; HEAD `5c365a3` (docs M13 hash; feat M13 `b353d67`); branch `main`.
+- Phạm vi M14 từ HANDOFF: `reporting-service` port `3014`, DB `nexatech_reporting`, dashboard metrics + audit projection, consume RabbitMQ (order/payment/shipping/review/warranty/support + audit), Staff+ RBAC.
+- Pattern: notification-service (consumer/inbox) + projection tables.
+- Không bắt đầu M15 trong phiên này.
 
 ### 2026-07-30 — M13 done
 

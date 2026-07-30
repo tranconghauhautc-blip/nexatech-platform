@@ -8,7 +8,7 @@
 - Application role riêng (không dùng superuser `postgres` cho app)
 - Không FK cross-service
 
-## Trạng thái persistence sau M7
+## Trạng thái persistence sau M14
 
 | Thành phần                | Trạng thái                                                                 |
 | ------------------------- | -------------------------------------------------------------------------- |
@@ -39,6 +39,7 @@
 | `INVENTORY_DATABASE_URL` | Postgres inventory |
 | `CART_DATABASE_URL`      | Postgres cart      |
 | `ORDER_DATABASE_URL`     | Postgres order     |
+| `REPORTING_DATABASE_URL` | Postgres reporting |
 | `REDIS_URL`              | Redis              |
 | `RABBITMQ_URL`           | RabbitMQ           |
 | `MINIO_*`                | Object storage     |
@@ -48,7 +49,7 @@
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support`, `nexatech_notification` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support`, `nexatech_notification`, `nexatech_reporting` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -68,7 +69,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | warranty-service     | `nexatech_warranty`     | Prisma + migration ✅ / Prisma + outbox runtime   |
 | support-service      | `nexatech_support`      | Prisma + migration ✅ / Prisma + outbox runtime   |
 | notification-service | `nexatech_notification` | Prisma + migration ✅ / Prisma + inbox consumer   |
-| reporting-service    | `nexatech_reporting`    | Later                                             |
+| reporting-service    | `nexatech_reporting`    | Prisma + migration ✅ / Prisma + inbox consumer   |
 
 ## catalog — Prisma models (M4)
 
@@ -192,6 +193,17 @@ Client: `apps/support-service/src/generated/prisma`. Order link: soft ownership 
 - `AuditLog` — thao tác nhạy cảm (event processed, request notification)
 
 Client: `apps/notification-service/src/generated/prisma`. Không outbox publisher chính; **consume** RabbitMQ + inbox. SMTP qua `SMTP_*` env (LoggingEmailSender khi thiếu SMTP ở dev).
+
+## reporting — Prisma models (M14)
+
+- `OrderProjection` / `PaymentProjection` / `ShipmentProjection` / `ReviewProjection` / `WarrantyClaimProjection` / `WarrantyReturnProjection` / `SupportTicketProjection` — read model 1 dòng / entity nguồn (PK = ID gốc), upsert theo event mới nhất (`lastEventType`, `lastEventId` với order), index theo `status`/`customerId`/`orderId`/`productId` phục vụ filter dashboard
+- `DailyMetric` — time-series đếm sự kiện theo ngày, unique `(metricDate, domain, metricKey)`; `value` kiểu `BigInt`, tăng bằng increment nguyên tử (an toàn khi nhiều consumer song song)
+- `AuditLogProjection` — audit log tổng hợp từ toàn hệ thống (`audit.recorded` events) + ghi trực tiếp qua `POST /admin/reporting/audit`; `sourceEventId` unique để dedupe khi event được publish lại
+- `ProcessedEvent` — inbox idempotency theo `eventId` (PK), giống pattern notification-service M13
+- `ReportingIdempotency` — REST idempotency cho `POST /admin/reporting/audit`
+- `AuditLog` — nhật ký nội bộ reporting-service (event đã xử lý, request audit thủ công)
+
+Client: `apps/reporting-service/src/generated/prisma`. Migration `20260730140000_init_reporting`. Không outbox publisher; **consume** RabbitMQ (queue `reporting-service.events`) + inbox, tương tự notification-service nhưng phục vụ dashboard/audit thay vì email/in-app.
 
 ## MinIO buckets
 

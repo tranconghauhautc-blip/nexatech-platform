@@ -1,6 +1,6 @@
 # NexaTech API Contracts
 
-Tài liệu phản ánh **code hiện tại (sau M4)** và kế hoạch các service chưa implement.
+Tài liệu phản ánh **code hiện tại (sau M14)** và kế hoạch các service chưa implement.
 
 DTO TypeScript sống trong `libs/shared/contracts`. Error envelope: `libs/shared/errors`.
 
@@ -546,9 +546,45 @@ Auth tạm: `x-user-id` / `x-user-roles`. Ownership theo `userId`. Template ti�
 
 ---
 
-## Các service sau M13 (kế hoạch — chưa code)
+## reporting-service — M14
 
-Reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Port mặc định: `3014` (`REPORTING_PORT`). Persistence: Prisma + `REPORTING_DATABASE_URL`. Base: `/api/v1` và `/api/v2` (mirror, `admin/reporting/*`). Health: `/health`, `/health/live`, `/health/ready`. Swagger: `/docs`.
+
+Auth tạm: `x-user-id` / `x-user-roles` (comma-separated). Toàn bộ endpoint yêu cầu **Staff+** (`Staff`, `Manager`, `Admin`, `SuperAdmin`) — thiếu `x-user-id` trả `UNAUTHORIZED`, có userId nhưng thiếu role hợp lệ trả `REPORTING_FORBIDDEN`. reporting-service không có route public/customer — đây là read model nội bộ cho dashboard quản trị.
+
+### Admin (Staff+)
+
+| Method | Path                                | Mô tả                                                                                                                  |
+| ------ | ----------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/admin/reporting/dashboard`        | Tổng hợp toàn hệ thống: đếm + breakdown theo status, doanh thu                                                         |
+| GET    | `/admin/reporting/metrics/daily`    | Time-series `DailyMetric` (filter `dateFrom`/`dateTo`/`domain`, phân trang)                                            |
+| GET    | `/admin/reporting/orders`           | Danh sách `OrderProjection` (filter `status`/`customerId`, phân trang)                                                 |
+| GET    | `/admin/reporting/payments`         | Danh sách `PaymentProjection` (filter `status`/`orderId`, phân trang)                                                  |
+| GET    | `/admin/reporting/shipments`        | Danh sách `ShipmentProjection` (filter `status`/`orderId`, phân trang)                                                 |
+| GET    | `/admin/reporting/reviews`          | Danh sách `ReviewProjection` (filter `status`/`productId`, phân trang)                                                 |
+| GET    | `/admin/reporting/warranty/claims`  | Danh sách `WarrantyClaimProjection` (filter `status`/`customerId`, phân trang)                                         |
+| GET    | `/admin/reporting/warranty/returns` | Danh sách `WarrantyReturnProjection` (filter `status`/`customerId`, phân trang)                                        |
+| GET    | `/admin/reporting/support/tickets`  | Danh sách `SupportTicketProjection` (filter `status`/`customerId`, phân trang)                                         |
+| GET    | `/admin/reporting/audit-logs`       | Danh sách `AuditLogProjection` (filter `action`/`actorId`/`resourceType`/`resourceId`/`dateFrom`/`dateTo`, phân trang) |
+| POST   | `/admin/reporting/audit`            | Ghi audit log thủ công (Staff+ tự tạo bản ghi, idempotent)                                                             |
+
+Query phân trang chung: `page` (mặc định 1), `pageSize` (mặc định 20, max 100).
+
+`GET /metrics/daily` query: `dateFrom?`, `dateTo?` (ISO datetime), `domain?` (`ORDER`\|`PAYMENT`\|`SHIPPING`\|`REVIEW`\|`WARRANTY`\|`SUPPORT`\|`AUDIT`\|`OTHER`), `page`, `pageSize`.
+
+`GET /audit-logs` query: `action?`, `actorId?`, `resourceType?`, `resourceId?`, `dateFrom?`, `dateTo?`, `page`, `pageSize`.
+
+`POST /audit` body: `action` (bắt buộc), `actorId?` (mặc định lấy từ `x-user-id`), `actorRoles?` (mặc định lấy từ `x-user-roles`), `resourceType?`, `resourceId?`, `serviceName?` (mặc định `reporting-service`), `details?` (object tự do), `idempotencyKey?` (≥8 ký tự, cũng nhận qua header `idempotency-key`) — gọi lại cùng key trả nguyên response đã lưu (`ReportingIdempotency`), khác `operation` trả lỗi `REPORTING_IDEMPOTENCY_CONFLICT`.
+
+`GET /dashboard` response (`DashboardSummaryDto`): tổng số + breakdown theo status cho `orders`/`payments`/`shipments`/`reviews`/`warrantyClaims`/`warrantyReturns`/`supportTickets`, `totalRevenue` (VND, tổng từ `payment.paid`/`payment.succeeded`), `generatedAt`.
+
+### Domain rules
+
+- **Read model duy nhất**: reporting-service không gọi REST sang service khác và không ghi dữ liệu ngược lại DB nào khác — mọi projection được xây dựng hoàn toàn từ event consume (RabbitMQ).
+- Consumer RabbitMQ queue `reporting-service.events` (bind toàn bộ routing key order/payment/shipment/review/warranty/support/audit liên quan); inbox `ProcessedEvent` theo `eventId` chống xử lý trùng — event đã `processed` bị bỏ qua an toàn (không lỗi).
+- Mỗi event xử lý thành công tăng một `DailyMetric` (`metricDate` UTC theo `occurredAt`, `domain`, `metricKey` — vd `orders_created`, `payments_paid`, `claims_completed`, `tickets_resolved`); `payment.paid`/`payment.succeeded` cộng thêm metric `revenue_vnd`.
+- `audit.recorded` (routing key `reporting.audit.recorded`, publish từ nhiều service khác) ghi thẳng vào `AuditLogProjection`, dedupe theo `sourceEventId` unique.
+- `POST /admin/reporting/audit` cho phép Staff+ tự tạo bản ghi `AuditLogProjection` (không qua event) — dùng khi cần audit hành động thực hiện trực tiếp trên UI reporting.
 
 ## Ghi chú v2
 

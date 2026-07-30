@@ -2035,3 +2035,256 @@ export interface RequestNotificationResultDto {
   inApp?: InAppNotificationDto;
   email?: EmailDeliveryDto;
 }
+
+/** ===================== Reporting (reporting-service owned) ===================== */
+
+export const REPORTING_LIMITS = {
+  pageSizeMax: 100,
+  defaultPageSize: 20,
+  actionMax: 120,
+  actorIdMax: 120,
+  resourceTypeMax: 60,
+  resourceIdMax: 120,
+  serviceNameMax: 60,
+  statusMax: 40,
+  idMax: 120,
+} as const;
+
+const reportingIdQuery = z.string().trim().min(1).max(REPORTING_LIMITS.idMax);
+const reportingStatusQuery = z
+  .string()
+  .trim()
+  .min(1)
+  .max(REPORTING_LIMITS.statusMax);
+
+export const listOrderProjectionsQuerySchema = paginationQuerySchema.extend({
+  status: reportingStatusQuery.optional(),
+  customerId: reportingIdQuery.optional(),
+});
+export type ListOrderProjectionsQuery = z.infer<
+  typeof listOrderProjectionsQuerySchema
+>;
+
+export const listPaymentProjectionsQuerySchema = paginationQuerySchema.extend({
+  status: reportingStatusQuery.optional(),
+  orderId: reportingIdQuery.optional(),
+});
+export type ListPaymentProjectionsQuery = z.infer<
+  typeof listPaymentProjectionsQuerySchema
+>;
+
+export const listShipmentProjectionsQuerySchema = paginationQuerySchema.extend({
+  status: reportingStatusQuery.optional(),
+  orderId: reportingIdQuery.optional(),
+});
+export type ListShipmentProjectionsQuery = z.infer<
+  typeof listShipmentProjectionsQuerySchema
+>;
+
+export const listReviewProjectionsQuerySchema = paginationQuerySchema.extend({
+  status: reportingStatusQuery.optional(),
+  productId: reportingIdQuery.optional(),
+});
+export type ListReviewProjectionsQuery = z.infer<
+  typeof listReviewProjectionsQuerySchema
+>;
+
+export const listWarrantyClaimProjectionsQuerySchema =
+  paginationQuerySchema.extend({
+    status: reportingStatusQuery.optional(),
+    customerId: reportingIdQuery.optional(),
+  });
+export type ListWarrantyClaimProjectionsQuery = z.infer<
+  typeof listWarrantyClaimProjectionsQuerySchema
+>;
+
+export const listWarrantyReturnProjectionsQuerySchema =
+  paginationQuerySchema.extend({
+    status: reportingStatusQuery.optional(),
+    customerId: reportingIdQuery.optional(),
+  });
+export type ListWarrantyReturnProjectionsQuery = z.infer<
+  typeof listWarrantyReturnProjectionsQuerySchema
+>;
+
+export const listSupportTicketProjectionsQuerySchema =
+  paginationQuerySchema.extend({
+    status: reportingStatusQuery.optional(),
+    customerId: reportingIdQuery.optional(),
+  });
+export type ListSupportTicketProjectionsQuery = z.infer<
+  typeof listSupportTicketProjectionsQuerySchema
+>;
+
+export const listAuditLogsQuerySchema = paginationQuerySchema.extend({
+  action: z.string().trim().max(REPORTING_LIMITS.actionMax).optional(),
+  actorId: reportingIdQuery.optional(),
+  resourceType: z
+    .string()
+    .trim()
+    .max(REPORTING_LIMITS.resourceTypeMax)
+    .optional(),
+  resourceId: reportingIdQuery.optional(),
+  dateFrom: z.string().datetime().optional(),
+  dateTo: z.string().datetime().optional(),
+});
+export type ListAuditLogsQuery = z.infer<typeof listAuditLogsQuerySchema>;
+
+export const dailyMetricsQuerySchema = z.object({
+  dateFrom: z.string().datetime().optional(),
+  dateTo: z.string().datetime().optional(),
+  domain: z.string().trim().max(40).optional(),
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(REPORTING_LIMITS.pageSizeMax)
+    .default(REPORTING_LIMITS.defaultPageSize),
+});
+export type DailyMetricsQuery = z.infer<typeof dailyMetricsQuerySchema>;
+
+export const recordAuditRequestSchema = z.object({
+  action: z.string().trim().min(1).max(REPORTING_LIMITS.actionMax),
+  actorId: z.string().trim().max(REPORTING_LIMITS.actorIdMax).optional(),
+  actorRoles: z.array(z.string().trim().max(40)).optional(),
+  resourceType: z
+    .string()
+    .trim()
+    .max(REPORTING_LIMITS.resourceTypeMax)
+    .optional(),
+  resourceId: z.string().trim().max(REPORTING_LIMITS.resourceIdMax).optional(),
+  serviceName: z
+    .string()
+    .trim()
+    .max(REPORTING_LIMITS.serviceNameMax)
+    .optional(),
+  details: z.record(z.string(), z.unknown()).optional(),
+  idempotencyKey: z.string().trim().min(8).max(128).optional(),
+});
+export type RecordAuditRequest = z.infer<typeof recordAuditRequestSchema>;
+
+export interface OrderProjectionDto {
+  orderId: string;
+  orderCode?: string;
+  customerId?: string;
+  status: string;
+  grandTotal: number;
+  totalQuantity: number;
+  createdAt: string;
+  updatedAt: string;
+  lastEventType?: string;
+  lastEventId?: string;
+}
+
+export interface PaymentProjectionDto {
+  paymentId: string;
+  orderId?: string;
+  status: string;
+  amount: number;
+  method?: string;
+  currency: string;
+  createdAt: string;
+  updatedAt: string;
+  lastEventType?: string;
+}
+
+export interface ShipmentProjectionDto {
+  shipmentId: string;
+  orderId?: string;
+  status: string;
+  carrierCode?: string;
+  trackingCode?: string;
+  createdAt: string;
+  updatedAt: string;
+  lastEventType?: string;
+}
+
+export interface ReviewProjectionDto {
+  reviewId: string;
+  productId?: string;
+  customerId?: string;
+  status: string;
+  rating?: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+  lastEventType?: string;
+}
+
+export interface WarrantyClaimProjectionDto {
+  claimId: string;
+  orderId?: string;
+  customerId?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  lastEventType?: string;
+}
+
+export interface WarrantyReturnProjectionDto {
+  returnId: string;
+  orderId?: string;
+  customerId?: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  lastEventType?: string;
+}
+
+export interface SupportTicketProjectionDto {
+  ticketId: string;
+  ticketCode?: string;
+  customerId?: string;
+  status: string;
+  priority?: string;
+  category?: string;
+  createdAt: string;
+  updatedAt: string;
+  lastEventType?: string;
+}
+
+export interface DailyMetricDto {
+  id: string;
+  metricDate: string;
+  domain: string;
+  metricKey: string;
+  value: number;
+}
+
+export interface AuditLogProjectionDto {
+  id: string;
+  sourceEventId?: string;
+  action: string;
+  actorId?: string;
+  actorRoles?: string[];
+  resourceType?: string;
+  resourceId?: string;
+  serviceName?: string;
+  details?: Record<string, unknown>;
+  occurredAt: string;
+  createdAt: string;
+}
+
+export interface RecordAuditResultDto {
+  auditLog: AuditLogProjectionDto;
+}
+
+export interface DashboardSummaryDto {
+  totalOrders: number;
+  ordersByStatus: Record<string, number>;
+  totalRevenue: number;
+  totalPayments: number;
+  paymentsByStatus: Record<string, number>;
+  totalShipments: number;
+  shipmentsByStatus: Record<string, number>;
+  totalReviews: number;
+  reviewsByStatus: Record<string, number>;
+  totalWarrantyClaims: number;
+  warrantyClaimsByStatus: Record<string, number>;
+  totalWarrantyReturns: number;
+  warrantyReturnsByStatus: Record<string, number>;
+  totalSupportTickets: number;
+  supportTicketsByStatus: Record<string, number>;
+  generatedAt: string;
+}

@@ -40,31 +40,31 @@ Không bao gồm voucher, mã giảm giá, flash sale, SIM, thiết bị mạng 
 
 ## 3. Frontend
 
-| App | Vai trò | Công nghệ |
-|-----|---------|-----------|
-| `storefront-web` | Cửa hàng khách hàng | Next.js App Router, TypeScript, REST client |
-| `admin-web` | Cổng quản trị nội bộ | Next.js App Router, TypeScript, RBAC UI |
+| App              | Vai trò              | Công nghệ                                   |
+| ---------------- | -------------------- | ------------------------------------------- |
+| `storefront-web` | Cửa hàng khách hàng  | Next.js App Router, TypeScript, REST client |
+| `admin-web`      | Cổng quản trị nội bộ | Next.js App Router, TypeScript, RBAC UI     |
 
 Cả hai frontend gọi API qua Kong Gateway, không gọi thẳng service nội bộ trong production.
 
 ## 4. Backend microservices
 
-| Service | Phạm vi dữ liệu | Ghi chú |
-|---------|-----------------|--------|
-| `identity-service` | User, credential, session, device, RBAC, OAuth | JWT access + refresh/session Redis |
-| `customer-service` | Hồ sơ khách, địa chỉ, preference | Liên kết `userId` từ identity |
-| `catalog-service` | Category, brand, product, variant, SKU, price history, specs | Search/filter |
-| `inventory-service` | Warehouse, store, stock, reservation, transfer | Giữ/trừ/hoàn tồn |
-| `cart-service` | Guest/user cart, wishlist, comparison, recently viewed | Merge cart khi login |
-| `order-service` | Order, shipment split, invoice PDF metadata | Orchestrate checkout |
-| `payment-service` | COD, mock, VNPay Sandbox | Adapter pattern |
-| `shipping-service` | Carrier adapter, tracking, packages | Tích hợp vận chuyển |
-| `review-service` | Review, media review (ảnh/video) | Chỉ khách đã mua |
-| `warranty-service` | Bảo hành, đổi trả | Liên kết order/SKU |
-| `notification-service` | Email, in-app notification | Consume events (inbox M13) |
-| `support-service` | Ticket hỗ trợ | Staff/Manager xử lý |
-| `reporting-service` | Dashboard metrics, audit log projection | Read model + audit |
-| `media-service` | Upload/presign MinIO, metadata | Ảnh sản phẩm, review, ticket |
+| Service                | Phạm vi dữ liệu                                              | Ghi chú                                        |
+| ---------------------- | ------------------------------------------------------------ | ---------------------------------------------- |
+| `identity-service`     | User, credential, session, device, RBAC, OAuth               | JWT access + refresh/session Redis             |
+| `customer-service`     | Hồ sơ khách, địa chỉ, preference                             | Liên kết `userId` từ identity                  |
+| `catalog-service`      | Category, brand, product, variant, SKU, price history, specs | Search/filter                                  |
+| `inventory-service`    | Warehouse, store, stock, reservation, transfer               | Giữ/trừ/hoàn tồn                               |
+| `cart-service`         | Guest/user cart, wishlist, comparison, recently viewed       | Merge cart khi login                           |
+| `order-service`        | Order, shipment split, invoice PDF metadata                  | Orchestrate checkout                           |
+| `payment-service`      | COD, mock, VNPay Sandbox                                     | Adapter pattern                                |
+| `shipping-service`     | Carrier adapter, tracking, packages                          | Tích hợp vận chuyển                            |
+| `review-service`       | Review, media review (ảnh/video)                             | Chỉ khách đã mua                               |
+| `warranty-service`     | Bảo hành, đổi trả                                            | Liên kết order/SKU                             |
+| `notification-service` | Email, in-app notification                                   | Consume events (inbox M13)                     |
+| `support-service`      | Ticket hỗ trợ                                                | Staff/Manager xử lý                            |
+| `reporting-service`    | Dashboard metrics, audit log projection                      | Read model + audit; consume events (inbox M14) |
+| `media-service`        | Upload/presign MinIO, metadata                               | Ảnh sản phẩm, review, ticket                   |
 
 Mỗi service:
 
@@ -76,16 +76,16 @@ Mỗi service:
 
 ## 5. Shared libraries (Nx)
 
-| Library | Mục đích |
-|---------|----------|
+| Library                 | Mục đích                                           |
+| ----------------------- | -------------------------------------------------- |
 | `libs/shared/contracts` | DTO, API request/response types, OpenAPI fragments |
-| `libs/shared/events` | Event payload schemas, routing keys |
-| `libs/shared/errors` | `errorCode`, message, details, traceId, timestamp |
-| `libs/shared/auth` | JWT claims, RBAC roles/permissions, guards helpers |
-| `libs/shared/config` | Env schema validation (Zod) |
-| `libs/shared/logging` | requestId/traceId correlation |
-| `libs/shared/testing` | Test utilities, factories |
-| `libs/shared/ui` | Shared UI primitives (nếu cần giữa 2 frontend) |
+| `libs/shared/events`    | Event payload schemas, routing keys                |
+| `libs/shared/errors`    | `errorCode`, message, details, traceId, timestamp  |
+| `libs/shared/auth`      | JWT claims, RBAC roles/permissions, guards helpers |
+| `libs/shared/config`    | Env schema validation (Zod)                        |
+| `libs/shared/logging`   | requestId/traceId correlation                      |
+| `libs/shared/testing`   | Test utilities, factories                          |
+| `libs/shared/ui`        | Shared UI primitives (nếu cần giữa 2 frontend)     |
 
 ## 6. Authentication & Authorization
 

@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`, warranty `3011`, support `3012`, notification `3013`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`, warranty `3011`, support `3012`, notification `3013`, reporting `3014`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `NOTIFICATION_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support`, `nexatech_notification` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `NOTIFICATION_DATABASE_URL`, `REPORTING_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support`, `nexatech_notification`, `nexatech_reporting` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -193,6 +193,17 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - Recipient: `customerId|userId|assigneeId` + `email|customerEmail|toEmail`; support message STAFF→customer, CUSTOMER→assignee; assign→assignee.
 - REST idempotency (`NotificationIdempotency`) + AuditLog; auth tạm `x-user-id` / `x-user-roles`.
 - Không distributed TX; không gọi DB service khác; không hard-code SMTP secret.
+
+## ADR-033 — Reporting dashboard + audit projection (M14)
+
+- **Quyết định:** `reporting-service` sở hữu DB `nexatech_reporting` (port `3014`). Read model duy nhất tổng hợp từ sự kiện domain khác — **không** ghi vào DB service khác, **không** gọi REST sync ngược.
+- Consumer RabbitMQ thứ hai trong monorepo (sau notification): queue durable `reporting-service.events`, bind topic `nexatech.events`, DLX `nexatech.events.dlx`, prefetch từ `REPORTING_CONSUMER_PREFETCH`.
+- Idempotency inbox: `ProcessedEvent` keyed bởi `eventId` (kiểm tra `isProcessed` trước khi ghi projection, `tryMarkProcessed` sau khi ghi thành công — cùng pattern notification-service).
+- Projection tables (upsert theo id trích từ payload, tên field linh hoạt: `orderId`/`paymentId`/`shipmentId`/`reviewId`/`claimId`/`returnId`/`ticketId`): `OrderProjection`, `PaymentProjection`, `ShipmentProjection`, `ReviewProjection`, `WarrantyClaimProjection`, `WarrantyReturnProjection`, `SupportTicketProjection`. Field nào không có trong payload thì giữ nguyên giá trị cũ (không ghi đè bằng `undefined`); lần đầu tạo lấy `createdAt` từ `occurredAt` của event.
+- `DailyMetric` đếm theo `(metricDate, domain, metricKey)` — tăng nguyên tử qua upsert+increment; `revenue_vnd` cộng dồn từ `amount`/`paidAmount`/`grandTotal` khi `payment.paid`/`payment.succeeded`.
+- `AuditLogProjection` lưu sự kiện `audit.recorded` (từ các service khác, vd. media-service) và audit ghi thủ công qua `POST /admin/reporting/audit` (Staff+, hỗ trợ `idempotency-key`, đồng thời ghi `AuditLog` nội bộ).
+- REST `GET /admin/reporting/dashboard|metrics/daily|orders|payments|shipments|reviews|warranty/claims|warranty/returns|support/tickets|audit-logs` — RBAC Staff+ toàn bộ (Staff/Manager/Admin/SuperAdmin).
+- Auth tạm: `x-user-id` / `x-user-roles`; không distributed TX; không hard-code credential.
 
 ## ADR-011 — Kong Gateway OSS
 

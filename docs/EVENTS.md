@@ -138,7 +138,7 @@
 
 Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)**, **payment-service (M8)**, **shipping-service (M9)**, **review-service (M10)**, **warranty-service (M11)** và **support-service (M12)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
 
-**notification-service (M13)** là consumer đầu tiên: queue `notification-service.events` + bảng inbox `ProcessedEvent` theo `eventId`.
+**notification-service (M13)** là consumer đầu tiên: queue `notification-service.events` + bảng inbox `ProcessedEvent` theo `eventId`. **reporting-service (M14)** là consumer thứ hai, cùng pattern inbox nhưng dùng để xây read model dashboard/audit thay vì gửi thông báo: queue `reporting-service.events`.
 
 ## Order consume / gọi sync (M7)
 
@@ -193,3 +193,14 @@ Các service ghi sự kiện quan trọng dùng transactional outbox (cùng tran
 - Tạo IN_APP + EMAIL từ template tiếng Việt; SMTP qua env; thiếu SMTP → LoggingEmailSender (dev) hoặc SKIPPED nếu `NOTIFICATION_REQUIRE_SMTP=true`.
 - REST in-app cho user; Staff+ `POST /notifications/request` và admin email deliveries.
 - Không publish outbox bắt buộc trong M13; không gọi DB service khác.
+
+## Reporting integrate (M14)
+
+- Consume RabbitMQ topic `nexatech.events` (queue `reporting-service.events`, DLX `nexatech.events.dlx`) — consumer RabbitMQ thứ hai trong hệ thống sau notification-service, bind gần như toàn bộ routing key order/payment/shipment/review/warranty/support/audit.
+- Inbox idempotent theo `eventId` (`ProcessedEvent`); event đã xử lý bị bỏ qua an toàn (`processed: false`), không throw lỗi.
+- Mỗi eventType map sang một domain (`ORDER`/`PAYMENT`/`SHIPPING`/`REVIEW`/`WARRANTY`/`SUPPORT`/`AUDIT`) → upsert projection tương ứng (`OrderProjection`, `PaymentProjection`, ...) theo entity ID, lưu `lastEventType` để biết trạng thái mới nhất.
+- Sau khi projection cập nhật thành công, tăng một `DailyMetric` (`metricDate` theo `occurredAt` UTC, `domain`, `metricKey` suy ra từ eventType — vd `orders_created`, `payments_paid`, `claims_completed`) bằng increment nguyên tử; `payment.paid`/`payment.succeeded` cộng thêm `revenue_vnd`.
+- `audit.recorded` (routing key `reporting.audit.recorded`, publish từ nhiều service) ghi thẳng vào `AuditLogProjection`, dedupe theo `sourceEventId` unique — không tăng projection khác.
+- REST Staff+ (`x-user-id`/`x-user-roles`) đọc dashboard tổng hợp và các projection/audit log; `POST /admin/reporting/audit` cho phép ghi audit thủ công (idempotent theo `idempotencyKey`).
+- **Không ghi ngược** vào DB của service khác, không gọi REST sang service khác — reporting-service là read model thuần túy xây dựng hoàn toàn từ event; không có distributed TX.
+- Xử lý lỗi: nack(requeue=false) đẩy message lỗi sang DLX thay vì lặp vô hạn.

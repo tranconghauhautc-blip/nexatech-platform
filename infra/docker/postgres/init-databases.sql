@@ -12,6 +12,7 @@ CREATE USER nexatech_review WITH PASSWORD 'changeme';
 CREATE USER nexatech_warranty WITH PASSWORD 'changeme';
 CREATE USER nexatech_support WITH PASSWORD 'changeme';
 CREATE USER nexatech_notification WITH PASSWORD 'changeme';
+CREATE USER nexatech_reporting WITH PASSWORD 'changeme';
 
 CREATE DATABASE nexatech_identity OWNER nexatech_identity;
 CREATE DATABASE nexatech_customer OWNER nexatech_customer;
@@ -26,6 +27,7 @@ CREATE DATABASE nexatech_review OWNER nexatech_review;
 CREATE DATABASE nexatech_warranty OWNER nexatech_warranty;
 CREATE DATABASE nexatech_support OWNER nexatech_support;
 CREATE DATABASE nexatech_notification OWNER nexatech_notification;
+CREATE DATABASE nexatech_reporting OWNER nexatech_reporting;
 
 GRANT ALL PRIVILEGES ON DATABASE nexatech_identity TO nexatech_identity;
 GRANT ALL PRIVILEGES ON DATABASE nexatech_customer TO nexatech_customer;
@@ -40,3 +42,4 @@ GRANT ALL PRIVILEGES ON DATABASE nexatech_review TO nexatech_review;
 GRANT ALL PRIVILEGES ON DATABASE nexatech_warranty TO nexatech_warranty;
 GRANT ALL PRIVILEGES ON DATABASE nexatech_support TO nexatech_support;
 GRANT ALL PRIVILEGES ON DATABASE nexatech_notification TO nexatech_notification;
+GRANT ALL PRIVILEGES ON DATABASE nexatech_reporting TO nexatech_reporting;

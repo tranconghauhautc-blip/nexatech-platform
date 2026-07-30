@@ -1,0 +1,165 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("REPORTING_DATABASE_URL")
+}
+
+model OrderProjection {
+  orderId       String    @id
+  orderCode     String?
+  customerId    String?
+  status        String
+  grandTotal    Int       @default(0)
+  totalQuantity Int       @default(0)
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  lastEventType String?
+  lastEventId   String?
+
+  @@index([status])
+  @@index([customerId])
+  @@index([createdAt])
+}
+
+model PaymentProjection {
+  paymentId     String    @id
+  orderId       String?
+  status        String
+  amount        Int       @default(0)
+  method        String?
+  currency      String    @default("VND")
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  lastEventType String?
+
+  @@index([status])
+  @@index([orderId])
+}
+
+model ShipmentProjection {
+  shipmentId    String    @id
+  orderId       String?
+  status        String
+  carrierCode   String?
+  trackingCode  String?
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  lastEventType String?
+
+  @@index([status])
+  @@index([orderId])
+}
+
+model ReviewProjection {
+  reviewId      String    @id
+  productId     String?
+  customerId    String?
+  status        String
+  rating        Int?
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+  lastEventType String?
+
+  @@index([status])
+  @@index([productId])
+}
+
+model WarrantyClaimProjection {
+  claimId       String    @id
+  orderId       String?
+  customerId    String?
+  status        String
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  lastEventType String?
+
+  @@index([status])
+  @@index([customerId])
+}
+
+model WarrantyReturnProjection {
+  returnId      String    @id
+  orderId       String?
+  customerId    String?
+  status        String
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  lastEventType String?
+
+  @@index([status])
+  @@index([customerId])
+}
+
+model SupportTicketProjection {
+  ticketId      String    @id
+  ticketCode    String?
+  customerId    String?
+  status        String
+  priority      String?
+  category      String?
+  createdAt     DateTime
+  updatedAt     DateTime  @updatedAt
+  lastEventType String?
+
+  @@index([status])
+  @@index([customerId])
+}
+
+model DailyMetric {
+  id         String   @id @default(uuid())
+  metricDate DateTime @db.Date
+  domain     String
+  metricKey  String
+  value      BigInt   @default(0)
+  updatedAt  DateTime @updatedAt
+
+  @@unique([metricDate, domain, metricKey])
+  @@index([domain])
+  @@index([metricDate])
+}
+
+model AuditLogProjection {
+  id            String   @id @default(uuid())
+  sourceEventId String?  @unique
+  action        String
+  actorId       String?
+  actorRoles    String?
+  resourceType  String?
+  resourceId    String?
+  serviceName   String?
+  detailsJson   Json?
+  occurredAt    DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([occurredAt])
+}
+
+model ProcessedEvent {
+  eventId     String   @id
+  eventType   String
+  routingKey  String?
+  processedAt DateTime @default(now())
+  resultJson  Json?
+}
+
+model ReportingIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}
