@@ -36,7 +36,7 @@
 | `1245aff`   | M8 payment-service   |
 | `882320f`   | M9 shipping-service  |
 | `7c203c6`   | M9 docs hash         |
-| _(pending)_ | M10 review-service   |
+| `631cd88`   | M10 review-service   |
 
 ## Apps sau M10 (17 projects)
 
