@@ -25,6 +25,12 @@ describe('shared-events', () => {
       payload: { orderId: 'o-1', userId: 'u-1' },
     });
     expect(routingKeyFor(EventTypes.ORDER_CREATED)).toBe('order.order.created');
+    expect(routingKeyFor(EventTypes.REVIEW_PUBLISHED)).toBe(
+      'review.review.published',
+    );
+    expect(routingKeyFor(EventTypes.REVIEW_RATING_AGGREGATE_UPDATED)).toBe(
+      'review.review.rating-aggregate.updated',
+    );
     expect(EVENT_EXCHANGE).toBe('nexatech.events');
   });
 

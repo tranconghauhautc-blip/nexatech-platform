@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -143,6 +143,21 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - Webhook: verify HMAC/token (`SHIPPING_WEBHOOK_SECRET`); payloadHash chống replay.
 - Order sync: `orderSyncedAt` chống double update; emit `shipment.delivered` (COD có thể consume).
 - Auth tạm: `x-user-id` / `x-user-roles`; webhook không JWT.
+
+## ADR-029 — Review verified buyer + moderation + aggregate (M10)
+
+- **Quyết định:** `review-service` sở hữu DB `nexatech_review` (port `3010`). Chỉ verified buyer được tạo review: xác minh qua `ORDER_SERVICE_URL` — `order.customerId === actor`, `order.status === DELIVERED`, `orderItemId` thuộc order; nếu có package chứa item thì package cũng phải `DELIVERED`. Không tin customerId/ownership từ body.
+- Một review active / `(customerId, orderItemId)` qua `activeKey`; soft-delete xoay `activeKey` → cho phép đánh giá lại sau khi xóa (có audit).
+- State machine: `PENDING | PUBLISHED | HIDDEN | REJECTED | DELETED`. `REVIEW_AUTO_PUBLISH` mặc định `true` (dev/test) → tạo ra `PUBLISHED`; production có thể tắt để vào queue `PENDING`.
+- Edit window: 72 giờ; optimistic `version`; soft-delete only.
+- Media: chỉ reference `mediaId` từ media-service; tối đa 5 ảnh + 1 video; verify ownership + MIME; unlink local khi xóa (không xóa object MinIO trực tiếp).
+- Store reply: Staff+; một reply active / review; chỉ trên `PUBLISHED`.
+- Helpful: một vote / (reviewId, customerId); cấm self-vote; idempotent.
+- Report: unique active theo `(reviewId, reporterId, reason)`; statuses OPEN/REVIEWING/RESOLVED/DISMISSED.
+- Aggregate: chỉ đếm `PUBLISHED`; integer math `averageRatingCents = round(sumRating * 100 / total)`; rebuild admin endpoint.
+- Privacy: mask displayName; public DTO không trả customerId/email/phone; sanitize content.
+- Outbox + RabbitMQ sau local TX; clients REST tới order/catalog/media với timeout/retry.
+- Auth tạm: `x-user-id` / `x-user-roles`.
 
 ## ADR-011 — Kong Gateway OSS
 

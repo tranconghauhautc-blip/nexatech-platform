@@ -386,9 +386,54 @@ Create quote body: `orderId`, `idempotencyKey`, `deliveryMethod?`, `packageIds?`
 
 ---
 
-## Các service sau M9 (kế hoạch — chưa code)
+## review-service (M10) — port 3010
 
-Review, warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Auth tạm: `x-user-id`, `x-user-roles`. CustomerId luôn lấy từ header, không từ body.
+
+### Customer / public
+
+| Method | Path                                          | Mô tả                             | Auth              |
+| ------ | --------------------------------------------- | --------------------------------- | ----------------- |
+| POST   | `/api/v1/reviews`                             | Tạo review (verified buyer)       | Customer          |
+| GET    | `/api/v1/reviews/:reviewId`                   | Chi tiết (public chỉ PUBLISHED)   | Optional          |
+| PATCH  | `/api/v1/reviews/:reviewId`                   | Sửa (owner, ≤72h)                 | Customer          |
+| DELETE | `/api/v1/reviews/:reviewId`                   | Soft-delete                       | Owner hoặc Staff+ |
+| GET    | `/api/v1/products/:productId/reviews`         | List PUBLISHED + filter/sort/page | Public            |
+| GET    | `/api/v1/products/:productId/reviews/summary` | Aggregate rating                  | Public            |
+| POST   | `/api/v1/reviews/:reviewId/helpful`           | Vote hữu ích                      | Customer          |
+| DELETE | `/api/v1/reviews/:reviewId/helpful`           | Bỏ vote                           | Customer          |
+| POST   | `/api/v1/reviews/:reviewId/reports`           | Báo cáo                           | Customer          |
+| POST   | `/api/v1/reviews/:reviewId/media`             | Gắn media reference               | Owner             |
+| DELETE | `/api/v1/reviews/:reviewId/media/:mediaId`    | Unlink media                      | Owner/Staff       |
+| POST   | `/api/v1/reviews/:reviewId/replies`           | Store reply                       | Staff+            |
+| PATCH  | `/api/v1/reviews/:reviewId/replies/:replyId`  | Sửa reply                         | Staff+            |
+| DELETE | `/api/v1/reviews/:reviewId/replies/:replyId`  | Soft-delete reply                 | Staff+            |
+
+Create body: `orderId`, `orderItemId`, `rating` (1–5), `content` (min 10), `title?`, `mediaIds?`, `displayName?`, `idempotencyKey?`.
+
+List query: `rating`, `hasMedia`, `verifiedOnly`, `sort=newest|highest|lowest|most_helpful`, pagination.
+
+### Admin
+
+| Method | Path                                             | Mô tả                                                | Auth   |
+| ------ | ------------------------------------------------ | ---------------------------------------------------- | ------ |
+| GET    | `/api/v1/admin/reviews`                          | Queue / filter status/reported/product/customer/date | Staff+ |
+| GET    | `/api/v1/admin/reviews/:reviewId`                | Chi tiết + moderation history                        | Staff+ |
+| POST   | `/api/v1/admin/reviews/:reviewId/moderate`       | publish/hide/reject/restore + reason                 | Staff+ |
+| GET    | `/api/v1/admin/review-reports`                   | Danh sách report                                     | Staff+ |
+| POST   | `/api/v1/admin/review-reports/:reportId/resolve` | RESOLVED/DISMISSED (+ hideReview?)                   | Staff+ |
+| POST   | `/api/v1/admin/reviews/aggregates/rebuild`       | Rebuild aggregate (productId?)                       | Staff+ |
+
+### Verified buyer / privacy
+
+- Order phải `DELIVERED` và thuộc customer; item tồn tại; package chứa item (nếu có) cũng `DELIVERED`.
+- Public response: không email/phone/customerId; `displayName` đã mask.
+
+---
+
+## Các service sau M10 (kế hoạch — chưa code)
+
+Warranty, support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

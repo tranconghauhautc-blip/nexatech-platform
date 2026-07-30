@@ -48,7 +48,7 @@
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -64,7 +64,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | order-service        | `nexatech_order`        | Prisma + migration ✅ / Prisma + outbox runtime   |
 | payment-service      | `nexatech_payment`      | Prisma + migration ✅ / Prisma + outbox runtime   |
 | shipping-service     | `nexatech_shipping`     | Prisma + migration ✅ / Prisma + outbox runtime   |
-| review-service       | `nexatech_review`       | Later                                             |
+| review-service       | `nexatech_review`       | Prisma + migration ✅ / Prisma + outbox runtime   |
 | warranty-service     | `nexatech_warranty`     | Later                                             |
 | notification-service | `nexatech_notification` | Later                                             |
 | support-service      | `nexatech_support`      | Later                                             |
@@ -148,6 +148,19 @@ Client: `apps/payment-service/src/generated/prisma`. Money: integer VND; VNPay `
 - `ShipmentIdempotency`, `OutboxEvent`, `AuditLog`
 
 Client: `apps/shipping-service/src/generated/prisma`. Money: integer VND.
+
+## review — Prisma models (M10)
+
+- `Review` — product/sku/order/orderItem, customerId, rating 1–5, content, status machine, `activeKey` unique, `version`, soft-delete via status+rotated activeKey
+- `ReviewMedia` — mediaId reference + kind IMAGE/VIDEO, soft unlink (`deletedAt`)
+- `ReviewReply` — một reply active / review (`activeKey`), soft-delete
+- `ReviewHelpfulVote` — unique `(reviewId, customerId)`
+- `ReviewReport` — reason/status + `activeKey` chống duplicate OPEN/REVIEWING
+- `ReviewModerationHistory` — from/to/action/actor/reason
+- `ProductRatingAggregate` — sumRating, counts star1–5, verified/media counts, version
+- `ReviewIdempotency`, `OutboxEvent`, `AuditLog`
+
+Client: `apps/review-service/src/generated/prisma`. Aggregate: `averageRatingCents = round(sumRating * 100 / totalReviews)`.
 
 ## MinIO buckets
 

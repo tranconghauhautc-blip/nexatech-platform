@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone tiếp theo:** M10 — Review
-- **Milestone đã hoàn thành gần nhất:** M9
+- **Milestone tiếp theo:** M11 — Warranty
+- **Milestone đã hoàn thành gần nhất:** M10
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (sau M9)
+- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (sau M10)
 
 ## Roadmap milestone
 
@@ -22,7 +22,8 @@
 | M7      | Order / Checkout                          | ✅ Done    | order-service + outbox           |
 | M8      | Payment                                   | ✅ Done    | payment-service + VNPay/MOCK/COD |
 | M9      | Shipping                                  | ✅ Done    | shipping-service + mock/GHN      |
-| M10–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M10.md`        |
+| M10     | Review                                    | ✅ Done    | review-service                   |
+| M11–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M11.md`        |
 
 ## Commits
 
@@ -34,8 +35,10 @@
 | `4e2627a`   | M7 order-service     |
 | `1245aff`   | M8 payment-service   |
 | `882320f`   | M9 shipping-service  |
+| `7c203c6`   | M9 docs hash         |
+| _(pending)_ | M10 review-service   |
 
-## Apps sau M9 (16 projects)
+## Apps sau M10 (17 projects)
 
 | App               | Port | Persistence                      |
 | ----------------- | ---- | -------------------------------- |
@@ -48,17 +51,17 @@
 | order-service     | 3007 | Prisma + outbox + RabbitMQ       |
 | payment-service   | 3008 | Prisma + outbox + RabbitMQ       |
 | shipping-service  | 3009 | Prisma + outbox + RabbitMQ       |
+| review-service    | 3010 | Prisma + outbox + RabbitMQ       |
 
-## M9 đã hoàn thành
+## M10 đã hoàn thành
 
-- [x] Shared contracts / errors / events cho shipping
-- [x] shipping-service Prisma + migration `nexatech_shipping`
-- [x] Quote, slot, shipment state machine, mock/GHN skeleton
-- [x] Store pickup code + webhook + outbox
-- [x] Order sync (`shipping-sync`)
+- [x] Shared contracts / errors / events cho review
+- [x] review-service Prisma + migration `nexatech_review`
+- [x] Verified buyer, lifecycle, media, reply, helpful, report, moderation
+- [x] Rating aggregate + rebuild
 - [x] Unit + API + migration tests
 - [x] Docker init DB / env
-- [x] Docs + HANDOFF-M10
+- [x] Docs + HANDOFF-M11
 - [x] format / lint / test / build xanh
 
 ## Workaround
@@ -67,16 +70,29 @@ Nx **22.7.7**, `NX_SKIP_NATIVE_FILE_CACHE=true`, `NX_DAEMON=false`.
 
 ## Local note (Postgres volume đã init)
 
-Nếu DB `nexatech_shipping` chưa có (volume cũ):
+Nếu DB `nexatech_review` chưa có (volume cũ):
 
 ```sql
-CREATE USER nexatech_shipping WITH PASSWORD 'changeme';
-CREATE DATABASE nexatech_shipping OWNER nexatech_shipping;
+CREATE USER nexatech_review WITH PASSWORD 'changeme';
+CREATE DATABASE nexatech_review OWNER nexatech_review;
 ```
 
-Rồi: `cd apps/shipping-service && npx prisma migrate deploy && npx prisma generate`
+Rồi: `cd apps/review-service && npx prisma migrate deploy && npx prisma generate`
 
 ## Nhật ký
+
+### 2026-07-30 — M10 done
+
+- review-service hoàn chỉnh; verified buyer; moderation; aggregate; media/reply/report/helpful; outbox.
+- Shared contracts/errors/events; docs + HANDOFF-M11.
+- **Không bắt đầu M11 trong phiên này**.
+
+### 2026-07-30 — M10 start
+
+- Working tree sạch; HEAD `7c203c6` (M9 docs); branch `main` đồng bộ `origin/main`.
+- Apps M4–M9 tồn tại; `review-service` chưa có.
+- Baseline format / lint / test / build xanh.
+- Bắt đầu triển khai review-service (verified buyer, moderation, aggregate, media, reply, report).
 
 ### 2026-07-30 — M9 done
 

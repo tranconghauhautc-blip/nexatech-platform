@@ -1,0 +1,194 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("REVIEW_DATABASE_URL")
+}
+
+enum ReviewStatus {
+  PENDING
+  PUBLISHED
+  HIDDEN
+  REJECTED
+  DELETED
+}
+
+enum ReviewMediaKind {
+  IMAGE
+  VIDEO
+}
+
+enum ReviewReportReason {
+  SPAM
+  OFFENSIVE
+  FAKE
+  IRRELEVANT
+  PRIVACY
+  OTHER
+}
+
+enum ReviewReportStatus {
+  OPEN
+  REVIEWING
+  RESOLVED
+  DISMISSED
+}
+
+model Review {
+  id               String    @id @default(uuid())
+  productId        String
+  skuId            String?
+  skuCode          String?
+  orderId          String
+  orderItemId      String
+  customerId       String
+  displayName      String
+  rating           Int
+  title            String?
+  content          String
+  verifiedPurchase Boolean   @default(true)
+  status           ReviewStatus @default(PENDING)
+  helpfulCount     Int       @default(0)
+  reportCount      Int       @default(0)
+  /// "customerId:orderItemId" khi active, "deleted:<uuid>" sau khi soft-delete
+  activeKey        String    @unique
+  deleteReason     String?
+  deletedAt        DateTime?
+  editedAt         DateTime?
+  version          Int       @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  media             ReviewMedia[]
+  replies           ReviewReply[]
+  helpfulVotes      ReviewHelpfulVote[]
+  reports           ReviewReport[]
+  moderationHistory ReviewModerationHistory[]
+
+  @@index([productId, status])
+  @@index([customerId])
+  @@index([orderId])
+  @@index([orderItemId])
+}
+
+model ReviewMedia {
+  id        String          @id @default(uuid())
+  reviewId  String
+  review    Review          @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  mediaId   String
+  kind      ReviewMediaKind
+  sortOrder Int             @default(0)
+  deletedAt DateTime?
+  createdAt DateTime        @default(now())
+
+  @@index([reviewId])
+  @@index([mediaId])
+}
+
+model ReviewReply {
+  id               String    @id @default(uuid())
+  reviewId         String
+  review           Review    @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  /// "review:<reviewId>" khi active, "deleted:<uuid>" sau khi soft-delete
+  activeKey        String    @unique
+  content          String
+  staffId          String
+  staffDisplayName String?
+  deletedAt        DateTime?
+  editedAt         DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([reviewId])
+}
+
+model ReviewHelpfulVote {
+  id         String   @id @default(uuid())
+  reviewId   String
+  review     Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  customerId String
+  createdAt  DateTime @default(now())
+
+  @@unique([reviewId, customerId])
+  @@index([reviewId])
+}
+
+model ReviewReport {
+  id             String             @id @default(uuid())
+  reviewId       String
+  review         Review             @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  reporterId     String
+  reason         ReviewReportReason
+  description    String?
+  status         ReviewReportStatus @default(OPEN)
+  /// "reviewId:reporterId:reason" khi OPEN/REVIEWING, "resolved:<uuid>" sau khi xử lý
+  activeKey      String             @unique
+  resolutionNote String?
+  resolvedBy     String?
+  resolvedAt     DateTime?
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([reviewId])
+  @@index([status])
+}
+
+model ReviewModerationHistory {
+  id         String        @id @default(uuid())
+  reviewId   String
+  review     Review        @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  fromStatus ReviewStatus?
+  toStatus   ReviewStatus
+  action     String
+  actorId    String
+  actorType  String
+  reason     String?
+  createdAt  DateTime      @default(now())
+
+  @@index([reviewId])
+}
+
+model ProductRatingAggregate {
+  productId       String   @id
+  sumRating       Int      @default(0)
+  totalReviews    Int      @default(0)
+  verifiedReviews Int      @default(0)
+  mediaReviews    Int      @default(0)
+  star1           Int      @default(0)
+  star2           Int      @default(0)
+  star3           Int      @default(0)
+  star4           Int      @default(0)
+  star5           Int      @default(0)
+  version         Int      @default(0)
+  updatedAt       DateTime @updatedAt
+}
+
+model ReviewIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  routingKey  String
+  payloadJson Json
+  traceId     String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([publishedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

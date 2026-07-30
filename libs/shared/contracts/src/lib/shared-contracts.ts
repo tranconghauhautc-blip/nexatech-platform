@@ -1108,3 +1108,299 @@ export interface PublicTrackingDto {
     note?: string;
   }>;
 }
+
+/** Review lifecycle (review-service owned) */
+export const reviewStatusSchema = z.enum([
+  'PENDING',
+  'PUBLISHED',
+  'HIDDEN',
+  'REJECTED',
+  'DELETED',
+]);
+export type ReviewStatus = z.infer<typeof reviewStatusSchema>;
+
+export const reviewReportReasonSchema = z.enum([
+  'SPAM',
+  'OFFENSIVE',
+  'FAKE',
+  'IRRELEVANT',
+  'PRIVACY',
+  'OTHER',
+]);
+export type ReviewReportReason = z.infer<typeof reviewReportReasonSchema>;
+
+export const reviewReportStatusSchema = z.enum([
+  'OPEN',
+  'REVIEWING',
+  'RESOLVED',
+  'DISMISSED',
+]);
+export type ReviewReportStatus = z.infer<typeof reviewReportStatusSchema>;
+
+export const reviewMediaKindSchema = z.enum(['IMAGE', 'VIDEO']);
+export type ReviewMediaKind = z.infer<typeof reviewMediaKindSchema>;
+
+export const REVIEW_LIMITS = {
+  TITLE_MAX: 120,
+  CONTENT_MIN: 10,
+  CONTENT_MAX: 5000,
+  REPLY_MIN: 1,
+  REPLY_MAX: 2000,
+  REPORT_DESCRIPTION_MAX: 1000,
+  MAX_IMAGES: 5,
+  MAX_VIDEOS: 1,
+  EDIT_WINDOW_HOURS: 72,
+} as const;
+
+export const createReviewRequestSchema = z.object({
+  orderId: z.string().trim().min(1).max(120),
+  orderItemId: z.string().trim().min(1).max(120),
+  rating: z.coerce.number().int().min(1).max(5),
+  title: z.string().trim().min(1).max(REVIEW_LIMITS.TITLE_MAX).optional(),
+  content: z
+    .string()
+    .trim()
+    .min(REVIEW_LIMITS.CONTENT_MIN)
+    .max(REVIEW_LIMITS.CONTENT_MAX),
+  displayName: z.string().trim().min(1).max(80).optional(),
+  mediaIds: z.array(z.string().trim().min(1).max(120)).max(6).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CreateReviewRequest = z.infer<typeof createReviewRequestSchema>;
+
+export const updateReviewRequestSchema = z
+  .object({
+    rating: z.coerce.number().int().min(1).max(5).optional(),
+    title: z
+      .string()
+      .trim()
+      .min(1)
+      .max(REVIEW_LIMITS.TITLE_MAX)
+      .nullable()
+      .optional(),
+    content: z
+      .string()
+      .trim()
+      .min(REVIEW_LIMITS.CONTENT_MIN)
+      .max(REVIEW_LIMITS.CONTENT_MAX)
+      .optional(),
+    expectedVersion: z.coerce.number().int().min(0).optional(),
+    idempotencyKey: z.string().trim().min(8).max(120).optional(),
+  })
+  .refine(
+    (v) =>
+      v.rating !== undefined ||
+      v.title !== undefined ||
+      v.content !== undefined,
+    { message: 'Cần ít nhất một trường để cập nhật' },
+  );
+export type UpdateReviewRequest = z.infer<typeof updateReviewRequestSchema>;
+
+export const attachReviewMediaRequestSchema = z.object({
+  mediaId: z.string().trim().min(1).max(120),
+  kind: reviewMediaKindSchema.optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type AttachReviewMediaRequest = z.infer<
+  typeof attachReviewMediaRequestSchema
+>;
+
+export const createReviewReplyRequestSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(REVIEW_LIMITS.REPLY_MIN)
+    .max(REVIEW_LIMITS.REPLY_MAX),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CreateReviewReplyRequest = z.infer<
+  typeof createReviewReplyRequestSchema
+>;
+
+export const updateReviewReplyRequestSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(REVIEW_LIMITS.REPLY_MIN)
+    .max(REVIEW_LIMITS.REPLY_MAX),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type UpdateReviewReplyRequest = z.infer<
+  typeof updateReviewReplyRequestSchema
+>;
+
+export const createReviewReportRequestSchema = z.object({
+  reason: reviewReportReasonSchema,
+  description: z
+    .string()
+    .trim()
+    .max(REVIEW_LIMITS.REPORT_DESCRIPTION_MAX)
+    .optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CreateReviewReportRequest = z.infer<
+  typeof createReviewReportRequestSchema
+>;
+
+export const moderateReviewRequestSchema = z.object({
+  action: z.enum(['publish', 'hide', 'reject', 'restore']),
+  reason: z.string().trim().min(1).max(500),
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ModerateReviewRequest = z.infer<typeof moderateReviewRequestSchema>;
+
+export const resolveReviewReportRequestSchema = z.object({
+  resolution: z.enum(['RESOLVED', 'DISMISSED']),
+  note: z.string().trim().min(1).max(500),
+  hideReview: z.boolean().optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type ResolveReviewReportRequest = z.infer<
+  typeof resolveReviewReportRequestSchema
+>;
+
+export const rebuildAggregatesRequestSchema = z.object({
+  productId: z.string().trim().min(1).max(120).optional(),
+});
+export type RebuildAggregatesRequest = z.infer<
+  typeof rebuildAggregatesRequestSchema
+>;
+
+export const listProductReviewsQuerySchema = paginationQuerySchema.extend({
+  rating: z.coerce.number().int().min(1).max(5).optional(),
+  hasMedia: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform((v) =>
+      v === undefined ? undefined : v === true || v === 'true',
+    ),
+  verifiedOnly: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform((v) =>
+      v === undefined ? undefined : v === true || v === 'true',
+    ),
+  sort: z
+    .enum(['newest', 'highest', 'lowest', 'most_helpful'])
+    .default('newest'),
+});
+export type ListProductReviewsQuery = z.infer<
+  typeof listProductReviewsQuerySchema
+>;
+
+export const listAdminReviewsQuerySchema = paginationQuerySchema.extend({
+  status: reviewStatusSchema.optional(),
+  productId: z.string().trim().min(1).max(120).optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  reported: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform((v) =>
+      v === undefined ? undefined : v === true || v === 'true',
+    ),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z.enum(['newest', 'oldest', 'most_reported']).default('newest'),
+});
+export type ListAdminReviewsQuery = z.infer<typeof listAdminReviewsQuerySchema>;
+
+export const listReviewReportsQuerySchema = paginationQuerySchema.extend({
+  status: reviewReportStatusSchema.optional(),
+  reviewId: z.string().trim().min(1).max(120).optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListReviewReportsQuery = z.infer<
+  typeof listReviewReportsQuerySchema
+>;
+
+export interface ReviewMediaDto {
+  id: string;
+  mediaId: string;
+  kind: ReviewMediaKind;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface ReviewReplyDto {
+  id: string;
+  content: string;
+  staffId: string;
+  staffDisplayName?: string;
+  createdAt: string;
+  updatedAt: string;
+  editedAt?: string;
+}
+
+export interface ReviewDto {
+  id: string;
+  productId: string;
+  skuId?: string;
+  skuCode?: string;
+  orderId: string;
+  orderItemId: string;
+  customerId?: string;
+  displayName: string;
+  rating: number;
+  title?: string;
+  content: string;
+  verifiedPurchase: boolean;
+  status: ReviewStatus;
+  helpfulCount: number;
+  reportCount: number;
+  hasMedia: boolean;
+  media: ReviewMediaDto[];
+  reply?: ReviewReplyDto;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  editedAt?: string;
+}
+
+export interface ProductRatingSummaryDto {
+  productId: string;
+  averageRating: number;
+  averageRatingCents: number;
+  totalReviews: number;
+  verifiedReviews: number;
+  mediaReviews: number;
+  ratingCounts: {
+    star1: number;
+    star2: number;
+    star3: number;
+    star4: number;
+    star5: number;
+  };
+  updatedAt: string;
+}
+
+export interface ReviewModerationHistoryDto {
+  id: string;
+  fromStatus?: ReviewStatus;
+  toStatus: ReviewStatus;
+  action: string;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export interface ReviewReportDto {
+  id: string;
+  reviewId: string;
+  reporterId: string;
+  reason: ReviewReportReason;
+  description?: string;
+  status: ReviewReportStatus;
+  resolutionNote?: string;
+  resolvedBy?: string;
+  resolvedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminReviewDetailDto extends ReviewDto {
+  customerId: string;
+  moderationHistory: ReviewModerationHistoryDto[];
+  reports?: ReviewReportDto[];
+}
