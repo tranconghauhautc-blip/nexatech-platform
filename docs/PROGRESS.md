@@ -26,7 +26,7 @@
 | `6e0cb8a` | M16 HANDOFF hash      |
 | `3e2c830` | M17 Helm/Docker/K8s   |
 | `d3bae87` | M17 docs hash         |
-| _(local)_ | M18 observability/ops |
+| `d904b12` | M18 observability/ops        |
 
 ## M18 checklist (Done)
 
