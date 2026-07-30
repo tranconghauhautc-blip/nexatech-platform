@@ -39,8 +39,11 @@ docker compose -f infra/docker/docker-compose.apps.yml up -d --build
 ## Dockerfile pattern
 
 ```text
-deps → build (Nx) → production runtime (node slim, USER 10001)
+deps (pnpm frozen) → nx build → pnpm install --prod --frozen-lockfile --ignore-workspace (dist package.json)
+→ runner (node slim, USER 10001, Prisma engine + schema)
 ```
+
+Nest runtime **không** copy workspace `node_modules`. Nx `generatePackageJson` + pruned lockfile trong `dist/apps/<service>/`; generator `scripts/m16-gen-dockerfiles.mjs` (ADR-041).
 
 Mỗi service expose:
 

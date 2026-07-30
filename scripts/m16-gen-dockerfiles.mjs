@@ -1,6 +1,21 @@
 import { writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+/**
+ * Generates production Dockerfiles for all Nest backend services.
+ *
+ * Runtime packaging contract:
+ * - Nx webpack build uses generatePackageJson + pruned pnpm-lock.yaml
+ * - Dependencies stay external (not blindly copying workspace node_modules)
+ * - Build stage materializes production node_modules via:
+ *     pnpm install --prod --frozen-lockfile --ignore-workspace
+ * - Runner copies dist (main.js + package.json + lockfile + node_modules)
+ *   plus Prisma schema/engine when present
+ *
+ * Root cause previously: runner copied the bundle only, so require('@nestjs/common')
+ * failed. tslib must also be a root production dependency because tsconfig
+ * importHelpers:true emits require('tslib') into main.js.
+ */
 const services = [
   ['identity-service', 3001],
   ['customer-service', 3002],
@@ -20,13 +35,14 @@ const services = [
 
 function dockerfile(name, port) {
   return `# syntax=docker/dockerfile:1.7
-# Production image for ${name} (Nx NestJS webpack bundle)
+# Production image for ${name} (Nx NestJS webpack bundle + prod node_modules)
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
 RUN corepack enable \\
   && apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \\
   && rm -rf /var/lib/apt/lists/*
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml nx.json tsconfig.base.json ./
+COPY eslint.config.mjs ./
 COPY libs ./libs
 COPY apps ./apps
 RUN pnpm install --frozen-lockfile
@@ -35,14 +51,22 @@ ENV NX_DAEMON=false
 ENV NODE_ENV=production
 RUN cd apps/${name} && pnpm exec prisma generate
 RUN pnpm exec nx build ${name} --configuration=production
+# Materialize production deps from Nx-generated package.json + pruned lockfile.
+# --ignore-workspace avoids the monorepo root workspace; store stays warm from the prior install.
+RUN cd dist/apps/${name} \\
+  && pnpm install --prod --frozen-lockfile --ignore-workspace
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
+ARG NEXATECH_SECURITY_LAB=0
+ARG NEXATECH_DEPLOY_PROFILE=production
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates curl \\
   && rm -rf /var/lib/apt/lists/* \\
-  && groupadd -r nexatech && useradd -r -g nexatech nexatech
+  && groupadd -g 10001 nexatech && useradd -u 10001 -g nexatech -m nexatech
 ENV NODE_ENV=production
 ENV PORT=${port}
+ENV NEXATECH_SECURITY_LAB=\${NEXATECH_SECURITY_LAB}
+ENV NEXATECH_DEPLOY_PROFILE=\${NEXATECH_DEPLOY_PROFILE}
 COPY --from=build /app/dist/apps/${name}/ ./
 COPY --from=build /app/apps/${name}/src/generated/prisma/schema.prisma ./schema.prisma
 COPY --from=build /app/apps/${name}/src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node ./libquery_engine-debian-openssl-3.0.x.so.node

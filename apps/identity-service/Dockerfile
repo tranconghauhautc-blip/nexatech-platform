@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# Production image for identity-service (Nx NestJS webpack bundle)
+# Production image for identity-service (Nx NestJS webpack bundle + prod node_modules)
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
 RUN corepack enable \
@@ -15,6 +15,10 @@ ENV NX_DAEMON=false
 ENV NODE_ENV=production
 RUN cd apps/identity-service && pnpm exec prisma generate
 RUN pnpm exec nx build identity-service --configuration=production
+# Materialize production deps from Nx-generated package.json + pruned lockfile.
+# --ignore-workspace avoids the monorepo root workspace; store stays warm from the prior install.
+RUN cd dist/apps/identity-service \
+  && pnpm install --prod --frozen-lockfile --ignore-workspace
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app

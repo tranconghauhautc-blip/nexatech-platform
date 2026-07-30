@@ -161,6 +161,28 @@ docker run --rm -e IDENTITY_DATABASE_URL='postgresql://...' nexatech/identity-se
 
 Smoke tối thiểu M17: build thành công **storefront-web**, **identity-service**, và **identity-service:0.17.0-migrate**; container start không crash ngay.
 
+### Nest runtime packaging (ADR-041)
+
+Nx webpack (`generatePackageJson: true`) externalize Nest/runtime deps vào `dist/apps/<service>/package.json` + pruned `pnpm-lock.yaml`. Production Dockerfile **phải** materialize deps:
+
+```text
+pnpm exec nx build <service> --configuration=production
+cd dist/apps/<service> && pnpm install --prod --frozen-lockfile --ignore-workspace
+```
+
+Generator: `scripts/m16-gen-dockerfiles.mjs` (regenerate toàn bộ `apps/*-service/Dockerfile`). `tslib` thuộc root **dependencies** (vì `importHelpers`). Không copy workspace `node_modules`; không `npm install` với lockfile pnpm.
+
+Local Compose validation:
+
+```powershell
+docker compose -f infra/docker/docker-compose.dev.yml up -d
+docker compose -f infra/docker/docker-compose.apps.yml up -d --build
+docker compose -f infra/docker/docker-compose.apps.yml ps -a
+# Expect: 14 Nest + storefront + admin + Kong healthy; curl http://127.0.0.1:3001/health/live → {"status":"ok"}
+```
+
+Sau recreate frontend/backend, nếu Kong 502 do DNS cache upstream: `docker compose -f infra/docker/docker-compose.apps.yml restart kong`.
+
 ### Secret scan
 
 Trước commit M17:

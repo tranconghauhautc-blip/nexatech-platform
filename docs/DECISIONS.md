@@ -337,3 +337,18 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Tests:** `pnpm security:test:secure|lab`, `security:smoke`, `security:validate`; lab runners yêu cầu `SECURITY_LAB_ACK=YES` + private target guard.
 - **Cấm:** weaken production path để lab xanh; secret thật; public lab không allowlist; PoC Internet.
 - **Hệ quả:** Roadmap M0–M21 hoàn tất; không tự bắt đầu milestone mới.
+
+## ADR-041 — Nest production Docker runtime dependencies
+
+- **Vấn đề:** Sau M0–M21, Compose local (`docker-compose.apps.yml`) khiến 14 Nest backends `Exited (1)` với `Cannot find module '@nestjs/common'` (và sau patch install: `tslib`).
+- **Nguyên nhân gốc:**
+  1. Nx webpack `generatePackageJson: true` **externalize** runtime deps vào `dist/apps/<service>/package.json` + pruned `pnpm-lock.yaml`, nhưng Dockerfile chỉ `COPY` bundle và chạy `node main.js` — **không** materialize production `node_modules`.
+  2. `tslib` nằm trong root `devDependencies` trong khi `tsconfig` `importHelpers: true` emit `require('tslib')` vào `main.js`; Nx omit `tslib` khỏi generated production package.json → thiếu module dù đã `pnpm install --prod`.
+  3. `nx prune` / `@nx/js:prune-lockfile` không dùng được trong integrated monorepo (không có `apps/*/package.json`); generator không cần prune target.
+- **Quyết định:**
+  - Chuyển `tslib` sang root `dependencies`.
+  - Cập nhật `scripts/m16-gen-dockerfiles.mjs` và regenerate 14 Dockerfiles: sau `nx build`, chạy `pnpm install --prod --frozen-lockfile --ignore-workspace` trong `dist/apps/<service>` (dùng package.json + lockfile do Nx sinh; không copy workspace `node_modules`, không `npm install`).
+  - Health controllers dùng `@Controller({ version: VERSION_NEUTRAL })` để `/health/live` khớp Docker/Helm probes (trước đó URI versioning đẩy probe sang `/v1/health/live`).
+  - Frontend runner: `HOSTNAME=0.0.0.0` để Next standalone lắng nghe loopback cho healthcheck trong container.
+- **Không đổi:** UID 10001, Prisma engine copy, image tags `0.17.0`, security-lab build args, migrate Dockerfile, Nx 22.7.7, Node 22.
+- **Hệ quả:** Local Compose stack: 14 Nest + storefront + admin + Kong healthy; smoke `/health/live` OK.

@@ -1,7 +1,7 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, VERSION_NEUTRAL } from '@nestjs/common';
 import { createHealthResponse } from '@nexatech/shared-contracts';
 
-@Controller()
+@Controller({ version: VERSION_NEUTRAL })
 export class HealthController {
   @Get('health')
   health() {

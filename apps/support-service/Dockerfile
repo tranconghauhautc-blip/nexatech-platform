@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.7
-# Production image for support-service (Nx NestJS webpack bundle)
+# Production image for support-service (Nx NestJS webpack bundle + prod node_modules)
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
 RUN corepack enable \
@@ -15,14 +15,22 @@ ENV NX_DAEMON=false
 ENV NODE_ENV=production
 RUN cd apps/support-service && pnpm exec prisma generate
 RUN pnpm exec nx build support-service --configuration=production
+# Materialize production deps from Nx-generated package.json + pruned lockfile.
+# --ignore-workspace avoids the monorepo root workspace; store stays warm from the prior install.
+RUN cd dist/apps/support-service \
+  && pnpm install --prod --frozen-lockfile --ignore-workspace
 
 FROM node:22-bookworm-slim AS runner
 WORKDIR /app
+ARG NEXATECH_SECURITY_LAB=0
+ARG NEXATECH_DEPLOY_PROFILE=production
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates curl \
   && rm -rf /var/lib/apt/lists/* \
   && groupadd -g 10001 nexatech && useradd -u 10001 -g nexatech -m nexatech
 ENV NODE_ENV=production
 ENV PORT=3012
+ENV NEXATECH_SECURITY_LAB=${NEXATECH_SECURITY_LAB}
+ENV NEXATECH_DEPLOY_PROFILE=${NEXATECH_DEPLOY_PROFILE}
 COPY --from=build /app/dist/apps/support-service/ ./
 COPY --from=build /app/apps/support-service/src/generated/prisma/schema.prisma ./schema.prisma
 COPY --from=build /app/apps/support-service/src/generated/prisma/libquery_engine-debian-openssl-3.0.x.so.node ./libquery_engine-debian-openssl-3.0.x.so.node
