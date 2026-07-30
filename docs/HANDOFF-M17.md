@@ -14,6 +14,7 @@ Ngày bàn giao: **2026-07-30**
 | Branch         | `main`                                                       |
 | Milestone xong | M0–**M16** (Docker backends / Kong / E2E / seed / Prisma ID) |
 | Milestone tiếp | **M17** — xem gợi ý bên dưới                                 |
+| Feat commit    | `042d846` (docs hash `9bb34ef`)                              |
 | Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`                |
 | Next.js        | **15.2.4**                                                   |
 
