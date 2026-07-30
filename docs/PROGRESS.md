@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M15 — chưa bắt đầu
-- **Milestone đã hoàn thành gần nhất:** M14 (reporting-service)
+- **Milestone đang làm:** _(sẵn sàng M16 — chưa bắt đầu)_
+- **Milestone đã hoàn thành gần nhất:** M15 (storefront-web + admin-web)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (21 projects; reporting 56/56 incl. Prisma integration Postgres Compose)
+- **Kiểm tra DoD M15:** format / lint / test / build OK
 
 ## Roadmap milestone
 
@@ -27,33 +27,38 @@
 | M12     | Support                                   | ✅ Done    | support-service                  |
 | M13     | Notification                              | ✅ Done    | notification-service             |
 | M14     | Reporting                                 | ✅ Done    | reporting-service                |
-| M15–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M15.md`        |
+| M15     | Frontend storefront + admin               | ✅ Done    | Next.js 15 App Router            |
+| M16–M22 | …                                         | ⏳ Pending | Sau DoD M15                      |
 
 ## Commits
 
-| Commit    | Nội dung                 |
-| --------- | ------------------------ |
-| `8526147` | M4 catalog + media       |
-| `b38b723` | M5 inventory-service     |
-| `d2155fc` | M6 cart-service          |
-| `4e2627a` | M7 order-service         |
-| `1245aff` | M8 payment-service       |
-| `882320f` | M9 shipping-service      |
-| `7c203c6` | M9 docs hash             |
-| `631cd88` | M10 review-service       |
-| `d7d4905` | M10 docs hash            |
-| `a60e754` | M11 warranty-service     |
-| `c5a1627` | M11 docs hash            |
-| `7c1a582` | M12 support-service      |
-| `194cdec` | M12 docs hash            |
-| `b353d67` | M13 notification-service |
-| `5c365a3` | M13 docs hash            |
-| `8f86457` | M14 reporting-service    |
+| Commit      | Nội dung                 |
+| ----------- | ------------------------ |
+| `8526147`   | M4 catalog + media       |
+| `b38b723`   | M5 inventory-service     |
+| `d2155fc`   | M6 cart-service          |
+| `4e2627a`   | M7 order-service         |
+| `1245aff`   | M8 payment-service       |
+| `882320f`   | M9 shipping-service      |
+| `7c203c6`   | M9 docs hash             |
+| `631cd88`   | M10 review-service       |
+| `d7d4905`   | M10 docs hash            |
+| `a60e754`   | M11 warranty-service     |
+| `c5a1627`   | M11 docs hash            |
+| `7c1a582`   | M12 support-service      |
+| `194cdec`   | M12 docs hash            |
+| `b353d67`   | M13 notification-service |
+| `5c365a3`   | M13 docs hash            |
+| `8f86457`   | M14 reporting-service    |
+| `b65e901`   | M14 docs hash            |
+| _(pending)_ | M15 storefront + admin   |
 
-## Apps sau M14 (21 projects)
+## Apps sau M15 (24 projects)
 
 | App                  | Port | Persistence                       |
 | -------------------- | ---- | --------------------------------- |
+| storefront-web       | 3000 | Next.js BFF + httpOnly session    |
+| admin-web            | 3100 | Next.js BFF + signed admin cookie |
 | identity-service     | 3001 | In-memory (schema sẵn)            |
 | customer-service     | 3002 | In-memory (schema sẵn)            |
 | catalog-service      | 3003 | Prisma + Postgres FTS             |
@@ -69,6 +74,19 @@
 | notification-service | 3013 | Prisma + inbox consumer + SMTP    |
 | reporting-service    | 3014 | Prisma + inbox consumer + metrics |
 
+## M15 đã hoàn thành
+
+- [x] `libs/shared/web` — format VND/date, ApiClient, admin menu RBAC helpers
+- [x] `storefront-web` — layout, home, danh mục, tìm kiếm, PDP, giỏ, checkout, auth UI, tài khoản
+- [x] SEO storefront (metadata/OG/sitemap/robots + Product/Breadcrumb JSON-LD)
+- [x] `admin-web` — login Staff+, RBAC menu, dashboard + list modules, users stub
+- [x] BFF `/api/bff/{service}` + auth routes; session httpOnly; không localStorage token
+- [x] Dockerfile multi-stage storefront + admin; compose notes; env `.env.example`
+- [x] Unit/component tests (storefront 28, admin 3, shared-web 8)
+- [x] ADR-034; docs ARCHITECTURE/API/TESTING/DECISIONS; `docs/HANDOFF-M16.md`
+- [x] format / lint / test / build monorepo
+- [x] **Không bắt đầu M16**
+
 ## M14 đã hoàn thành
 
 - [x] Shared contracts / errors cho reporting
@@ -80,35 +98,10 @@
 - [x] Docker DB init (`nexatech_reporting`) + docs + HANDOFF-M15
 - [x] format / lint / test / build (chạy cuối M14)
 
-## M13 đã hoàn thành
-
-- [x] Shared contracts / errors cho notification
-- [x] notification-service Prisma + migration `nexatech_notification` (`20260730130000_init_notification`)
-- [x] In-app REST (list/unread/read/read-all/delete) + ownership
-- [x] Email delivery + Vietnamese templates + SMTP env adapter
-- [x] RabbitMQ consumer + ProcessedEvent inbox idempotency + DLX
-- [x] Staff+ request notification + admin email deliveries
-- [x] Support outbox payload enrichment (`customerId`/`assigneeId`) — additive
-- [x] Unit + controller + migration + Prisma integration (61/61 pass)
-- [x] Docker DB init (`nexatech_notification`) + docs + HANDOFF-M14
-- [x] format / lint / test / build (chạy cuối M13)
-
-## M12 đã hoàn thành
-
-- [x] Shared contracts / errors / events cho support ticket
-- [x] support-service Prisma + migration `nexatech_support` (`20260730120000_init_support`)
-- [x] Ticket state machine + customer/staff messages (WAITING_CUSTOMER → WAITING_STAFF)
-- [x] Optional order ownership check; warranty/return opaque REST IDs
-- [x] Media attachments (max 5 ảnh), Staff+ queue/transition/assign/priority
-- [x] Optimistic locking (`version`), idempotency key, AuditLog
-- [x] Outbox + RabbitMQ publisher + OutboxDispatcher
-- [x] Unit + controller + migration + Prisma integration (43/43 pass)
-- [x] Docker DB init (`nexatech_support`) + docs + HANDOFF-M13
-- [x] format / lint / test / build (chạy cuối M12)
-
 ## Workaround
 
 Nx **22.7.7**, `NX_SKIP_NATIVE_FILE_CACHE=true`, `NX_DAEMON=false`.
+M15: `sync.disabledTaskSyncGenerators: ["@nx/js:typescript-sync"]` (tránh ép TS project references trên Nest).
 
 ## Local note (Postgres volume đã init)
 
@@ -125,6 +118,21 @@ Rồi: `cd apps/reporting-service && npx prisma migrate deploy && npx prisma gen
 
 ## Nhật ký
 
+### 2026-07-30 — M15 done
+
+- storefront-web (3000) + admin-web (3100) + shared-web; Next.js **15.2.4**; ADR-034 BFF/session.
+- UI tiếng Việt, VND; không voucher/flash sale; admin `robots` disallow.
+- Test FE: storefront 28, admin 3, shared-web 8; lint 0 errors; build monorepo xanh (24 projects).
+- HANDOFF-M16 sẵn sàng; **không bắt đầu M16**.
+
+### 2026-07-30 — M15 start
+
+- Working tree sạch; HEAD `b65e901` (docs M14 hash; feat M14 `8f86457`); branch `main`.
+- Phạm vi M15 từ HANDOFF: `storefront-web` + `admin-web` (Next.js 15 App Router), tích hợp REST `/api/v1` qua env URL, UI tiếng Việt, VND, RBAC admin.
+- Backend hiện có (14): identity, customer, catalog, media, inventory, cart, order, payment, shipping, review, warranty, support, notification, reporting.
+- Baseline format/lint/test/build xanh (21 projects) trước khi code FE.
+- Không bắt đầu M16 trong phiên này.
+
 ### 2026-07-30 — M14 done
 
 - reporting-service hoàn chỉnh: dashboard metrics + audit projection, RabbitMQ consumer/inbox, DailyMetric atomic increment, Staff+ REST.
@@ -132,33 +140,3 @@ Rồi: `cd apps/reporting-service && npx prisma migrate deploy && npx prisma gen
 - Test reporting 56/56 (integration Postgres Compose); format/lint/test/build monorepo xanh (21 projects).
 - Commit `8f86457`.
 - **Không bắt đầu M15 trong phiên này**.
-
-### 2026-07-30 — M14 start
-
-- Working tree sạch; HEAD `5c365a3` (docs M13 hash; feat M13 `b353d67`); branch `main`.
-- Phạm vi M14 từ HANDOFF: `reporting-service` port `3014`, DB `nexatech_reporting`, dashboard metrics + audit projection, consume RabbitMQ (order/payment/shipping/review/warranty/support + audit), Staff+ RBAC.
-- Pattern: notification-service (consumer/inbox) + projection tables.
-- Không bắt đầu M15 trong phiên này.
-
-### 2026-07-30 — M13 done
-
-- notification-service hoàn chỉnh: in-app + email, RabbitMQ consumer/inbox, templates tiếng Việt, SMTP env.
-- Shared contracts/errors + ADR-032; support outbox payload enrichment; docs + HANDOFF-M14.
-- Test notification 61/61 (integration Postgres Compose); format/lint/test/build monorepo xanh.
-- Commit `b353d67`.
-- **Không bắt đầu M14 trong phiên này**.
-
-### 2026-07-30 — M13 start
-
-- Working tree sạch; HEAD `194cdec` (M12 docs hash); branch `main`.
-- Phạm vi M13 từ HANDOFF: `notification-service` port `3013`, DB `nexatech_notification`, email + in-app, consume RabbitMQ events, template tiếng Việt, SMTP từ env.
-- Pattern: support-service (publisher) + inbox consumer mới.
-- Không bắt đầu M14 trong phiên này.
-
-### 2026-07-30 — M12 done
-
-- support-service hoàn chỉnh: ticket state machine, messages, attachments, assign/priority, order soft-link, outbox + RabbitMQ.
-- Shared contracts/errors/events + ADR-031; docs + HANDOFF-M13.
-- Test support 43/43 (integration Postgres Compose); format/lint/test/build monorepo xanh.
-- Commit `7c1a582`.
-- **Không bắt đầu M13 trong phiên này**.

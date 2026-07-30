@@ -1,0 +1,118 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 24px;
+  padding: 20px;
+  background: var(--nt-surface-muted);
+  border-radius: var(--nt-radius-md);
+}
+
+.summaryScore {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.scoreValue {
+  font-family: var(--nt-font-heading);
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--nt-navy-900);
+}
+
+.bars {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 44px 1fr 30px;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  color: var(--nt-text-muted);
+}
+
+.barTrack {
+  height: 8px;
+  border-radius: var(--nt-radius-pill);
+  background: var(--nt-border);
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: #f5a623;
+}
+
+.barCount {
+  text-align: right;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.item {
+  border-bottom: 1px solid var(--nt-border);
+  padding-bottom: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.itemHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.itemAuthor {
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.itemDate {
+  color: var(--nt-text-faint);
+  font-size: 0.8rem;
+  margin-left: auto;
+}
+
+.itemTitle {
+  font-size: 0.98rem;
+}
+
+.itemContent {
+  font-size: 0.9rem;
+  color: var(--nt-text);
+  line-height: 1.6;
+}
+
+.reply {
+  background: var(--nt-cyan-050);
+  border-radius: var(--nt-radius-sm);
+  padding: 10px 12px;
+  font-size: 0.85rem;
+  color: var(--nt-navy-900);
+}
+
+@media (max-width: 640px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}

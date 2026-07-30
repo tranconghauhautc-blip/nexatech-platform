@@ -1,8 +1,23 @@
 # NexaTech API Contracts
 
-Tài liệu phản ánh **code hiện tại (sau M14)** và kế hoạch các service chưa implement.
+Tài liệu phản ánh **code hiện tại (sau M15)** và kế hoạch các service chưa implement.
 
 DTO TypeScript sống trong `libs/shared/contracts`. Error envelope: `libs/shared/errors`.
+
+## Frontend BFF (M15)
+
+Storefront/admin không gọi thẳng microservice từ browser trong local mặc định. Thay vào đó:
+
+| App            | Browser path                          | Server upstream                     |
+| -------------- | ------------------------------------- | ----------------------------------- |
+| storefront-web | `/api/bff/{service}/...`              | `{SERVICE}_URL` + `/api/v1/...`     |
+| storefront-web | `/api/auth/login\|register\|session…` | identity-service `/api/v1/auth/...` |
+| admin-web      | `/api/bff/{service}/...`              | tương tự + session Staff+           |
+| admin-web      | `/api/auth/login\|session\|logout`    | identity + RBAC portal check        |
+
+Env: `NEXT_PUBLIC_API_BASE_URL`, `INTERNAL_API_BASE_URL`, `APP_BASE_URL`, `ADMIN_BASE_URL`, `MEDIA_PUBLIC_BASE_URL`, `NEXT_PUBLIC_GOOGLE_OAUTH_CLIENT_ID`, `ADMIN_SESSION_SECRET`.
+
+**Chưa sẵn sàng trên UI:** Google OAuth thật (nút disabled khi thiếu client id / backend); admin users API (stub trang `/nguoi-dung`).
 
 ## Quy ước chung (đã áp dụng)
 

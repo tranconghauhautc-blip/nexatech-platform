@@ -1,0 +1,32 @@
+.root {
+  padding-block: 14px;
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.84rem;
+  color: var(--nt-text-muted);
+}
+
+.list li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.list a:hover {
+  color: var(--nt-navy-900);
+  text-decoration: underline;
+}
+
+.separator {
+  color: var(--nt-text-faint);
+}
+
+.current {
+  color: var(--nt-text);
+  font-weight: 600;
+}

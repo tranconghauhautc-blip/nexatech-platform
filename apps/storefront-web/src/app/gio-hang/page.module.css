@@ -1,0 +1,104 @@
+.root {
+  padding: 1.5rem 0 3rem;
+}
+.title {
+  font-family: var(--font-space-grotesk), sans-serif;
+  color: #0b1f3a;
+}
+.list {
+  list-style: none;
+  padding: 0;
+  margin: 1.25rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+.item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #fff;
+}
+.name {
+  font-weight: 600;
+  color: #0b1f3a;
+}
+.meta {
+  color: #64748b;
+  font-size: 0.85rem;
+}
+.warn {
+  color: #b45309;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+}
+.qty {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+}
+.qty input {
+  width: 72px;
+  padding: 0.35rem 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+.price {
+  font-weight: 700;
+  color: #0b1f3a;
+}
+.remove {
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  cursor: pointer;
+  font: inherit;
+}
+.summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  padding: 1.25rem;
+  border-radius: 14px;
+  background: #0b1f3a;
+  color: #e0f2fe;
+}
+.subtotalLabel {
+  opacity: 0.8;
+}
+.subtotal {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+.note {
+  margin: 0.5rem 0 0;
+  font-size: 0.85rem;
+  opacity: 0.8;
+  max-width: 28rem;
+}
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.error {
+  color: #b91c1c;
+}
+.issues {
+  background: #fff7ed;
+  color: #9a3412;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+}
+@media (max-width: 720px) {
+  .item {
+    grid-template-columns: 1fr;
+  }
+}

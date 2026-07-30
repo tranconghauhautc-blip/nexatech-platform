@@ -1,0 +1,98 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.price {
+  font-family: var(--nt-font-heading);
+  font-size: 1.9rem;
+  font-weight: 700;
+  color: var(--nt-navy-900);
+}
+
+.variants {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.variantList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.variant,
+.variantActive {
+  padding: 9px 16px;
+  border-radius: var(--nt-radius-pill);
+  border: 1px solid var(--nt-border-strong);
+  background: var(--nt-surface);
+  font-size: 0.86rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--nt-text);
+}
+
+.variantActive {
+  border-color: var(--nt-cyan-500);
+  background: var(--nt-cyan-050);
+  color: var(--nt-navy-900);
+}
+
+.stockRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantityRow {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--nt-border-strong);
+  border-radius: var(--nt-radius-sm);
+  width: fit-content;
+}
+
+.stepper button {
+  width: 38px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  font-size: 1.1rem;
+  cursor: pointer;
+  color: var(--nt-text);
+}
+
+.stepper button:hover {
+  background: var(--nt-surface-muted);
+}
+
+.stepper input {
+  width: 52px;
+  height: 40px;
+  border: none;
+  border-left: 1px solid var(--nt-border-strong);
+  border-right: 1px solid var(--nt-border-strong);
+  text-align: center;
+  font-size: 0.95rem;
+}
+
+.actionRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.secondaryRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}

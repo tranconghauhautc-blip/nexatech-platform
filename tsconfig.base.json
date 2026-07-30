@@ -31,7 +31,8 @@
       "@nexatech/shared-auth": ["libs/shared/auth/src/index.ts"],
       "@nexatech/shared-contracts": ["libs/shared/contracts/src/index.ts"],
       "@nexatech/shared-events": ["libs/shared/events/src/index.ts"],
-      "@nexatech/shared-logging": ["libs/shared/logging/src/index.ts"]
+      "@nexatech/shared-logging": ["libs/shared/logging/src/index.ts"],
+      "@nexatech/shared-web": ["libs/shared/web/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp", "dist"]

@@ -57,3 +57,7 @@ apps/*/src/generated/
 # Tests
 playwright-report/
 test-results/
+
+# Next.js
+.next
+out

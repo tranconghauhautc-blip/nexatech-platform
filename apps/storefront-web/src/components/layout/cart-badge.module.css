@@ -1,0 +1,32 @@
+.root {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nt-text-on-dark);
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+}
+
+.root:hover {
+  color: var(--nt-cyan-300);
+}
+
+.count {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  background: var(--nt-cyan-500);
+  color: var(--nt-navy-950);
+  font-size: 0.66rem;
+  font-weight: 700;
+  min-width: 18px;
+  height: 18px;
+  border-radius: var(--nt-radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 2px solid var(--nt-navy-900);
+}

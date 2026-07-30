@@ -1,0 +1,10 @@
+export default function Loading() {
+  return (
+    <div
+      className="nt-container nt-skeleton"
+      style={{ minHeight: 240, margin: '2rem auto' }}
+      aria-busy="true"
+      aria-label="Đang tải"
+    />
+  );
+}

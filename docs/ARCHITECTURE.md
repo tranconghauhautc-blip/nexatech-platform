@@ -40,12 +40,16 @@ Không bao gồm voucher, mã giảm giá, flash sale, SIM, thiết bị mạng 
 
 ## 3. Frontend
 
-| App              | Vai trò              | Công nghệ                                   |
-| ---------------- | -------------------- | ------------------------------------------- |
-| `storefront-web` | Cửa hàng khách hàng  | Next.js App Router, TypeScript, REST client |
-| `admin-web`      | Cổng quản trị nội bộ | Next.js App Router, TypeScript, RBAC UI     |
+| App              | Vai trò              | Công nghệ                                  | Port local |
+| ---------------- | -------------------- | ------------------------------------------ | ---------- |
+| `storefront-web` | Cửa hàng khách hàng  | Next.js 15 App Router, TypeScript, BFF     | 3000       |
+| `admin-web`      | Cổng quản trị nội bộ | Next.js 15 App Router, TypeScript, RBAC UI | 3100       |
 
-Cả hai frontend gọi API qua Kong Gateway, không gọi thẳng service nội bộ trong production.
+**M15:** Frontend gọi backend qua Next.js Route Handlers `/api/bff/{service}/...` (server-side dùng `*_SERVICE_URL` / `INTERNAL_API_BASE_URL`). Trình duyệt không hard-code IP service. Production target vẫn là Kong Gateway (`NEXT_PUBLIC_API_BASE_URL`). Session: httpOnly cookie (`nt_session` storefront; signed `nexatech_admin_session` admin). Auth tạm đính kèm `x-user-id` / `x-user-roles` / `x-cart-token` khi proxy.
+
+Shared FE: `libs/shared/web` (`formatVnd`, `ApiClient`, error envelope mapping, admin menu helpers).
+
+Cả hai frontend không index admin (`robots` disallow); storefront có metadata/OG/sitemap-ready.
 
 ## 4. Backend microservices
 

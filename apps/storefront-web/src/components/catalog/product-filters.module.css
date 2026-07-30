@@ -1,0 +1,24 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 1rem;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: #f8fbff;
+}
+.label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #0b1f3a;
+}
+.input {
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+}
+.input:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 1px;
+}

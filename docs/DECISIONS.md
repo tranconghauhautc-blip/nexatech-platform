@@ -272,3 +272,13 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Quyết định:** Đặt `NX_SKIP_NATIVE_FILE_CACHE=true` và `NX_DAEMON=false` trong scripts + `.env.nx`.
 - **Lý do:** Nx 23.x lỗi `WorkspaceContext is not a constructor` khi load native binding từ temp; Nx 22.7.7 ổn định hơn nhưng vẫn cần bypass trên môi trường này.
 - **Hệ quả:** Scripts dùng `cross-env` để set biến này trên mọi OS.
+
+## ADR-034 — Frontend BFF + session cookie (M15)
+
+- **Quyết định:** `storefront-web` (port 3000) và `admin-web` (port 3100) dùng Next.js 15 App Router. Browser gọi relative `/api/bff/{service}/...` và `/api/auth/...`; server proxy tới `*_SERVICE_URL` (fallback localhost ports). Không hard-code IP production.
+- Session storefront: httpOnly cookie JSON `nt_session` + `nt_cart_token`. Admin: cookie ký HMAC `nexatech_admin_session` (cần `ADMIN_SESSION_SECRET` hoặc `JWT_ACCESS_SECRET`).
+- Token không lưu localStorage. Admin login từ chối role Customer (`canAccessAdminPortal`).
+- Menu admin chỉ là UX filter; backend RBAC vẫn là nguồn quyền.
+- Shared FE helpers trong `libs/shared/web`.
+- Dockerfile multi-stage `output: 'standalone'`, non-root, healthcheck.
+- **Nx sync:** tắt `@nx/js:typescript-sync` trong `nx.json` (`sync.disabledTaskSyncGenerators`) để tránh ép `references`/`composite` trên Nest apps (gây TS6305 khi `dist/out-tsc` chưa có). Path alias trong `tsconfig.base.json` vẫn là nguồn resolve.

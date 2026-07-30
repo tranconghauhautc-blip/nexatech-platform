@@ -1,0 +1,56 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--nx-text-secondary);
+  border: 1px dashed var(--nx-navy-border);
+  border-radius: var(--nx-radius-lg);
+  background: rgba(15, 25, 48, 0.35);
+}
+
+.icon {
+  font-size: 28px;
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--nx-text-primary);
+}
+
+.description {
+  font-size: 13px;
+  max-width: 420px;
+}
+
+.errorWrapper {
+  composes: wrapper;
+  border-color: color-mix(in srgb, var(--nx-danger) 40%, transparent);
+  background: color-mix(in srgb, var(--nx-danger) 8%, transparent);
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px solid var(--nx-navy-600);
+  border-top-color: var(--nx-cyan-400);
+  animation: nx-spin 0.7s linear infinite;
+}
+
+.spinnerRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+@keyframes nx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

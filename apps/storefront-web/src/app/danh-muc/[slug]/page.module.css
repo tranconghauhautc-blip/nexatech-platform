@@ -1,0 +1,25 @@
+.root {
+  padding: 1.5rem 0 3rem;
+}
+.header {
+  margin: 1rem 0 1.5rem;
+}
+.title {
+  margin: 0 0 0.35rem;
+  font-family: var(--font-space-grotesk), sans-serif;
+  color: #0b1f3a;
+}
+.lead {
+  margin: 0;
+  color: #4b6478;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 1.5rem;
+}
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}

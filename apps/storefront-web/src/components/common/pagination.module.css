@@ -1,0 +1,41 @@
+.root {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 28px;
+}
+
+.page,
+.pageActive,
+.navBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding-inline: 6px;
+  border-radius: var(--nt-radius-sm);
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--nt-text);
+  border: 1px solid var(--nt-border);
+  background: var(--nt-surface);
+}
+
+.page:hover,
+.navBtn:hover {
+  border-color: var(--nt-cyan-500);
+  color: var(--nt-navy-900);
+}
+
+.pageActive {
+  background: var(--nt-navy-900);
+  border-color: var(--nt-navy-900);
+  color: #fff;
+}
+
+.ellipsis {
+  color: var(--nt-text-faint);
+  padding-inline: 4px;
+}

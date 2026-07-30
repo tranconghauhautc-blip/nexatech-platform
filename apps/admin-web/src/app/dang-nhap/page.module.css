@@ -1,0 +1,86 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(
+      circle at 20% 20%,
+      rgba(34, 211, 238, 0.12),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(34, 211, 238, 0.08),
+      transparent 40%
+    );
+}
+
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: linear-gradient(180deg, var(--nx-navy-850), var(--nx-navy-900));
+  border: 1px solid var(--nx-navy-border);
+  border-radius: var(--nx-radius-lg);
+  padding: 32px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.brandMark {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--nx-cyan-500), var(--nx-cyan-300));
+  color: #04222b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 20px;
+}
+
+.brandName {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.brandSub {
+  font-size: 11.5px;
+  color: var(--nx-text-muted);
+}
+
+.heading {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.subheading {
+  font-size: 13px;
+  color: var(--nx-text-secondary);
+  margin: 0 0 24px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formError {
+  font-size: 13px;
+  color: var(--nx-danger);
+  background: rgba(248, 113, 113, 0.1);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  border-radius: var(--nx-radius-sm);
+  padding: 10px 12px;
+}

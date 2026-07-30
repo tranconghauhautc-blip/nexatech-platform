@@ -1,0 +1,48 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 160px;
+  gap: 14px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 1px solid var(--nt-border);
+  border-radius: var(--nt-radius-md);
+  padding: 10px;
+  background: var(--nt-surface);
+}
+
+.image {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: var(--nt-radius-sm);
+  object-fit: cover;
+  background: var(--nt-surface-muted);
+}
+
+.name {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--nt-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.price {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--nt-navy-900);
+}

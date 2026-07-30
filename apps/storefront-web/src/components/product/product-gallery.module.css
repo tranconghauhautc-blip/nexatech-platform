@@ -1,0 +1,48 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.main {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--nt-radius-lg);
+  overflow: hidden;
+  background: var(--nt-surface-muted);
+  border: 1px solid var(--nt-border);
+}
+
+.mainImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.thumbRow {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+}
+
+.thumb,
+.thumbActive {
+  width: 68px;
+  height: 68px;
+  flex-shrink: 0;
+  border-radius: var(--nt-radius-sm);
+  overflow: hidden;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  background: var(--nt-surface-muted);
+}
+
+.thumbActive {
+  border-color: var(--nt-cyan-500);
+}
+
+.thumbImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

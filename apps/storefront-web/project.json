@@ -1,0 +1,9 @@
+{
+  "name": "storefront-web",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/storefront-web",
+  "projectType": "application",
+  "tags": ["scope:frontend", "type:app"],
+  "// targets": "to see all targets run: nx show project storefront-web --web",
+  "targets": {}
+}

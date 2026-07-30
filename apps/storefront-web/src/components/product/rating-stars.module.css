@@ -1,0 +1,32 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.starWrap {
+  position: relative;
+  display: inline-block;
+}
+
+.starBase {
+  color: var(--nt-border-strong);
+}
+
+.starFillClip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.starFill {
+  color: #f5a623;
+}
+
+.value {
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--nt-text);
+}

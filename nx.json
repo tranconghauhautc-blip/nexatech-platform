@@ -52,6 +52,17 @@
         "watchDepsTargetName": "watch-deps",
         "serveStaticTargetName": "serve-static"
       }
+    },
+    {
+      "plugin": "@nx/next/plugin",
+      "options": {
+        "startTargetName": "start",
+        "buildTargetName": "build",
+        "devTargetName": "dev",
+        "serveStaticTargetName": "serve-static",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
     }
   ],
   "targetDefaults": {
@@ -60,5 +71,16 @@
       "dependsOn": ["^build"],
       "inputs": ["production", "^production"]
     }
+  },
+  "generators": {
+    "@nx/next": {
+      "application": {
+        "style": "css",
+        "linter": "eslint"
+      }
+    }
+  },
+  "sync": {
+    "disabledTaskSyncGenerators": ["@nx/js:typescript-sync"]
   }
 }

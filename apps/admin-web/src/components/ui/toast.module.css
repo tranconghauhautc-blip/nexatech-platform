@@ -1,0 +1,46 @@
+.viewport {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+  max-width: 360px;
+}
+
+.toast {
+  padding: 12px 16px;
+  border-radius: var(--nx-radius-md);
+  background: var(--nx-navy-800);
+  border: 1px solid var(--nx-navy-border);
+  color: var(--nx-text-primary);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1.4;
+  animation: nx-toast-in 0.18s ease-out;
+}
+
+.success {
+  border-color: var(--nx-success);
+}
+
+.error {
+  border-color: var(--nx-danger);
+}
+
+.info {
+  border-color: var(--nx-cyan-400);
+}
+
+@keyframes nx-toast-in {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

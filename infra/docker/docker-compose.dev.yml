@@ -71,6 +71,11 @@ services:
       exit 0;
       "
 
+  # Frontend images (M15) — build từ repo root khi cần:
+  # docker build -f apps/storefront-web/Dockerfile -t nexatech/storefront-web:0.15.0 .
+  # docker build -f apps/admin-web/Dockerfile -t nexatech/admin-web:0.15.0 .
+  # Chạy local ưu tiên: pnpm exec nx dev storefront-web / admin-web
+
 volumes:
   postgres_data:
   minio_data:
