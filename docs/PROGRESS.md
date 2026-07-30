@@ -25,6 +25,7 @@
 | `f202367` | M19 docs hash                  |
 | `53247e4` | M20 performance/reliability/DR |
 | `20e98bb` | M21 security lab / OWASP       |
+| `d859687` | Fix Nest Docker runtime deps   |
 
 ## M21 checklist (Done)
 
@@ -50,6 +51,7 @@
 - **Root cause:** Nest webpack `generatePackageJson` externalize deps nhưng runtime image không `pnpm install --prod`; `tslib` ở `devDependencies` bị omit khỏi dist package.json dù `importHelpers` emit `require('tslib')`.
 - **Fix:** `tslib` → `dependencies`; regenerate 14 Dockerfiles via `scripts/m16-gen-dockerfiles.mjs` (install prod deps từ Nx pruned lockfile); health `VERSION_NEUTRAL`; frontend `HOSTNAME=0.0.0.0`.
 - **Validation:** `docker compose` apps stack — 14/14 Nest healthy, storefront/admin healthy, Kong healthy; smoke `/health/live` OK; no `MODULE_NOT_FOUND`.
+- **Commit:** `d859687`
 
 ### 2026-07-30 — M21 done
 
