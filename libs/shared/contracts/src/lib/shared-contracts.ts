@@ -1698,3 +1698,231 @@ export interface AdminReturnRequestDetailDto extends ReturnRequestDto {
   customerId: string;
   history: ReturnRequestHistoryDto[];
 }
+
+/** Support ticket (support-service owned) */
+export const supportTicketStatusSchema = z.enum([
+  'OPEN',
+  'IN_PROGRESS',
+  'WAITING_CUSTOMER',
+  'WAITING_STAFF',
+  'RESOLVED',
+  'CLOSED',
+  'CANCELLED',
+]);
+export type SupportTicketStatus = z.infer<typeof supportTicketStatusSchema>;
+
+export const supportTicketCategorySchema = z.enum([
+  'ORDER',
+  'PRODUCT',
+  'PAYMENT',
+  'SHIPPING',
+  'WARRANTY',
+  'ACCOUNT',
+  'OTHER',
+]);
+export type SupportTicketCategory = z.infer<typeof supportTicketCategorySchema>;
+
+export const supportTicketPrioritySchema = z.enum([
+  'LOW',
+  'NORMAL',
+  'HIGH',
+  'URGENT',
+]);
+export type SupportTicketPriority = z.infer<typeof supportTicketPrioritySchema>;
+
+export const supportMediaKindSchema = z.enum(['IMAGE']);
+export type SupportMediaKind = z.infer<typeof supportMediaKindSchema>;
+
+export const supportMessageAuthorTypeSchema = z.enum(['CUSTOMER', 'STAFF']);
+export type SupportMessageAuthorType = z.infer<
+  typeof supportMessageAuthorTypeSchema
+>;
+
+export const SUPPORT_LIMITS = {
+  MAX_ATTACHMENTS: 5,
+  SUBJECT_MIN: 5,
+  SUBJECT_MAX: 200,
+  DESCRIPTION_MIN: 10,
+  DESCRIPTION_MAX: 5000,
+  MESSAGE_MIN: 1,
+  MESSAGE_MAX: 5000,
+} as const;
+
+export const createSupportTicketRequestSchema = z.object({
+  category: supportTicketCategorySchema,
+  subject: z
+    .string()
+    .trim()
+    .min(SUPPORT_LIMITS.SUBJECT_MIN)
+    .max(SUPPORT_LIMITS.SUBJECT_MAX),
+  description: z
+    .string()
+    .trim()
+    .min(SUPPORT_LIMITS.DESCRIPTION_MIN)
+    .max(SUPPORT_LIMITS.DESCRIPTION_MAX),
+  priority: supportTicketPrioritySchema.optional().default('NORMAL'),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  warrantyClaimId: z.string().trim().min(1).max(120).optional(),
+  returnRequestId: z.string().trim().min(1).max(120).optional(),
+  mediaIds: z
+    .array(z.string().trim().min(1).max(120))
+    .max(SUPPORT_LIMITS.MAX_ATTACHMENTS)
+    .optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CreateSupportTicketRequest = z.infer<
+  typeof createSupportTicketRequestSchema
+>;
+
+export const addSupportTicketMessageRequestSchema = z.object({
+  content: z
+    .string()
+    .trim()
+    .min(SUPPORT_LIMITS.MESSAGE_MIN)
+    .max(SUPPORT_LIMITS.MESSAGE_MAX),
+  mediaIds: z
+    .array(z.string().trim().min(1).max(120))
+    .max(SUPPORT_LIMITS.MAX_ATTACHMENTS)
+    .optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type AddSupportTicketMessageRequest = z.infer<
+  typeof addSupportTicketMessageRequestSchema
+>;
+
+export const attachSupportTicketMediaRequestSchema = z.object({
+  mediaId: z.string().trim().min(1).max(120),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type AttachSupportTicketMediaRequest = z.infer<
+  typeof attachSupportTicketMediaRequestSchema
+>;
+
+export const supportTicketTransitionActionSchema = z.enum([
+  'start',
+  'wait_customer',
+  'resolve',
+  'close',
+  'reopen',
+  'cancel',
+]);
+export type SupportTicketTransitionAction = z.infer<
+  typeof supportTicketTransitionActionSchema
+>;
+
+export const transitionSupportTicketRequestSchema = z.object({
+  action: supportTicketTransitionActionSchema,
+  reason: z.string().trim().max(500).optional(),
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type TransitionSupportTicketRequest = z.infer<
+  typeof transitionSupportTicketRequestSchema
+>;
+
+export const assignSupportTicketRequestSchema = z.object({
+  assigneeId: z.string().trim().min(1).max(120),
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type AssignSupportTicketRequest = z.infer<
+  typeof assignSupportTicketRequestSchema
+>;
+
+export const updateSupportTicketPriorityRequestSchema = z.object({
+  priority: supportTicketPrioritySchema,
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type UpdateSupportTicketPriorityRequest = z.infer<
+  typeof updateSupportTicketPriorityRequestSchema
+>;
+
+export const cancelSupportTicketRequestSchema = z.object({
+  reason: z.string().trim().max(500).optional(),
+  expectedVersion: z.coerce.number().int().min(0).optional(),
+  idempotencyKey: z.string().trim().min(8).max(120).optional(),
+});
+export type CancelSupportTicketRequest = z.infer<
+  typeof cancelSupportTicketRequestSchema
+>;
+
+export const listSupportTicketsQuerySchema = paginationQuerySchema.extend({
+  status: supportTicketStatusSchema.optional(),
+  category: supportTicketCategorySchema.optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListSupportTicketsQuery = z.infer<
+  typeof listSupportTicketsQuerySchema
+>;
+
+export const listAdminSupportTicketsQuerySchema = paginationQuerySchema.extend({
+  status: supportTicketStatusSchema.optional(),
+  category: supportTicketCategorySchema.optional(),
+  priority: supportTicketPrioritySchema.optional(),
+  customerId: z.string().trim().min(1).max(120).optional(),
+  assigneeId: z.string().trim().min(1).max(120).optional(),
+  orderId: z.string().trim().min(1).max(120).optional(),
+  from: z.string().datetime().optional(),
+  to: z.string().datetime().optional(),
+  sort: z.enum(['newest', 'oldest']).default('newest'),
+});
+export type ListAdminSupportTicketsQuery = z.infer<
+  typeof listAdminSupportTicketsQuerySchema
+>;
+
+export interface SupportTicketAttachmentDto {
+  id: string;
+  mediaId: string;
+  kind: SupportMediaKind;
+  messageId?: string;
+  createdAt: string;
+}
+
+export interface SupportTicketMessageDto {
+  id: string;
+  authorId: string;
+  authorType: SupportMessageAuthorType;
+  content: string;
+  attachments: SupportTicketAttachmentDto[];
+  createdAt: string;
+}
+
+export interface SupportTicketHistoryDto {
+  id: string;
+  fromStatus?: SupportTicketStatus;
+  toStatus: SupportTicketStatus;
+  action: string;
+  actorId: string;
+  actorType: string;
+  reason?: string;
+  createdAt: string;
+}
+
+export interface SupportTicketDto {
+  id: string;
+  ticketCode: string;
+  customerId?: string;
+  category: SupportTicketCategory;
+  priority: SupportTicketPriority;
+  subject: string;
+  description: string;
+  status: SupportTicketStatus;
+  orderId?: string;
+  warrantyClaimId?: string;
+  returnRequestId?: string;
+  assigneeId?: string;
+  attachments: SupportTicketAttachmentDto[];
+  messageCount: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SupportTicketDetailDto extends SupportTicketDto {
+  customerId: string;
+  messages: SupportTicketMessageDto[];
+  history: SupportTicketHistoryDto[];
+}
+
+export type AdminSupportTicketDetailDto = SupportTicketDetailDto;

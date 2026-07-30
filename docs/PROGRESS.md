@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M12 — chưa bắt đầu
-- **Milestone đã hoàn thành gần nhất:** M11 (warranty-service)
+- **Milestone đang làm:** M12 — hoàn tất (chờ commit hash docs)
+- **Milestone đã hoàn thành gần nhất:** M12 (support-service)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (18 projects; warranty 39/39 incl. Prisma integration Postgres Compose)
+- **Kiểm tra cuối phiên:** format / lint / test / build — chạy sau M12; support 43/43 incl. Prisma integration Postgres Compose
 
 ## Roadmap milestone
 
@@ -24,7 +24,8 @@
 | M9      | Shipping                                  | ✅ Done    | shipping-service + mock/GHN      |
 | M10     | Review                                    | ✅ Done    | review-service                   |
 | M11     | Warranty                                  | ✅ Done    | warranty-service                 |
-| M12–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M12.md`        |
+| M12     | Support                                   | ✅ Done    | support-service                  |
+| M13–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M13.md`        |
 
 ## Commits
 
@@ -40,8 +41,9 @@
 | `631cd88` | M10 review-service   |
 | `d7d4905` | M10 docs hash        |
 | `a60e754` | M11 warranty-service |
+| `c5a1627` | M11 docs hash        |
 
-## Apps sau M11 (18 projects)
+## Apps sau M12 (19 projects)
 
 | App               | Port | Persistence                      |
 | ----------------- | ---- | -------------------------------- |
@@ -56,6 +58,20 @@
 | shipping-service  | 3009 | Prisma + outbox + RabbitMQ       |
 | review-service    | 3010 | Prisma + outbox + RabbitMQ       |
 | warranty-service  | 3011 | Prisma + outbox + RabbitMQ       |
+| support-service   | 3012 | Prisma + outbox + RabbitMQ       |
+
+## M12 đã hoàn thành
+
+- [x] Shared contracts / errors / events cho support ticket
+- [x] support-service Prisma + migration `nexatech_support` (`20260730120000_init_support`)
+- [x] Ticket state machine + customer/staff messages (WAITING_CUSTOMER → WAITING_STAFF)
+- [x] Optional order ownership check; warranty/return opaque REST IDs
+- [x] Media attachments (max 5 ảnh), Staff+ queue/transition/assign/priority
+- [x] Optimistic locking (`version`), idempotency key, AuditLog
+- [x] Outbox + RabbitMQ publisher + OutboxDispatcher
+- [x] Unit + controller + migration + Prisma integration (43/43 pass)
+- [x] Docker DB init (`nexatech_support`) + docs + HANDOFF-M13
+- [x] format / lint / test / build (chạy cuối M12)
 
 ## M11 đã hoàn thành
 
@@ -108,7 +124,31 @@ CREATE DATABASE nexatech_warranty OWNER nexatech_warranty;
 
 Rồi: `cd apps/warranty-service && npx prisma migrate deploy && npx prisma generate`
 
+Nếu DB `nexatech_support` chưa có (volume cũ):
+
+```sql
+CREATE USER nexatech_support WITH PASSWORD 'changeme';
+CREATE DATABASE nexatech_support OWNER nexatech_support;
+```
+
+Rồi: `cd apps/support-service && npx prisma migrate deploy && npx prisma generate`
+
 ## Nhật ký
+
+### 2026-07-30 — M12 done
+
+- support-service hoàn chỉnh: ticket state machine, messages, attachments, assign/priority, order soft-link, outbox + RabbitMQ.
+- Shared contracts/errors/events + ADR-031; docs + HANDOFF-M13.
+- Test support 43/43 (integration Postgres Compose); format/lint/test/build monorepo.
+- **Không bắt đầu M13 trong phiên này**.
+
+### 2026-07-30 — M12 start
+
+- Working tree sạch; HEAD `c5a1627` (M11 docs hash); branch `main`.
+- Baseline format + lint xanh (18 projects).
+- Phạm vi M12 từ HANDOFF: `support-service` port `3012`, DB `nexatech_support`, ticket hỗ trợ, media attachment, liên kết order/warranty/return bằng REST ID, RBAC + audit + outbox.
+- Pattern: warranty-service / review-service.
+- Không bắt đầu M13 trong phiên này.
 
 ### 2026-07-30 — M11 done
 
@@ -132,24 +172,3 @@ Rồi: `cd apps/warranty-service && npx prisma migrate deploy && npx prisma gene
 - review-service hoàn chỉnh; verified buyer; moderation; aggregate; media/reply/report/helpful; outbox.
 - Shared contracts/errors/events; docs + HANDOFF-M11.
 - **Không bắt đầu M11 trong phiên này**.
-
-### 2026-07-30 — M10 start
-
-- Working tree sạch; HEAD `7c203c6` (M9 docs); branch `main` đồng bộ `origin/main`.
-- Apps M4–M9 tồn tại; `review-service` chưa có.
-- Baseline format / lint / test / build xanh.
-- Bắt đầu triển khai review-service (verified buyer, moderation, aggregate, media, reply, report).
-
-### 2026-07-30 — M9 done
-
-- shipping-service hoàn chỉnh; quote/slot/shipment; mock + GHN skeleton; store pickup; webhook; outbox; order shipping-sync.
-- Shared contracts/errors/events; docs + HANDOFF-M10.
-- **Không bắt đầu M10 trong phiên này**.
-
-### 2026-07-30 — M9 start
-
-- Working tree sạch; HEAD `4e14ec7`; baseline format/lint/test/build xanh.
-
-### 2026-07-30 — M8 done
-
-- payment-service hoàn chỉnh; COD/MOCK/VNPay; refund domain; outbox; order payment-sync.

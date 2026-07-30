@@ -99,11 +99,12 @@ Scripts dùng `cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false` (xem AD
 | `shipping-service`  | Quote/slot/shipment state machine, mock provider, webhook signature/replay, store pickup code, ownership/RBAC, outbox, order sync (`orderSyncedAt`); Prisma/migration khi có `SHIPPING_DATABASE_URL`                                |
 | `review-service`    | Verified buyer, lifecycle/moderation, media limits/ownership, reply RBAC, helpful idempotency/concurrency, duplicate report, aggregate math/rebuild, privacy, outbox; Prisma/migration khi có `REVIEW_DATABASE_URL`                 |
 | `warranty-service`  | Claim/return state machines, verified buyer, evidence media ownership/MIME, staff transitions, order sync RETURN_REQUESTED/RETURNED, refund/inventory contract events only, outbox; Prisma/migration khi có `WARRANTY_DATABASE_URL` |
+| `support-service`   | Ticket state machine, customer/staff messages, media attachments ownership/MIME, assign/priority, ownership/RBAC, idempotency, version conflict, outbox; Prisma/migration khi có `SUPPORT_DATABASE_URL`                             |
 
-## Integration (M4–M11)
+## Integration (M4–M12)
 
-Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
-Tests tự skip nếu thiếu env — riêng warranty M11 đã chạy integration với Postgres Compose thật.
+Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
+Tests tự skip nếu thiếu env — riêng support M12 đã chạy integration với Postgres Compose thật.
 
 `inventory.concurrency.spec.ts` chạy song song nhiều lệnh `reserveStock`/`issueStock` bằng `InMemoryInventoryRepository` và khẳng định bất biến `reserved <= onHand` cùng `onHand >= 0` luôn đúng; các lần thất bại phải là `INVENTORY_INSUFFICIENT` hoặc `INVENTORY_CONFLICT`.
 

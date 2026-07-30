@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPPORT_DATABASE_URL")
+}
+
+enum SupportTicketStatus {
+  OPEN
+  IN_PROGRESS
+  WAITING_CUSTOMER
+  WAITING_STAFF
+  RESOLVED
+  CLOSED
+  CANCELLED
+}
+
+enum SupportTicketCategory {
+  ORDER
+  PRODUCT
+  PAYMENT
+  SHIPPING
+  WARRANTY
+  ACCOUNT
+  OTHER
+}
+
+enum SupportTicketPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+enum SupportMediaKind {
+  IMAGE
+}
+
+enum SupportMessageAuthorType {
+  CUSTOMER
+  STAFF
+}
+
+model SupportTicket {
+  id              String                @id @default(uuid())
+  ticketCode      String                @unique
+  customerId      String
+  category        SupportTicketCategory
+  priority        SupportTicketPriority @default(NORMAL)
+  subject         String
+  description     String
+  status          SupportTicketStatus   @default(OPEN)
+  orderId         String?
+  warrantyClaimId String?
+  returnRequestId String?
+  assigneeId      String?
+  version         Int                   @default(0)
+  createdAt       DateTime              @default(now())
+  updatedAt       DateTime              @updatedAt
+
+  attachments SupportTicketAttachment[]
+  messages    SupportTicketMessage[]
+  history     SupportTicketHistory[]
+
+  @@index([customerId])
+  @@index([status])
+  @@index([assigneeId])
+  @@index([orderId])
+  @@index([category])
+}
+
+model SupportTicketAttachment {
+  id        String                @id @default(uuid())
+  ticketId  String
+  ticket    SupportTicket         @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  messageId String?
+  message   SupportTicketMessage? @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  mediaId   String
+  kind      SupportMediaKind      @default(IMAGE)
+  deletedAt DateTime?
+  createdAt DateTime              @default(now())
+
+  @@index([ticketId])
+  @@index([messageId])
+  @@index([mediaId])
+}
+
+model SupportTicketMessage {
+  id         String                   @id @default(uuid())
+  ticketId   String
+  ticket     SupportTicket            @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId   String
+  authorType SupportMessageAuthorType
+  content    String
+  createdAt  DateTime                 @default(now())
+
+  attachments SupportTicketAttachment[]
+
+  @@index([ticketId])
+}
+
+model SupportTicketHistory {
+  id         String               @id @default(uuid())
+  ticketId   String
+  ticket     SupportTicket        @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  fromStatus SupportTicketStatus?
+  toStatus   SupportTicketStatus
+  action     String
+  actorId    String
+  actorType  String
+  reason     String?
+  createdAt  DateTime             @default(now())
+
+  @@index([ticketId])
+}
+
+model SupportIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model OutboxEvent {
+  id          String    @id @default(uuid())
+  eventType   String
+  routingKey  String
+  payloadJson Json
+  traceId     String
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([publishedAt])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

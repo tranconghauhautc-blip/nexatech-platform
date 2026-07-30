@@ -480,9 +480,46 @@ Transition body: `action`, `reason?`, `expectedVersion?` (optimistic lock), `ide
 
 ---
 
-## Các service sau M11 (kế hoạch — chưa code)
+## support-service (M12) — port 3012
 
-Support, notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+Base: `/api/v1` và `/api/v2` (mirror). Auth tạm: `x-user-id`, `x-user-roles`. Health: `/health`, `/health/live`, `/health/ready`. Swagger: `/docs`.
+
+### Customer
+
+| Method | Path                                     | Mô tả                                                                                                                            |
+| ------ | ---------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| POST   | `/support/tickets`                       | Tạo ticket (category, subject, description, priority?, orderId?, warrantyClaimId?, returnRequestId?, mediaIds?, idempotencyKey?) |
+| GET    | `/support/tickets`                       | Danh sách ticket của tôi (status?, category?, sort, page)                                                                        |
+| GET    | `/support/tickets/:ticketId`             | Chi tiết + messages (owner hoặc Staff+)                                                                                          |
+| POST   | `/support/tickets/:ticketId/messages`    | Thêm tin nhắn; nếu status `WAITING_CUSTOMER` → auto `WAITING_STAFF`                                                              |
+| POST   | `/support/tickets/:ticketId/attachments` | Đính kèm media (max 5 ảnh, ownership + MIME)                                                                                     |
+| POST   | `/support/tickets/:ticketId/cancel`      | Hủy (customer: OPEN/WAITING_CUSTOMER)                                                                                            |
+
+### Admin (Staff+)
+
+| Method | Path                                          | Mô tả                                                                    |
+| ------ | --------------------------------------------- | ------------------------------------------------------------------------ |
+| GET    | `/admin/support/tickets`                      | Queue filter status/category/priority/customerId/assigneeId/orderId      |
+| GET    | `/admin/support/tickets/:ticketId`            | Chi tiết + messages + history                                            |
+| POST   | `/admin/support/tickets/:ticketId/transition` | `action`: start \| wait_customer \| resolve \| close \| reopen \| cancel |
+| POST   | `/admin/support/tickets/:ticketId/messages`   | Staff reply                                                              |
+| POST   | `/admin/support/tickets/:ticketId/assign`     | Gán `assigneeId`                                                         |
+| PATCH  | `/admin/support/tickets/:ticketId/priority`   | Đổi priority                                                             |
+
+Transition/assign/priority body hỗ trợ `expectedVersion?`, `idempotencyKey?`.
+
+### Domain rules
+
+- State: OPEN→IN_PROGRESS→WAITING_CUSTOMER|RESOLVED|CLOSED; WAITING_CUSTOMER (customer message)→WAITING_STAFF; RESOLVED→CLOSED|reopen→IN_PROGRESS; terminal CLOSED/CANCELLED.
+- `orderId` optional: soft-check ownership qua order-service REST; `warrantyClaimId`/`returnRequestId` lưu opaque ID.
+- Media: chỉ reference; max 5 ảnh; không truy cập DB media.
+- Optimistic lock + idempotency + audit + outbox events.
+
+---
+
+## Các service sau M12 (kế hoạch — chưa code)
+
+Notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

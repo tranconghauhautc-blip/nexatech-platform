@@ -117,6 +117,11 @@
 | `warranty.inventory_return_requested` | `warranty.inventory-return.requested`    | warranty            | inventory (contract only, chưa consume)      |
 | `support.ticket_created`              | `support.ticket.created`                 | support             | notification                                 |
 | `support.ticket_updated`              | `support.ticket.updated`                 | support             | notification                                 |
+| `support.ticket_assigned`             | `support.ticket.assigned`                | support             | notification                                 |
+| `support.ticket_resolved`             | `support.ticket.resolved`                | support             | notification, reporting                      |
+| `support.ticket_closed`               | `support.ticket.closed`                  | support             | notification, reporting                      |
+| `support.ticket_cancelled`            | `support.ticket.cancelled`               | support             | notification                                 |
+| `support.ticket_message_added`        | `support.ticket.message.added`           | support             | notification                                 |
 | `audit.recorded`                      | `reporting.audit.recorded`               | various → reporting | reporting                                    |
 | `media.uploaded`                      | `media.media.uploaded`                   | media               | catalog/review/support (bind by ownerType)   |
 | `media.deleted`                       | `media.media.deleted`                    | media               | catalog/review/support                       |
@@ -131,7 +136,7 @@
 
 ## Outbox pattern
 
-Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)**, **payment-service (M8)**, **shipping-service (M9)**, **review-service (M10)** và **warranty-service (M11)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
+Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)**, **payment-service (M8)**, **shipping-service (M9)**, **review-service (M10)**, **warranty-service (M11)** và **support-service (M12)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
 
 ## Order consume / gọi sync (M7)
 
@@ -169,4 +174,12 @@ Các service ghi sự kiện quan trọng dùng transactional outbox (cùng tran
 - Publish outbox: `warranty.claim_*` (created/updated/approved/rejected/completed/cancelled), `warranty.return_*` (requested/updated/approved/rejected/completed/cancelled).
 - `warranty.refund_requested` (khi return COMPLETED + `desiredResolution=REFUND`) và `warranty.inventory_return_requested` (khi return `mark_received`) chỉ là **event hợp đồng** — payment-service/inventory-service tự consume; warranty-service không gọi HTTP các service này.
 - Verified buyer: order + package DELIVERED; một active claim và một active return / orderItem (`activeKey`); soft cancel rotate key cho phép tạo yêu cầu mới.
+- Publish chỉ sau local transaction thành công (outbox).
+
+## Support integrate (M12)
+
+- Sync REST (optional): `GET /orders/:id` khi ticket có `orderId` — ownership check; `GET /media/:id` cho attachment.
+- Liên kết `warrantyClaimId` / `returnRequestId` chỉ lưu ID (không gọi warranty REST bắt buộc trong M12).
+- Publish outbox: `support.ticket_created|updated|assigned|resolved|closed|cancelled|message_added`.
+- Không truy cập DB order/warranty/media; không distributed TX.
 - Publish chỉ sau local transaction thành công (outbox).

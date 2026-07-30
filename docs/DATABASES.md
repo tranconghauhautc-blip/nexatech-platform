@@ -48,7 +48,7 @@
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -66,8 +66,8 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | shipping-service     | `nexatech_shipping`     | Prisma + migration ✅ / Prisma + outbox runtime   |
 | review-service       | `nexatech_review`       | Prisma + migration ✅ / Prisma + outbox runtime   |
 | warranty-service     | `nexatech_warranty`     | Prisma + migration ✅ / Prisma + outbox runtime   |
+| support-service      | `nexatech_support`      | Prisma + migration ✅ / Prisma + outbox runtime   |
 | notification-service | `nexatech_notification` | Later                                             |
-| support-service      | `nexatech_support`      | Later                                             |
 | reporting-service    | `nexatech_reporting`    | Later                                             |
 
 ## catalog — Prisma models (M4)
@@ -172,6 +172,16 @@ Client: `apps/review-service/src/generated/prisma`. Aggregate: `averageRatingCen
 - `WarrantyIdempotency`, `OutboxEvent`, `AuditLog`
 
 Client: `apps/warranty-service/src/generated/prisma`. Order sync: APPROVED→`RETURN_REQUESTED`, COMPLETED→`RETURNED`, REJECTED/CANCELLED (nếu đã sync RETURN_REQUESTED)→`DELIVERED` qua `OrderClient.syncReturn` (`POST /api/v1/orders/:id/return-sync`), retry giới hạn, không distributed TX. Refund/inventory return chỉ publish event (`warranty.refund_requested`, `warranty.inventory_return_requested`) — không gọi HTTP payment/inventory.
+
+## support — Prisma models (M12)
+
+- `SupportTicket` — `ticketCode` unique (`NT-S-YYYYMMDD-XXXXXX`), customerId, category, priority, subject, description, status machine (OPEN→IN_PROGRESS→WAITING_CUSTOMER|RESOLVED|CLOSED; WAITING_CUSTOMER customer-message→WAITING_STAFF; RESOLVED→CLOSED|reopen), optional `orderId`/`warrantyClaimId`/`returnRequestId` (REST ID only), `assigneeId`, `version` optimistic lock
+- `SupportTicketMessage` — authorId/authorType CUSTOMER|STAFF, content
+- `SupportTicketAttachment` — mediaId reference, kind IMAGE, optional messageId, soft `deletedAt`; max 5 / ticket
+- `SupportTicketHistory` — from/to/action/actor/reason
+- `SupportIdempotency`, `OutboxEvent`, `AuditLog`
+
+Client: `apps/support-service/src/generated/prisma`. Order link: soft ownership check qua `OrderClient.getOrder` khi có `orderId`. Không truy cập DB warranty/order.
 
 ## MinIO buckets
 
