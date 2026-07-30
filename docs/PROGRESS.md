@@ -48,6 +48,7 @@
 | `194cdec` | M12 docs hash            |
 | `b353d67` | M13 notification-service |
 | `5c365a3` | M13 docs hash            |
+| `8f86457` | M14 reporting-service    |
 
 ## Apps sau M14 (21 projects)
 
@@ -129,6 +130,7 @@ Rồi: `cd apps/reporting-service && npx prisma migrate deploy && npx prisma gen
 - reporting-service hoàn chỉnh: dashboard metrics + audit projection, RabbitMQ consumer/inbox, DailyMetric atomic increment, Staff+ REST.
 - Shared contracts/errors + ADR-033; Docker DB init; docs + HANDOFF-M15.
 - Test reporting 56/56 (integration Postgres Compose); format/lint/test/build monorepo xanh (21 projects).
+- Commit `8f86457`.
 - **Không bắt đầu M15 trong phiên này**.
 
 ### 2026-07-30 — M14 start

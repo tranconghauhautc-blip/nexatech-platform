@@ -12,7 +12,7 @@ Ngày bàn giao: **2026-07-30**
 | -------------- | ------------------------------------------------------------- |
 | Path           | `d:\NexaTech\nexatech-platform`                               |
 | Branch         | `main`                                                        |
-| Milestone xong | M0–**M14** (reporting-service; xem `docs/PROGRESS.md` commit) |
+| Milestone xong | M0–**M14** (`8f86457`, sau format/lint/test/build OK) |
 | Milestone tiếp | **M15** — storefront-web / admin-web (Next.js)                |
 | Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`                 |
 
