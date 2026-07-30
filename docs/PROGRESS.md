@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M12 — hoàn tất (chờ commit hash docs)
+- **Milestone đang làm:** M13 — chưa bắt đầu
 - **Milestone đã hoàn thành gần nhất:** M12 (support-service)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — chạy sau M12; support 43/43 incl. Prisma integration Postgres Compose
+- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (19 projects; support 43/43 incl. Prisma integration Postgres Compose)
 
 ## Roadmap milestone
 
@@ -42,6 +42,7 @@
 | `d7d4905` | M10 docs hash        |
 | `a60e754` | M11 warranty-service |
 | `c5a1627` | M11 docs hash        |
+| `7c1a582` | M12 support-service  |
 
 ## Apps sau M12 (19 projects)
 
@@ -139,7 +140,8 @@ Rồi: `cd apps/support-service && npx prisma migrate deploy && npx prisma gener
 
 - support-service hoàn chỉnh: ticket state machine, messages, attachments, assign/priority, order soft-link, outbox + RabbitMQ.
 - Shared contracts/errors/events + ADR-031; docs + HANDOFF-M13.
-- Test support 43/43 (integration Postgres Compose); format/lint/test/build monorepo.
+- Test support 43/43 (integration Postgres Compose); format/lint/test/build monorepo xanh.
+- Commit `7c1a582`.
 - **Không bắt đầu M13 trong phiên này**.
 
 ### 2026-07-30 — M12 start
