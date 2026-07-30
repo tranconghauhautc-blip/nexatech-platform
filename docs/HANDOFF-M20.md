@@ -15,7 +15,7 @@ Ngày bàn giao: **2026-07-30**
 | Milestone xong | M0–**M19**                                      |
 | Milestone tiếp | **M20** — Performance / reliability / DR        |
 | Feat M18       | `d904b12` (docs `722aff9`)                      |
-| Feat M19       | _(điền sau commit)_                             |
+| Feat M19       | `2fad006`                                       |
 | Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`   |
 | Next.js        | **15.2.4**                                      |
 | Helm apps      | `deploy/helm/nexatech` **0.17.0**               |
