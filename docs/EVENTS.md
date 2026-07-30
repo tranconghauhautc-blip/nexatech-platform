@@ -138,6 +138,8 @@
 
 Các service ghi sự kiện quan trọng dùng transactional outbox (cùng transaction Prisma) rồi publisher đẩy lên RabbitMQ — **order-service (M7)**, **payment-service (M8)**, **shipping-service (M9)**, **review-service (M10)**, **warranty-service (M11)** và **support-service (M12)** đã triển khai `OutboxEvent` + dispatcher sau commit; inventory/cart publish trực tiếp khi có `RABBITMQ_URL`.
 
+**notification-service (M13)** là consumer đầu tiên: queue `notification-service.events` + bảng inbox `ProcessedEvent` theo `eventId`.
+
 ## Order consume / gọi sync (M7)
 
 - Sync REST: cart refresh/validate/convert; catalog SKU price; inventory reserve/release.
@@ -180,6 +182,14 @@ Các service ghi sự kiện quan trọng dùng transactional outbox (cùng tran
 
 - Sync REST (optional): `GET /orders/:id` khi ticket có `orderId` — ownership check; `GET /media/:id` cho attachment.
 - Liên kết `warrantyClaimId` / `returnRequestId` chỉ lưu ID (không gọi warranty REST bắt buộc trong M12).
-- Publish outbox: `support.ticket_created|updated|assigned|resolved|closed|cancelled|message_added`.
+- Publish outbox: `support.ticket_created|updated|assigned|resolved|closed|cancelled|message_added` (payload gồm `customerId` / `assigneeId` / `ticketCode` khi có để notification resolve recipient).
 - Không truy cập DB order/warranty/media; không distributed TX.
 - Publish chỉ sau local transaction thành công (outbox).
+
+## Notification integrate (M13)
+
+- Consume RabbitMQ topic `nexatech.events` (queue `notification-service.events`, DLX `nexatech.events.dlx`).
+- Inbox idempotent theo `eventId` (`ProcessedEvent`).
+- Tạo IN_APP + EMAIL từ template tiếng Việt; SMTP qua env; thiếu SMTP → LoggingEmailSender (dev) hoặc SKIPPED nếu `NOTIFICATION_REQUIRE_SMTP=true`.
+- REST in-app cho user; Staff+ `POST /notifications/request` và admin email deliveries.
+- Không publish outbox bắt buộc trong M13; không gọi DB service khác.

@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("NOTIFICATION_DATABASE_URL")
+}
+
+enum NotificationCategory {
+  IDENTITY
+  ORDER
+  PAYMENT
+  SHIPPING
+  REVIEW
+  WARRANTY
+  SUPPORT
+  SYSTEM
+}
+
+enum EmailDeliveryStatus {
+  PENDING
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+}
+
+model InAppNotification {
+  id              String               @id @default(uuid())
+  userId          String
+  category        NotificationCategory
+  templateKey     String
+  title           String
+  body            String
+  linkUrl         String?
+  sourceEventId   String?
+  sourceEventType String?
+  dataJson        Json?
+  readAt          DateTime?
+  deletedAt       DateTime?
+  createdAt       DateTime             @default(now())
+
+  @@index([userId])
+  @@index([readAt])
+  @@index([sourceEventId])
+  @@index([category])
+}
+
+model EmailDelivery {
+  id            String              @id @default(uuid())
+  toEmail       String
+  userId        String?
+  templateKey   String
+  subject       String
+  bodyText      String
+  status        EmailDeliveryStatus @default(PENDING)
+  attempts      Int                 @default(0)
+  lastError     String?
+  sourceEventId String?
+  dataJson      Json?
+  sentAt        DateTime?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([toEmail])
+  @@index([status])
+  @@index([sourceEventId])
+}
+
+model ProcessedEvent {
+  eventId     String   @id
+  eventType   String
+  routingKey  String?
+  processedAt DateTime @default(now())
+  resultJson  Json?
+}
+
+model NotificationIdempotency {
+  key          String   @id
+  operation    String
+  responseJson Json
+  createdAt    DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  actorId   String
+  details   Json?
+  createdAt DateTime @default(now())
+}

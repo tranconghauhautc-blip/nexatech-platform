@@ -48,7 +48,7 @@
 
 Init Compose (`infra/docker/postgres/init-databases.sql`):
 
-- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support` (password dev `changeme`)
+- Users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support`, `nexatech_notification` (password dev `changeme`)
 - DBs cùng tên tương ứng
 
 ## Danh sách database
@@ -67,7 +67,7 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 | review-service       | `nexatech_review`       | Prisma + migration ✅ / Prisma + outbox runtime   |
 | warranty-service     | `nexatech_warranty`     | Prisma + migration ✅ / Prisma + outbox runtime   |
 | support-service      | `nexatech_support`      | Prisma + migration ✅ / Prisma + outbox runtime   |
-| notification-service | `nexatech_notification` | Later                                             |
+| notification-service | `nexatech_notification` | Prisma + migration ✅ / Prisma + inbox consumer   |
 | reporting-service    | `nexatech_reporting`    | Later                                             |
 
 ## catalog — Prisma models (M4)
@@ -182,6 +182,16 @@ Client: `apps/warranty-service/src/generated/prisma`. Order sync: APPROVED→`RE
 - `SupportIdempotency`, `OutboxEvent`, `AuditLog`
 
 Client: `apps/support-service/src/generated/prisma`. Order link: soft ownership check qua `OrderClient.getOrder` khi có `orderId`. Không truy cập DB warranty/order.
+
+## notification — Prisma models (M13)
+
+- `InAppNotification` — userId, category, templateKey, title, body, linkUrl?, sourceEventId/Type, dataJson, readAt, soft `deletedAt`
+- `EmailDelivery` — toEmail, userId?, templateKey, subject, bodyText, status PENDING/SENT/FAILED/SKIPPED, attempts, lastError, sourceEventId, sentAt
+- `ProcessedEvent` — inbox idempotency theo `eventId` (PK)
+- `NotificationIdempotency` — REST idempotency
+- `AuditLog` — thao tác nhạy cảm (event processed, request notification)
+
+Client: `apps/notification-service/src/generated/prisma`. Không outbox publisher chính; **consume** RabbitMQ + inbox. SMTP qua `SMTP_*` env (LoggingEmailSender khi thiếu SMTP ở dev).
 
 ## MinIO buckets
 

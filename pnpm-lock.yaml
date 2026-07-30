@@ -46,6 +46,9 @@ importers:
       minio:
         specifier: ^8.0.7
         version: 8.0.7
+      nodemailer:
+        specifier: ^9.0.3
+        version: 9.0.3
       reflect-metadata:
         specifier: 0.2.2
         version: 0.2.2
@@ -119,6 +122,9 @@ importers:
       '@types/node':
         specifier: 22.13.10
         version: 22.13.10
+      '@types/nodemailer':
+        specifier: ^8.0.1
+        version: 8.0.1
       cross-env:
         specifier: 7.0.3
         version: 7.0.3
@@ -3313,6 +3319,12 @@ packages:
     resolution:
       {
         integrity: sha512-I6LPUvlRH+O6VRUqYOcMudhaIdUVWfsjnZavnsraHvpBwaEyMN29ry+0UVJhImYL16xsscu0aske3yA+uPOWfw==,
+      }
+
+  '@types/nodemailer@8.0.1':
+    resolution:
+      {
+        integrity: sha512-PxpaInm8V1JQDd4j0ds5HfvWQk8JupS1C0Picb96QJsrrRDjBH+DlK7L4ZdNSqNULhiZRQHc40nLVShaGxXAMw==,
       }
 
   '@types/parse-json@4.0.2':
@@ -7685,6 +7697,13 @@ packages:
         integrity: sha512-wRNIrw4DmVLKQlbgOMdkMx27Wrpzes2hh5Jtbi2bjPd+4wJstWIqP5A+lscnqbm0xxmT5Bpg8Lec5ItEBwx6BQ==,
       }
     engines: { node: '>=18' }
+
+  nodemailer@9.0.3:
+    resolution:
+      {
+        integrity: sha512-n+YP+NKwR5zRWa60k3GiQ6Q3B4KXCoAw40dAKeCtYn020iNN74aWK2liXIC3ZEATeGql7we3tE3t8QwhY0eskw==,
+      }
+    engines: { node: '>=6.0.0' }
 
   normalize-path@3.0.0:
     resolution:
@@ -12692,6 +12711,10 @@ snapshots:
     dependencies:
       undici-types: 6.20.0
 
+  '@types/nodemailer@8.0.1':
+    dependencies:
+      '@types/node': 22.13.10
+
   '@types/parse-json@4.0.2': {}
 
   '@types/qs@6.15.1': {}
@@ -15680,6 +15703,8 @@ snapshots:
   node-int64@0.4.0: {}
 
   node-releases@2.0.51: {}
+
+  nodemailer@9.0.3: {}
 
   normalize-path@3.0.0: {}
 

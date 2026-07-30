@@ -48,7 +48,7 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - **Quyết định:** `enableVersioning({ type: URI })` → `/api/v1/...`, `/api/v2/...`.
 - Health: `/health`, `/health/live`, `/health/ready` **exclude** khỏi global prefix `api`.
 - Swagger: `/docs` mỗi service.
-- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`, warranty `3011`, support `3012`.
+- Ports mặc định: identity `3001`, customer `3002`, catalog `3003`, media `3004`, inventory `3005`, cart `3006`, order `3007`, payment `3008`, shipping `3009`, review `3010`, warranty `3011`, support `3012`, notification `3013`.
 
 ## ADR-021 — Customer auth tạm bằng header
 
@@ -60,8 +60,8 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 ## ADR-022 — Prisma client output trong app
 
 - **Quyết định:** `generator client { output = "../src/generated/prisma" }` per service.
-- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`.
-- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support` (không dùng role `postgres` cho app).
+- Env URL: `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `NOTIFICATION_DATABASE_URL`.
+- App DB users: `nexatech_identity`, `nexatech_customer`, `nexatech_catalog`, `nexatech_media`, `nexatech_inventory`, `nexatech_cart`, `nexatech_order`, `nexatech_payment`, `nexatech_shipping`, `nexatech_review`, `nexatech_warranty`, `nexatech_support`, `nexatech_notification` (không dùng role `postgres` cho app).
 - Generated client gitignore `apps/*/src/generated/`; target `prisma-generate` trước build/test.
 
 ## ADR-023 — Persistence thật cho catalog/media (M4)
@@ -182,6 +182,17 @@ Các quyết định kỹ thuật đã chốt. Không hỏi lại trừ khi có 
 - Optimistic `version` + idempotency key + AuditLog; ticket code `NT-S-YYYYMMDD-XXXXXX`.
 - Outbox + RabbitMQ sau local TX; auth tạm `x-user-id` / `x-user-roles`.
 - Staff+ (Staff/Manager/Admin/SuperAdmin) xử lý queue/transition/assign/priority/reply.
+
+## ADR-032 — Notification email + in-app + inbox consumer (M13)
+
+- **Quyết định:** `notification-service` sở hữu DB `nexatech_notification` (port `3013`).
+- Channels: **IN_APP** (REST list/read/delete) và **EMAIL** (SMTP adapter qua `SMTP_*` env; LoggingEmailSender khi thiếu SMTP ở local).
+- **Consumer RabbitMQ đầu tiên** trong monorepo: queue durable `notification-service.events`, bind topic `nexatech.events`, DLX `nexatech.events.dlx`, prefetch từ `NOTIFICATION_CONSUMER_PREFETCH`.
+- Idempotency inbox: bảng `ProcessedEvent` keyed bởi `eventId` — xử lý lại cùng event là no-op.
+- Template tiếng Việt theo `templateKey`/`eventType` (identity/order/payment/shipping/review/warranty/support + `notification.requested`).
+- Recipient: `customerId|userId|assigneeId` + `email|customerEmail|toEmail`; support message STAFF→customer, CUSTOMER→assignee; assign→assignee.
+- REST idempotency (`NotificationIdempotency`) + AuditLog; auth tạm `x-user-id` / `x-user-roles`.
+- Không distributed TX; không gọi DB service khác; không hard-code SMTP secret.
 
 ## ADR-011 — Kong Gateway OSS
 

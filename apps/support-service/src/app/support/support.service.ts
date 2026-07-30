@@ -346,6 +346,7 @@ export class SupportService {
             EventTypes.SUPPORT_TICKET_CREATED,
             {
               ticketCode,
+              customerId: actor.userId,
               category: input.category,
               priority: input.priority,
               orderId,
@@ -479,7 +480,14 @@ export class SupportService {
         const outbox: OutboxEventInput[] = [
           buildOutbox(
             EventTypes.SUPPORT_TICKET_MESSAGE_ADDED,
-            { ticketId, authorType },
+            {
+              ticketId,
+              ticketCode: ticket.ticketCode,
+              customerId: ticket.customerId,
+              assigneeId: ticket.assigneeId,
+              authorType,
+              authorId: actor.userId,
+            },
             traceId,
           ),
         ];
@@ -489,6 +497,8 @@ export class SupportService {
               EventTypes.SUPPORT_TICKET_UPDATED,
               {
                 ticketId,
+                ticketCode: ticket.ticketCode,
+                customerId: ticket.customerId,
                 from: statusTransition.fromStatus,
                 to: statusTransition.toStatus,
               },
@@ -556,7 +566,13 @@ export class SupportService {
           outbox: [
             buildOutbox(
               EventTypes.SUPPORT_TICKET_UPDATED,
-              { ticketId, mediaId: input.mediaId, action: 'attach-media' },
+              {
+                ticketId,
+                ticketCode: ticket.ticketCode,
+                customerId: ticket.customerId,
+                mediaId: input.mediaId,
+                action: 'attach-media',
+              },
               traceId,
             ),
           ],
@@ -606,6 +622,9 @@ export class SupportService {
         TICKET_EVENT_BY_ACTION[action],
         {
           ticketId,
+          ticketCode: ticket.ticketCode,
+          customerId: ticket.customerId,
+          assigneeId: ticket.assigneeId,
           from: ticket.status,
           to: toStatus,
           reason: opts.reason,
@@ -766,7 +785,12 @@ export class SupportService {
         const outbox: OutboxEventInput[] = [
           buildOutbox(
             EventTypes.SUPPORT_TICKET_ASSIGNED,
-            { ticketId, assigneeId: input.assigneeId },
+            {
+              ticketId,
+              ticketCode: ticket.ticketCode,
+              customerId: ticket.customerId,
+              assigneeId: input.assigneeId,
+            },
             traceId,
           ),
         ];
@@ -817,7 +841,12 @@ export class SupportService {
         const outbox: OutboxEventInput[] = [
           buildOutbox(
             EventTypes.SUPPORT_TICKET_UPDATED,
-            { ticketId, priority: input.priority },
+            {
+              ticketId,
+              ticketCode: ticket.ticketCode,
+              customerId: ticket.customerId,
+              priority: input.priority,
+            },
             traceId,
           ),
         ];

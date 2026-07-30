@@ -517,9 +517,38 @@ Transition/assign/priority body hỗ trợ `expectedVersion?`, `idempotencyKey?`
 
 ---
 
-## Các service sau M12 (kế hoạch — chưa code)
+## notification — M13
 
-Notification, reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
+### Customer
+
+| Method | Path                          | Mô tả                                         |
+| ------ | ----------------------------- | --------------------------------------------- |
+| GET    | `/notifications`              | Danh sách in-app (page, unreadOnly, category) |
+| GET    | `/notifications/unread-count` | Số chưa đọc                                   |
+| PATCH  | `/notifications/:id/read`     | Đánh dấu đã đọc (ownership)                   |
+| POST   | `/notifications/read-all`     | Đánh dấu tất cả đã đọc                        |
+| DELETE | `/notifications/:id`          | Soft-delete in-app                            |
+
+### Staff+
+
+| Method | Path                                    | Mô tả                                             |
+| ------ | --------------------------------------- | ------------------------------------------------- |
+| POST   | `/notifications/request`                | Tạo thông báo thủ công (IN_APP/EMAIL), idempotent |
+| GET    | `/admin/notifications/email-deliveries` | Queue email delivery theo status                  |
+
+Auth tạm: `x-user-id` / `x-user-roles`. Ownership theo `userId`. Template tiếng Việt theo `templateKey` / eventType. SMTP từ env (`SMTP_*`); không hard-code secret.
+
+### Domain rules
+
+- Consumer RabbitMQ queue `notification-service.events` (inbox `ProcessedEvent` theo `eventId`).
+- Channels: IN_APP + EMAIL; bỏ qua channel thiếu recipient.
+- Support payload: `customerId` trên lifecycle; message STAFF→customer, CUSTOMER→assignee; assign→assignee.
+
+---
+
+## Các service sau M13 (kế hoạch — chưa code)
+
+Reporting. Chi tiết endpoint xem ARCHITECTURE khi triển khai milestone tương ứng.
 
 ## Ghi chú v2
 

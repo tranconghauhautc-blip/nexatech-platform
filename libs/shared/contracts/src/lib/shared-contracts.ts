@@ -1926,3 +1926,112 @@ export interface SupportTicketDetailDto extends SupportTicketDto {
 }
 
 export type AdminSupportTicketDetailDto = SupportTicketDetailDto;
+
+/** In-app + email notification (notification-service owned) */
+export const NotificationChannels = ['IN_APP', 'EMAIL'] as const;
+export type NotificationChannel = (typeof NotificationChannels)[number];
+
+export const NotificationCategories = [
+  'IDENTITY',
+  'ORDER',
+  'PAYMENT',
+  'SHIPPING',
+  'REVIEW',
+  'WARRANTY',
+  'SUPPORT',
+  'SYSTEM',
+] as const;
+export type NotificationCategory = (typeof NotificationCategories)[number];
+
+export const EmailDeliveryStatuses = [
+  'PENDING',
+  'SENT',
+  'FAILED',
+  'SKIPPED',
+] as const;
+export type EmailDeliveryStatus = (typeof EmailDeliveryStatuses)[number];
+
+export const NOTIFICATION_LIMITS = {
+  titleMax: 200,
+  bodyMax: 4000,
+  linkUrlMax: 500,
+  pageSizeMax: 100,
+  defaultPageSize: 20,
+} as const;
+
+export const notificationChannelSchema = z.enum(NotificationChannels);
+export const notificationCategorySchema = z.enum(NotificationCategories);
+export const emailDeliveryStatusSchema = z.enum(EmailDeliveryStatuses);
+
+export const listNotificationsQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce
+    .number()
+    .int()
+    .min(1)
+    .max(NOTIFICATION_LIMITS.pageSizeMax)
+    .default(NOTIFICATION_LIMITS.defaultPageSize),
+  unreadOnly: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .transform((v) =>
+      v === undefined ? undefined : v === true || v === 'true',
+    ),
+  category: notificationCategorySchema.optional(),
+});
+export type ListNotificationsQuery = z.infer<
+  typeof listNotificationsQuerySchema
+>;
+
+export const requestNotificationSchema = z.object({
+  userId: z.string().min(1).max(64).optional(),
+  email: z.string().email().optional(),
+  category: notificationCategorySchema.default('SYSTEM'),
+  templateKey: z.string().min(1).max(100),
+  title: z.string().min(1).max(NOTIFICATION_LIMITS.titleMax).optional(),
+  body: z.string().min(1).max(NOTIFICATION_LIMITS.bodyMax).optional(),
+  linkUrl: z.string().max(NOTIFICATION_LIMITS.linkUrlMax).optional(),
+  channels: z
+    .array(notificationChannelSchema)
+    .min(1)
+    .default(['IN_APP', 'EMAIL']),
+  data: z.record(z.string(), z.unknown()).optional(),
+  idempotencyKey: z.string().min(8).max(128).optional(),
+});
+export type RequestNotificationInput = z.infer<
+  typeof requestNotificationSchema
+>;
+
+export interface InAppNotificationDto {
+  id: string;
+  userId: string;
+  category: NotificationCategory;
+  templateKey: string;
+  title: string;
+  body: string;
+  linkUrl?: string;
+  readAt?: string;
+  createdAt: string;
+}
+
+export interface UnreadCountDto {
+  count: number;
+}
+
+export interface EmailDeliveryDto {
+  id: string;
+  toEmail: string;
+  userId?: string;
+  templateKey: string;
+  subject: string;
+  status: EmailDeliveryStatus;
+  attempts: number;
+  lastError?: string;
+  sentAt?: string;
+  createdAt: string;
+}
+
+export interface RequestNotificationResultDto {
+  inApp?: InAppNotificationDto;
+  email?: EmailDeliveryDto;
+}

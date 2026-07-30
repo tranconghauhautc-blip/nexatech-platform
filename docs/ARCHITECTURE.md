@@ -61,7 +61,7 @@ Cả hai frontend gọi API qua Kong Gateway, không gọi thẳng service nội
 | `shipping-service` | Carrier adapter, tracking, packages | Tích hợp vận chuyển |
 | `review-service` | Review, media review (ảnh/video) | Chỉ khách đã mua |
 | `warranty-service` | Bảo hành, đổi trả | Liên kết order/SKU |
-| `notification-service` | Email, in-app notification | Consume events |
+| `notification-service` | Email, in-app notification | Consume events (inbox M13) |
 | `support-service` | Ticket hỗ trợ | Staff/Manager xử lý |
 | `reporting-service` | Dashboard metrics, audit log projection | Read model + audit |
 | `media-service` | Upload/presign MinIO, metadata | Ảnh sản phẩm, review, ticket |

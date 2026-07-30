@@ -2,11 +2,11 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** M13 — chưa bắt đầu
-- **Milestone đã hoàn thành gần nhất:** M12 (support-service)
+- **Milestone đang làm:** M13 — hoàn tất (chờ commit hash docs)
+- **Milestone đã hoàn thành gần nhất:** M13 (notification-service)
 - **Cập nhật lần cuối:** 2026-07-30
 - **Branch:** `main`
-- **Kiểm tra cuối phiên:** format / lint / test / build — xanh (19 projects; support 43/43 incl. Prisma integration Postgres Compose)
+- **Kiểm tra cuối phiên:** format / lint / test / build — đang chạy
 
 ## Roadmap milestone
 
@@ -25,7 +25,8 @@
 | M10     | Review                                    | ✅ Done    | review-service                   |
 | M11     | Warranty                                  | ✅ Done    | warranty-service                 |
 | M12     | Support                                   | ✅ Done    | support-service                  |
-| M13–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M13.md`        |
+| M13     | Notification                              | ✅ Done    | notification-service             |
+| M14–M22 | …                                         | ⏳ Pending | Xem `docs/HANDOFF-M14.md`        |
 
 ## Commits
 
@@ -43,23 +44,38 @@
 | `a60e754` | M11 warranty-service |
 | `c5a1627` | M11 docs hash        |
 | `7c1a582` | M12 support-service  |
+| `194cdec` | M12 docs hash        |
 
-## Apps sau M12 (19 projects)
+## Apps sau M13 (20 projects)
 
-| App               | Port | Persistence                      |
-| ----------------- | ---- | -------------------------------- |
-| identity-service  | 3001 | In-memory (schema sẵn)           |
-| customer-service  | 3002 | In-memory (schema sẵn)           |
-| catalog-service   | 3003 | Prisma + Postgres FTS            |
-| media-service     | 3004 | Prisma + MinIO                   |
-| inventory-service | 3005 | Prisma + optimistic lock         |
-| cart-service      | 3006 | Prisma + Redis assist + RabbitMQ |
-| order-service     | 3007 | Prisma + outbox + RabbitMQ       |
-| payment-service   | 3008 | Prisma + outbox + RabbitMQ       |
-| shipping-service  | 3009 | Prisma + outbox + RabbitMQ       |
-| review-service    | 3010 | Prisma + outbox + RabbitMQ       |
-| warranty-service  | 3011 | Prisma + outbox + RabbitMQ       |
-| support-service   | 3012 | Prisma + outbox + RabbitMQ       |
+| App                  | Port | Persistence                      |
+| -------------------- | ---- | -------------------------------- |
+| identity-service     | 3001 | In-memory (schema sẵn)           |
+| customer-service     | 3002 | In-memory (schema sẵn)           |
+| catalog-service      | 3003 | Prisma + Postgres FTS            |
+| media-service        | 3004 | Prisma + MinIO                   |
+| inventory-service    | 3005 | Prisma + optimistic lock         |
+| cart-service         | 3006 | Prisma + Redis assist + RabbitMQ |
+| order-service        | 3007 | Prisma + outbox + RabbitMQ       |
+| payment-service      | 3008 | Prisma + outbox + RabbitMQ       |
+| shipping-service     | 3009 | Prisma + outbox + RabbitMQ       |
+| review-service       | 3010 | Prisma + outbox + RabbitMQ       |
+| warranty-service     | 3011 | Prisma + outbox + RabbitMQ       |
+| support-service      | 3012 | Prisma + outbox + RabbitMQ       |
+| notification-service | 3013 | Prisma + inbox consumer + SMTP   |
+
+## M13 đã hoàn thành
+
+- [x] Shared contracts / errors cho notification
+- [x] notification-service Prisma + migration `nexatech_notification` (`20260730130000_init_notification`)
+- [x] In-app REST (list/unread/read/read-all/delete) + ownership
+- [x] Email delivery + Vietnamese templates + SMTP env adapter
+- [x] RabbitMQ consumer + ProcessedEvent inbox idempotency + DLX
+- [x] Staff+ request notification + admin email deliveries
+- [x] Support outbox payload enrichment (`customerId`/`assigneeId`) — additive
+- [x] Unit + controller + migration + Prisma integration (61/61 pass)
+- [x] Docker DB init (`nexatech_notification`) + docs + HANDOFF-M14
+- [x] format / lint / test / build (chạy cuối M13)
 
 ## M12 đã hoàn thành
 
@@ -74,67 +90,38 @@
 - [x] Docker DB init (`nexatech_support`) + docs + HANDOFF-M13
 - [x] format / lint / test / build (chạy cuối M12)
 
-## M11 đã hoàn thành
-
-- [x] Shared contracts / errors / events cho warranty (claim + return)
-- [x] warranty-service Prisma + migration `nexatech_warranty` (`20260730110000_init_warranty`)
-- [x] Verified buyer (order DELIVERED + package DELIVERED nếu có), SKU/productId từ order item snapshot
-- [x] Claim state machine (SUBMITTED→UNDER_REVIEW→APPROVED→IN_PROGRESS→COMPLETED, REJECTED/CANCELLED) + return state machine (REQUESTED→UNDER_REVIEW→APPROVED→AWAITING_RETURN→RECEIVED→COMPLETED, REJECTED/CANCELLED)
-- [x] Một active claim/return theo `activeKey` (`customerId:orderItemId`), rotate khi soft cancel
-- [x] Media evidence: reference-only, ownership + MIME image/\* qua MediaClient, tối đa 5 ảnh
-- [x] Optimistic locking (`version`), idempotency key, AuditLog thao tác nhạy cảm
-- [x] Outbox + RabbitMQ publisher + OutboxDispatcher (giống review-service)
-- [x] Order sync một chiều qua `OrderClient.syncReturn` + order-service `POST /orders/:id/return-sync` (APPROVED→RETURN_REQUESTED, COMPLETED→RETURNED, REJECTED/CANCELLED sau sync→DELIVERED); idempotent; rollback khi sync lỗi; không distributed TX
-- [x] `warranty.refund_requested` / `warranty.inventory_return_requested` chỉ publish event — không gọi HTTP payment/inventory
-- [x] Unit test (state machines, service, controller) + migration test + integration test Prisma thật (39/39 pass)
-- [x] Docker DB init (`nexatech_warranty`) + docs + HANDOFF-M12
-- [x] format / lint / test / build xanh (toàn monorepo)
-
-## M10 đã hoàn thành
-
-- [x] Shared contracts / errors / events cho review
-- [x] review-service Prisma + migration `nexatech_review`
-- [x] Verified buyer, lifecycle, media, reply, helpful, report, moderation
-- [x] Rating aggregate + rebuild
-- [x] Unit + API + migration tests
-- [x] Docker init DB / env
-- [x] Docs + HANDOFF-M11
-- [x] format / lint / test / build xanh
-
 ## Workaround
 
 Nx **22.7.7**, `NX_SKIP_NATIVE_FILE_CACHE=true`, `NX_DAEMON=false`.
 
 ## Local note (Postgres volume đã init)
 
-Nếu DB `nexatech_review` chưa có (volume cũ):
+Nếu DB `nexatech_notification` chưa có (volume cũ):
 
 ```sql
-CREATE USER nexatech_review WITH PASSWORD 'changeme';
-CREATE DATABASE nexatech_review OWNER nexatech_review;
+CREATE USER nexatech_notification WITH PASSWORD 'changeme';
+CREATE DATABASE nexatech_notification OWNER nexatech_notification;
 ```
 
-Rồi: `cd apps/review-service && npx prisma migrate deploy && npx prisma generate`
+Rồi trong DB đó: `GRANT ALL ON SCHEMA public TO nexatech_notification;`
 
-Nếu DB `nexatech_warranty` chưa có (volume cũ):
-
-```sql
-CREATE USER nexatech_warranty WITH PASSWORD 'changeme';
-CREATE DATABASE nexatech_warranty OWNER nexatech_warranty;
-```
-
-Rồi: `cd apps/warranty-service && npx prisma migrate deploy && npx prisma generate`
-
-Nếu DB `nexatech_support` chưa có (volume cũ):
-
-```sql
-CREATE USER nexatech_support WITH PASSWORD 'changeme';
-CREATE DATABASE nexatech_support OWNER nexatech_support;
-```
-
-Rồi: `cd apps/support-service && npx prisma migrate deploy && npx prisma generate`
+Rồi: `cd apps/notification-service && npx prisma migrate deploy && npx prisma generate`
 
 ## Nhật ký
+
+### 2026-07-30 — M13 done
+
+- notification-service hoàn chỉnh: in-app + email, RabbitMQ consumer/inbox, templates tiếng Việt, SMTP env.
+- Shared contracts/errors + ADR-032; support outbox payload enrichment; docs + HANDOFF-M14.
+- Test notification 61/61 (integration Postgres Compose); format/lint/test/build monorepo.
+- **Không bắt đầu M14 trong phiên này**.
+
+### 2026-07-30 — M13 start
+
+- Working tree sạch; HEAD `194cdec` (M12 docs hash); branch `main`.
+- Phạm vi M13 từ HANDOFF: `notification-service` port `3013`, DB `nexatech_notification`, email + in-app, consume RabbitMQ events, template tiếng Việt, SMTP từ env.
+- Pattern: support-service (publisher) + inbox consumer mới.
+- Không bắt đầu M14 trong phiên này.
 
 ### 2026-07-30 — M12 done
 
@@ -143,34 +130,3 @@ Rồi: `cd apps/support-service && npx prisma migrate deploy && npx prisma gener
 - Test support 43/43 (integration Postgres Compose); format/lint/test/build monorepo xanh.
 - Commit `7c1a582`.
 - **Không bắt đầu M13 trong phiên này**.
-
-### 2026-07-30 — M12 start
-
-- Working tree sạch; HEAD `c5a1627` (M11 docs hash); branch `main`.
-- Baseline format + lint xanh (18 projects).
-- Phạm vi M12 từ HANDOFF: `support-service` port `3012`, DB `nexatech_support`, ticket hỗ trợ, media attachment, liên kết order/warranty/return bằng REST ID, RBAC + audit + outbox.
-- Pattern: warranty-service / review-service.
-- Không bắt đầu M13 trong phiên này.
-
-### 2026-07-30 — M11 done
-
-- warranty-service hoàn chỉnh: claim + return state machine, verified buyer, media evidence, activeKey, optimistic lock, idempotency, audit log, outbox + RabbitMQ.
-- Order-service bổ sung `POST /orders/:id/return-sync` (Staff+, idempotent).
-- Refund/inventory return trong M11 chỉ publish event hợp đồng — không gọi HTTP payment/inventory.
-- Shared contracts/errors/events + ADR-030; docs + HANDOFF-M12.
-- Test warranty 39/39 (integration Postgres Compose); format/lint/test/build monorepo xanh.
-- **Không bắt đầu M12 trong phiên này**.
-
-### 2026-07-30 — M11 start
-
-- Working tree sạch; HEAD `d7d4905`; baseline format/lint/test/build xanh.
-- Docker Compose Postgres/Redis/RabbitMQ/MinIO đang chạy.
-- Phạm vi: warranty claim + return request; verified purchase; evidence media; staff queue; outbox; order sync RETURN_REQUESTED/RETURNED.
-- Không refund/inventory return thật trong M11 (chỉ event/contract).
-- Bắt đầu Nhóm A → I.
-
-### 2026-07-30 — M10 done
-
-- review-service hoàn chỉnh; verified buyer; moderation; aggregate; media/reply/report/helpful; outbox.
-- Shared contracts/errors/events; docs + HANDOFF-M11.
-- **Không bắt đầu M11 trong phiên này**.
