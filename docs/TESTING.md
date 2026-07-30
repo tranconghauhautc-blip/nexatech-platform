@@ -102,13 +102,26 @@ Scripts dùng `cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false` (xem AD
 | `support-service`      | Ticket state machine, customer/staff messages, media attachments ownership/MIME, assign/priority, ownership/RBAC, idempotency, version conflict, outbox; Prisma/migration khi có `SUPPORT_DATABASE_URL`                                                                                                                                                                                                 |
 | `notification-service` | Template render, event extract/recipient routing, inbox idempotency, in-app ownership/RBAC, mark-read concurrency, email sender (InMemory/Logging/SMTP), REST request idempotency; Prisma/migration khi có `NOTIFICATION_DATABASE_URL`                                                                                                                                                                  |
 | `reporting-service`    | Event domain mapping/metric key derivation (`event-handlers`), inbox idempotency + projection upsert + DailyMetric increment + audit projection (`reporting.service`), RBAC Staff+ (`REPORTING_FORBIDDEN`/`UNAUTHORIZED`), dashboard/projection/audit-log controllers, REST audit idempotency + conflict, consumer bind/nack DLX; Prisma/migration/Postgres integration khi có `REPORTING_DATABASE_URL` |
-| `shared-web`           | `formatVnd`/`formatDateTimeVn`, `ApiClient` error envelope mapping, timeout, admin menu filter helpers                                                                                                                                                                                                                                                                                                  |
+| `shared-web`           | `formatVnd`/`formatDateTimeVn`, `ApiClient` error envelope mapping, timeout, admin menu filter helpers, BFF path sanitize/timeout envelope                                                                                                                                                                                                                                                              |
 | `storefront-web`       | Home/catalog/PDP/cart/checkout/auth/account pages; BFF proxy; session cookie; validation schemas; cart totals; Jest component/util tests                                                                                                                                                                                                                                                                |
 | `admin-web`            | Login guard + RBAC menu; dashboard reporting; catalog/inventory/order/payment/shipping/review/warranty/support/notification/reporting/media list pages; users stub; Jest menu tests                                                                                                                                                                                                                     |
 
-## Integration (M4–M15)
+## Playwright E2E (M16)
 
-Bật Compose rồi set `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `NOTIFICATION_DATABASE_URL`, `REPORTING_DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
+```bash
+pnpm exec playwright install chromium
+pnpm e2e
+# hoặc khi FE đã chạy:
+# $env:PLAYWRIGHT_SKIP_WEBSERVER='1'; pnpm e2e
+```
+
+Specs: `e2e/storefront/*` (smoke, catalog/cart, responsive), `e2e/admin/smoke.spec.ts` (login + route guard + robots).
+
+Backend thật qua Compose (khi có): seed catalog `pnpm seed:catalog` sau migrate; Kong `http://localhost:8000`.
+
+## Integration (M4–M16)
+
+Bật Compose rồi set `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `NOTIFICATION_DATABASE_URL`, `REPORTING_DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
 Tests tự skip nếu thiếu env — riêng notification M13 đã chạy integration với Postgres Compose thật (`61/61` khi có DB).
 
 reporting-service M14 dự kiến **56+ test** (unit domain/metric mapping + controller RBAC + event-handlers extract/status + Prisma migration snapshot + Prisma integration + consumer bind/DLX), tương tự cấu trúc notification M13; chạy đủ khi có `REPORTING_DATABASE_URL`.

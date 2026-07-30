@@ -282,3 +282,13 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - Shared FE helpers trong `libs/shared/web`.
 - Dockerfile multi-stage `output: 'standalone'`, non-root, healthcheck.
 - **Nx sync:** tắt `@nx/js:typescript-sync` trong `nx.json` (`sync.disabledTaskSyncGenerators`) để tránh ép `references`/`composite` trên Nest apps (gây TS6305 khi `dist/out-tsc` chưa có). Path alias trong `tsconfig.base.json` vẫn là nguồn resolve.
+
+## ADR-035 — Docker backends + Kong + E2E (M16)
+
+- **Quyết định:** Mỗi Nest service có Dockerfile multi-stage riêng (Node 22 bookworm, non-root, `/health/live` healthcheck, tag semver `0.16.0`). Compose apps tại `infra/docker/docker-compose.apps.yml` + Kong declarative `infra/kong/kong.yml` route `/api/v1` / `/api/v2`.
+- Prisma `binaryTargets` gồm `native` + `debian-openssl-3.0.x`; runtime copy `schema.prisma` + query engine cạnh `main.js`.
+- Identity/customer: wire Prisma repository khi có `*_DATABASE_URL` (InMemory chỉ `NODE_ENV=test`); migration `20260730160000_init_*`.
+- Catalog seed ~100 SP: `pnpm seed:catalog` (`scripts/seed-catalog.cjs`).
+- Playwright E2E smoke: `e2e/` + `pnpm e2e` (tự `nx dev` storefront/admin nếu chưa có URL override).
+- BFF hardening: whitelist service + `sanitizeBffPathParts`, timeout `BFF_UPSTREAM_TIMEOUT_MS`, không lộ URL nội bộ trong lỗi 502.
+- Next.js giữ **15.2.4** (không nâng CVE patch trong M16).

@@ -45,7 +45,7 @@ Không bao gồm voucher, mã giảm giá, flash sale, SIM, thiết bị mạng 
 | `storefront-web` | Cửa hàng khách hàng  | Next.js 15 App Router, TypeScript, BFF     | 3000       |
 | `admin-web`      | Cổng quản trị nội bộ | Next.js 15 App Router, TypeScript, RBAC UI | 3100       |
 
-**M15:** Frontend gọi backend qua Next.js Route Handlers `/api/bff/{service}/...` (server-side dùng `*_SERVICE_URL` / `INTERNAL_API_BASE_URL`). Trình duyệt không hard-code IP service. Production target vẫn là Kong Gateway (`NEXT_PUBLIC_API_BASE_URL`). Session: httpOnly cookie (`nt_session` storefront; signed `nexatech_admin_session` admin). Auth tạm đính kèm `x-user-id` / `x-user-roles` / `x-cart-token` khi proxy.
+**M15–M16:** Frontend BFF `/api/bff/{service}`; Kong local declarative (`infra/kong/kong.yml`) cho `/api/v1`. Session httpOnly (ADR-034). Backend Dockerfiles + compose apps (ADR-035). Identity/customer Prisma khi có DATABASE_URL.
 
 Shared FE: `libs/shared/web` (`formatVnd`, `ApiClient`, error envelope mapping, admin menu helpers).
 

@@ -1,0 +1,280 @@
+# App stack (M16) — build images from repo root; depends on infra from docker-compose.dev.yml
+# Usage:
+#   docker compose -f infra/docker/docker-compose.dev.yml up -d
+#   docker compose -f infra/docker/docker-compose.apps.yml up -d --build
+#
+# Image tags use semver (không dùng latest).
+
+x-backend-env: &backend-env
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret-min-32-chars}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-secret-min-32-chars}
+  REDIS_URL: redis://redis:6379
+  RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+  NODE_ENV: production
+
+services:
+  kong:
+    image: kong:3.9.0
+    environment:
+      KONG_DATABASE: 'off'
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_LISTEN: '0.0.0.0:8000'
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001'
+      KONG_LOG_LEVEL: notice
+    ports:
+      - '8000:8000'
+      - '8001:8001'
+    volumes:
+      - ../kong/kong.yml:/kong/kong.yml:ro
+    healthcheck:
+      test: ['CMD', 'kong', 'health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  identity-service:
+    build:
+      context: ../..
+      dockerfile: apps/identity-service/Dockerfile
+    image: nexatech/identity-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3001
+      IDENTITY_DATABASE_URL: postgresql://nexatech_identity:changeme@postgres:5432/nexatech_identity
+    ports:
+      - '3001:3001'
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+  customer-service:
+    build:
+      context: ../..
+      dockerfile: apps/customer-service/Dockerfile
+    image: nexatech/customer-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3002
+      CUSTOMER_DATABASE_URL: postgresql://nexatech_customer:changeme@postgres:5432/nexatech_customer
+    ports:
+      - '3002:3002'
+
+  catalog-service:
+    build:
+      context: ../..
+      dockerfile: apps/catalog-service/Dockerfile
+    image: nexatech/catalog-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3003
+      CATALOG_DATABASE_URL: postgresql://nexatech_catalog:changeme@postgres:5432/nexatech_catalog
+    ports:
+      - '3003:3003'
+
+  media-service:
+    build:
+      context: ../..
+      dockerfile: apps/media-service/Dockerfile
+    image: nexatech/media-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3004
+      MEDIA_DATABASE_URL: postgresql://nexatech_media:changeme@postgres:5432/nexatech_media
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin
+      MINIO_USE_SSL: 'false'
+    ports:
+      - '3004:3004'
+
+  inventory-service:
+    build:
+      context: ../..
+      dockerfile: apps/inventory-service/Dockerfile
+    image: nexatech/inventory-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3005
+      INVENTORY_DATABASE_URL: postgresql://nexatech_inventory:changeme@postgres:5432/nexatech_inventory
+    ports:
+      - '3005:3005'
+
+  cart-service:
+    build:
+      context: ../..
+      dockerfile: apps/cart-service/Dockerfile
+    image: nexatech/cart-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3006
+      CART_DATABASE_URL: postgresql://nexatech_cart:changeme@postgres:5432/nexatech_cart
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+    ports:
+      - '3006:3006'
+
+  order-service:
+    build:
+      context: ../..
+      dockerfile: apps/order-service/Dockerfile
+    image: nexatech/order-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3007
+      ORDER_DATABASE_URL: postgresql://nexatech_order:changeme@postgres:5432/nexatech_order
+      CART_SERVICE_URL: http://cart-service:3006
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+    ports:
+      - '3007:3007'
+
+  payment-service:
+    build:
+      context: ../..
+      dockerfile: apps/payment-service/Dockerfile
+    image: nexatech/payment-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3008
+      PAYMENT_DATABASE_URL: postgresql://nexatech_payment:changeme@postgres:5432/nexatech_payment
+      ORDER_SERVICE_URL: http://order-service:3007
+      MOCK_PAYMENT_ENABLED: 'true'
+    ports:
+      - '3008:3008'
+
+  shipping-service:
+    build:
+      context: ../..
+      dockerfile: apps/shipping-service/Dockerfile
+    image: nexatech/shipping-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3009
+      SHIPPING_DATABASE_URL: postgresql://nexatech_shipping:changeme@postgres:5432/nexatech_shipping
+      MOCK_SHIPPING_ENABLED: 'true'
+    ports:
+      - '3009:3009'
+
+  review-service:
+    build:
+      context: ../..
+      dockerfile: apps/review-service/Dockerfile
+    image: nexatech/review-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3010
+      REVIEW_DATABASE_URL: postgresql://nexatech_review:changeme@postgres:5432/nexatech_review
+    ports:
+      - '3010:3010'
+
+  warranty-service:
+    build:
+      context: ../..
+      dockerfile: apps/warranty-service/Dockerfile
+    image: nexatech/warranty-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3011
+      WARRANTY_DATABASE_URL: postgresql://nexatech_warranty:changeme@postgres:5432/nexatech_warranty
+    ports:
+      - '3011:3011'
+
+  support-service:
+    build:
+      context: ../..
+      dockerfile: apps/support-service/Dockerfile
+    image: nexatech/support-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3012
+      SUPPORT_DATABASE_URL: postgresql://nexatech_support:changeme@postgres:5432/nexatech_support
+    ports:
+      - '3012:3012'
+
+  notification-service:
+    build:
+      context: ../..
+      dockerfile: apps/notification-service/Dockerfile
+    image: nexatech/notification-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3013
+      NOTIFICATION_DATABASE_URL: postgresql://nexatech_notification:changeme@postgres:5432/nexatech_notification
+    ports:
+      - '3013:3013'
+
+  reporting-service:
+    build:
+      context: ../..
+      dockerfile: apps/reporting-service/Dockerfile
+    image: nexatech/reporting-service:0.16.0
+    environment:
+      <<: *backend-env
+      PORT: 3014
+      REPORTING_DATABASE_URL: postgresql://nexatech_reporting:changeme@postgres:5432/nexatech_reporting
+    ports:
+      - '3014:3014'
+
+  storefront-web:
+    build:
+      context: ../..
+      dockerfile: apps/storefront-web/Dockerfile
+    image: nexatech/storefront-web:0.16.0
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      APP_BASE_URL: http://localhost:3000
+      INTERNAL_API_BASE_URL: http://kong:8000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      CUSTOMER_SERVICE_URL: http://customer-service:3002
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      CART_SERVICE_URL: http://cart-service:3006
+      ORDER_SERVICE_URL: http://order-service:3007
+      PAYMENT_SERVICE_URL: http://payment-service:3008
+      SHIPPING_SERVICE_URL: http://shipping-service:3009
+      REVIEW_SERVICE_URL: http://review-service:3010
+      WARRANTY_SERVICE_URL: http://warranty-service:3011
+      SUPPORT_SERVICE_URL: http://support-service:3012
+      NOTIFICATION_SERVICE_URL: http://notification-service:3013
+      REPORTING_SERVICE_URL: http://reporting-service:3014
+      MEDIA_PUBLIC_BASE_URL: http://localhost:9000
+    ports:
+      - '3000:3000'
+
+  admin-web:
+    build:
+      context: ../..
+      dockerfile: apps/admin-web/Dockerfile
+    image: nexatech/admin-web:0.16.0
+    environment:
+      NODE_ENV: production
+      PORT: 3100
+      ADMIN_BASE_URL: http://localhost:3100
+      INTERNAL_API_BASE_URL: http://kong:8000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:-change-me-admin-session-secret-min-16}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret-min-32-chars}
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      CUSTOMER_SERVICE_URL: http://customer-service:3002
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      CART_SERVICE_URL: http://cart-service:3006
+      ORDER_SERVICE_URL: http://order-service:3007
+      PAYMENT_SERVICE_URL: http://payment-service:3008
+      SHIPPING_SERVICE_URL: http://shipping-service:3009
+      REVIEW_SERVICE_URL: http://review-service:3010
+      WARRANTY_SERVICE_URL: http://warranty-service:3011
+      SUPPORT_SERVICE_URL: http://support-service:3012
+      NOTIFICATION_SERVICE_URL: http://notification-service:3013
+      REPORTING_SERVICE_URL: http://reporting-service:3014
+    ports:
+      - '3100:3100'
+
+networks:
+  default:
+    name: nexatech-dev
+    external: true

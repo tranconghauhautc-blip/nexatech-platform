@@ -2,11 +2,11 @@
 
 ## Môi trường
 
-| Env | Mục đích | Orchestration |
-|-----|----------|---------------|
-| `local` | Dev máy cá nhân | Docker Compose + Nx serve |
-| `integration` | Test tích hợp | Compose full stack |
-| `production` | Kubernetes | Helm + Kong |
+| Env           | Mục đích        | Orchestration             |
+| ------------- | --------------- | ------------------------- |
+| `local`       | Dev máy cá nhân | Docker Compose + Nx serve |
+| `integration` | Test tích hợp   | Compose full stack        |
+| `production`  | Kubernetes      | Helm + Kong               |
 
 ## Nguyên tắc
 
@@ -26,7 +26,7 @@ Services hạ tầng tối thiểu:
 - RabbitMQ 3.13+ (management plugin)
 - MinIO
 - Mailhog / Mailpit (dev email)
-- Kong (optional local; có thể gọi thẳng service khi dev)
+- Kong (local qua `docker-compose.apps.yml`)
 
 ## Dockerfile pattern
 
@@ -38,6 +38,32 @@ Mỗi service expose:
 
 - HTTP port riêng (map qua env `PORT`)
 - `/health`, `/health/live`, `/health/ready`
+
+## Kong
+
+- Declarative config: `infra/kong/kong.yml`
+- Local: Compose service `kong` trong `docker-compose.apps.yml` (proxy `:8000`, admin `:8001`)
+- Routes theo prefix `/api/v1` và `/api/v2` → từng microservice (strip_path=false)
+- Plugins: cors, correlation-id (`x-request-id`)
+- JWT plugin / rate-limit chi tiết: milestone sau khi auth header giả lập được thay
+
+## App images (M16)
+
+```bash
+docker compose -f infra/docker/docker-compose.dev.yml up -d
+docker network create nexatech-dev 2>$null
+docker compose -f infra/docker/docker-compose.apps.yml up -d --build
+```
+
+Mỗi Nest app: `apps/<service>/Dockerfile` (tag `nexatech/<service>:0.16.0`). Frontend: Dockerfile M15, tag `0.16.0` trong compose apps.
+
+## Seed catalog
+
+```bash
+cd apps/catalog-service && npx prisma migrate deploy && npx prisma generate
+$env:CATALOG_DATABASE_URL='postgresql://nexatech_catalog:changeme@localhost:5432/nexatech_catalog'
+pnpm seed:catalog
+```
 
 ## Kubernetes / Helm (M19)
 
@@ -57,16 +83,6 @@ deploy/helm/nexatech/
 ```
 
 Mỗi microservice: Deployment + Service + ConfigMap + Secret ref + ServiceMonitor (optional).
-
-## Kong
-
-- Declarative config (`kong.yml`) trong repo
-- Routes theo prefix:
-  - `/api/v1/auth` → identity
-  - `/api/v1/customers` → customer
-  - `/api/v1/products` → catalog
-  - ... (map đầy đủ ở M18/M19)
-- Plugins: cors, rate-limiting, jwt (khi sẵn sàng), request-id
 
 ## Secrets cần cung cấp sau (không commit)
 

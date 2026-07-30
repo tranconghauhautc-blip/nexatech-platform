@@ -10,7 +10,11 @@
     "test": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t test --all",
     "build": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t build --all",
     "typecheck": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx run-many -t typecheck --all",
-    "graph": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx graph"
+    "graph": "cross-env NX_SKIP_NATIVE_FILE_CACHE=true NX_DAEMON=false nx graph",
+    "e2e": "playwright test",
+    "e2e:storefront": "playwright test --project=storefront-chromium",
+    "e2e:admin": "playwright test --project=admin-chromium",
+    "seed:catalog": "node scripts/seed-catalog.cjs"
   },
   "engines": {
     "node": ">=22.0.0",

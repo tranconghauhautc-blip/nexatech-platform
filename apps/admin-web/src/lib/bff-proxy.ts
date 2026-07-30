@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  bffTimeoutMs,
+  fetchWithTimeout,
+  sanitizeBffPathParts,
+  upstreamUnavailableEnvelope,
+} from '@nexatech/shared-web';
 import { isAdminServiceKey, resolveServiceBaseUrl } from './service-urls';
 import { ADMIN_SESSION_COOKIE, verifySessionToken } from './session';
 
@@ -14,15 +20,31 @@ export async function proxyAdminRequest(
   request: NextRequest,
   params: { service: string; path: string[] },
 ): Promise<NextResponse> {
+  const traceId = crypto.randomUUID();
   if (!isAdminServiceKey(params.service)) {
     return NextResponse.json(
       {
         errorCode: 'BFF_UNKNOWN_SERVICE',
         message: `Dịch vụ không hỗ trợ: ${params.service}`,
-        traceId: crypto.randomUUID(),
+        details: {},
+        traceId,
         timestamp: new Date().toISOString(),
       },
       { status: 404 },
+    );
+  }
+
+  const safeParts = sanitizeBffPathParts(params.path);
+  if (safeParts === null) {
+    return NextResponse.json(
+      {
+        errorCode: 'BFF_INVALID_PATH',
+        message: 'Đường dẫn API không hợp lệ',
+        details: {},
+        traceId,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 400 },
     );
   }
 
@@ -30,7 +52,7 @@ export async function proxyAdminRequest(
   const session = await verifySessionToken(sessionToken);
 
   const base = resolveServiceBaseUrl(params.service);
-  const subPath = params.path.join('/');
+  const subPath = safeParts.join('/');
   const target = `${base}/api/v1/${subPath}${new URL(request.url).search}`;
 
   const headers = new Headers();
@@ -47,10 +69,10 @@ export async function proxyAdminRequest(
     headers.set(key, value);
   });
   if (!headers.has('x-request-id')) {
-    headers.set('x-request-id', crypto.randomUUID());
+    headers.set('x-request-id', traceId);
   }
   if (!headers.has('x-trace-id')) {
-    headers.set('x-trace-id', crypto.randomUUID());
+    headers.set('x-trace-id', traceId);
   }
   if (session) {
     headers.set('x-user-id', session.userId);
@@ -68,29 +90,22 @@ export async function proxyAdminRequest(
   }
 
   try {
-    const upstream = await fetch(target, init);
+    const upstream = await fetchWithTimeout(target, init, bffTimeoutMs());
     const body = await upstream.arrayBuffer();
     const responseHeaders = new Headers();
     const contentType = upstream.headers.get('content-type');
     if (contentType) {
       responseHeaders.set('content-type', contentType);
     }
+    responseHeaders.set('x-request-id', headers.get('x-request-id') ?? traceId);
+    responseHeaders.set('x-trace-id', headers.get('x-trace-id') ?? traceId);
     return new NextResponse(body, {
       status: upstream.status,
       headers: responseHeaders,
     });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        errorCode: 'UPSTREAM_UNAVAILABLE',
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Không kết nối được dịch vụ backend',
-        traceId: crypto.randomUUID(),
-        timestamp: new Date().toISOString(),
-      },
-      { status: 502 },
-    );
+  } catch {
+    return NextResponse.json(upstreamUnavailableEnvelope(traceId), {
+      status: 502,
+    });
   }
 }

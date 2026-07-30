@@ -12,14 +12,14 @@
 
 | Thành phần                | Trạng thái                                                                 |
 | ------------------------- | -------------------------------------------------------------------------- |
-| Prisma schema identity    | ✅ Có — chưa wire runtime                                                  |
-| Prisma schema customer    | ✅ Có — chưa wire runtime                                                  |
+| Prisma schema identity    | ✅ Có + migration `20260730160000_init_identity`                           |
+| Prisma schema customer    | ✅ Có + migration `20260730160000_init_customer`                           |
 | Prisma schema catalog     | ✅ Có + migration `20260729120000_init_catalog`                            |
 | Prisma schema media       | ✅ Có + migration `20260729130000_init_media`                              |
 | Prisma schema inventory   | ✅ Có + migration `20260729140000_init_inventory`                          |
 | Prisma schema cart        | ✅ Có + migration `20260729160000_init_cart`                               |
 | Prisma schema order       | ✅ Có + migration `20260730000000_init_order`                              |
-| Runtime identity/customer | In-memory (M3)                                                             |
+| Runtime identity/customer | **Prisma** khi `*_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` (M16)   |
 | Runtime catalog           | **Prisma** khi `CATALOG_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test`   |
 | Runtime media             | **Prisma** khi `MEDIA_DATABASE_URL`; MinIO khi `MINIO_*`                   |
 | Runtime inventory         | **Prisma** khi `INVENTORY_DATABASE_URL`; InMemory chỉ unit/`NODE_ENV=test` |
@@ -56,8 +56,8 @@ Init Compose (`infra/docker/postgres/init-databases.sql`):
 
 | Service              | Database name           | Schema status                                     |
 | -------------------- | ----------------------- | ------------------------------------------------- |
-| identity-service     | `nexatech_identity`     | Prisma schema ✅ / runtime in-memory              |
-| customer-service     | `nexatech_customer`     | Prisma schema ✅ / runtime in-memory              |
+| identity-service     | `nexatech_identity`     | Prisma + migration ✅ / Prisma repository runtime |
+| customer-service     | `nexatech_customer`     | Prisma + migration ✅ / Prisma repository runtime |
 | catalog-service      | `nexatech_catalog`      | Prisma + migration ✅ / Prisma repository runtime |
 | media-service        | `nexatech_media`        | Prisma + migration ✅ / Prisma repository runtime |
 | inventory-service    | `nexatech_inventory`    | Prisma + migration ✅ / Prisma repository runtime |

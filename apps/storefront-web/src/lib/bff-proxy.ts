@@ -1,4 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server';
+import {
+  bffTimeoutMs,
+  fetchWithTimeout,
+  sanitizeBffPathParts,
+  upstreamUnavailableEnvelope,
+} from '@nexatech/shared-web';
 import { CART_TOKEN_COOKIE, SESSION_COOKIE, type SessionData } from './session';
 import { getInternalServiceBaseUrl, isServiceName } from './env';
 
@@ -23,20 +29,36 @@ export async function proxyToService(
   req: NextRequest,
   pathParts: string[],
 ) {
+  const traceId = crypto.randomUUID();
   if (!isServiceName(service)) {
     return NextResponse.json(
       {
         errorCode: 'BFF_UNKNOWN_SERVICE',
         message: `Dịch vụ không hỗ trợ: ${service}`,
-        traceId: crypto.randomUUID(),
+        details: {},
+        traceId,
         timestamp: new Date().toISOString(),
       },
       { status: 404 },
     );
   }
 
+  const safeParts = sanitizeBffPathParts(pathParts);
+  if (safeParts === null) {
+    return NextResponse.json(
+      {
+        errorCode: 'BFF_INVALID_PATH',
+        message: 'Đường dẫn API không hợp lệ',
+        details: {},
+        traceId,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 400 },
+    );
+  }
+
   const base = getInternalServiceBaseUrl(service);
-  const subPath = pathParts.join('/');
+  const subPath = safeParts.join('/');
   const target = `${base}/api/v1/${subPath}${new URL(req.url).search}`;
   const session = readSession(req);
   const headers = new Headers();
@@ -48,10 +70,10 @@ export async function proxyToService(
     headers.set(key, value);
   });
   if (!headers.has('x-request-id')) {
-    headers.set('x-request-id', crypto.randomUUID());
+    headers.set('x-request-id', traceId);
   }
   if (!headers.has('x-trace-id')) {
-    headers.set('x-trace-id', crypto.randomUUID());
+    headers.set('x-trace-id', traceId);
   }
   if (session) {
     headers.set('x-user-id', session.userId);
@@ -69,28 +91,22 @@ export async function proxyToService(
   }
 
   try {
-    const upstream = await fetch(target, init);
+    const upstream = await fetchWithTimeout(target, init, bffTimeoutMs());
     const body = await upstream.arrayBuffer();
     const responseHeaders = new Headers();
     const contentType = upstream.headers.get('content-type');
     if (contentType) {
       responseHeaders.set('content-type', contentType);
     }
+    responseHeaders.set('x-request-id', headers.get('x-request-id') ?? traceId);
+    responseHeaders.set('x-trace-id', headers.get('x-trace-id') ?? traceId);
     return new NextResponse(body, {
       status: upstream.status,
       headers: responseHeaders,
     });
-  } catch (error) {
-    return NextResponse.json(
-      {
-        errorCode: 'UPSTREAM_UNAVAILABLE',
-        message:
-          error instanceof Error
-            ? error.message
-            : 'Không kết nối được dịch vụ backend',
-        timestamp: new Date().toISOString(),
-      },
-      { status: 502 },
-    );
+  } catch {
+    return NextResponse.json(upstreamUnavailableEnvelope(traceId), {
+      status: 502,
+    });
   }
 }
