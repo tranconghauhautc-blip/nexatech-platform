@@ -62,6 +62,13 @@
 
 ## Nhật ký
 
+### 2026-08-01 — Storefront filters: brand/category selects + guest tracking
+
+- ProductFilters: brand `<select>` từ `GET /brands`; search page thêm category select từ cây danh mục.
+- Category PLP: min/max price wired; breadcrumb không còn trùng “Trang chủ”.
+- Guest `/tra-cuu-don-hang` (public shipping tracking); hồ sơ địa chỉ có form thêm; admin danh-mục/thương-hiệu search+filter.
+- Footer “Tra cứu đơn hàng” → public page.
+
 ### 2026-08-01 — Production UX + always-on OWASP for WAF PoC
 
 - Show/hide password (admin + storefront auth).

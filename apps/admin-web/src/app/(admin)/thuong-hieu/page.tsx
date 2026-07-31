@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { createBrandRequestSchema, toSlug } from '@nexatech/shared-contracts';
 import { useArrayQuery } from '../../../lib/use-array-query';
 import { bffRequest, getErrorMessage } from '../../../lib/api-client';
@@ -12,6 +12,7 @@ import {
 import { Badge } from '../../../components/ui/Badge';
 import { Drawer } from '../../../components/ui/Drawer';
 import { TextField, TextareaField } from '../../../components/ui/form';
+import { ListToolbar } from '../../../components/ui/ListToolbar';
 import { useToast } from '../../../components/ui/toast';
 
 interface FormState {
@@ -40,6 +41,22 @@ export default function BrandsPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
+
+  const filteredItems = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return items.filter((brand) => {
+      if (statusFilter === 'active' && !brand.isActive) return false;
+      if (statusFilter === 'inactive' && brand.isActive) return false;
+      if (!q) return true;
+      return (
+        brand.name.toLowerCase().includes(q) ||
+        brand.slug.toLowerCase().includes(q)
+      );
+    });
+  }, [items, search, statusFilter]);
 
   const openCreate = () => {
     setEditingId(null);
@@ -176,10 +193,28 @@ export default function BrandsPage() {
         </button>
       </div>
 
+      <ListToolbar
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        searchPlaceholder="Tên hoặc slug…"
+        searchLabel="Tìm thương hiệu"
+        statusValue={statusFilter}
+        onStatusChange={setStatusFilter}
+        statusOptions={[
+          { value: 'active', label: 'Hoạt động' },
+          { value: 'inactive', label: 'Đã ẩn' },
+        ]}
+        onApply={() => setSearch(searchInput.trim())}
+        onReset={() => {
+          setSearchInput('');
+          setSearch('');
+          setStatusFilter('');
+        }}
+      />
       <div className="nx-card">
         <DataTable
           columns={columns}
-          rows={items}
+          rows={filteredItems}
           getRowKey={(b) => b.id}
           loading={loading}
           error={error}

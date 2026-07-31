@@ -42,7 +42,7 @@ export function SiteFooter() {
               <Link href="/tai-khoan/bao-hanh">Bảo hành & đổi trả</Link>
             </li>
             <li>
-              <Link href="/tai-khoan/don-hang">Tra cứu đơn hàng</Link>
+              <Link href="/tra-cuu-don-hang">Tra cứu đơn hàng</Link>
             </li>
             <li>
               <Link href="/thanh-toan">Hướng dẫn thanh toán</Link>

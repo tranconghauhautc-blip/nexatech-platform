@@ -8,6 +8,7 @@ import { Breadcrumbs } from '../../../components/common/breadcrumbs';
 import { ProductFilters } from '../../../components/catalog/product-filters';
 import {
   findCategoryBySlug,
+  getBrands,
   getCategoryTree,
   searchProducts,
 } from '../../../lib/catalog-server';
@@ -46,8 +47,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       | 'relevance') || 'newest';
   const q = first(sp['q']);
   const brandSlug = first(sp['brandSlug']);
+  const minPrice = first(sp['minPrice']);
+  const maxPrice = first(sp['maxPrice']);
 
-  const tree = await getCategoryTree();
+  const [tree, brands] = await Promise.all([getCategoryTree(), getBrands()]);
   const category =
     findCategoryBySlug(tree, slug) ??
     NAV_CATEGORIES.find((c) => c.slug === slug);
@@ -62,13 +65,15 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     sort,
     q,
     brandSlug,
+    minPrice: minPrice ? Number(minPrice) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
   });
 
   const label = 'name' in category ? category.name : category.label;
 
   return (
     <div className={`nt-container ${styles.root}`}>
-      <Breadcrumbs items={[{ label: 'Trang chủ', href: '/' }, { label }]} />
+      <Breadcrumbs items={[{ label }]} />
       <header className={styles.header}>
         <h1 className={styles.title}>{label}</h1>
         <p className={styles.lead}>
@@ -79,7 +84,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <div className={styles.layout}>
         <ProductFilters
           basePath={`/danh-muc/${slug}`}
-          current={{ q, brandSlug, sort, page }}
+          brands={brands}
+          current={{ q, brandSlug, sort, page, minPrice, maxPrice }}
         />
         <div>
           {result.items.length === 0 ? (

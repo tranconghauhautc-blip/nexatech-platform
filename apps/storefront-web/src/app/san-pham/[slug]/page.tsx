@@ -112,7 +112,6 @@ export default async function ProductDetailPage({ params }: Props) {
       />
       <Breadcrumbs
         items={[
-          { label: 'Trang chủ', href: '/' },
           {
             label: product.category.name,
             href: `/danh-muc/${product.category.slug}`,

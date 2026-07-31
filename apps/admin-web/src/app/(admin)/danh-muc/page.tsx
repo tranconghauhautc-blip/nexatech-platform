@@ -15,6 +15,7 @@ import {
 } from '../../../components/ui/DataTable';
 import { Badge } from '../../../components/ui/Badge';
 import { Drawer } from '../../../components/ui/Drawer';
+import { ListToolbar } from '../../../components/ui/ListToolbar';
 import { TextField, SelectField } from '../../../components/ui/form';
 import { useToast } from '../../../components/ui/toast';
 
@@ -46,8 +47,23 @@ export default function CategoriesPage() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
+  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const flat = useMemo(() => flattenCategoryTree(items), [items]);
+  const filteredFlat = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    return flat.filter(({ node }) => {
+      if (statusFilter === 'active' && !node.isActive) return false;
+      if (statusFilter === 'inactive' && node.isActive) return false;
+      if (!q) return true;
+      return (
+        node.name.toLowerCase().includes(q) ||
+        node.slug.toLowerCase().includes(q)
+      );
+    });
+  }, [flat, search, statusFilter]);
   const parentOptions = useMemo(
     () =>
       excludeSubtree(flat, editingId).map(({ node, depth }) => ({
@@ -207,10 +223,28 @@ export default function CategoriesPage() {
         </button>
       </div>
 
+      <ListToolbar
+        searchValue={searchInput}
+        onSearchChange={setSearchInput}
+        searchPlaceholder="Tên hoặc slug…"
+        searchLabel="Tìm danh mục"
+        statusValue={statusFilter}
+        onStatusChange={setStatusFilter}
+        statusOptions={[
+          { value: 'active', label: 'Hoạt động' },
+          { value: 'inactive', label: 'Đã ẩn' },
+        ]}
+        onApply={() => setSearch(searchInput.trim())}
+        onReset={() => {
+          setSearchInput('');
+          setSearch('');
+          setStatusFilter('');
+        }}
+      />
       <div className="nx-card">
         <DataTable
           columns={columns}
-          rows={flat}
+          rows={filteredFlat}
           getRowKey={(row) => row.node.id}
           loading={loading}
           error={error}

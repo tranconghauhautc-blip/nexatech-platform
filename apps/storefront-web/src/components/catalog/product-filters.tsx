@@ -4,35 +4,57 @@ import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { reflectSearchQuery } from '@nexatech/shared-security-lab';
 import { SORT_OPTIONS } from '../../lib/constants';
+import type { Brand } from '../../lib/types';
 import styles from './product-filters.module.css';
+
+export interface FilterCategoryOption {
+  slug: string;
+  name: string;
+}
 
 interface Props {
   basePath: string;
   current: {
     q?: string;
     brandSlug?: string;
+    categorySlug?: string;
     sort?: string;
     page?: number;
     minPrice?: string;
     maxPrice?: string;
   };
+  brands: Brand[];
+  /** Optional category dropdown (search page). Omit on category PLP. */
+  categories?: FilterCategoryOption[];
   /** SC-72 reflected XSS echo — raw query for WAF PoC when provided */
   reflectHtml?: string;
 }
 
-export function ProductFilters({ basePath, current, reflectHtml }: Props) {
+export function ProductFilters({
+  basePath,
+  current,
+  brands,
+  categories,
+  reflectHtml,
+}: Props) {
   const router = useRouter();
   const [q, setQ] = useState(current.q ?? '');
   const [brandSlug, setBrandSlug] = useState(current.brandSlug ?? '');
+  const [categorySlug, setCategorySlug] = useState(current.categorySlug ?? '');
   const [sort, setSort] = useState(current.sort ?? 'newest');
   const [minPrice, setMinPrice] = useState(current.minPrice ?? '');
   const [maxPrice, setMaxPrice] = useState(current.maxPrice ?? '');
+
+  const activeBrands = brands.filter((b) => b.isActive !== false);
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     const params = new URLSearchParams();
     if (q.trim()) params.set('q', q.trim());
     if (brandSlug.trim()) params.set('brandSlug', brandSlug.trim());
+    if (categories && categorySlug.trim()) {
+      params.set('categorySlug', categorySlug.trim());
+    }
     if (minPrice.trim()) params.set('minPrice', minPrice.trim());
     if (maxPrice.trim()) params.set('maxPrice', maxPrice.trim());
     if (sort) params.set('sort', sort);
@@ -55,6 +77,7 @@ export function ProductFilters({ basePath, current, reflectHtml }: Props) {
         className={styles.input}
         value={q}
         onChange={(e) => setQ(e.target.value)}
+        placeholder="Tên sản phẩm…"
       />
       {reflectHtml ? (
         <div
@@ -66,16 +89,43 @@ export function ProductFilters({ basePath, current, reflectHtml }: Props) {
         />
       ) : null}
 
+      {categories && categories.length > 0 ? (
+        <>
+          <label className={styles.label} htmlFor="filter-category">
+            Danh mục
+          </label>
+          <select
+            id="filter-category"
+            className={styles.input}
+            value={categorySlug}
+            onChange={(e) => setCategorySlug(e.target.value)}
+          >
+            <option value="">Tất cả danh mục</option>
+            {categories.map((cat) => (
+              <option key={cat.slug} value={cat.slug}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+        </>
+      ) : null}
+
       <label className={styles.label} htmlFor="filter-brand">
-        Thương hiệu (slug)
+        Thương hiệu
       </label>
-      <input
+      <select
         id="filter-brand"
         className={styles.input}
         value={brandSlug}
         onChange={(e) => setBrandSlug(e.target.value)}
-        placeholder="apple, samsung…"
-      />
+      >
+        <option value="">Tất cả thương hiệu</option>
+        {activeBrands.map((brand) => (
+          <option key={brand.id} value={brand.slug}>
+            {brand.name}
+          </option>
+        ))}
+      </select>
 
       <label className={styles.label} htmlFor="filter-min">
         Giá từ
@@ -87,6 +137,7 @@ export function ProductFilters({ basePath, current, reflectHtml }: Props) {
         min={0}
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
+        placeholder="0"
       />
 
       <label className={styles.label} htmlFor="filter-max">
@@ -99,6 +150,7 @@ export function ProductFilters({ basePath, current, reflectHtml }: Props) {
         min={0}
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
+        placeholder="Không giới hạn"
       />
 
       <label className={styles.label} htmlFor="filter-sort">

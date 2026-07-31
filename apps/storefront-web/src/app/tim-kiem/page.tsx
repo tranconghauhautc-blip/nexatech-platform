@@ -4,7 +4,13 @@ import { ProductGrid } from '../../components/product/product-grid';
 import { EmptyState } from '../../components/common/empty-state';
 import { Pagination } from '../../components/common/pagination';
 import { ProductFilters } from '../../components/catalog/product-filters';
-import { searchProducts } from '../../lib/catalog-server';
+import {
+  flattenCategories,
+  getBrands,
+  getCategoryTree,
+  searchProducts,
+} from '../../lib/catalog-server';
+import { NAV_CATEGORIES } from '../../lib/constants';
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -36,16 +42,29 @@ export default async function SearchPage({ searchParams }: Props) {
   const minPrice = first(sp['minPrice']);
   const maxPrice = first(sp['maxPrice']);
 
-  const result = await searchProducts({
-    q,
-    page,
-    pageSize: 12,
-    sort,
-    brandSlug,
-    categorySlug,
-    minPrice: minPrice ? Number(minPrice) : undefined,
-    maxPrice: maxPrice ? Number(maxPrice) : undefined,
-  });
+  const [result, brands, tree] = await Promise.all([
+    searchProducts({
+      q,
+      page,
+      pageSize: 12,
+      sort,
+      brandSlug,
+      categorySlug,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+    }),
+    getBrands(),
+    getCategoryTree(),
+  ]);
+
+  const categoriesFromApi = flattenCategories(tree).map((node) => ({
+    slug: node.slug,
+    name: node.name,
+  }));
+  const categories =
+    categoriesFromApi.length > 0
+      ? categoriesFromApi
+      : NAV_CATEGORIES.map((c) => ({ slug: c.slug, name: c.label }));
 
   return (
     <div className="nt-container" style={{ padding: '1.5rem 0 3rem' }}>
@@ -65,7 +84,17 @@ export default async function SearchPage({ searchParams }: Props) {
       >
         <ProductFilters
           basePath="/tim-kiem"
-          current={{ q, brandSlug, sort, page, minPrice, maxPrice }}
+          brands={brands}
+          categories={categories}
+          current={{
+            q,
+            brandSlug,
+            categorySlug,
+            sort,
+            page,
+            minPrice,
+            maxPrice,
+          }}
           reflectHtml={q || undefined}
         />
         <div>
