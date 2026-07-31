@@ -1,21 +1,18 @@
 'use client';
 
-import { useMemo, useState } from 'react';
-import { useListQuery } from '../../../lib/use-list-query';
+import { useMemo } from 'react';
+import { useArrayQuery } from '../../../lib/use-array-query';
 import {
   DataTable,
   type DataTableColumn,
 } from '../../../components/ui/DataTable';
-import { Pagination } from '../../../components/ui/Pagination';
 
 export default function Page() {
-  const [page, setPage] = useState(1);
-  const { items, meta, loading, error, refetch } = useListQuery<
+  const { items, loading, error, refetch } = useArrayQuery<
     Record<string, unknown>
   >({
     service: 'inventory',
     path: 'stock',
-    page,
   });
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
@@ -27,7 +24,13 @@ export default function Page() {
       {
         key: 'available',
         header: 'Khả dụng',
-        render: (r) => String(r['available'] ?? r.id ?? ''),
+        render: (r) => String(r['available'] ?? r['onHand'] ?? '—'),
+      },
+      {
+        key: 'locationId',
+        header: 'Vị trí',
+        render: (r) =>
+          String(r['locationId'] ?? r['warehouseId'] ?? r['storeId'] ?? '—'),
       },
     ],
     [],
@@ -44,20 +47,14 @@ export default function Page() {
       <DataTable
         columns={columns}
         rows={items}
-        getRowKey={(r) => String(r.id ?? r.code ?? Math.random())}
+        getRowKey={(r) =>
+          String(r.id ?? `${r['skuCode']}-${r['locationId']}` ?? Math.random())
+        }
         loading={loading}
         error={error}
         onRetry={refetch}
         emptyTitle="Không có dữ liệu"
         emptyDescription="Chưa có bản ghi hoặc backend chưa sẵn sàng."
-      />
-      <Pagination
-        meta={{
-          page: meta.page,
-          pageSize: meta.pageSize,
-          total: meta.totalItems,
-        }}
-        onPageChange={setPage}
       />
     </div>
   );

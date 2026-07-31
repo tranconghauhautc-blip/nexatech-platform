@@ -22,8 +22,26 @@ function loadServiceDoc(serviceId) {
   return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 }
 
+const SERVICE_DISPLAY_TAGS = {
+  'identity-service': 'Identity',
+  'customer-service': 'Customer',
+  'catalog-service': 'Catalog',
+  'media-service': 'Media',
+  'inventory-service': 'Inventory',
+  'cart-service': 'Cart',
+  'order-service': 'Order',
+  'payment-service': 'Payment',
+  'shipping-service': 'Shipping',
+  'review-service': 'Review',
+  'warranty-service': 'Warranty',
+  'support-service': 'Support',
+  'notification-service': 'Notification',
+  'reporting-service': 'Reporting',
+};
+
 function prefixOperationIds(doc, serviceId) {
   const short = serviceId.replace(/-service$/u, '');
+  const displayTag = SERVICE_DISPLAY_TAGS[serviceId] || short;
   for (const p of Object.keys(doc.paths || {})) {
     for (const method of Object.keys(doc.paths[p] || {})) {
       if (method.startsWith('x-')) continue;
@@ -33,7 +51,8 @@ function prefixOperationIds(doc, serviceId) {
       if (!String(base).startsWith(`${short}_`)) {
         op.operationId = `${short}_${base}`.replace(/[^a-zA-Z0-9._-]/g, '_');
       }
-      op.tags = Array.from(new Set([...(op.tags || []), serviceId, short]));
+      // Single service tag for combined Swagger UI grouping.
+      op.tags = [displayTag];
       op['x-nexatech-service'] = serviceId;
     }
   }
@@ -71,8 +90,9 @@ function main() {
       },
     ],
     tags: SERVICES.map((s) => ({
-      name: s.id,
+      name: SERVICE_DISPLAY_TAGS[s.id] || s.id.replace(/-service$/u, ''),
       description: s.description,
+      'x-nexatech-service': s.id,
     })),
     paths: {},
     components: {

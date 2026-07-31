@@ -363,6 +363,17 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Cấm:** hard-code password; bật lab qua HTTP; PoC ra Internet; malware package download cho A03.
 - **Hệ quả:** Local login/RBAC smoke dùng password do operator đặt; coverage API1–API10 và A01–A10 có evidence automated.
 
+## ADR-044 — Combined Swagger portal (local/lab)
+
+- **Quyết định:** Thêm `apps/swagger-portal` phục vụ `openapi/nexatech-combined.openapi.yaml` tại:
+  - Direct: `http://localhost:8090/docs`
+  - Kong local: `http://localhost:8000/docs` (+ `/openapi/*` download)
+- Tags gộp theo service display name (Identity…Reporting).
+- Gate: `NEXATECH_SWAGGER_PORTAL_ENABLED=1` / security-lab / development; production default **off**; **không** thêm vào `kong.production.yml`.
+- Per-service `/docs` giữ nguyên để debug.
+- Health smoke: `pnpm lab:smoke` kiểm portal + Kong `/docs`.
+- **Cấm:** public combined Swagger trên production edge; làm yếu cookie/BFF auth vì Swagger Bearer lab.
+
 ## ADR-043 — Local security training lab (browser + Swagger + OpenAPI 3)
 
 - **Quyết định:** Bổ sung lớp “local security training lab” trên nền M21, không mở milestone roadmap mới:

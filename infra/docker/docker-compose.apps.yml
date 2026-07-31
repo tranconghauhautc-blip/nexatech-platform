@@ -274,6 +274,35 @@ services:
     ports:
       - '3100:3100'
 
+  # Combined Swagger UI — local/lab only. Not present in production Kong/Helm profiles.
+  swagger-portal:
+    build:
+      context: ../..
+      dockerfile: apps/swagger-portal/Dockerfile
+    image: nexatech/swagger-portal:0.17.0
+    environment:
+      NODE_ENV: production
+      PORT: 8090
+      HOST: 0.0.0.0
+      OPENAPI_DIR: /app/openapi
+      SWAGGER_UI_DIST: /app/node_modules/swagger-ui-dist
+      NEXATECH_SWAGGER_PORTAL_ENABLED: '1'
+      NEXATECH_DEPLOY_PROFILE: local-lab
+    ports:
+      - '8090:8090'
+    healthcheck:
+      test:
+        [
+          'CMD',
+          'node',
+          '-e',
+          "fetch('http://127.0.0.1:8090/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+
 networks:
   default:
     name: nexatech-dev

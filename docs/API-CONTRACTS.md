@@ -385,7 +385,7 @@ Base: `/api/v1` (mirror `/api/v2`). Port **3009**. Auth tạm: `x-user-id` / `x-
 
 | Method | Path                               | Mô tả                       |
 | ------ | ---------------------------------- | --------------------------- |
-| GET    | `/api/v1/admin/shipping/shipments` | List filter/sort/pagination |
+| GET    | `/api/v1/admin/shipments`          | List filter/sort/pagination |
 
 ### Order sync
 

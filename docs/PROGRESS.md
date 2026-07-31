@@ -62,6 +62,13 @@
 
 ## Nhật ký
 
+### 2026-08-01 — Combined Swagger portal + admin list path fixes
+
+- Admin: `van-chuyen` → `admin/shipments` (fix 404); `kho-hang` → `useArrayQuery` for array-shaped `/stock`.
+- New `apps/swagger-portal` on `:8090`, Kong local routes `/docs` + `/openapi` → combined OpenAPI UI; gated for lab/dev only (absent from production Kong).
+- Combined tags: Identity…Reporting; `pnpm lab:smoke` checks portal + Kong `/docs`.
+- Docs: LOCAL-LAB-LINKS, SWAGGER-LINKS, LOCAL-SECURITY-LAB-GUIDE, API-CONTRACTS.
+
 ### 2026-08-01 — Swagger Try-it-out Failed to fetch (ADR-043)
 
 - **Root cause:** Live Swagger included `https://api.example.invalid`; UI selected it → browser `Failed to fetch`.

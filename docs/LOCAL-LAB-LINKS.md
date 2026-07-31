@@ -9,6 +9,9 @@ Ports lấy từ `infra/docker/docker-compose.dev.yml` và `infra/docker/docker-
 | Storefront          | http://localhost:3000              | Website khách                   | Session cookie `nt_session` (BFF httpOnly)                       | Public web                         | Không lộ access token cho JS                                           |
 | Admin Portal        | http://localhost:3100              | Cổng quản trị RBAC              | Session cookie `nexatech_admin_session` + `ADMIN_SESSION_SECRET` | Internal / VPN                     | Route guard + menu theo role                                           |
 | Kong Gateway        | http://localhost:8000              | API gateway `/api/v1` `/api/v2` | Forward `Authorization` / cookies                                | Edge API                           | CORS local; production dùng VIP riêng                                  |
+| **Combined Swagger** | http://localhost:8000/docs        | OpenAPI 3 UI đủ 14 services     | Bearer từ Identity login                                         | **Không** production               | Lab/dev only — `swagger-portal` + Kong route; direct :8090 cũng được |
+| Combined OpenAPI    | http://localhost:8000/openapi/nexatech-combined.openapi.yaml | Download YAML/JSON | —                                                                | **Không** production               | JSON: `/openapi/nexatech-combined.openapi.json`                        |
+| Swagger portal      | http://localhost:8090/docs         | Same UI bypass Kong             | `NEXATECH_SWAGGER_PORTAL_ENABLED=1`                              | **Không** production               | Health: http://localhost:8090/health                                   |
 | Kong Admin          | http://localhost:8001              | Kong admin API                  | Local Compose only                                               | **Không public production**        | Chỉ lab/dev                                                            |
 | RabbitMQ Management | http://localhost:15672             | Hàng đợi / exchange UI          | Compose RabbitMQ defaults (local)                                | **Không public production**        | ClusterIP trong Helm prod                                              |
 | MinIO Console       | http://localhost:9001              | Object storage UI               | Compose MinIO root (local)                                       | **Không public production**        | ClusterIP trong Helm prod                                              |
@@ -44,3 +47,13 @@ pnpm seed:accounts
 Emails: `staff@nexatech.local`, `manager@nexatech.local`, `admin@nexatech.local`, `superadmin@nexatech.local`.
 
 Xem thêm: [LOCAL-SECURITY-LAB-GUIDE.md](./LOCAL-SECURITY-LAB-GUIDE.md), [SWAGGER-LINKS.md](./SWAGGER-LINKS.md).
+
+## Combined Swagger portal
+
+```powershell
+docker compose -f infra/docker/docker-compose.apps.yml up -d --build swagger-portal kong
+# UI: http://localhost:8000/docs  (hoặc http://localhost:8090/docs)
+pnpm lab:smoke
+```
+
+Portal **không** có trong `infra/kong/kong.production.yml`. Production giữ disabled.

@@ -253,9 +253,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/admin/catalog/brands:
     post:
@@ -270,9 +268,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/brands/{id}:
     patch:
@@ -292,9 +288,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/categories:
     post:
@@ -309,9 +303,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/categories/{id}:
     patch:
@@ -331,9 +323,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/products:
     post:
@@ -348,9 +338,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/products/{id}:
     patch:
@@ -370,9 +358,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/products/{id}/status:
     patch:
@@ -392,9 +378,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/products/{productId}/media-links:
     post:
@@ -414,9 +398,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/skus:
     post:
@@ -431,9 +413,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/skus/{skuId}/prices:
     post:
@@ -458,9 +438,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/catalog/spec-templates:
     get:
@@ -480,9 +458,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
     post:
       operationId: catalog_AdminCatalogController_createSpecTemplate_v1
@@ -496,9 +472,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/admin/inventory/reservations/{id}/commit:
     post:
@@ -523,9 +497,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/reservations/{id}/release:
     post:
@@ -550,9 +522,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/adjust:
     post:
@@ -572,9 +542,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/issue:
     post:
@@ -594,9 +562,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/receive:
     post:
@@ -616,9 +582,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/reserve:
     post:
@@ -638,9 +602,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/return:
     post:
@@ -660,9 +622,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stores:
     post:
@@ -682,9 +642,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/transfers:
     post:
@@ -704,9 +662,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/warehouses:
     post:
@@ -726,9 +682,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/admin/notifications/email-deliveries:
     get:
@@ -758,9 +712,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/admin/orders:
     get:
@@ -790,9 +742,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}:
     get:
@@ -827,9 +777,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}/cancel:
     post:
@@ -864,9 +812,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}/confirm:
     post:
@@ -901,9 +847,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}/status-transitions:
     post:
@@ -938,9 +882,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/admin/payments:
     get:
@@ -970,9 +912,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/admin/payments/{paymentId}:
     get:
@@ -1007,9 +947,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/admin/payments/{paymentId}/cod-collect:
     post:
@@ -1044,9 +982,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/admin/payments/{paymentId}/refunds:
     post:
@@ -1081,9 +1017,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/admin/reporting/audit:
     post:
@@ -1118,9 +1052,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/audit-logs:
     get:
@@ -1150,9 +1082,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/dashboard:
     get:
@@ -1182,9 +1112,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/metrics/daily:
     get:
@@ -1214,9 +1142,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/orders:
     get:
@@ -1246,9 +1172,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/payments:
     get:
@@ -1278,9 +1202,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/reviews:
     get:
@@ -1310,9 +1232,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/shipments:
     get:
@@ -1342,9 +1262,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/support/tickets:
     get:
@@ -1374,9 +1292,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/warranty/claims:
     get:
@@ -1406,9 +1322,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/warranty/returns:
     get:
@@ -1438,9 +1352,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v1/admin/returns:
     get:
@@ -1470,9 +1382,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/admin/returns/{returnId}:
     get:
@@ -1507,9 +1417,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/admin/returns/{returnId}/transition:
     post:
@@ -1549,9 +1457,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/admin/review-reports:
     get:
@@ -1581,9 +1487,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/admin/review-reports/{reportId}/resolve:
     post:
@@ -1623,9 +1527,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/admin/reviews:
     get:
@@ -1655,9 +1557,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/admin/reviews/aggregates/rebuild:
     post:
@@ -1692,9 +1592,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/admin/reviews/{reviewId}:
     get:
@@ -1729,9 +1627,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/admin/reviews/{reviewId}/moderate:
     post:
@@ -1771,9 +1667,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/admin/shipments:
     get:
@@ -1803,9 +1697,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/admin/shipments/{shipmentId}:
     get:
@@ -1840,9 +1732,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/admin/shipments/{shipmentId}/status-transitions:
     post:
@@ -1877,9 +1767,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/admin/support/tickets:
     get:
@@ -1909,9 +1797,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}:
     get:
@@ -1946,9 +1832,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/assign:
     post:
@@ -1988,9 +1872,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/messages:
     post:
@@ -2030,9 +1912,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/priority:
     patch:
@@ -2072,9 +1952,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/transition:
     post:
@@ -2114,9 +1992,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/admin/warranty/claims:
     get:
@@ -2146,9 +2022,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/admin/warranty/claims/{claimId}:
     get:
@@ -2183,9 +2057,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/admin/warranty/claims/{claimId}/transition:
     post:
@@ -2225,9 +2097,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/auth/forgot-password:
     post:
@@ -2243,9 +2113,7 @@ paths:
           description: ''
       summary: Yêu cầu OTP đặt lại mật khẩu
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/login:
     post:
@@ -2271,9 +2139,7 @@ paths:
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/logout:
     post:
@@ -2289,9 +2155,7 @@ paths:
           description: ''
       summary: Thu hồi session (refresh không dùng lại được)
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/me:
     get:
@@ -2319,9 +2183,7 @@ paths:
         - bearer: []
       summary: Thông tin user từ Bearer access token (Swagger Authorize flow)
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/refresh:
     post:
@@ -2341,9 +2203,7 @@ paths:
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/register:
     post:
@@ -2365,9 +2225,7 @@ paths:
           description: ''
       summary: Đăng ký tài khoản Customer
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/reset-password:
     post:
@@ -2383,9 +2241,7 @@ paths:
           description: ''
       summary: Đặt lại mật khẩu bằng OTP
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/sessions/{sessionId}:
     delete:
@@ -2403,9 +2259,7 @@ paths:
         - bearer: []
       summary: Thu hồi một phiên
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/sessions/{userId}:
     get:
@@ -2423,9 +2277,7 @@ paths:
         - bearer: []
       summary: Liệt kê phiên đăng nhập của user
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/auth/verify-email:
     post:
@@ -2441,9 +2293,7 @@ paths:
           description: ''
       summary: Xác minh email OTP
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v1/brands:
     get:
@@ -2452,8 +2302,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/carts/convert:
     post:
@@ -2478,9 +2327,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/current:
     delete:
@@ -2510,9 +2357,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     get:
       operationId: cart_CartController_current_v1
@@ -2541,9 +2386,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/current/items:
     post:
@@ -2573,9 +2416,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/current/items/{skuId}:
     delete:
@@ -2610,9 +2451,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     patch:
       operationId: cart_CartController_updateItem_v1
@@ -2646,9 +2485,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/current/refresh:
     post:
@@ -2678,9 +2515,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/current/validate:
     post:
@@ -2715,9 +2550,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/guest:
     post:
@@ -2737,9 +2570,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/carts/merge:
     post:
@@ -2764,9 +2595,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/categories:
     get:
@@ -2775,8 +2604,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/comparison:
     delete:
@@ -2791,9 +2619,7 @@ paths:
         200:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     get:
       operationId: cart_ComparisonController_list_v1
@@ -2807,9 +2633,7 @@ paths:
         200:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     post:
       operationId: cart_ComparisonController_add_v1
@@ -2823,9 +2647,7 @@ paths:
         201:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/comparison/{productId}:
     delete:
@@ -2845,9 +2667,7 @@ paths:
         200:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/customers/me:
     get:
@@ -2862,9 +2682,7 @@ paths:
         200:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
     put:
       operationId: customer_CustomerController_updateMe_v1
@@ -2878,9 +2696,7 @@ paths:
         200:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
   /api/v1/customers/me/addresses:
     get:
@@ -2895,9 +2711,7 @@ paths:
         200:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
     post:
       operationId: customer_CustomerController_addAddress_v1
@@ -2911,9 +2725,7 @@ paths:
         201:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
   /api/v1/media/admin/cleanup-orphans:
     post:
@@ -2938,8 +2750,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/media/by-entity/{entityType}/{entityId}:
     get:
@@ -2959,8 +2770,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/media/presign:
     post:
@@ -2980,8 +2790,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/media/{id}:
     delete:
@@ -3006,8 +2815,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
     get:
       operationId: media_MediaController_metadata_v1
@@ -3021,8 +2829,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/media/{id}/confirm:
     post:
@@ -3047,8 +2854,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/media/{id}/download-url:
     get:
@@ -3073,8 +2879,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/media/{id}/links:
     post:
@@ -3099,8 +2904,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v1/mock-payments/{paymentId}/cancel:
     post:
@@ -3135,9 +2939,7 @@ paths:
         201:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/mock-payments/{paymentId}/checkout:
     get:
@@ -3162,9 +2964,7 @@ paths:
         200:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/mock-payments/{paymentId}/fail:
     post:
@@ -3199,9 +2999,7 @@ paths:
         201:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/mock-payments/{paymentId}/succeed:
     post:
@@ -3236,9 +3034,7 @@ paths:
         201:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/movements:
     get:
@@ -3263,8 +3059,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/notifications:
     get:
@@ -3294,9 +3089,7 @@ paths:
         200:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/notifications/read-all:
     post:
@@ -3326,9 +3119,7 @@ paths:
         201:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/notifications/request:
     post:
@@ -3368,9 +3159,7 @@ paths:
         201:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/notifications/unread-count:
     get:
@@ -3400,9 +3189,7 @@ paths:
         200:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/notifications/{id}:
     delete:
@@ -3437,9 +3224,7 @@ paths:
         204:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/notifications/{id}/read:
     patch:
@@ -3474,9 +3259,7 @@ paths:
         200:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v1/orders:
     get:
@@ -3506,9 +3289,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
     post:
       operationId: order_OrderController_create_v1
@@ -3537,9 +3318,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}:
     get:
@@ -3574,9 +3353,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/cancel:
     post:
@@ -3611,9 +3388,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/confirm:
     post:
@@ -3648,9 +3423,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/packages:
     get:
@@ -3685,9 +3458,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/payment-sync:
     post:
@@ -3722,9 +3493,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/return-sync:
     post:
@@ -3759,9 +3528,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/shipping-sync:
     post:
@@ -3796,9 +3563,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/status-history:
     get:
@@ -3833,9 +3598,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v1/payments:
     post:
@@ -3865,9 +3628,7 @@ paths:
         201:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/payments/by-order/{orderId}:
     get:
@@ -3902,9 +3663,7 @@ paths:
         200:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/payments/{paymentId}:
     get:
@@ -3939,9 +3698,7 @@ paths:
         200:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/payments/{paymentId}/cancel:
     post:
@@ -3976,9 +3733,7 @@ paths:
         201:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/payments/{paymentId}/refunds:
     get:
@@ -4013,9 +3768,7 @@ paths:
         200:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
     post:
       operationId: payment_PaymentController_createRefund_v1
@@ -4049,9 +3802,7 @@ paths:
         201:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/products:
     get:
@@ -4060,8 +3811,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/products/{id}/recommendations:
     get:
@@ -4076,8 +3826,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/products/{productId}/reviews:
     get:
@@ -4092,9 +3841,7 @@ paths:
         200:
           description: ''
       tags:
-        - product-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/products/{productId}/reviews/summary:
     get:
@@ -4109,9 +3856,7 @@ paths:
         200:
           description: ''
       tags:
-        - product-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/products/{slug}:
     get:
@@ -4126,8 +3871,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/recently-viewed:
     get:
@@ -4147,9 +3891,7 @@ paths:
         200:
           description: ''
       tags:
-        - recently-viewed
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     post:
       operationId: cart_RecentlyViewedController_track_v1
@@ -4168,9 +3910,7 @@ paths:
         201:
           description: ''
       tags:
-        - recently-viewed
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/reservations/{id}:
     get:
@@ -4185,8 +3925,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/returns:
     get:
@@ -4216,9 +3955,7 @@ paths:
         200:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
     post:
       operationId: warranty_ReturnsController_create_v1
@@ -4252,9 +3989,7 @@ paths:
         201:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/returns/{returnId}:
     get:
@@ -4289,9 +4024,7 @@ paths:
         200:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/returns/{returnId}/cancel:
     post:
@@ -4331,9 +4064,7 @@ paths:
         201:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/returns/{returnId}/media:
     post:
@@ -4373,9 +4104,7 @@ paths:
         201:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/reviews:
     post:
@@ -4410,9 +4139,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}:
     delete:
@@ -4452,9 +4179,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     get:
       operationId: review_ReviewsController_get_v1
@@ -4488,9 +4213,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     patch:
       operationId: review_ReviewsController_update_v1
@@ -4529,9 +4252,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/helpful:
     delete:
@@ -4571,9 +4292,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     post:
       operationId: review_ReviewsController_addHelpful_v1
@@ -4612,9 +4331,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/media:
     post:
@@ -4654,9 +4371,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/media/{mediaId}:
     delete:
@@ -4701,9 +4416,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/replies:
     post:
@@ -4743,9 +4456,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/replies/{replyId}:
     delete:
@@ -4790,9 +4501,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     patch:
       operationId: review_ReviewsController_updateReply_v1
@@ -4836,9 +4545,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/reports:
     post:
@@ -4878,9 +4585,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v1/shipments:
     post:
@@ -4910,9 +4615,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/order/{orderId}:
     get:
@@ -4947,9 +4650,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}:
     get:
@@ -4984,9 +4685,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/book:
     post:
@@ -5021,9 +4720,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/cancel:
     post:
@@ -5058,9 +4755,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/confirm-pickup:
     post:
@@ -5095,9 +4790,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/ready-for-pickup:
     post:
@@ -5132,9 +4825,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/status-transitions:
     post:
@@ -5169,9 +4860,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/tracking:
     get:
@@ -5206,9 +4895,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/providers/{provider}/webhook:
     post:
@@ -5243,8 +4930,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/quotes:
     post:
@@ -5274,8 +4960,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/quotes/{quoteId}:
     get:
@@ -5310,8 +4995,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/slot-reservations/{reservationId}:
     delete:
@@ -5346,8 +5030,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/slots:
     get:
@@ -5377,8 +5060,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/slots/{slotId}/reserve:
     post:
@@ -5413,8 +5095,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/shipping/tracking/{trackingCode}:
     get:
@@ -5439,8 +5120,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v1/skus/{skuCode}:
     get:
@@ -5455,8 +5135,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v1/stock:
     get:
@@ -5481,8 +5160,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/stock/availability:
     get:
@@ -5507,8 +5185,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/stock/low:
     get:
@@ -5517,8 +5194,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/stock/sources:
     get:
@@ -5543,8 +5219,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/stores:
     get:
@@ -5553,8 +5228,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/support/tickets:
     get:
@@ -5584,9 +5258,7 @@ paths:
         200:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
     post:
       operationId: support_TicketsController_create_v1
@@ -5620,9 +5292,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}:
     get:
@@ -5657,9 +5327,7 @@ paths:
         200:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}/attachments:
     post:
@@ -5699,9 +5367,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}/cancel:
     post:
@@ -5741,9 +5407,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}/messages:
     post:
@@ -5783,9 +5447,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v1/vnpay/ipn:
     get:
@@ -5794,9 +5456,7 @@ paths:
         200:
           description: ''
       tags:
-        - vnpay
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
     post:
       operationId: payment_VnpayController_ipnPost_v1
@@ -5804,9 +5464,7 @@ paths:
         201:
           description: ''
       tags:
-        - vnpay
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/vnpay/return:
     get:
@@ -5815,9 +5473,7 @@ paths:
         200:
           description: ''
       tags:
-        - vnpay
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v1/warehouses:
     get:
@@ -5826,8 +5482,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v1/warranty/claims:
     get:
@@ -5857,9 +5512,7 @@ paths:
         200:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
     post:
       operationId: warranty_ClaimsController_create_v1
@@ -5893,9 +5546,7 @@ paths:
         201:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/warranty/claims/{claimId}:
     get:
@@ -5930,9 +5581,7 @@ paths:
         200:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/warranty/claims/{claimId}/cancel:
     post:
@@ -5972,9 +5621,7 @@ paths:
         201:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/warranty/claims/{claimId}/media:
     post:
@@ -6014,9 +5661,7 @@ paths:
         201:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v1/wishlist:
     get:
@@ -6031,9 +5676,7 @@ paths:
         200:
           description: ''
       tags:
-        - wishlist
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     post:
       operationId: cart_WishlistController_add_v1
@@ -6047,9 +5690,7 @@ paths:
         201:
           description: ''
       tags:
-        - wishlist
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v1/wishlist/{productId}:
     delete:
@@ -6069,9 +5710,7 @@ paths:
         200:
           description: ''
       tags:
-        - wishlist
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/admin/catalog/brands:
     post:
@@ -6086,9 +5725,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/brands/{id}:
     patch:
@@ -6108,9 +5745,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/categories:
     post:
@@ -6125,9 +5760,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/categories/{id}:
     patch:
@@ -6147,9 +5780,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/products:
     post:
@@ -6164,9 +5795,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/products/{id}:
     patch:
@@ -6186,9 +5815,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/products/{id}/status:
     patch:
@@ -6208,9 +5835,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/products/{productId}/media-links:
     post:
@@ -6230,9 +5855,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/skus:
     post:
@@ -6247,9 +5870,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/skus/{skuId}/prices:
     post:
@@ -6274,9 +5895,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/catalog/spec-templates:
     get:
@@ -6296,9 +5915,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
     post:
       operationId: catalog_AdminCatalogController_createSpecTemplate_v2
@@ -6312,9 +5929,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-catalog
-        - catalog-service
-        - catalog
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/admin/inventory/reservations/{id}/commit:
     post:
@@ -6339,9 +5954,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/reservations/{id}/release:
     post:
@@ -6366,9 +5979,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/adjust:
     post:
@@ -6388,9 +5999,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/issue:
     post:
@@ -6410,9 +6019,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/receive:
     post:
@@ -6432,9 +6039,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/reserve:
     post:
@@ -6454,9 +6059,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/return:
     post:
@@ -6476,9 +6079,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stores:
     post:
@@ -6498,9 +6099,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/transfers:
     post:
@@ -6520,9 +6119,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/warehouses:
     post:
@@ -6542,9 +6139,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-inventory
-        - inventory-service
-        - inventory
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/admin/notifications/email-deliveries:
     get:
@@ -6574,9 +6169,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/admin/orders:
     get:
@@ -6606,9 +6199,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}:
     get:
@@ -6643,9 +6234,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}/cancel:
     post:
@@ -6680,9 +6269,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}/confirm:
     post:
@@ -6717,9 +6304,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}/status-transitions:
     post:
@@ -6754,9 +6339,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/admin/payments:
     get:
@@ -6786,9 +6369,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/admin/payments/{paymentId}:
     get:
@@ -6823,9 +6404,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/admin/payments/{paymentId}/cod-collect:
     post:
@@ -6860,9 +6439,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/admin/payments/{paymentId}/refunds:
     post:
@@ -6897,9 +6474,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/admin/reporting/audit:
     post:
@@ -6934,9 +6509,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/audit-logs:
     get:
@@ -6966,9 +6539,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/dashboard:
     get:
@@ -6998,9 +6569,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/metrics/daily:
     get:
@@ -7030,9 +6599,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/orders:
     get:
@@ -7062,9 +6629,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/payments:
     get:
@@ -7094,9 +6659,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/reviews:
     get:
@@ -7126,9 +6689,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/shipments:
     get:
@@ -7158,9 +6719,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/support/tickets:
     get:
@@ -7190,9 +6749,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/warranty/claims:
     get:
@@ -7222,9 +6779,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/warranty/returns:
     get:
@@ -7254,9 +6809,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reporting
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /api/v2/admin/returns:
     get:
@@ -7286,9 +6839,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/admin/returns/{returnId}:
     get:
@@ -7323,9 +6874,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/admin/returns/{returnId}/transition:
     post:
@@ -7365,9 +6914,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/admin/review-reports:
     get:
@@ -7397,9 +6944,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/admin/review-reports/{reportId}/resolve:
     post:
@@ -7439,9 +6984,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/admin/reviews:
     get:
@@ -7471,9 +7014,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/admin/reviews/aggregates/rebuild:
     post:
@@ -7508,9 +7049,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/admin/reviews/{reviewId}:
     get:
@@ -7545,9 +7084,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/admin/reviews/{reviewId}/moderate:
     post:
@@ -7587,9 +7124,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/admin/shipments:
     get:
@@ -7619,9 +7154,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/admin/shipments/{shipmentId}:
     get:
@@ -7656,9 +7189,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/admin/shipments/{shipmentId}/status-transitions:
     post:
@@ -7693,9 +7224,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/admin/support/tickets:
     get:
@@ -7725,9 +7254,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}:
     get:
@@ -7762,9 +7289,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/assign:
     post:
@@ -7804,9 +7329,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/messages:
     post:
@@ -7846,9 +7369,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/priority:
     patch:
@@ -7888,9 +7409,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/transition:
     post:
@@ -7930,9 +7449,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-support
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/admin/warranty/claims:
     get:
@@ -7962,9 +7479,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/admin/warranty/claims/{claimId}:
     get:
@@ -7999,9 +7514,7 @@ paths:
         200:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/admin/warranty/claims/{claimId}/transition:
     post:
@@ -8041,9 +7554,7 @@ paths:
         201:
           description: ''
       tags:
-        - admin-warranty
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/auth/forgot-password:
     post:
@@ -8059,9 +7570,7 @@ paths:
           description: ''
       summary: Yêu cầu OTP đặt lại mật khẩu
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/login:
     post:
@@ -8087,9 +7596,7 @@ paths:
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/logout:
     post:
@@ -8105,9 +7612,7 @@ paths:
           description: ''
       summary: Thu hồi session (refresh không dùng lại được)
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/me:
     get:
@@ -8135,9 +7640,7 @@ paths:
         - bearer: []
       summary: Thông tin user từ Bearer access token (Swagger Authorize flow)
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/refresh:
     post:
@@ -8157,9 +7660,7 @@ paths:
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/register:
     post:
@@ -8181,9 +7682,7 @@ paths:
           description: ''
       summary: Đăng ký tài khoản Customer
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/reset-password:
     post:
@@ -8199,9 +7698,7 @@ paths:
           description: ''
       summary: Đặt lại mật khẩu bằng OTP
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/sessions/{sessionId}:
     delete:
@@ -8219,9 +7716,7 @@ paths:
         - bearer: []
       summary: Thu hồi một phiên
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/sessions/{userId}:
     get:
@@ -8239,9 +7734,7 @@ paths:
         - bearer: []
       summary: Liệt kê phiên đăng nhập của user
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/auth/verify-email:
     post:
@@ -8257,9 +7750,7 @@ paths:
           description: ''
       summary: Xác minh email OTP
       tags:
-        - auth
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /api/v2/brands:
     get:
@@ -8268,8 +7759,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/carts/convert:
     post:
@@ -8294,9 +7784,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/current:
     delete:
@@ -8326,9 +7814,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     get:
       operationId: cart_CartController_current_v2
@@ -8357,9 +7843,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/current/items:
     post:
@@ -8389,9 +7873,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/current/items/{skuId}:
     delete:
@@ -8426,9 +7908,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     patch:
       operationId: cart_CartController_updateItem_v2
@@ -8462,9 +7942,7 @@ paths:
         200:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/current/refresh:
     post:
@@ -8494,9 +7972,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/current/validate:
     post:
@@ -8531,9 +8007,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/guest:
     post:
@@ -8553,9 +8027,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/carts/merge:
     post:
@@ -8580,9 +8052,7 @@ paths:
         201:
           description: ''
       tags:
-        - carts
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/categories:
     get:
@@ -8591,8 +8061,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/comparison:
     delete:
@@ -8607,9 +8076,7 @@ paths:
         200:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     get:
       operationId: cart_ComparisonController_list_v2
@@ -8623,9 +8090,7 @@ paths:
         200:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     post:
       operationId: cart_ComparisonController_add_v2
@@ -8639,9 +8104,7 @@ paths:
         201:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/comparison/{productId}:
     delete:
@@ -8661,9 +8124,7 @@ paths:
         200:
           description: ''
       tags:
-        - comparison
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/customers/me:
     get:
@@ -8678,9 +8139,7 @@ paths:
         200:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
     put:
       operationId: customer_CustomerController_updateMe_v2
@@ -8694,9 +8153,7 @@ paths:
         200:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
   /api/v2/customers/me/addresses:
     get:
@@ -8711,9 +8168,7 @@ paths:
         200:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
     post:
       operationId: customer_CustomerController_addAddress_v2
@@ -8727,9 +8182,7 @@ paths:
         201:
           description: ''
       tags:
-        - customers
-        - customer-service
-        - customer
+        - Customer
       x-nexatech-service: customer-service
   /api/v2/media/admin/cleanup-orphans:
     post:
@@ -8754,8 +8207,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/media/by-entity/{entityType}/{entityId}:
     get:
@@ -8775,8 +8227,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/media/presign:
     post:
@@ -8796,8 +8247,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/media/{id}:
     delete:
@@ -8822,8 +8272,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
     get:
       operationId: media_MediaController_metadata_v2
@@ -8837,8 +8286,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/media/{id}/confirm:
     post:
@@ -8863,8 +8311,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/media/{id}/download-url:
     get:
@@ -8889,8 +8336,7 @@ paths:
         200:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/media/{id}/links:
     post:
@@ -8915,8 +8361,7 @@ paths:
         201:
           description: ''
       tags:
-        - media
-        - media-service
+        - Media
       x-nexatech-service: media-service
   /api/v2/mock-payments/{paymentId}/cancel:
     post:
@@ -8951,9 +8396,7 @@ paths:
         201:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/mock-payments/{paymentId}/checkout:
     get:
@@ -8978,9 +8421,7 @@ paths:
         200:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/mock-payments/{paymentId}/fail:
     post:
@@ -9015,9 +8456,7 @@ paths:
         201:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/mock-payments/{paymentId}/succeed:
     post:
@@ -9052,9 +8491,7 @@ paths:
         201:
           description: ''
       tags:
-        - mock-payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/movements:
     get:
@@ -9079,8 +8516,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/notifications:
     get:
@@ -9110,9 +8546,7 @@ paths:
         200:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/notifications/read-all:
     post:
@@ -9142,9 +8576,7 @@ paths:
         201:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/notifications/request:
     post:
@@ -9184,9 +8616,7 @@ paths:
         201:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/notifications/unread-count:
     get:
@@ -9216,9 +8646,7 @@ paths:
         200:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/notifications/{id}:
     delete:
@@ -9253,9 +8681,7 @@ paths:
         204:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/notifications/{id}/read:
     patch:
@@ -9290,9 +8716,7 @@ paths:
         200:
           description: ''
       tags:
-        - notifications
-        - notification-service
-        - notification
+        - Notification
       x-nexatech-service: notification-service
   /api/v2/orders:
     get:
@@ -9322,9 +8746,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
     post:
       operationId: order_OrderController_create_v2
@@ -9353,9 +8775,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}:
     get:
@@ -9390,9 +8810,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/cancel:
     post:
@@ -9427,9 +8845,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/confirm:
     post:
@@ -9464,9 +8880,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/packages:
     get:
@@ -9501,9 +8915,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/payment-sync:
     post:
@@ -9538,9 +8950,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/return-sync:
     post:
@@ -9575,9 +8985,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/shipping-sync:
     post:
@@ -9612,9 +9020,7 @@ paths:
         201:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/status-history:
     get:
@@ -9649,9 +9055,7 @@ paths:
         200:
           description: ''
       tags:
-        - orders
-        - order-service
-        - order
+        - Order
       x-nexatech-service: order-service
   /api/v2/payments:
     post:
@@ -9681,9 +9085,7 @@ paths:
         201:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/payments/by-order/{orderId}:
     get:
@@ -9718,9 +9120,7 @@ paths:
         200:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/payments/{paymentId}:
     get:
@@ -9755,9 +9155,7 @@ paths:
         200:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/payments/{paymentId}/cancel:
     post:
@@ -9792,9 +9190,7 @@ paths:
         201:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/payments/{paymentId}/refunds:
     get:
@@ -9829,9 +9225,7 @@ paths:
         200:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
     post:
       operationId: payment_PaymentController_createRefund_v2
@@ -9865,9 +9259,7 @@ paths:
         201:
           description: ''
       tags:
-        - payments
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/products:
     get:
@@ -9876,8 +9268,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/products/{id}/recommendations:
     get:
@@ -9892,8 +9283,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/products/{productId}/reviews:
     get:
@@ -9908,9 +9298,7 @@ paths:
         200:
           description: ''
       tags:
-        - product-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/products/{productId}/reviews/summary:
     get:
@@ -9925,9 +9313,7 @@ paths:
         200:
           description: ''
       tags:
-        - product-reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/products/{slug}:
     get:
@@ -9942,8 +9328,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/recently-viewed:
     get:
@@ -9963,9 +9348,7 @@ paths:
         200:
           description: ''
       tags:
-        - recently-viewed
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     post:
       operationId: cart_RecentlyViewedController_track_v2
@@ -9984,9 +9367,7 @@ paths:
         201:
           description: ''
       tags:
-        - recently-viewed
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/reservations/{id}:
     get:
@@ -10001,8 +9382,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/returns:
     get:
@@ -10032,9 +9412,7 @@ paths:
         200:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
     post:
       operationId: warranty_ReturnsController_create_v2
@@ -10068,9 +9446,7 @@ paths:
         201:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/returns/{returnId}:
     get:
@@ -10105,9 +9481,7 @@ paths:
         200:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/returns/{returnId}/cancel:
     post:
@@ -10147,9 +9521,7 @@ paths:
         201:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/returns/{returnId}/media:
     post:
@@ -10189,9 +9561,7 @@ paths:
         201:
           description: ''
       tags:
-        - returns
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/reviews:
     post:
@@ -10226,9 +9596,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}:
     delete:
@@ -10268,9 +9636,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     get:
       operationId: review_ReviewsController_get_v2
@@ -10304,9 +9670,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     patch:
       operationId: review_ReviewsController_update_v2
@@ -10345,9 +9709,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/helpful:
     delete:
@@ -10387,9 +9749,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     post:
       operationId: review_ReviewsController_addHelpful_v2
@@ -10428,9 +9788,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/media:
     post:
@@ -10470,9 +9828,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/media/{mediaId}:
     delete:
@@ -10517,9 +9873,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/replies:
     post:
@@ -10559,9 +9913,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/replies/{replyId}:
     delete:
@@ -10606,9 +9958,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
     patch:
       operationId: review_ReviewsController_updateReply_v2
@@ -10652,9 +10002,7 @@ paths:
         200:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/reports:
     post:
@@ -10694,9 +10042,7 @@ paths:
         201:
           description: ''
       tags:
-        - reviews
-        - review-service
-        - review
+        - Review
       x-nexatech-service: review-service
   /api/v2/shipments:
     post:
@@ -10726,9 +10072,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/order/{orderId}:
     get:
@@ -10763,9 +10107,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}:
     get:
@@ -10800,9 +10142,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/book:
     post:
@@ -10837,9 +10177,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/cancel:
     post:
@@ -10874,9 +10212,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/confirm-pickup:
     post:
@@ -10911,9 +10247,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/ready-for-pickup:
     post:
@@ -10948,9 +10282,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/status-transitions:
     post:
@@ -10985,9 +10317,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/tracking:
     get:
@@ -11022,9 +10352,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipments
-        - shipping-service
-        - shipping
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/providers/{provider}/webhook:
     post:
@@ -11059,8 +10387,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/quotes:
     post:
@@ -11090,8 +10417,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/quotes/{quoteId}:
     get:
@@ -11126,8 +10452,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/slot-reservations/{reservationId}:
     delete:
@@ -11162,8 +10487,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/slots:
     get:
@@ -11193,8 +10517,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/slots/{slotId}/reserve:
     post:
@@ -11229,8 +10552,7 @@ paths:
         201:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/shipping/tracking/{trackingCode}:
     get:
@@ -11255,8 +10577,7 @@ paths:
         200:
           description: ''
       tags:
-        - shipping
-        - shipping-service
+        - Shipping
       x-nexatech-service: shipping-service
   /api/v2/skus/{skuCode}:
     get:
@@ -11271,8 +10592,7 @@ paths:
         200:
           description: ''
       tags:
-        - catalog
-        - catalog-service
+        - Catalog
       x-nexatech-service: catalog-service
   /api/v2/stock:
     get:
@@ -11297,8 +10617,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/stock/availability:
     get:
@@ -11323,8 +10642,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/stock/low:
     get:
@@ -11333,8 +10651,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/stock/sources:
     get:
@@ -11359,8 +10676,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/stores:
     get:
@@ -11369,8 +10685,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/support/tickets:
     get:
@@ -11400,9 +10715,7 @@ paths:
         200:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
     post:
       operationId: support_TicketsController_create_v2
@@ -11436,9 +10749,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}:
     get:
@@ -11473,9 +10784,7 @@ paths:
         200:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}/attachments:
     post:
@@ -11515,9 +10824,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}/cancel:
     post:
@@ -11557,9 +10864,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}/messages:
     post:
@@ -11599,9 +10904,7 @@ paths:
         201:
           description: ''
       tags:
-        - support-tickets
-        - support-service
-        - support
+        - Support
       x-nexatech-service: support-service
   /api/v2/vnpay/ipn:
     get:
@@ -11610,9 +10913,7 @@ paths:
         200:
           description: ''
       tags:
-        - vnpay
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
     post:
       operationId: payment_VnpayController_ipnPost_v2
@@ -11620,9 +10921,7 @@ paths:
         201:
           description: ''
       tags:
-        - vnpay
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/vnpay/return:
     get:
@@ -11631,9 +10930,7 @@ paths:
         200:
           description: ''
       tags:
-        - vnpay
-        - payment-service
-        - payment
+        - Payment
       x-nexatech-service: payment-service
   /api/v2/warehouses:
     get:
@@ -11642,8 +10939,7 @@ paths:
         200:
           description: ''
       tags:
-        - inventory
-        - inventory-service
+        - Inventory
       x-nexatech-service: inventory-service
   /api/v2/warranty/claims:
     get:
@@ -11673,9 +10969,7 @@ paths:
         200:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
     post:
       operationId: warranty_ClaimsController_create_v2
@@ -11709,9 +11003,7 @@ paths:
         201:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/warranty/claims/{claimId}:
     get:
@@ -11746,9 +11038,7 @@ paths:
         200:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/warranty/claims/{claimId}/cancel:
     post:
@@ -11788,9 +11078,7 @@ paths:
         201:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/warranty/claims/{claimId}/media:
     post:
@@ -11830,9 +11118,7 @@ paths:
         201:
           description: ''
       tags:
-        - warranty-claims
-        - warranty-service
-        - warranty
+        - Warranty
       x-nexatech-service: warranty-service
   /api/v2/wishlist:
     get:
@@ -11847,9 +11133,7 @@ paths:
         200:
           description: ''
       tags:
-        - wishlist
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
     post:
       operationId: cart_WishlistController_add_v2
@@ -11863,9 +11147,7 @@ paths:
         201:
           description: ''
       tags:
-        - wishlist
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /api/v2/wishlist/{productId}:
     delete:
@@ -11885,9 +11167,7 @@ paths:
         200:
           description: ''
       tags:
-        - wishlist
-        - cart-service
-        - cart
+        - Cart
       x-nexatech-service: cart-service
   /health:
     get:
@@ -11896,9 +11176,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /health/debug:
     get:
@@ -11913,9 +11191,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /health/lab:
     get:
@@ -11924,9 +11200,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
   /health/live:
     get:
@@ -11935,9 +11209,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /health/ready:
     get:
@@ -11946,9 +11218,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - reporting-service
-        - reporting
+        - Reporting
       x-nexatech-service: reporting-service
   /lab/ssrf-probe:
     get:
@@ -11963,9 +11233,7 @@ paths:
         200:
           description: ''
       tags:
-        - Health
-        - identity-service
-        - identity
+        - Identity
       x-nexatech-service: identity-service
 servers:
   - url: "http://localhost:8000"
@@ -11994,33 +11262,47 @@ servers:
     description: Production placeholder
 tags:
   - description: "Auth, session, OTP và RBAC"
-    name: identity-service
+    name: Identity
+    x-nexatech-service: identity-service
   - description: Hồ sơ khách hàng và địa chỉ
-    name: customer-service
+    name: Customer
+    x-nexatech-service: customer-service
   - description: "Danh mục, thương hiệu, sản phẩm, SKU và giá"
-    name: catalog-service
+    name: Catalog
+    x-nexatech-service: catalog-service
   - description: Presign MinIO và metadata media
-    name: media-service
+    name: Media
+    x-nexatech-service: media-service
   - description: "Kho, cửa hàng, tồn, giữ và điều chuyển"
-    name: inventory-service
+    name: Inventory
+    x-nexatech-service: inventory-service
   - description: "Giỏ hàng, wishlist, so sánh, đã xem"
-    name: cart-service
+    name: Cart
+    x-nexatech-service: cart-service
   - description: "Checkout, trạng thái đơn, huỷ và outbox"
-    name: order-service
+    name: Order
+    x-nexatech-service: order-service
   - description: "COD, mock, VNPay sandbox và hoàn tiền"
-    name: payment-service
+    name: Payment
+    x-nexatech-service: payment-service
   - description: "Báo giá, shipment và webhook vận chuyển"
-    name: shipping-service
+    name: Shipping
+    x-nexatech-service: shipping-service
   - description: Đánh giá sản phẩm và kiểm duyệt
-    name: review-service
+    name: Review
+    x-nexatech-service: review-service
   - description: "Bảo hành, đổi trả và đồng bộ đơn"
-    name: warranty-service
+    name: Warranty
+    x-nexatech-service: warranty-service
   - description: Ticket hỗ trợ và hội thoại
-    name: support-service
+    name: Support
+    x-nexatech-service: support-service
   - description: Thông báo in-app và email
-    name: notification-service
+    name: Notification
+    x-nexatech-service: notification-service
   - description: Dashboard và audit projection
-    name: reporting-service
+    name: Reporting
+    x-nexatech-service: reporting-service
 x-nexatech-security-lab:
   description: "Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab."
 x-nexatech-webhooks:

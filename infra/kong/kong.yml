@@ -98,6 +98,12 @@ services:
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+  - name: swagger-portal
+    url: http://swagger-portal:8090
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
 
 routes:
   - name: storefront-root
@@ -160,6 +166,10 @@ routes:
         '/api/v2/warehouses',
         '/api/v1/stores',
         '/api/v2/stores',
+        '/api/v1/stock',
+        '/api/v2/stock',
+        '/api/v1/movements',
+        '/api/v2/movements',
         '/api/v1/admin/inventory',
         '/api/v2/admin/inventory',
       ]
@@ -206,10 +216,19 @@ routes:
       [
         '/api/v1/shipping',
         '/api/v2/shipping',
+        '/api/v1/shipments',
+        '/api/v2/shipments',
+        '/api/v1/admin/shipments',
+        '/api/v2/admin/shipments',
         '/api/v1/admin/shipping',
         '/api/v2/admin/shipping',
       ]
     strip_path: false
+  - name: swagger-portal
+    service: swagger-portal
+    paths: ['/docs', '/openapi']
+    strip_path: false
+    regex_priority: 100
   - name: review
     service: review-service
     paths:

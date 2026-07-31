@@ -1,0 +1,17 @@
+{
+  "name": "@nexatech/swagger-portal",
+  "version": "0.17.0",
+  "private": true,
+  "description": "Combined OpenAPI Swagger UI for local/security-lab only",
+  "main": "src/main.cjs",
+  "scripts": {
+    "start": "node src/main.cjs",
+    "test": "node --test src/main.spec.cjs"
+  },
+  "dependencies": {
+    "swagger-ui-dist": "5.20.5"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

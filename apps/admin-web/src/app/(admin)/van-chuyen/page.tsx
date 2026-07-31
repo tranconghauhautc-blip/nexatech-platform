@@ -14,7 +14,7 @@ export default function Page() {
     Record<string, unknown>
   >({
     service: 'shipping',
-    path: 'admin/shipping/shipments',
+    path: 'admin/shipments',
     page,
   });
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(

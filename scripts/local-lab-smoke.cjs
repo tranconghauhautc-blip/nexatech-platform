@@ -86,6 +86,43 @@ async function main() {
     }
   }
 
+  // Combined Swagger portal (direct :8090 + Kong /docs)
+  for (const [name, url, opts] of [
+    [
+      'swagger-portal-health',
+      'http://127.0.0.1:8090/health',
+      { include: 'swagger-portal' },
+    ],
+    [
+      'swagger-portal-docs',
+      'http://127.0.0.1:8090/docs',
+      { include: 'nexatech-combined' },
+    ],
+    [
+      'swagger-portal-yaml',
+      'http://127.0.0.1:8090/openapi/nexatech-combined.openapi.yaml',
+      { include: 'openapi:' },
+    ],
+    [
+      'swagger-portal-json',
+      'http://127.0.0.1:8090/openapi/nexatech-combined.openapi.json',
+      { include: 'openapi' },
+    ],
+    [
+      'kong-combined-docs',
+      `${KONG_URL.replace('localhost', '127.0.0.1')}/docs`,
+      { include: 'nexatech-combined' },
+    ],
+  ]) {
+    try {
+      const status = await check(url, opts);
+      console.log(`[lab-smoke] OK ${name} → ${status}`);
+    } catch (err) {
+      failures.push(`${name}: ${err.message}`);
+      console.error(`[lab-smoke] FAIL ${name}: ${err.message}`);
+    }
+  }
+
   // Identity Swagger Authorize flow (login + me) when seed password provided
   const seedPassword =
     process.env.DEV_SEED_PASSWORD || process.env.E2E_DEV_SEED_PASSWORD;

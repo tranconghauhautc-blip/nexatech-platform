@@ -76,7 +76,9 @@ Xem [SWAGGER-LINKS.md](./SWAGGER-LINKS.md).
 
 ## Import nhanh
 
-1. Chạy generate + combine
-2. Import `openapi/nexatech-combined.openapi.yaml`
-3. Chọn server Kong hoặc direct
-4. Authorize Bearer từ identity login
+1. Chạy generate + combine **hoặc** mở combined portal
+2. Browser: http://localhost:8000/docs
+3. Hoặc import `openapi/nexatech-combined.openapi.yaml` vào Burp/ZAP/Postman
+4. Chọn server Kong; Authorize Bearer từ identity login
+
+Combined portal (`apps/swagger-portal`) chỉ bật local/lab — không có trong production Kong.

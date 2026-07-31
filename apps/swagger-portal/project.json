@@ -1,0 +1,31 @@
+{
+  "name": "swagger-portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/swagger-portal/src",
+  "projectType": "application",
+  "tags": ["scope:tooling", "type:swagger-portal"],
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node apps/swagger-portal/src/main.cjs",
+        "env": {
+          "NEXATECH_SWAGGER_PORTAL_ENABLED": "1",
+          "PORT": "8090"
+        }
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node --test apps/swagger-portal/src/main.spec.cjs"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node -e \"require('fs').accessSync('apps/swagger-portal/src/main.cjs'); console.log('swagger-portal:ok')\""
+      }
+    }
+  }
+}
