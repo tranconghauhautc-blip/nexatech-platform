@@ -67,6 +67,7 @@ export default function RegisterPage() {
           <label htmlFor="fullName">Họ và tên</label>
           <input
             id="fullName"
+            type="text"
             value={fullName}
             onChange={(e) => setFullName(e.target.value)}
             autoComplete="name"

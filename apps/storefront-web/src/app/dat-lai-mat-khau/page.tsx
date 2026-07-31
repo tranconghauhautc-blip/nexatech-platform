@@ -61,6 +61,7 @@ function ResetForm() {
           <label htmlFor="code">Mã OTP</label>
           <input
             id="code"
+            type="text"
             value={code}
             onChange={(e) => setCode(e.target.value)}
             required
