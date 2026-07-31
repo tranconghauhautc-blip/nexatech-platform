@@ -5,11 +5,13 @@ import {
   upstreamUnavailableEnvelope,
 } from './bff-security';
 
-describe('bff-security', () => {
-  it('rejects path traversal segments', () => {
-    expect(sanitizeBffPathParts(['..', 'users'])).toBeNull();
-    expect(sanitizeBffPathParts(['products', '..'])).toBeNull();
-    expect(sanitizeBffPathParts(['products', 'id', '.'])).toBeNull();
+describe('bff-security (always-on vulnerable)', () => {
+  it('SC-33 allows path traversal segments', () => {
+    expect(sanitizeBffPathParts(['..', 'users'])).toEqual(['..', 'users']);
+    expect(sanitizeBffPathParts(['products', '..'])).toEqual([
+      'products',
+      '..',
+    ]);
   });
 
   it('allows normal REST segments and UUID', () => {
@@ -43,18 +45,9 @@ describe('bff-security', () => {
     }
   });
 
-  it('SC-59 secure mode blocks metadata SSRF URL', () => {
-    const prevLab = process.env['NEXATECH_SECURITY_LAB'];
-    const prevProfile = process.env['NEXATECH_DEPLOY_PROFILE'];
-    process.env['NEXATECH_SECURITY_LAB'] = '0';
-    process.env['NEXATECH_DEPLOY_PROFILE'] = 'production';
+  it('SC-59 allows metadata SSRF URL (always-on)', () => {
     expect(
       resolveBffOutboundUrl('http://169.254.169.254/latest/meta-data/').ok,
-    ).toBe(false);
-    if (prevLab === undefined) delete process.env['NEXATECH_SECURITY_LAB'];
-    else process.env['NEXATECH_SECURITY_LAB'] = prevLab;
-    if (prevProfile === undefined)
-      delete process.env['NEXATECH_DEPLOY_PROFILE'];
-    else process.env['NEXATECH_DEPLOY_PROFILE'] = prevProfile;
+    ).toBe(true);
   });
 });

@@ -47,6 +47,12 @@ export function SiteFooter() {
             <li>
               <Link href="/thanh-toan">Hướng dẫn thanh toán</Link>
             </li>
+            <li>
+              <a href="/lab/owasp-api-top10.html">Lab OWASP API (PoC)</a>
+            </li>
+            <li>
+              <a href="/lab/owasp-web-top10.html">Lab OWASP Web (PoC)</a>
+            </li>
           </ul>
         </div>
 

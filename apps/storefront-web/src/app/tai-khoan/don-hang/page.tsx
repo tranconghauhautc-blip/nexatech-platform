@@ -6,7 +6,7 @@ import { EmptyState } from '../../../components/common/empty-state';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 
 export default function Page() {
-  const [items, setItems] = useState<unknown[]>([]);
+  const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,7 +19,7 @@ export default function Page() {
         const list = Array.isArray(data)
           ? data
           : ((data as { items?: unknown[] })?.items ?? []);
-        setItems(list);
+        setItems(list as Record<string, unknown>[]);
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
@@ -81,16 +81,11 @@ export default function Page() {
           gap: '0.65rem',
         }}
       >
-        {items.map((item, index) => {
-          const record = item as Record<string, unknown>;
-          const id = String(record.id ?? record.code ?? index);
-          const label = String(
-            record.code ??
-              record.subject ??
-              record.productName ??
-              record.title ??
-              id,
-          );
+        {items.map((record, index) => {
+          const id = String(record['id'] ?? record['code'] ?? index);
+          const code = String(record['code'] ?? id);
+          const status = String(record['status'] ?? '—');
+          const total = record['grandTotal'];
           return (
             <li
               key={id}
@@ -99,14 +94,27 @@ export default function Page() {
                 borderRadius: 12,
                 padding: '0.85rem',
                 background: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                gap: '1rem',
+                alignItems: 'center',
               }}
             >
-              <strong>{label}</strong>
-              {record.status ? (
-                <div style={{ color: '#4b6478' }}>
-                  Trạng thái: {String(record.status)}
-                </div>
-              ) : null}
+              <div>
+                <strong>{code}</strong>
+                <div style={{ color: '#4b6478' }}>Trạng thái: {status}</div>
+                {typeof total === 'number' ? (
+                  <div style={{ color: '#0b1f3a' }}>
+                    {total.toLocaleString('vi-VN')} ₫
+                  </div>
+                ) : null}
+              </div>
+              <Link
+                href={`/tai-khoan/don-hang/${encodeURIComponent(id)}`}
+                className="nt-btn nt-btn-ghost"
+              >
+                Chi tiết
+              </Link>
             </li>
           );
         })}

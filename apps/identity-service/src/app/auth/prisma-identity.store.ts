@@ -5,7 +5,7 @@ import {
   OtpChallenge,
   UserStatus,
 } from './auth.types';
-import { IdentityStore } from './identity.store';
+import { IdentityStore, ListUsersFilter } from './identity.store';
 import { PrismaService } from './prisma.service';
 
 function mapUser(row: {
@@ -83,6 +83,36 @@ export class PrismaIdentityStore implements IdentityStore {
   async findUserById(id: string): Promise<IdentityUser | null> {
     const row = await this.prisma.user.findUnique({ where: { id } });
     return row ? mapUser(row) : null;
+  }
+
+  async listUsers(
+    filter: ListUsersFilter,
+  ): Promise<{ items: IdentityUser[]; total: number }> {
+    const where: Record<string, unknown> = {};
+    if (filter.q) {
+      where['OR'] = [
+        { email: { contains: filter.q, mode: 'insensitive' } },
+        { fullName: { contains: filter.q, mode: 'insensitive' } },
+      ];
+    }
+    if (filter.status) where['status'] = filter.status;
+    if (filter.role) where['roles'] = { has: filter.role };
+
+    let orderBy: Record<string, 'asc' | 'desc'> = { createdAt: 'desc' };
+    if (filter.sort === 'createdAt_asc') orderBy = { createdAt: 'asc' };
+    if (filter.sort === 'email_asc') orderBy = { email: 'asc' };
+    if (filter.sort === 'email_desc') orderBy = { email: 'desc' };
+
+    const [total, rows] = await Promise.all([
+      this.prisma.user.count({ where }),
+      this.prisma.user.findMany({
+        where,
+        orderBy,
+        skip: (filter.page - 1) * filter.pageSize,
+        take: filter.pageSize,
+      }),
+    ]);
+    return { items: rows.map(mapUser), total };
   }
 
   async createUser(input: {

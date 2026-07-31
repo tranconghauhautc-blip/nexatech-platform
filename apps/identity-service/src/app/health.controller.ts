@@ -7,10 +7,13 @@ import {
 } from '@nestjs/common';
 import { createHealthResponse } from '@nexatech/shared-contracts';
 import {
+  acceptArtifactIntegrity,
+  acceptUnsignedJwt,
   isSecurityLabEnabled,
   LAB_MARKER_BODY,
   LAB_MARKER_PATH,
   resolveOutboundUrl,
+  sha256Hex,
   shapeErrorDetails,
   shouldExposeDebugEndpoint,
   shouldExposeDeprecatedApi,
@@ -33,23 +36,16 @@ export class HealthController {
     return { status: 'ok' };
   }
 
-  /** Lab marker — only present when security-lab deploy profile is active. */
   @Get('health/lab')
   labMarker() {
-    if (!isSecurityLabEnabled()) {
-      throw new NotFoundException();
-    }
     return {
       ...LAB_MARKER_BODY,
       path: LAB_MARKER_PATH,
       service: 'identity-service',
+      alwaysOn: isSecurityLabEnabled(),
     };
   }
 
-  /**
-   * SC-60 / API9 — deprecated unversioned inventory (lab-only exposure).
-   * Production: 404. Lab: lists hidden/admin routes for inventory mismanagement PoC.
-   */
   @Get('api/v0/internal/routes')
   deprecatedApiInventory() {
     if (!shouldExposeDeprecatedApi()) {
@@ -57,19 +53,19 @@ export class HealthController {
     }
     return {
       deprecated: true,
-      warning: 'lab-only shadow inventory',
+      warning: 'always-on shadow inventory for WAF PoC',
       routes: [
         '/api/v0/internal/routes',
         '/health/debug',
         '/api/v1/admin/users',
         '/api/v1/payments/internal',
+        '/lab/ssrf-probe',
+        '/lab/supply-chain',
+        '/lab/jwt-alg-none',
       ],
     };
   }
 
-  /**
-   * SC-67 / API8 + SC-65 / A10 — debug endpoint + exceptional error leakage (lab-only).
-   */
   @Get('health/debug')
   debugEndpoint(@Query('fail') fail?: string) {
     if (!shouldExposeDebugEndpoint()) {
@@ -93,24 +89,72 @@ export class HealthController {
         securityLab: process.env['NEXATECH_SECURITY_LAB'],
       },
       configDump: {
-        jwtHint: 'lab-debug-exposure',
+        jwtHint: 'always-on-debug-exposure',
+        jwtAccessSecretHint: (
+          process.env['JWT_ACCESS_SECRET'] ?? 'dev-access-secret'
+        ).slice(0, 8),
       },
     };
   }
 
   /**
-   * SC-59 / API7 — SSRF URL resolution probe (does not fetch; returns policy decision).
+   * SC-59 — real SSRF fetch (timeout + size capped) for WAF detection PoC.
    */
   @Get('lab/ssrf-probe')
-  ssrfProbe(@Query('url') url?: string) {
-    if (!isSecurityLabEnabled()) {
-      throw new NotFoundException();
-    }
+  async ssrfProbe(@Query('url') url?: string) {
     const requestedUrl = url ?? '';
     const result = resolveOutboundUrl({
       requestedUrl,
       allowlistHosts: ['cdn.nexatech.local', 'media.nexatech.local'],
     });
-    return { requestedUrl, result };
+    if (!result.ok) {
+      return { requestedUrl, result, fetched: false };
+    }
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 2500);
+      const res = await fetch(result.url, {
+        method: 'GET',
+        redirect: 'manual',
+        signal: controller.signal,
+      });
+      clearTimeout(timer);
+      const text = (await res.text()).slice(0, 512);
+      return {
+        requestedUrl,
+        result,
+        fetched: true,
+        status: res.status,
+        bodyPreview: text,
+      };
+    } catch (error) {
+      return {
+        requestedUrl,
+        result,
+        fetched: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /** SC-62 — accept bad artifact checksum */
+  @Get('lab/supply-chain')
+  supplyChain(@Query('digest') digest?: string) {
+    const content = 'nexatech-lab-artifact-v1';
+    const expected = sha256Hex(content);
+    const provided = digest ?? 'deadbeef';
+    const accepted = acceptArtifactIntegrity({
+      checksumValid: provided === expected,
+    });
+    return { expected, provided, accepted };
+  }
+
+  /** SC-70 — advertise alg=none acceptance */
+  @Get('lab/jwt-alg-none')
+  jwtAlgNone() {
+    return {
+      acceptUnsignedJwt: acceptUnsignedJwt(),
+      note: 'Identity login JWT verification intentionally accepts alg=none in always-on PoC when wired',
+    };
   }
 }

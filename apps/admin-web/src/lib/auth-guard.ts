@@ -15,13 +15,11 @@ export function isPublicAdminPath(pathname: string): boolean {
   );
 }
 
+/** Lab console always available (always-on vulnerable PoC). */
 export function isSecurityLabUiEnabled(
-  env: NodeJS.ProcessEnv = process.env,
+  _env: NodeJS.ProcessEnv = process.env,
 ): boolean {
-  return (
-    env['NEXATECH_SECURITY_LAB'] === '1' &&
-    env['NEXATECH_DEPLOY_PROFILE'] === 'security-lab'
-  );
+  return true;
 }
 
 /** Minimum role required for a path based on admin menu catalog. */
@@ -44,19 +42,13 @@ export type GuardDecision =
  * - Unauthenticated → /unauthorized (or login with redirect for deep links)
  * - Authenticated without portal role → /forbidden
  * - Authenticated below menu minimumRole → /forbidden
- * - /security-lab only when security-lab deploy profile is active
+ * - /security-lab always available (ADR-044 always-on)
  */
 export function decideAdminAccess(
   session: AdminSessionPayload | null,
   pathname: string,
-  env: NodeJS.ProcessEnv = process.env,
+  _env: NodeJS.ProcessEnv = process.env,
 ): GuardDecision {
-  if (pathname === '/security-lab' || pathname.startsWith('/security-lab/')) {
-    if (!isSecurityLabUiEnabled(env)) {
-      return { action: 'redirect', destination: '/forbidden?ly_do=lab_off' };
-    }
-  }
-
   const isPublic = isPublicAdminPath(pathname);
 
   if (isPublic) {

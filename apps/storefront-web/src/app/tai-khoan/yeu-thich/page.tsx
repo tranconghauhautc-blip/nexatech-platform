@@ -5,10 +5,11 @@ import { useCallback, useEffect, useState } from 'react';
 import { EmptyState } from '../../../components/common/empty-state';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 
-export default function Page() {
-  const [items, setItems] = useState<unknown[]>([]);
+export default function WishlistPage() {
+  const [items, setItems] = useState<Record<string, unknown>[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -19,7 +20,7 @@ export default function Page() {
         const list = Array.isArray(data)
           ? data
           : ((data as { items?: unknown[] })?.items ?? []);
-        setItems(list);
+        setItems(list as Record<string, unknown>[]);
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
@@ -28,6 +29,18 @@ export default function Page() {
   useEffect(() => {
     load();
   }, [load]);
+
+  async function removeItem(id: string) {
+    setBusyId(id);
+    try {
+      await bff.delete(`/api/bff/cart/wishlist/${encodeURIComponent(id)}`);
+      await load();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
 
   if (loading) {
     return (
@@ -81,16 +94,18 @@ export default function Page() {
           gap: '0.65rem',
         }}
       >
-        {items.map((item, index) => {
-          const record = item as Record<string, unknown>;
-          const id = String(record.id ?? record.code ?? index);
-          const label = String(
-            record.code ??
-              record.subject ??
-              record.productName ??
-              record.title ??
+        {items.map((record, index) => {
+          const id = String(
+            record['id'] ?? record['productId'] ?? record['skuId'] ?? index,
+          );
+          const name = String(
+            record['productName'] ??
+              record['name'] ??
+              record['title'] ??
+              record['skuCode'] ??
               id,
           );
+          const slug = record['productSlug'] ?? record['slug'];
           return (
             <li
               key={id}
@@ -99,14 +114,28 @@ export default function Page() {
                 borderRadius: 12,
                 padding: '0.85rem',
                 background: '#fff',
+                display: 'flex',
+                justifyContent: 'space-between',
+                gap: '1rem',
+                alignItems: 'center',
               }}
             >
-              <strong>{label}</strong>
-              {record.status ? (
-                <div style={{ color: '#4b6478' }}>
-                  Trạng thái: {String(record.status)}
-                </div>
-              ) : null}
+              <div>
+                <strong>{name}</strong>
+                {typeof slug === 'string' ? (
+                  <div>
+                    <Link href={`/san-pham/${slug}`}>Xem sản phẩm</Link>
+                  </div>
+                ) : null}
+              </div>
+              <button
+                type="button"
+                className="nt-btn nt-btn-ghost"
+                disabled={busyId === id}
+                onClick={() => removeItem(id)}
+              >
+                {busyId === id ? 'Đang xóa…' : 'Xóa'}
+              </button>
             </li>
           );
         })}

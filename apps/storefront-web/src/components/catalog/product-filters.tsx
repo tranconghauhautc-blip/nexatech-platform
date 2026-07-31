@@ -12,20 +12,28 @@ interface Props {
     brandSlug?: string;
     sort?: string;
     page?: number;
+    minPrice?: string;
+    maxPrice?: string;
   };
+  /** SC-72 reflected XSS echo — raw query for WAF PoC when provided */
+  reflectHtml?: string;
 }
 
-export function ProductFilters({ basePath, current }: Props) {
+export function ProductFilters({ basePath, current, reflectHtml }: Props) {
   const router = useRouter();
   const [q, setQ] = useState(current.q ?? '');
   const [brandSlug, setBrandSlug] = useState(current.brandSlug ?? '');
   const [sort, setSort] = useState(current.sort ?? 'newest');
+  const [minPrice, setMinPrice] = useState(current.minPrice ?? '');
+  const [maxPrice, setMaxPrice] = useState(current.maxPrice ?? '');
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
     const params = new URLSearchParams();
     if (q.trim()) params.set('q', q.trim());
     if (brandSlug.trim()) params.set('brandSlug', brandSlug.trim());
+    if (minPrice.trim()) params.set('minPrice', minPrice.trim());
+    if (maxPrice.trim()) params.set('maxPrice', maxPrice.trim());
     if (sort) params.set('sort', sort);
     params.set('page', '1');
     const qs = params.toString();
@@ -47,6 +55,13 @@ export function ProductFilters({ basePath, current }: Props) {
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
+      {reflectHtml ? (
+        <div
+          className={styles.label}
+          // INTENTIONAL SC-72: reflected XSS for WAF PoC
+          dangerouslySetInnerHTML={{ __html: `Kết quả cho: ${reflectHtml}` }}
+        />
+      ) : null}
 
       <label className={styles.label} htmlFor="filter-brand">
         Thương hiệu (slug)
@@ -56,6 +71,31 @@ export function ProductFilters({ basePath, current }: Props) {
         className={styles.input}
         value={brandSlug}
         onChange={(e) => setBrandSlug(e.target.value)}
+        placeholder="apple, samsung…"
+      />
+
+      <label className={styles.label} htmlFor="filter-min">
+        Giá từ
+      </label>
+      <input
+        id="filter-min"
+        className={styles.input}
+        type="number"
+        min={0}
+        value={minPrice}
+        onChange={(e) => setMinPrice(e.target.value)}
+      />
+
+      <label className={styles.label} htmlFor="filter-max">
+        Giá đến
+      </label>
+      <input
+        id="filter-max"
+        className={styles.input}
+        type="number"
+        min={0}
+        value={maxPrice}
+        onChange={(e) => setMaxPrice(e.target.value)}
       />
 
       <label className={styles.label} htmlFor="filter-sort">

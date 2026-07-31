@@ -62,6 +62,15 @@
 
 ## Nhật ký
 
+### 2026-08-01 — Production UX + always-on OWASP for WAF PoC
+
+- Show/hide password (admin + storefront auth).
+- Admin ListToolbar search/filter/sort trên hầu hết list pages; media theo entity ID; `/nguoi-dung` thật.
+- Identity `GET/PATCH /api/v1/admin/users` + Kong route; BFLA/mass-assignment/DTO leak always-on.
+- Storefront: PLP price/brand filters, XSS reflect search, wishlist/compare/orders polish; public HTML guides `/lab/owasp-*.html`.
+- **ADR-044:** intentional vulns ALWAYS ON — no `FORCE_SECURE`, no security-lab dual gate; policies hardcode vulnerable path; SSRF probe fetches.
+- Docs: API-CONTRACTS admin users, DECISIONS ADR-044, OWASP guides links.
+
 ### 2026-08-01 — Combined Swagger portal + admin list path fixes
 
 - Admin: `van-chuyen` → `admin/shipments` (fix 404); `kho-hang` → `useArrayQuery` for array-shaped `/stock`.

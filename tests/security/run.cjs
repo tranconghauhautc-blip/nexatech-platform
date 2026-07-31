@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /**
- * Security suite runners — secure regression + lab vulnerable mode.
- * Does not require live cluster. Uses shared-security-lab policy tests via nx.
+ * Security suite — always-on vulnerable PoC.
+ * `secure` mode kept as alias that still runs policy tests (now asserting vulns).
  */
 const { spawnSync } = require('child_process');
 const path = require('path');
 
-const mode = process.argv[2] || 'secure'; // secure | lab | smoke | validate
+const mode = process.argv[2] || 'lab';
 const root = path.resolve(__dirname, '../..');
 
 function run(cmd, args, env = {}) {
@@ -38,35 +38,22 @@ function assertPrivateBase(url) {
   }
 }
 
-if (mode === 'secure') {
-  const code = run('pnpm', ['exec', 'nx', 'test', 'shared-security-lab'], {
-    NEXATECH_SECURITY_LAB: '0',
-    NEXATECH_DEPLOY_PROFILE: 'production',
-    NODE_ENV: 'test',
-  });
-  // also re-run bff-security tests (secure default)
-  const code2 = run('pnpm', ['exec', 'nx', 'test', 'shared-web'], {
-    NEXATECH_SECURITY_LAB: '0',
-    NEXATECH_DEPLOY_PROFILE: 'production',
-    NODE_ENV: 'test',
-  });
-  process.exit(code !== 0 ? code : code2);
-}
-
-if (mode === 'lab') {
-  if (process.env.SECURITY_LAB_ACK !== 'YES') {
+if (mode === 'secure' || mode === 'lab') {
+  // Always-on: both modes assert intentional vulnerable behavior exists
+  if (mode === 'lab' && process.env.SECURITY_LAB_ACK !== 'YES') {
     console.error(
-      '[security] FAIL: set SECURITY_LAB_ACK=YES to run lab vulnerable tests',
+      '[security] FAIL: set SECURITY_LAB_ACK=YES to run lab tests',
     );
     process.exit(1);
   }
   const code = run('pnpm', ['exec', 'nx', 'test', 'shared-security-lab'], {
-    NEXATECH_SECURITY_LAB: '1',
-    NEXATECH_DEPLOY_PROFILE: 'security-lab',
     NODE_ENV: 'test',
     SECURITY_LAB_ACK: 'YES',
   });
-  process.exit(code);
+  const code2 = run('pnpm', ['exec', 'nx', 'test', 'shared-web'], {
+    NODE_ENV: 'test',
+  });
+  process.exit(code !== 0 ? code : code2);
 }
 
 if (mode === 'smoke') {
@@ -76,9 +63,7 @@ if (mode === 'smoke') {
   }
   const base = process.env.SECURITY_LAB_BASE_URL || 'http://127.0.0.1:3001';
   assertPrivateBase(base);
-  console.log(
-    `[security] smoke target=${base} (marker check is optional if stack down)`,
-  );
+  console.log(`[security] smoke target=${base}`);
   try {
     const http = require('http');
     const url = new URL('/health/lab', base);
@@ -99,7 +84,6 @@ if (mode === 'smoke') {
 
 if (mode === 'validate') {
   let failed = 0;
-  failed += run('node', [__filename, 'secure']) === 0 ? 0 : 1;
   process.env.SECURITY_LAB_ACK = 'YES';
   failed += run('node', [__filename, 'lab']) === 0 ? 0 : 1;
   failed +=

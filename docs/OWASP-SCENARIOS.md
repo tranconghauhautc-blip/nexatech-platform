@@ -1,11 +1,11 @@
 # OWASP Scenarios — NexaTech Security Lab
 
-Intentional vulnerabilities exist **only** when:
+**ADR-044 — Always-on:** Intentional vulnerabilities are **ALWAYS active** in every environment. There is no toggle (`NEXATECH_SECURITY_LAB`, `FORCE_SECURE`, or deploy-profile gate). Policies in `@nexatech/shared-security-lab` hardcode the vulnerable branch for WAF / API Security appliance PoC.
 
-- `NEXATECH_SECURITY_LAB=1`
-- `NEXATECH_DEPLOY_PROFILE=security-lab`
+Public browser guides (no auth):
 
-Production profile (`values-production.yaml`) sets both to safe defaults. Lab uses `values-security-lab.yaml` + image tag `*-sec-lab`.
+- `/lab/owasp-api-top10.html`
+- `/lab/owasp-web-top10.html`
 
 Official references:
 
@@ -14,7 +14,18 @@ Official references:
 
 PoC / tests: `pnpm security:test:secure`, `SECURITY_LAB_ACK=YES pnpm security:test:lab`, `pnpm security:validate`. Policies live in `libs/shared/security-lab`.
 
-**Committed intentional count:** 30 scenarios (SC-01 … SC-67, non-contiguous IDs preserved for history).
+**Committed intentional count:** 30+ core (SC-01 … SC-67) plus SC-70…SC-75 web/API extras (JWT alg=none flag, open redirect, reflected XSS, CSRF Origin skip, clickjacking headers omit, auth failure PII). Non-contiguous IDs preserved for history.
+
+| Extra ID | Primary | Endpoint / flow |
+| -------- | ------- | --------------- |
+| SC-70 | API2 / A04 | `GET /lab/jwt-alg-none` |
+| SC-71 | A01 | Storefront `/dang-nhap?next=` open redirect |
+| SC-72 | A05 | `/tim-kiem?q=` reflected XSS (`dangerouslySetInnerHTML`) |
+| SC-73 | A08 | `shouldEnforceCsrfOrigin` always false |
+| SC-74 | A02 | `frameProtectionHeaders` empty |
+| SC-75 | A07 | `shapeAuthFailureDetails` email enumeration |
+
+SSRF SC-59 now **fetches** via `GET /lab/ssrf-probe?url=` (timeout capped).
 
 ---
 

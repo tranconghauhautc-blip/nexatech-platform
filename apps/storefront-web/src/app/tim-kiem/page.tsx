@@ -33,6 +33,8 @@ export default async function SearchPage({ searchParams }: Props) {
       | 'relevance') || 'relevance';
   const brandSlug = first(sp['brandSlug']);
   const categorySlug = first(sp['categorySlug']);
+  const minPrice = first(sp['minPrice']);
+  const maxPrice = first(sp['maxPrice']);
 
   const result = await searchProducts({
     q,
@@ -41,6 +43,8 @@ export default async function SearchPage({ searchParams }: Props) {
     sort,
     brandSlug,
     categorySlug,
+    minPrice: minPrice ? Number(minPrice) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
   });
 
   return (
@@ -61,7 +65,8 @@ export default async function SearchPage({ searchParams }: Props) {
       >
         <ProductFilters
           basePath="/tim-kiem"
-          current={{ q, brandSlug, sort, page }}
+          current={{ q, brandSlug, sort, page, minPrice, maxPrice }}
+          reflectHtml={q || undefined}
         />
         <div>
           {result.items.length === 0 ? (

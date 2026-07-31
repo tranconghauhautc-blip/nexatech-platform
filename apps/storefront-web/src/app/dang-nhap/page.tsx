@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, Suspense, useState } from 'react';
 import { bff, getErrorMessage } from '../../lib/api-browser';
 import { loginFormSchema } from '../../lib/validation';
+import { PasswordField } from '../../components/common/password-field';
 import { useAuth } from '../../components/providers/auth-provider';
 import styles from './page.module.css';
 
@@ -67,17 +68,14 @@ function LoginForm() {
             required
           />
         </div>
-        <div className={styles.field}>
-          <label htmlFor="password">Mật khẩu</label>
-          <input
-            id="password"
-            type="password"
-            autoComplete="current-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
+        <PasswordField
+          id="password"
+          label="Mật khẩu"
+          value={password}
+          onChange={setPassword}
+          autoComplete="current-password"
+          required
+        />
         {error ? (
           <p className={styles.error} role="alert">
             {error}

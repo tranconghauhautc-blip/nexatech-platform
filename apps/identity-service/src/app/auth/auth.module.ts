@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { AdminUsersController } from '../admin/admin-users.controller';
+import { AdminUsersService } from '../admin/admin-users.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { InMemoryIdentityStore, IdentityStore } from './identity.store';
@@ -35,7 +37,7 @@ function createStoreProviders() {
 }
 
 @Module({
-  controllers: [AuthController],
+  controllers: [AuthController, AdminUsersController],
   providers: [
     ...createStoreProviders(),
     {
@@ -57,7 +59,12 @@ function createStoreProviders() {
         }),
       inject: [IDENTITY_STORE],
     },
+    {
+      provide: AdminUsersService,
+      useFactory: (store: IdentityStore) => new AdminUsersService(store),
+      inject: [IDENTITY_STORE],
+    },
   ],
-  exports: [AuthService],
+  exports: [AuthService, AdminUsersService],
 })
 export class AuthModule {}

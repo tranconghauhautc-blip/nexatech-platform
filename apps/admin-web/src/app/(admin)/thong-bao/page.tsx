@@ -1,29 +1,59 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { useListQuery } from '../../../lib/use-list-query';
+import { useListControls } from '../../../lib/use-list-controls';
 import {
   DataTable,
   type DataTableColumn,
 } from '../../../components/ui/DataTable';
+import { ListToolbar } from '../../../components/ui/ListToolbar';
 import { Pagination } from '../../../components/ui/Pagination';
+import { Badge } from '../../../components/ui/Badge';
+
+const STATUS_OPTIONS = [
+  { value: 'PENDING', label: 'Chờ gửi' },
+  { value: 'SENT', label: 'Đã gửi' },
+  { value: 'FAILED', label: 'Thất bại' },
+  { value: 'BOUNCED', label: 'Bounce' },
+];
 
 export default function Page() {
-  const [page, setPage] = useState(1);
+  const controls = useListControls({
+    searchToFilters: (search) => ({ q: search }),
+  });
   const { items, meta, loading, error, refetch } = useListQuery<
     Record<string, unknown>
   >({
     service: 'notification',
     path: 'admin/notifications/email-deliveries',
-    page,
+    page: controls.page,
+    filters: {
+      ...(controls.status ? { status: controls.status } : {}),
+      ...(controls.search ? { to: controls.search } : {}),
+    },
   });
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
-      { key: 'id', header: 'ID', render: (r) => String(r['id'] ?? r.id ?? '') },
+      {
+        key: 'id',
+        header: 'ID',
+        render: (r) => String(r['id'] ?? '—').slice(0, 8),
+      },
+      {
+        key: 'to',
+        header: 'Người nhận',
+        render: (r) => String(r['to'] ?? r['recipient'] ?? '—'),
+      },
+      {
+        key: 'subject',
+        header: 'Tiêu đề',
+        render: (r) => String(r['subject'] ?? '—').slice(0, 50),
+      },
       {
         key: 'status',
         header: 'Trạng thái',
-        render: (r) => String(r['status'] ?? r.id ?? ''),
+        render: (r) => <Badge>{String(r['status'] ?? '—')}</Badge>,
       },
     ],
     [],
@@ -34,18 +64,32 @@ export default function Page() {
       <div className="nx-page-header">
         <div>
           <div className="nx-page-title">Thông báo</div>
-          <div className="nx-page-subtitle">Email deliveries</div>
+          <div className="nx-page-subtitle">Email delivery log</div>
         </div>
       </div>
+      <ListToolbar
+        searchValue={controls.searchInput}
+        onSearchChange={controls.setSearchInput}
+        searchPlaceholder="Email người nhận…"
+        searchLabel="Email"
+        statusValue={controls.status}
+        onStatusChange={(v) => {
+          controls.setStatus(v);
+          controls.setPage(1);
+        }}
+        statusOptions={STATUS_OPTIONS}
+        onApply={controls.apply}
+        onReset={controls.reset}
+      />
       <DataTable
         columns={columns}
         rows={items}
-        getRowKey={(r) => String(r.id ?? r.code ?? Math.random())}
+        getRowKey={(r) => String(r.id ?? Math.random())}
         loading={loading}
         error={error}
         onRetry={refetch}
         emptyTitle="Không có dữ liệu"
-        emptyDescription="Chưa có bản ghi hoặc backend chưa sẵn sàng."
+        emptyDescription="Chưa có bản ghi email khớp bộ lọc."
       />
       <Pagination
         meta={{
@@ -53,7 +97,7 @@ export default function Page() {
           pageSize: meta.pageSize,
           total: meta.totalItems,
         }}
-        onPageChange={setPage}
+        onPageChange={controls.setPage}
       />
     </div>
   );

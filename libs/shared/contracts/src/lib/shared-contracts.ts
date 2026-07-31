@@ -2288,3 +2288,50 @@ export interface DashboardSummaryDto {
   supportTicketsByStatus: Record<string, number>;
   generatedAt: string;
 }
+
+/** Identity — admin users / roles */
+export const identityUserStatusSchema = z.enum([
+  'PENDING_VERIFICATION',
+  'ACTIVE',
+  'DISABLED',
+]);
+
+export const identityRoleSchema = z.enum([
+  'Customer',
+  'Staff',
+  'Manager',
+  'Admin',
+  'SuperAdmin',
+]);
+
+export const listAdminUsersQuerySchema = paginationQuerySchema.extend({
+  q: z.string().trim().max(200).optional(),
+  status: identityUserStatusSchema.optional(),
+  role: identityRoleSchema.optional(),
+  sort: z
+    .enum(['createdAt_desc', 'createdAt_asc', 'email_asc', 'email_desc'])
+    .default('createdAt_desc'),
+});
+export type ListAdminUsersQuery = z.infer<typeof listAdminUsersQuerySchema>;
+
+export const patchAdminUserRequestSchema = z.object({
+  fullName: z.string().trim().min(1).max(120).optional(),
+  status: identityUserStatusSchema.optional(),
+  roles: z.array(identityRoleSchema).min(1).max(5).optional(),
+  // Lab mass-assignment may also pass unexpected keys; Zod strips unknown by default
+});
+export type PatchAdminUserRequest = z.infer<typeof patchAdminUserRequestSchema>;
+
+export interface AdminUserDto {
+  id: string;
+  email: string;
+  fullName: string;
+  status: z.infer<typeof identityUserStatusSchema>;
+  roles: Array<z.infer<typeof identityRoleSchema>>;
+  emailVerifiedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+  /** Lab-only leak when shapePublicResource is bypassed */
+  passwordHash?: string;
+  internalCost?: number;
+}

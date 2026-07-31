@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
 import { bff, getErrorMessage } from '../../lib/api-browser';
+import { PasswordField } from '../../components/common/password-field';
 import { flattenZodErrors, registerFormSchema } from '../../lib/validation';
 import styles from './page.module.css';
 
@@ -89,36 +90,24 @@ export default function RegisterPage() {
             <span className={styles.error}>{fieldErrors['email']}</span>
           ) : null}
         </div>
-        <div className={styles.field}>
-          <label htmlFor="password">Mật khẩu</label>
-          <input
-            id="password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-          {fieldErrors['password'] ? (
-            <span className={styles.error}>{fieldErrors['password']}</span>
-          ) : null}
-        </div>
-        <div className={styles.field}>
-          <label htmlFor="confirmPassword">Xác nhận mật khẩu</label>
-          <input
-            id="confirmPassword"
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            autoComplete="new-password"
-            required
-          />
-          {fieldErrors['confirmPassword'] ? (
-            <span className={styles.error}>
-              {fieldErrors['confirmPassword']}
-            </span>
-          ) : null}
-        </div>
+        <PasswordField
+          id="password"
+          label="Mật khẩu"
+          value={password}
+          onChange={setPassword}
+          autoComplete="new-password"
+          error={fieldErrors['password']}
+          required
+        />
+        <PasswordField
+          id="confirmPassword"
+          label="Xác nhận mật khẩu"
+          value={confirmPassword}
+          onChange={setConfirmPassword}
+          autoComplete="new-password"
+          error={fieldErrors['confirmPassword']}
+          required
+        />
         <div className={styles.field}>
           <label htmlFor="agreeTerms">
             <input

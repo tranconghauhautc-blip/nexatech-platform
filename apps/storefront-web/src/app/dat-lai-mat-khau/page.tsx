@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, Suspense, useState } from 'react';
 import { bff, getErrorMessage } from '../../lib/api-browser';
+import { PasswordField } from '../../components/common/password-field';
 import { resetPasswordRequestSchema } from '../../lib/validation';
 import styles from './page.module.css';
 
@@ -65,16 +66,14 @@ function ResetForm() {
             required
           />
         </div>
-        <div className={styles.field}>
-          <label htmlFor="newPassword">Mật khẩu mới</label>
-          <input
-            id="newPassword"
-            type="password"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-            required
-          />
-        </div>
+        <PasswordField
+          id="newPassword"
+          label="Mật khẩu mới"
+          value={newPassword}
+          onChange={setNewPassword}
+          autoComplete="new-password"
+          required
+        />
         {error ? (
           <p className={styles.error} role="alert">
             {error}

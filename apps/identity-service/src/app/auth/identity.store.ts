@@ -7,9 +7,21 @@ import {
 } from './auth.types';
 import { Role, Roles } from '@nexatech/shared-auth';
 
+export interface ListUsersFilter {
+  q?: string;
+  status?: UserStatus;
+  role?: Role;
+  sort?: 'createdAt_desc' | 'createdAt_asc' | 'email_asc' | 'email_desc';
+  page: number;
+  pageSize: number;
+}
+
 export interface IdentityStore {
   findUserByEmail(email: string): Promise<IdentityUser | null>;
   findUserById(id: string): Promise<IdentityUser | null>;
+  listUsers(
+    filter: ListUsersFilter,
+  ): Promise<{ items: IdentityUser[]; total: number }>;
   createUser(input: {
     email: string;
     fullName: string;
@@ -51,6 +63,36 @@ export class InMemoryIdentityStore implements IdentityStore {
 
   async findUserById(id: string): Promise<IdentityUser | null> {
     return this.users.get(id) ?? null;
+  }
+
+  async listUsers(
+    filter: ListUsersFilter,
+  ): Promise<{ items: IdentityUser[]; total: number }> {
+    let items = [...this.users.values()];
+    if (filter.q) {
+      const q = filter.q.toLowerCase();
+      items = items.filter(
+        (u) =>
+          u.email.includes(q) || u.fullName.toLowerCase().includes(q),
+      );
+    }
+    if (filter.status) {
+      items = items.filter((u) => u.status === filter.status);
+    }
+    if (filter.role) {
+      items = items.filter((u) => u.roles.includes(filter.role as Role));
+    }
+    const sort = filter.sort ?? 'createdAt_desc';
+    items.sort((a, b) => {
+      if (sort === 'email_asc') return a.email.localeCompare(b.email);
+      if (sort === 'email_desc') return b.email.localeCompare(a.email);
+      if (sort === 'createdAt_asc')
+        return a.createdAt.getTime() - b.createdAt.getTime();
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    });
+    const total = items.length;
+    const start = (filter.page - 1) * filter.pageSize;
+    return { items: items.slice(start, start + filter.pageSize), total };
   }
 
   async createUser(input: {

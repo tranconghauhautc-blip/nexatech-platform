@@ -1,14 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { formatVnd } from '@nexatech/shared-web';
 import { useListQuery } from '../../../lib/use-list-query';
+import { useListControls } from '../../../lib/use-list-controls';
 import type { ProductSummaryRow } from '../../../lib/types';
 import {
   DataTable,
   type DataTableColumn,
 } from '../../../components/ui/DataTable';
 import { Badge, type BadgeTone } from '../../../components/ui/Badge';
+import { ListToolbar } from '../../../components/ui/ListToolbar';
 import { Pagination } from '../../../components/ui/Pagination';
 
 const STATUS_LABEL: Record<ProductSummaryRow['status'], string> = {
@@ -25,13 +27,32 @@ const STATUS_TONE: Record<ProductSummaryRow['status'], BadgeTone> = {
   archived: 'danger',
 };
 
+const STATUS_OPTIONS = [
+  { value: 'draft', label: 'Nháp' },
+  { value: 'active', label: 'Đang bán' },
+  { value: 'inactive', label: 'Ngừng bán' },
+  { value: 'archived', label: 'Lưu trữ' },
+];
+
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Mới nhất' },
+  { value: 'name', label: 'Tên A→Z' },
+  { value: 'price_asc', label: 'Giá tăng' },
+  { value: 'price_desc', label: 'Giá giảm' },
+  { value: 'relevance', label: 'Liên quan' },
+];
+
 export default function Page() {
-  const [page, setPage] = useState(1);
+  const controls = useListControls({
+    defaultSort: 'newest',
+    searchToFilters: (search) => ({ q: search }),
+  });
   const { items, meta, loading, error, refetch } =
     useListQuery<ProductSummaryRow>({
       service: 'catalog',
       path: 'products',
-      page,
+      page: controls.page,
+      filters: controls.filters,
     });
   const columns = useMemo<DataTableColumn<ProductSummaryRow>[]>(
     () => [
@@ -76,6 +97,25 @@ export default function Page() {
           <div className="nx-page-subtitle">Quản lý catalog sản phẩm</div>
         </div>
       </div>
+      <ListToolbar
+        searchValue={controls.searchInput}
+        onSearchChange={controls.setSearchInput}
+        searchPlaceholder="Tên sản phẩm…"
+        statusValue={controls.status}
+        onStatusChange={(v) => {
+          controls.setStatus(v);
+          controls.setPage(1);
+        }}
+        statusOptions={STATUS_OPTIONS}
+        sortValue={controls.sort}
+        onSortChange={(v) => {
+          controls.setSort(v);
+          controls.setPage(1);
+        }}
+        sortOptions={SORT_OPTIONS}
+        onApply={controls.apply}
+        onReset={controls.reset}
+      />
       <DataTable
         columns={columns}
         rows={items}
@@ -84,7 +124,7 @@ export default function Page() {
         error={error}
         onRetry={refetch}
         emptyTitle="Không có dữ liệu"
-        emptyDescription="Chưa có bản ghi hoặc backend chưa sẵn sàng."
+        emptyDescription="Chưa có sản phẩm khớp bộ lọc."
       />
       <Pagination
         meta={{
@@ -92,7 +132,7 @@ export default function Page() {
           pageSize: meta.pageSize,
           total: meta.totalItems,
         }}
-        onPageChange={setPage}
+        onPageChange={controls.setPage}
       />
     </div>
   );

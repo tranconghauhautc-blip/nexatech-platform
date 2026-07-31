@@ -44,26 +44,11 @@ describe('decideAdminAccess', () => {
     );
   });
 
-  it('hides security-lab when profile is production', () => {
-    const d = decideAdminAccess(staffSession, '/security-lab', {
-      NEXATECH_SECURITY_LAB: '0',
-      NEXATECH_DEPLOY_PROFILE: 'production',
-    } as NodeJS.ProcessEnv);
-    expect(d.action).toBe('redirect');
-  });
-
-  it('allows security-lab only when lab profile active', () => {
-    const d = decideAdminAccess(staffSession, '/security-lab', {
-      NEXATECH_SECURITY_LAB: '1',
-      NEXATECH_DEPLOY_PROFILE: 'security-lab',
-    } as NodeJS.ProcessEnv);
-    expect(d.action).toBe('allow');
-    expect(
-      isSecurityLabUiEnabled({
-        NEXATECH_SECURITY_LAB: '1',
-        NEXATECH_DEPLOY_PROFILE: 'security-lab',
-      } as NodeJS.ProcessEnv),
-    ).toBe(true);
+  it('always allows security-lab UI (always-on vulnerable PoC)', () => {
+    expect(isSecurityLabUiEnabled()).toBe(true);
+    expect(decideAdminAccess(staffSession, '/security-lab').action).toBe(
+      'allow',
+    );
   });
 
   it('maps menu paths to minimum roles', () => {

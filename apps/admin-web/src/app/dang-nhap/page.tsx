@@ -2,6 +2,7 @@
 
 import { Suspense, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { PasswordField } from '../../components/ui/PasswordField';
 import { loginFormSchema } from '../../lib/validation/auth';
 import styles from './page.module.css';
 
@@ -91,23 +92,15 @@ function LoginForm() {
             ) : null}
           </div>
 
-          <div className="nx-field">
-            <label className="nx-label" htmlFor="password">
-              Mật khẩu
-            </label>
-            <input
-              id="password"
-              type="password"
-              className={`nx-input ${fieldErrors.password ? 'nx-input-error' : ''}`}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              autoComplete="current-password"
-              placeholder="••••••••"
-            />
-            {fieldErrors.password ? (
-              <span className="nx-error-text">{fieldErrors.password}</span>
-            ) : null}
-          </div>
+          <PasswordField
+            id="password"
+            label="Mật khẩu"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            placeholder="••••••••"
+            error={fieldErrors.password}
+          />
 
           {formError ? (
             <div className={styles.formError} role="alert">

@@ -134,14 +134,16 @@ docker compose -f infra/docker/docker-compose.apps.yml stop
 docker compose -f infra/docker/docker-compose.dev.yml stop
 ```
 
-## Security-lab dashboard
+## Always-on vulnerabilities (ADR-044)
 
-`http://localhost:3100/security-lab` chỉ render khi:
+Intentional OWASP API + Web risks **luôn bật** — không cần `NEXATECH_SECURITY_LAB` / deploy-profile gate / `FORCE_SECURE`.
 
-- `NEXATECH_SECURITY_LAB=1`
-- `NEXATECH_DEPLOY_PROFILE=security-lab`
+Public guides (customer mở được, không auth):
 
-Production artifact không route/render trang này.
+- http://localhost:3000/lab/owasp-api-top10.html
+- http://localhost:3000/lab/owasp-web-top10.html
+
+Admin dashboard: http://localhost:3100/security-lab (Staff+ session).
 
 ## Smoke HTTP bắt buộc
 

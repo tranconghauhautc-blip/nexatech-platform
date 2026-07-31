@@ -53,14 +53,23 @@ Port mặc định: `3001` (`IDENTITY_PORT`).
 
 \* Chưa gắn JWT guard — phải bổ sung trước production.
 
+### Admin users (đã implement)
+
+| Method | Path                         | Ghi chú                                              |
+| ------ | ---------------------------- | ---------------------------------------------------- |
+| GET    | `/api/v1/admin/users`        | List + `q`/`status`/`role`/`sort`/`page`/`pageSize`  |
+| GET    | `/api/v1/admin/users/:id`    | Chi tiết (DTO có thể leak `passwordHash` — always-on) |
+| PATCH  | `/api/v1/admin/users/:id`    | Đổi `roles`/`status`/`fullName` (mass-assignment PoC) |
+
+Headers: `x-user-id`, `x-user-roles` (BFLA always-on: Customer cũng gọi được).
+
 ### Chưa implement (kế hoạch)
 
 | Method            | Path                       | Ghi chú                          |
 | ----------------- | -------------------------- | -------------------------------- |
 | POST              | `/api/v1/auth/google`      | Chờ Google OAuth credentials     |
 | POST              | `/api/v1/auth/otp/request` | OTP đang gắn vào register/forgot |
-| GET               | `/api/v1/users/me`         |                                  |
-| Admin users/roles | `/api/v1/admin/users...`   |                                  |
+| GET               | `/api/v1/users/me`         | Dùng `GET /api/v1/auth/me`       |
 
 ### Register body (Zod `registerRequestSchema`)
 

@@ -32,7 +32,9 @@ Ports lấy từ `infra/docker/docker-compose.dev.yml` và `infra/docker/docker-
 | Support API         | http://localhost:3012              | Ticket                          | Customer / staff                                                 | Via Kong                           |                                                                        |
 | Notification API    | http://localhost:3013              | Thông báo                       | Customer / manager                                               | Via Kong                           |                                                                        |
 | Reporting API       | http://localhost:3014              | Báo cáo                         | Manager+                                                         | Via Kong                           |                                                                        |
-| Security Lab UI     | http://localhost:3100/security-lab | Dashboard OWASP lab             | Admin session + lab profile                                      | **Không** trên production artifact | Cần `NEXATECH_SECURITY_LAB=1` + `NEXATECH_DEPLOY_PROFILE=security-lab` |
+| Security Lab UI     | http://localhost:3100/security-lab | Dashboard OWASP lab             | Admin session (Staff+)                                           | Always-on vulnerable PoC           | ADR-044 — không cần dual gate                                      |
+| OWASP API Guide     | http://localhost:3000/lab/owasp-api-top10.html | Public exploit guide (API Top 10) | Không auth                                              | Public lab guide                   | Customer cũng mở được                                              |
+| OWASP Web Guide     | http://localhost:3000/lab/owasp-web-top10.html | Public exploit guide (Web Top 10) | Không auth                                              | Public lab guide                   | Customer cũng mở được                                              |
 
 ## Seed accounts (local)
 

@@ -381,7 +381,16 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
   - Shared Swagger bootstrap `setupNexaTechSwagger` trong `@nexatech/shared-platform` (servers same-origin `/` + local + Kong trên live UI; production placeholder chỉ trong exported OpenAPI; Bearer + gateway headers, ErrorEnvelope, deterministic `operationIdFactory`; strip browser-forbidden header params).
   - OpenAPI tooling: `pnpm openapi:generate|combine|validate` → `openapi/*.openapi.yaml` + `nexatech-combined.openapi.yaml` (import Burp/ZAP/Postman).
   - Identity: DTOs/Swagger examples, `GET /api/v1/auth/me` cho Authorize flow; seed accounts giữ gate `DEV_SEED_PASSWORD`.
-  - Admin: `/unauthorized`, `/forbidden`, RBAC route guard theo menu `minimumRole`, `/security-lab` dashboard **chỉ** khi `NEXATECH_SECURITY_LAB=1` + `NEXATECH_DEPLOY_PROFILE=security-lab`.
+  - Admin: `/unauthorized`, `/forbidden`, RBAC route guard theo menu `minimumRole`, `/security-lab` dashboard luôn mở (xem ADR-044).
   - HTTP smoke `pnpm lab:smoke`; Playwright `e2e/admin/rbac-roles.spec.ts` (cần `E2E_DEV_SEED_PASSWORD`).
-- **Cấm:** hard-code password; public management console production; lab dashboard trên production artifact; secret trong OpenAPI.
+- **Cấm:** hard-code password; secret trong OpenAPI.
 - **Hệ quả:** Người học mở browser login/logout, Swagger call API, import OpenAPI 3; coverage OWASP API1–10 / A01–A10 giữ qua ADR-042.
+
+## ADR-044 — Always-on intentional vulnerabilities (WAF / API Security PoC)
+
+- **Quyết định:** Bỏ toàn bộ dual-gate / `FORCE_SECURE` / secure policy branch. `@nexatech/shared-security-lab` **luôn** trả về hành vi vulnerable; `isSecurityLabEnabled()` luôn `true`.
+- **Mục đích:** Chứng minh WAF và API Security appliance phát hiện/chặn tấn công trên ứng dụng sống (mọi môi trường: local Compose, K8s, …).
+- **HTTP executable:** BOLA/BFLA/mass-assignment (admin users), SSRF fetch thật `/lab/ssrf-probe`, SQLi ORDER BY, XSS reflect `/tim-kiem?q=`, open redirect `?next=`, debug leak, supply-chain digest, OTP `000000`, v.v.
+- **Public guides (không auth):** `http://localhost:3000/lab/owasp-api-top10.html`, `http://localhost:3000/lab/owasp-web-top10.html`.
+- **Cấm:** thêm lại toggle tắt lỗ hổng cho runtime PoC; coi đây là production hardening mặc định.
+- **Hệ quả:** ADR-040 dual-profile lab gate bị thay thế cho mục tiêu appliance PoC.
