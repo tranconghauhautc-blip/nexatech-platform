@@ -62,6 +62,12 @@
 
 ## Nhật ký
 
+### 2026-08-01 — Swagger Try-it-out Failed to fetch (ADR-043)
+
+- **Root cause:** Live Swagger included `https://api.example.invalid`; UI selected it → browser `Failed to fetch`.
+- **Fix:** Live servers = same-origin `/` + localhost + Kong; drop production placeholder from UI; strip browser-forbidden headers (`user-agent`); login đọc UA từ request thật.
+- Identity image rebuild `nexatech/identity-service:0.17.0`; OpenAPI export normalize + validate OK.
+
 ### 2026-08-01 — Local security training lab (ADR-043)
 
 - OpenAPI 3 export/combine/validate; combined spec for Burp/ZAP/Postman.

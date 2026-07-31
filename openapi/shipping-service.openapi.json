@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -51,15 +62,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -71,10 +77,15 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
@@ -127,7 +138,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-shipments"]
+        "tags": [
+          "admin-shipments"
+        ]
       }
     },
     "/api/v1/admin/shipments/{shipmentId}": {
@@ -180,7 +193,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-shipments"]
+        "tags": [
+          "admin-shipments"
+        ]
       }
     },
     "/api/v1/admin/shipments/{shipmentId}/status-transitions": {
@@ -233,7 +248,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-shipments"]
+        "tags": [
+          "admin-shipments"
+        ]
       }
     },
     "/api/v1/shipments": {
@@ -278,7 +295,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/order/{orderId}": {
@@ -331,7 +350,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}": {
@@ -384,7 +405,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}/book": {
@@ -437,7 +460,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}/cancel": {
@@ -490,7 +515,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}/confirm-pickup": {
@@ -543,7 +570,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}/ready-for-pickup": {
@@ -596,7 +625,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}/status-transitions": {
@@ -649,7 +680,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipments/{shipmentId}/tracking": {
@@ -702,7 +735,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v1/shipping/providers/{provider}/webhook": {
@@ -755,7 +790,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v1/shipping/quotes": {
@@ -800,7 +837,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v1/shipping/quotes/{quoteId}": {
@@ -853,7 +892,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v1/shipping/slot-reservations/{reservationId}": {
@@ -906,7 +947,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v1/shipping/slots": {
@@ -951,7 +994,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v1/shipping/slots/{slotId}/reserve": {
@@ -1004,7 +1049,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v1/shipping/tracking/{trackingCode}": {
@@ -1041,7 +1088,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/admin/shipments": {
@@ -1086,7 +1135,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-shipments"]
+        "tags": [
+          "admin-shipments"
+        ]
       }
     },
     "/api/v2/admin/shipments/{shipmentId}": {
@@ -1139,7 +1190,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-shipments"]
+        "tags": [
+          "admin-shipments"
+        ]
       }
     },
     "/api/v2/admin/shipments/{shipmentId}/status-transitions": {
@@ -1192,7 +1245,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-shipments"]
+        "tags": [
+          "admin-shipments"
+        ]
       }
     },
     "/api/v2/shipments": {
@@ -1237,7 +1292,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/order/{orderId}": {
@@ -1290,7 +1347,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}": {
@@ -1343,7 +1402,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}/book": {
@@ -1396,7 +1457,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}/cancel": {
@@ -1449,7 +1512,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}/confirm-pickup": {
@@ -1502,7 +1567,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}/ready-for-pickup": {
@@ -1555,7 +1622,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}/status-transitions": {
@@ -1608,7 +1677,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipments/{shipmentId}/tracking": {
@@ -1661,7 +1732,9 @@
             "description": ""
           }
         },
-        "tags": ["shipments"]
+        "tags": [
+          "shipments"
+        ]
       }
     },
     "/api/v2/shipping/providers/{provider}/webhook": {
@@ -1714,7 +1787,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/shipping/quotes": {
@@ -1759,7 +1834,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/shipping/quotes/{quoteId}": {
@@ -1812,7 +1889,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/shipping/slot-reservations/{reservationId}": {
@@ -1865,7 +1944,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/shipping/slots": {
@@ -1910,7 +1991,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/shipping/slots/{slotId}/reserve": {
@@ -1963,7 +2046,9 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/api/v2/shipping/tracking/{trackingCode}": {
@@ -2000,43 +2085,48 @@
             "description": ""
           }
         },
-        "tags": ["shipping"]
+        "tags": [
+          "shipping"
+        ]
       }
     },
     "/health": {
       "get": {
         "operationId": "HealthController_health",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
       "get": {
         "operationId": "HealthController_live",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "HealthController_ready",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

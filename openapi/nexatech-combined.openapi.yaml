@@ -38,7 +38,7 @@ components:
           example: Bearer
           type: string
         userId:
-          example: '00000000-0000-4000-8000-000000000001'
+          example: "00000000-0000-4000-8000-000000000001"
           type: string
       required:
         - userId
@@ -95,7 +95,7 @@ components:
     ForgotPasswordRequestDto:
       properties:
         email:
-          example: 'user@example.com'
+          example: "user@example.com"
           type: string
       required:
         - email
@@ -103,12 +103,12 @@ components:
     LoginRequestDto:
       properties:
         email:
-          description: 'Email đăng nhập (local seed dùng @nexatech.local)'
-          example: 'staff@nexatech.local'
+          description: "Email đăng nhập (local seed dùng @nexatech.local)"
+          example: "staff@nexatech.local"
           type: string
         password:
           description: Không commit mật khẩu thật vào OpenAPI/repo
-          example: '<operator-defined-DEV_SEED_PASSWORD>'
+          example: "<operator-defined-DEV_SEED_PASSWORD>"
           type: string
       required:
         - email
@@ -172,13 +172,13 @@ components:
     RegisterRequestDto:
       properties:
         email:
-          example: 'customer@example.com'
+          example: "customer@example.com"
           type: string
         fullName:
           example: Nguyen Van A
           type: string
         password:
-          example: 'StrongPass1!'
+          example: "StrongPass1!"
           minLength: 8
           type: string
       required:
@@ -192,10 +192,10 @@ components:
           example: 123456
           type: string
         email:
-          example: 'user@example.com'
+          example: "user@example.com"
           type: string
         newPassword:
-          example: 'NewStrongPass1!'
+          example: "NewStrongPass1!"
           type: string
       required:
         - email
@@ -208,7 +208,7 @@ components:
           example: 123456
           type: string
         email:
-          example: 'customer@example.com'
+          example: "customer@example.com"
           type: string
       required:
         - email
@@ -242,14 +242,13 @@ components:
       type: apiKey
 info:
   title: NexaTech Combined API
-  description: 'Combined OpenAPI 3 specification for local security training. Import into Burp Suite, OWASP ZAP, Postman, Insomnia, or Swagger Editor. Prefer Kong server for gateway testing; direct ports for service debug. Contains no real secrets, passwords, or tokens.'
+  description: "Combined OpenAPI 3 specification for local security training. Import into Burp Suite, OWASP ZAP, Postman, Insomnia, or Swagger Editor. Prefer Kong server for gateway testing; direct ports for service debug. Contains no real secrets, passwords, or tokens."
   version: 1.0.0
 openapi: 3.0.3
 paths:
   /api/v0/internal/routes:
     get:
       operationId: identity_Health_deprecatedApiInventory_v0
-      parameters: []
       responses:
         200:
           description: ''
@@ -2233,12 +2232,11 @@ paths:
   /api/v1/auth/forgot-password:
     post:
       operationId: identity_Auth_forgotPassword_v1
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+              $ref: "#/components/schemas/ForgotPasswordRequestDto"
         required: true
       responses:
         201:
@@ -2252,30 +2250,24 @@ paths:
   /api/v1/auth/login:
     post:
       operationId: identity_Auth_login_v1
-      parameters:
-        - in: header
-          name: user-agent
-          required: true
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequestDto'
+              $ref: "#/components/schemas/LoginRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
@@ -2286,12 +2278,11 @@ paths:
   /api/v1/auth/logout:
     post:
       operationId: identity_Auth_logout_v1
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LogoutRequestDto'
+              $ref: "#/components/schemas/LogoutRequestDto"
         required: true
       responses:
         201:
@@ -2316,13 +2307,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MeResponseDto'
+                $ref: "#/components/schemas/MeResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       security:
         - bearer: []
@@ -2335,19 +2326,18 @@ paths:
   /api/v1/auth/refresh:
     post:
       operationId: identity_Auth_refresh_v1
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshRequestDto'
+              $ref: "#/components/schemas/RefreshRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
@@ -2358,12 +2348,11 @@ paths:
   /api/v1/auth/register:
     post:
       operationId: identity_Auth_register_v1
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequestDto'
+              $ref: "#/components/schemas/RegisterRequestDto"
         required: true
       responses:
         201:
@@ -2372,7 +2361,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       summary: Đăng ký tài khoản Customer
       tags:
@@ -2383,12 +2372,11 @@ paths:
   /api/v1/auth/reset-password:
     post:
       operationId: identity_Auth_resetPassword_v1
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequestDto'
+              $ref: "#/components/schemas/ResetPasswordRequestDto"
         required: true
       responses:
         201:
@@ -2442,12 +2430,11 @@ paths:
   /api/v1/auth/verify-email:
     post:
       operationId: identity_Auth_verifyEmail_v1
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyEmailRequestDto'
+              $ref: "#/components/schemas/VerifyEmailRequestDto"
         required: true
       responses:
         201:
@@ -2461,7 +2448,6 @@ paths:
   /api/v1/brands:
     get:
       operationId: catalog_CatalogController_brands_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -2785,7 +2771,6 @@ paths:
   /api/v1/categories:
     get:
       operationId: catalog_CatalogController_categories_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -4071,7 +4056,6 @@ paths:
   /api/v1/products:
     get:
       operationId: catalog_CatalogController_products_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -5529,7 +5513,6 @@ paths:
   /api/v1/stock/low:
     get:
       operationId: inventory_InventoryController_lowStock_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -5566,7 +5549,6 @@ paths:
   /api/v1/stores:
     get:
       operationId: inventory_InventoryController_stores_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -5808,7 +5790,6 @@ paths:
   /api/v1/vnpay/ipn:
     get:
       operationId: payment_VnpayController_ipnGet_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -5819,7 +5800,6 @@ paths:
       x-nexatech-service: payment-service
     post:
       operationId: payment_VnpayController_ipnPost_v1
-      parameters: []
       responses:
         201:
           description: ''
@@ -5831,7 +5811,6 @@ paths:
   /api/v1/vnpay/return:
     get:
       operationId: payment_VnpayController_returnGet_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -5843,7 +5822,6 @@ paths:
   /api/v1/warehouses:
     get:
       operationId: inventory_InventoryController_warehouses_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -8070,12 +8048,11 @@ paths:
   /api/v2/auth/forgot-password:
     post:
       operationId: identity_Auth_forgotPassword_v2
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+              $ref: "#/components/schemas/ForgotPasswordRequestDto"
         required: true
       responses:
         201:
@@ -8089,30 +8066,24 @@ paths:
   /api/v2/auth/login:
     post:
       operationId: identity_Auth_login_v2
-      parameters:
-        - in: header
-          name: user-agent
-          required: true
-          schema:
-            type: string
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequestDto'
+              $ref: "#/components/schemas/LoginRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
@@ -8123,12 +8094,11 @@ paths:
   /api/v2/auth/logout:
     post:
       operationId: identity_Auth_logout_v2
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LogoutRequestDto'
+              $ref: "#/components/schemas/LogoutRequestDto"
         required: true
       responses:
         201:
@@ -8153,13 +8123,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MeResponseDto'
+                $ref: "#/components/schemas/MeResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       security:
         - bearer: []
@@ -8172,19 +8142,18 @@ paths:
   /api/v2/auth/refresh:
     post:
       operationId: identity_Auth_refresh_v2
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshRequestDto'
+              $ref: "#/components/schemas/RefreshRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
@@ -8195,12 +8164,11 @@ paths:
   /api/v2/auth/register:
     post:
       operationId: identity_Auth_register_v2
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequestDto'
+              $ref: "#/components/schemas/RegisterRequestDto"
         required: true
       responses:
         201:
@@ -8209,7 +8177,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       summary: Đăng ký tài khoản Customer
       tags:
@@ -8220,12 +8188,11 @@ paths:
   /api/v2/auth/reset-password:
     post:
       operationId: identity_Auth_resetPassword_v2
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequestDto'
+              $ref: "#/components/schemas/ResetPasswordRequestDto"
         required: true
       responses:
         201:
@@ -8279,12 +8246,11 @@ paths:
   /api/v2/auth/verify-email:
     post:
       operationId: identity_Auth_verifyEmail_v2
-      parameters: []
       requestBody:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyEmailRequestDto'
+              $ref: "#/components/schemas/VerifyEmailRequestDto"
         required: true
       responses:
         201:
@@ -8298,7 +8264,6 @@ paths:
   /api/v2/brands:
     get:
       operationId: catalog_CatalogController_brands_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -8622,7 +8587,6 @@ paths:
   /api/v2/categories:
     get:
       operationId: catalog_CatalogController_categories_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -9908,7 +9872,6 @@ paths:
   /api/v2/products:
     get:
       operationId: catalog_CatalogController_products_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -11366,7 +11329,6 @@ paths:
   /api/v2/stock/low:
     get:
       operationId: inventory_InventoryController_lowStock_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -11403,7 +11365,6 @@ paths:
   /api/v2/stores:
     get:
       operationId: inventory_InventoryController_stores_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -11645,7 +11606,6 @@ paths:
   /api/v2/vnpay/ipn:
     get:
       operationId: payment_VnpayController_ipnGet_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -11656,7 +11616,6 @@ paths:
       x-nexatech-service: payment-service
     post:
       operationId: payment_VnpayController_ipnPost_v2
-      parameters: []
       responses:
         201:
           description: ''
@@ -11668,7 +11627,6 @@ paths:
   /api/v2/vnpay/return:
     get:
       operationId: payment_VnpayController_returnGet_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -11680,7 +11638,6 @@ paths:
   /api/v2/warehouses:
     get:
       operationId: inventory_InventoryController_warehouses_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -11935,7 +11892,6 @@ paths:
   /health:
     get:
       operationId: reporting_HealthController_health
-      parameters: []
       responses:
         200:
           description: ''
@@ -11964,7 +11920,6 @@ paths:
   /health/lab:
     get:
       operationId: identity_Health_labMarker
-      parameters: []
       responses:
         200:
           description: ''
@@ -11976,7 +11931,6 @@ paths:
   /health/live:
     get:
       operationId: reporting_HealthController_live
-      parameters: []
       responses:
         200:
           description: ''
@@ -11988,7 +11942,6 @@ paths:
   /health/ready:
     get:
       operationId: reporting_HealthController_ready
-      parameters: []
       responses:
         200:
           description: ''
@@ -12015,9 +11968,9 @@ paths:
         - identity
       x-nexatech-service: identity-service
 servers:
-  - url: 'http://localhost:8000'
+  - url: "http://localhost:8000"
     description: Kong Gateway (local)
-  - url: 'http://localhost:{port}'
+  - url: "http://localhost:{port}"
     description: Direct service (port 3001–3014)
     variables:
       port:
@@ -12037,30 +11990,30 @@ servers:
           - 3012
           - 3013
           - 3014
-  - url: 'https://api.example.invalid'
+  - url: "https://api.example.invalid"
     description: Production placeholder
 tags:
-  - description: 'Auth, session, OTP và RBAC'
+  - description: "Auth, session, OTP và RBAC"
     name: identity-service
   - description: Hồ sơ khách hàng và địa chỉ
     name: customer-service
-  - description: 'Danh mục, thương hiệu, sản phẩm, SKU và giá'
+  - description: "Danh mục, thương hiệu, sản phẩm, SKU và giá"
     name: catalog-service
   - description: Presign MinIO và metadata media
     name: media-service
-  - description: 'Kho, cửa hàng, tồn, giữ và điều chuyển'
+  - description: "Kho, cửa hàng, tồn, giữ và điều chuyển"
     name: inventory-service
-  - description: 'Giỏ hàng, wishlist, so sánh, đã xem'
+  - description: "Giỏ hàng, wishlist, so sánh, đã xem"
     name: cart-service
-  - description: 'Checkout, trạng thái đơn, huỷ và outbox'
+  - description: "Checkout, trạng thái đơn, huỷ và outbox"
     name: order-service
-  - description: 'COD, mock, VNPay sandbox và hoàn tiền'
+  - description: "COD, mock, VNPay sandbox và hoàn tiền"
     name: payment-service
-  - description: 'Báo giá, shipment và webhook vận chuyển'
+  - description: "Báo giá, shipment và webhook vận chuyển"
     name: shipping-service
   - description: Đánh giá sản phẩm và kiểm duyệt
     name: review-service
-  - description: 'Bảo hành, đổi trả và đồng bộ đơn'
+  - description: "Bảo hành, đổi trả và đồng bộ đơn"
     name: warranty-service
   - description: Ticket hỗ trợ và hội thoại
     name: support-service
@@ -12069,6 +12022,6 @@ tags:
   - description: Dashboard và audit projection
     name: reporting-service
 x-nexatech-security-lab:
-  description: 'Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab.'
+  description: "Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab."
 x-nexatech-webhooks:
   description: VNPay and shipping provider callbacks live on payment-service and shipping-service specs. Production verifies signatures; security-lab may weaken checks intentionally.

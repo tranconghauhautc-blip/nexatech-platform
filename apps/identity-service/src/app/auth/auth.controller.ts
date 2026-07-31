@@ -6,6 +6,7 @@ import {
   Headers,
   Param,
   Post,
+  Req,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -27,6 +28,10 @@ import {
   ResetPasswordRequestDto,
   VerifyEmailRequestDto,
 } from './auth.dto';
+
+type RequestWithHeaders = {
+  headers: Record<string, string | string[] | undefined>;
+};
 
 @ApiTags('auth')
 @Controller({ path: 'auth', version: ['1', '2'] })
@@ -51,10 +56,11 @@ export class AuthController {
   @ApiBody({ type: LoginRequestDto })
   @ApiResponse({ status: 200, type: AuthTokenResponseDto })
   @ApiResponse({ status: 401, type: ErrorEnvelopeDto })
-  login(
-    @Body() body: LoginRequestDto,
-    @Headers('user-agent') userAgent?: string,
-  ) {
+  login(@Body() body: LoginRequestDto, @Req() req: RequestWithHeaders) {
+    // Read User-Agent from the real request — do not expose as Swagger
+    // parameter (browsers forbid setting User-Agent from fetch/XHR).
+    const raw = req.headers['user-agent'];
+    const userAgent = Array.isArray(raw) ? raw[0] : raw;
     return this.authService.login(body, userAgent);
   }
 

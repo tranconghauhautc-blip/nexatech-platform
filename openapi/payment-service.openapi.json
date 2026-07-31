@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -51,15 +62,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -71,10 +77,15 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
@@ -127,7 +138,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/admin/payments/{paymentId}": {
@@ -180,7 +193,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/admin/payments/{paymentId}/cod-collect": {
@@ -233,7 +248,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/admin/payments/{paymentId}/refunds": {
@@ -286,7 +303,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/cancel": {
@@ -339,7 +358,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/checkout": {
@@ -376,7 +397,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/fail": {
@@ -429,7 +452,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/succeed": {
@@ -482,7 +507,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/payments": {
@@ -527,7 +554,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/by-order/{orderId}": {
@@ -580,7 +609,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/{paymentId}": {
@@ -633,7 +664,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/{paymentId}/cancel": {
@@ -686,7 +719,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/{paymentId}/refunds": {
@@ -739,7 +774,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       },
       "post": {
         "operationId": "PaymentController_createRefund_v1",
@@ -790,41 +827,46 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/vnpay/ipn": {
       "get": {
         "operationId": "VnpayController_ipnGet_v1",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       },
       "post": {
         "operationId": "VnpayController_ipnPost_v1",
-        "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/api/v1/vnpay/return": {
       "get": {
         "operationId": "VnpayController_returnGet_v1",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/api/v2/admin/payments": {
@@ -869,7 +911,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/admin/payments/{paymentId}": {
@@ -922,7 +966,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/admin/payments/{paymentId}/cod-collect": {
@@ -975,7 +1021,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/admin/payments/{paymentId}/refunds": {
@@ -1028,7 +1076,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/cancel": {
@@ -1081,7 +1131,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/checkout": {
@@ -1118,7 +1170,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/fail": {
@@ -1171,7 +1225,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/succeed": {
@@ -1224,7 +1280,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/payments": {
@@ -1269,7 +1327,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/by-order/{orderId}": {
@@ -1322,7 +1382,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/{paymentId}": {
@@ -1375,7 +1437,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/{paymentId}/cancel": {
@@ -1428,7 +1492,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/{paymentId}/refunds": {
@@ -1481,7 +1547,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       },
       "post": {
         "operationId": "PaymentController_createRefund_v2",
@@ -1532,77 +1600,85 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/vnpay/ipn": {
       "get": {
         "operationId": "VnpayController_ipnGet_v2",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       },
       "post": {
         "operationId": "VnpayController_ipnPost_v2",
-        "parameters": [],
         "responses": {
           "201": {
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/api/v2/vnpay/return": {
       "get": {
         "operationId": "VnpayController_returnGet_v2",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/health": {
       "get": {
         "operationId": "HealthController_health",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
       "get": {
         "operationId": "HealthController_live",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "HealthController_ready",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

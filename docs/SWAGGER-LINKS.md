@@ -24,12 +24,13 @@ Repo export: `openapi/<service>.openapi.yaml` + `openapi/nexatech-combined.opena
 ## Identity Swagger Authorize flow
 
 1. Mở http://localhost:3001/docs
-2. `POST /api/v1/auth/login` với seed account (password từ `DEV_SEED_PASSWORD`)
-3. Copy `accessToken` (không copy refresh token ra ngoài phạm vi cần thiết)
-4. Bấm **Authorize** → Bearer JWT
-5. `GET /api/v1/auth/me`
-6. `POST /api/v1/auth/refresh` rồi thử token cũ (contract: session cũ bị thu hồi)
-7. `POST /api/v1/auth/logout` với `sessionId`
+2. Chọn server **same origin as /docs** (mặc định) — không chọn production placeholder nếu thấy trong spec export
+3. `POST /api/v1/auth/login` với seed account (password từ `DEV_SEED_PASSWORD`)
+4. Copy `accessToken` (không copy refresh token ra ngoài phạm vi cần thiết)
+5. Bấm **Authorize** → Bearer JWT
+6. `GET /api/v1/auth/me`
+7. `POST /api/v1/auth/refresh` rồi thử token cũ (contract: session cũ bị thu hồi)
+8. `POST /api/v1/auth/logout` với `sessionId`
 
 Frontend BFF dùng cookie httpOnly; Swagger dùng Bearer trực tiếp — không làm yếu cookie production.
 

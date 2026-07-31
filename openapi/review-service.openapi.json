@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -51,15 +62,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -71,10 +77,15 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
@@ -127,7 +138,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v1/admin/review-reports/{reportId}/resolve": {
@@ -188,7 +201,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v1/admin/reviews": {
@@ -233,7 +248,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v1/admin/reviews/aggregates/rebuild": {
@@ -286,7 +303,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v1/admin/reviews/{reviewId}": {
@@ -339,7 +358,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v1/admin/reviews/{reviewId}/moderate": {
@@ -400,7 +421,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v1/products/{productId}/reviews": {
@@ -421,7 +444,9 @@
             "description": ""
           }
         },
-        "tags": ["product-reviews"]
+        "tags": [
+          "product-reviews"
+        ]
       }
     },
     "/api/v1/products/{productId}/reviews/summary": {
@@ -442,7 +467,9 @@
             "description": ""
           }
         },
-        "tags": ["product-reviews"]
+        "tags": [
+          "product-reviews"
+        ]
       }
     },
     "/api/v1/reviews": {
@@ -495,7 +522,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}": {
@@ -556,7 +585,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "get": {
         "operationId": "ReviewsController_get_v1",
@@ -607,7 +638,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "patch": {
         "operationId": "ReviewsController_update_v1",
@@ -666,7 +699,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}/helpful": {
@@ -727,7 +762,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "post": {
         "operationId": "ReviewsController_addHelpful_v1",
@@ -786,7 +823,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}/media": {
@@ -847,7 +886,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}/media/{mediaId}": {
@@ -916,7 +957,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}/replies": {
@@ -977,7 +1020,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}/replies/{replyId}": {
@@ -1046,7 +1091,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "patch": {
         "operationId": "ReviewsController_updateReply_v1",
@@ -1113,7 +1160,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v1/reviews/{reviewId}/reports": {
@@ -1174,7 +1223,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/admin/review-reports": {
@@ -1219,7 +1270,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v2/admin/review-reports/{reportId}/resolve": {
@@ -1280,7 +1333,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v2/admin/reviews": {
@@ -1325,7 +1380,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v2/admin/reviews/aggregates/rebuild": {
@@ -1378,7 +1435,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v2/admin/reviews/{reviewId}": {
@@ -1431,7 +1490,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v2/admin/reviews/{reviewId}/moderate": {
@@ -1492,7 +1553,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reviews"]
+        "tags": [
+          "admin-reviews"
+        ]
       }
     },
     "/api/v2/products/{productId}/reviews": {
@@ -1513,7 +1576,9 @@
             "description": ""
           }
         },
-        "tags": ["product-reviews"]
+        "tags": [
+          "product-reviews"
+        ]
       }
     },
     "/api/v2/products/{productId}/reviews/summary": {
@@ -1534,7 +1599,9 @@
             "description": ""
           }
         },
-        "tags": ["product-reviews"]
+        "tags": [
+          "product-reviews"
+        ]
       }
     },
     "/api/v2/reviews": {
@@ -1587,7 +1654,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}": {
@@ -1648,7 +1717,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "get": {
         "operationId": "ReviewsController_get_v2",
@@ -1699,7 +1770,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "patch": {
         "operationId": "ReviewsController_update_v2",
@@ -1758,7 +1831,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}/helpful": {
@@ -1819,7 +1894,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "post": {
         "operationId": "ReviewsController_addHelpful_v2",
@@ -1878,7 +1955,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}/media": {
@@ -1939,7 +2018,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}/media/{mediaId}": {
@@ -2008,7 +2089,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}/replies": {
@@ -2069,7 +2152,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}/replies/{replyId}": {
@@ -2138,7 +2223,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       },
       "patch": {
         "operationId": "ReviewsController_updateReply_v2",
@@ -2205,7 +2292,9 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/api/v2/reviews/{reviewId}/reports": {
@@ -2266,43 +2355,48 @@
             "description": ""
           }
         },
-        "tags": ["reviews"]
+        "tags": [
+          "reviews"
+        ]
       }
     },
     "/health": {
       "get": {
         "operationId": "HealthController_health",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
       "get": {
         "operationId": "HealthController_live",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "HealthController_ready",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -51,15 +62,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -71,10 +77,15 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
@@ -127,7 +138,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}": {
@@ -180,7 +193,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/assign": {
@@ -241,7 +256,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/messages": {
@@ -302,7 +319,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/priority": {
@@ -363,7 +382,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/transition": {
@@ -424,7 +445,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v1/support/tickets": {
@@ -469,7 +492,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       },
       "post": {
         "operationId": "TicketsController_create_v1",
@@ -520,7 +545,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v1/support/tickets/{ticketId}": {
@@ -573,7 +600,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v1/support/tickets/{ticketId}/attachments": {
@@ -634,7 +663,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v1/support/tickets/{ticketId}/cancel": {
@@ -695,7 +726,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v1/support/tickets/{ticketId}/messages": {
@@ -756,7 +789,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v2/admin/support/tickets": {
@@ -801,7 +836,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}": {
@@ -854,7 +891,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/assign": {
@@ -915,7 +954,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/messages": {
@@ -976,7 +1017,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/priority": {
@@ -1037,7 +1080,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/transition": {
@@ -1098,7 +1143,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-support"]
+        "tags": [
+          "admin-support"
+        ]
       }
     },
     "/api/v2/support/tickets": {
@@ -1143,7 +1190,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       },
       "post": {
         "operationId": "TicketsController_create_v2",
@@ -1194,7 +1243,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v2/support/tickets/{ticketId}": {
@@ -1247,7 +1298,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v2/support/tickets/{ticketId}/attachments": {
@@ -1308,7 +1361,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v2/support/tickets/{ticketId}/cancel": {
@@ -1369,7 +1424,9 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/api/v2/support/tickets/{ticketId}/messages": {
@@ -1430,43 +1487,48 @@
             "description": ""
           }
         },
-        "tags": ["support-tickets"]
+        "tags": [
+          "support-tickets"
+        ]
       }
     },
     "/health": {
       "get": {
         "operationId": "HealthController_health",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
       "get": {
         "operationId": "HealthController_live",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "HealthController_ready",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

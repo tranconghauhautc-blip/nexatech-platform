@@ -40,9 +40,63 @@ const PAGINATION_META_SCHEMA = {
   },
 };
 
+/** Browser-forbidden / hop-by-hop headers that break Swagger "Try it out". */
+const SWAGGER_STRIP_HEADER_PARAMS = new Set([
+  'accept',
+  'accept-charset',
+  'accept-encoding',
+  'access-control-request-headers',
+  'access-control-request-method',
+  'connection',
+  'content-length',
+  'cookie',
+  'cookie2',
+  'date',
+  'dnt',
+  'expect',
+  'host',
+  'keep-alive',
+  'origin',
+  'referer',
+  'te',
+  'trailer',
+  'transfer-encoding',
+  'upgrade',
+  'via',
+  'user-agent',
+]);
+
+function stripForbiddenHeaderParameters(document: OpenAPIObject): void {
+  for (const pathItem of Object.values(document.paths ?? {})) {
+    if (!pathItem || typeof pathItem !== 'object') continue;
+    for (const method of Object.keys(pathItem)) {
+      if (method.startsWith('x-')) continue;
+      const op = (pathItem as Record<string, { parameters?: unknown[] }>)[
+        method
+      ];
+      if (!op || !Array.isArray(op.parameters)) continue;
+      op.parameters = op.parameters.filter((param) => {
+        if (!param || typeof param !== 'object') return true;
+        const p = param as { in?: string; name?: string; $ref?: string };
+        if (p.$ref) return true;
+        if (p.in !== 'header' || typeof p.name !== 'string') return true;
+        return !SWAGGER_STRIP_HEADER_PARAMS.has(p.name.toLowerCase());
+      });
+    }
+  }
+}
+
+/** @internal Exported for unit tests. */
+export const stripForbiddenHeaderParametersForTest =
+  stripForbiddenHeaderParameters;
+
 /**
- * Build OpenAPI 3 document with local/Kong/production servers,
+ * Build OpenAPI 3 document with same-origin/local/Kong servers,
  * Bearer + gateway header security schemes, and shared schemas.
+ *
+ * Live Swagger defaults to relative `/` so Try-it-out hits the service
+ * serving `/docs` (avoids accidental `api.example.invalid` Failed to fetch).
+ * Production placeholder belongs only in exported `openapi/*.openapi.*` files.
  */
 export function buildNexaTechOpenApiDocument(
   app: INestApplication,
@@ -58,18 +112,16 @@ export function buildNexaTechOpenApiDocument(
         'Local security training lab: use Swagger Authorize with JWT from identity login,',
         'or gateway trust headers (`x-user-id`, `x-user-roles`) behind Kong/BFF.',
         'Do not paste production secrets. Security-lab intentional vulns require lab deploy profile.',
+        'Servers: prefer “same origin as /docs”; do not pick unreachable hosts for Try it out.',
       ].join('\n'),
     )
     .setVersion(version)
+    .addServer('/', `${options.serviceName} (same origin as /docs)`)
     .addServer(
       `http://localhost:${options.port}`,
       `${options.serviceName} direct (local)`,
     )
     .addServer('http://localhost:8000', 'Kong Gateway (local)')
-    .addServer(
-      'https://api.example.invalid',
-      'Production placeholder (replace; never commit real hosts with secrets)',
-    )
     .addBearerAuth(
       {
         type: 'http',
@@ -159,6 +211,8 @@ export function buildNexaTechOpenApiDocument(
     ErrorEnvelope: ERROR_ENVELOPE_SCHEMA,
     PaginationMeta: PAGINATION_META_SCHEMA,
   };
+
+  stripForbiddenHeaderParameters(document);
 
   return document;
 }

@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -51,15 +62,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -71,10 +77,15 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
@@ -119,7 +130,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/current": {
@@ -164,7 +177,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       },
       "get": {
         "operationId": "CartController_current_v1",
@@ -207,7 +222,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/current/items": {
@@ -252,7 +269,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/current/items/{skuId}": {
@@ -305,7 +324,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       },
       "patch": {
         "operationId": "CartController_updateItem_v1",
@@ -356,7 +377,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/current/refresh": {
@@ -401,7 +424,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/current/validate": {
@@ -454,7 +479,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/guest": {
@@ -483,7 +510,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/carts/merge": {
@@ -520,7 +549,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v1/comparison": {
@@ -541,7 +572,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       },
       "get": {
         "operationId": "ComparisonController_list_v1",
@@ -560,7 +593,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       },
       "post": {
         "operationId": "ComparisonController_add_v1",
@@ -579,7 +614,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       }
     },
     "/api/v1/comparison/{productId}": {
@@ -608,7 +645,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       }
     },
     "/api/v1/recently-viewed": {
@@ -637,7 +676,9 @@
             "description": ""
           }
         },
-        "tags": ["recently-viewed"]
+        "tags": [
+          "recently-viewed"
+        ]
       },
       "post": {
         "operationId": "RecentlyViewedController_track_v1",
@@ -664,7 +705,9 @@
             "description": ""
           }
         },
-        "tags": ["recently-viewed"]
+        "tags": [
+          "recently-viewed"
+        ]
       }
     },
     "/api/v1/wishlist": {
@@ -685,7 +728,9 @@
             "description": ""
           }
         },
-        "tags": ["wishlist"]
+        "tags": [
+          "wishlist"
+        ]
       },
       "post": {
         "operationId": "WishlistController_add_v1",
@@ -704,7 +749,9 @@
             "description": ""
           }
         },
-        "tags": ["wishlist"]
+        "tags": [
+          "wishlist"
+        ]
       }
     },
     "/api/v1/wishlist/{productId}": {
@@ -733,7 +780,9 @@
             "description": ""
           }
         },
-        "tags": ["wishlist"]
+        "tags": [
+          "wishlist"
+        ]
       }
     },
     "/api/v2/carts/convert": {
@@ -770,7 +819,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/current": {
@@ -815,7 +866,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       },
       "get": {
         "operationId": "CartController_current_v2",
@@ -858,7 +911,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/current/items": {
@@ -903,7 +958,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/current/items/{skuId}": {
@@ -956,7 +1013,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       },
       "patch": {
         "operationId": "CartController_updateItem_v2",
@@ -1007,7 +1066,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/current/refresh": {
@@ -1052,7 +1113,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/current/validate": {
@@ -1105,7 +1168,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/guest": {
@@ -1134,7 +1199,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/carts/merge": {
@@ -1171,7 +1238,9 @@
             "description": ""
           }
         },
-        "tags": ["carts"]
+        "tags": [
+          "carts"
+        ]
       }
     },
     "/api/v2/comparison": {
@@ -1192,7 +1261,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       },
       "get": {
         "operationId": "ComparisonController_list_v2",
@@ -1211,7 +1282,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       },
       "post": {
         "operationId": "ComparisonController_add_v2",
@@ -1230,7 +1303,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       }
     },
     "/api/v2/comparison/{productId}": {
@@ -1259,7 +1334,9 @@
             "description": ""
           }
         },
-        "tags": ["comparison"]
+        "tags": [
+          "comparison"
+        ]
       }
     },
     "/api/v2/recently-viewed": {
@@ -1288,7 +1365,9 @@
             "description": ""
           }
         },
-        "tags": ["recently-viewed"]
+        "tags": [
+          "recently-viewed"
+        ]
       },
       "post": {
         "operationId": "RecentlyViewedController_track_v2",
@@ -1315,7 +1394,9 @@
             "description": ""
           }
         },
-        "tags": ["recently-viewed"]
+        "tags": [
+          "recently-viewed"
+        ]
       }
     },
     "/api/v2/wishlist": {
@@ -1336,7 +1417,9 @@
             "description": ""
           }
         },
-        "tags": ["wishlist"]
+        "tags": [
+          "wishlist"
+        ]
       },
       "post": {
         "operationId": "WishlistController_add_v2",
@@ -1355,7 +1438,9 @@
             "description": ""
           }
         },
-        "tags": ["wishlist"]
+        "tags": [
+          "wishlist"
+        ]
       }
     },
     "/api/v2/wishlist/{productId}": {
@@ -1384,43 +1469,48 @@
             "description": ""
           }
         },
-        "tags": ["wishlist"]
+        "tags": [
+          "wishlist"
+        ]
       }
     },
     "/health": {
       "get": {
         "operationId": "HealthController_health",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
       "get": {
         "operationId": "HealthController_live",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "HealthController_ready",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

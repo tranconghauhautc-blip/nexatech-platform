@@ -367,7 +367,7 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 
 - **Quyết định:** Bổ sung lớp “local security training lab” trên nền M21, không mở milestone roadmap mới:
   - Tài liệu entry points: `docs/LOCAL-LAB-LINKS.md`, `docs/SWAGGER-LINKS.md`, `docs/LOCAL-SECURITY-LAB-GUIDE.md`, `docs/OPENAPI-GUIDE.md`.
-  - Shared Swagger bootstrap `setupNexaTechSwagger` trong `@nexatech/shared-platform` (servers local/Kong/placeholder, Bearer + gateway headers, ErrorEnvelope, deterministic `operationIdFactory`).
+  - Shared Swagger bootstrap `setupNexaTechSwagger` trong `@nexatech/shared-platform` (servers same-origin `/` + local + Kong trên live UI; production placeholder chỉ trong exported OpenAPI; Bearer + gateway headers, ErrorEnvelope, deterministic `operationIdFactory`; strip browser-forbidden header params).
   - OpenAPI tooling: `pnpm openapi:generate|combine|validate` → `openapi/*.openapi.yaml` + `nexatech-combined.openapi.yaml` (import Burp/ZAP/Postman).
   - Identity: DTOs/Swagger examples, `GET /api/v1/auth/me` cho Authorize flow; seed accounts giữ gate `DEV_SEED_PASSWORD`.
   - Admin: `/unauthorized`, `/forbidden`, RBAC route guard theo menu `minimumRole`, `/security-lab` dashboard **chỉ** khi `NEXATECH_SECURITY_LAB=1` + `NEXATECH_DEPLOY_PROFILE=security-lab`.

@@ -35,7 +35,13 @@
       },
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -79,7 +85,13 @@
             "type": "string"
           }
         },
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "type": "object"
       },
       "ForgotPasswordRequestDto": {
@@ -89,7 +101,9 @@
             "type": "string"
           }
         },
-        "required": ["email"],
+        "required": [
+          "email"
+        ],
         "type": "object"
       },
       "LoginRequestDto": {
@@ -105,7 +119,10 @@
             "type": "string"
           }
         },
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "type": "object"
       },
       "LogoutRequestDto": {
@@ -115,7 +132,9 @@
             "type": "string"
           }
         },
-        "required": ["sessionId"],
+        "required": [
+          "sessionId"
+        ],
         "type": "object"
       },
       "MeResponseDto": {
@@ -127,7 +146,9 @@
             "type": "string"
           },
           "roles": {
-            "example": ["Staff"],
+            "example": [
+              "Staff"
+            ],
             "items": {
               "type": "string"
             },
@@ -143,12 +164,21 @@
             "type": "string"
           }
         },
-        "required": ["userId", "email", "roles"],
+        "required": [
+          "userId",
+          "email",
+          "roles"
+        ],
         "type": "object"
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -171,7 +201,9 @@
             "type": "string"
           }
         },
-        "required": ["refreshToken"],
+        "required": [
+          "refreshToken"
+        ],
         "type": "object"
       },
       "RegisterRequestDto": {
@@ -190,7 +222,11 @@
             "type": "string"
           }
         },
-        "required": ["email", "password", "fullName"],
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ],
         "type": "object"
       },
       "ResetPasswordRequestDto": {
@@ -208,7 +244,11 @@
             "type": "string"
           }
         },
-        "required": ["email", "code", "newPassword"],
+        "required": [
+          "email",
+          "code",
+          "newPassword"
+        ],
         "type": "object"
       },
       "VerifyEmailRequestDto": {
@@ -222,7 +262,10 @@
             "type": "string"
           }
         },
-        "required": ["email", "code"],
+        "required": [
+          "email",
+          "code"
+        ],
         "type": "object"
       }
     },
@@ -270,19 +313,19 @@
     "/api/v0/internal/routes": {
       "get": {
         "operationId": "Health_deprecatedApiInventory_v0",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/api/v1/auth/forgot-password": {
       "post": {
         "operationId": "Auth_forgotPassword_v1",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -299,22 +342,14 @@
           }
         },
         "summary": "Yêu cầu OTP đặt lại mật khẩu",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "Auth_login_v1",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "user-agent",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -348,13 +383,14 @@
           }
         },
         "summary": "Đăng nhập — lấy accessToken để Authorize trên Swagger",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/logout": {
       "post": {
         "operationId": "Auth_logout_v1",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -371,7 +407,9 @@
           }
         },
         "summary": "Thu hồi session (refresh không dùng lại được)",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/me": {
@@ -415,13 +453,14 @@
           }
         ],
         "summary": "Thông tin user từ Bearer access token (Swagger Authorize flow)",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/refresh": {
       "post": {
         "operationId": "Auth_refresh_v1",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -445,13 +484,14 @@
           }
         },
         "summary": "Đổi refresh token — session cũ bị thu hồi",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/register": {
       "post": {
         "operationId": "Auth_register_v1",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -478,13 +518,14 @@
           }
         },
         "summary": "Đăng ký tài khoản Customer",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/reset-password": {
       "post": {
         "operationId": "Auth_resetPassword_v1",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -501,7 +542,9 @@
           }
         },
         "summary": "Đặt lại mật khẩu bằng OTP",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/sessions/{sessionId}": {
@@ -528,7 +571,9 @@
           }
         ],
         "summary": "Thu hồi một phiên",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/sessions/{userId}": {
@@ -555,13 +600,14 @@
           }
         ],
         "summary": "Liệt kê phiên đăng nhập của user",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v1/auth/verify-email": {
       "post": {
         "operationId": "Auth_verifyEmail_v1",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -578,13 +624,14 @@
           }
         },
         "summary": "Xác minh email OTP",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/forgot-password": {
       "post": {
         "operationId": "Auth_forgotPassword_v2",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -601,22 +648,14 @@
           }
         },
         "summary": "Yêu cầu OTP đặt lại mật khẩu",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/login": {
       "post": {
         "operationId": "Auth_login_v2",
-        "parameters": [
-          {
-            "in": "header",
-            "name": "user-agent",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -650,13 +689,14 @@
           }
         },
         "summary": "Đăng nhập — lấy accessToken để Authorize trên Swagger",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/logout": {
       "post": {
         "operationId": "Auth_logout_v2",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -673,7 +713,9 @@
           }
         },
         "summary": "Thu hồi session (refresh không dùng lại được)",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/me": {
@@ -717,13 +759,14 @@
           }
         ],
         "summary": "Thông tin user từ Bearer access token (Swagger Authorize flow)",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/refresh": {
       "post": {
         "operationId": "Auth_refresh_v2",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -747,13 +790,14 @@
           }
         },
         "summary": "Đổi refresh token — session cũ bị thu hồi",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/register": {
       "post": {
         "operationId": "Auth_register_v2",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -780,13 +824,14 @@
           }
         },
         "summary": "Đăng ký tài khoản Customer",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/reset-password": {
       "post": {
         "operationId": "Auth_resetPassword_v2",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -803,7 +848,9 @@
           }
         },
         "summary": "Đặt lại mật khẩu bằng OTP",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/sessions/{sessionId}": {
@@ -830,7 +877,9 @@
           }
         ],
         "summary": "Thu hồi một phiên",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/sessions/{userId}": {
@@ -857,13 +906,14 @@
           }
         ],
         "summary": "Liệt kê phiên đăng nhập của user",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/api/v2/auth/verify-email": {
       "post": {
         "operationId": "Auth_verifyEmail_v2",
-        "parameters": [],
         "requestBody": {
           "content": {
             "application/json": {
@@ -880,19 +930,22 @@
           }
         },
         "summary": "Xác minh email OTP",
-        "tags": ["auth"]
+        "tags": [
+          "auth"
+        ]
       }
     },
     "/health": {
       "get": {
         "operationId": "Health_health",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/debug": {
@@ -913,43 +966,48 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/lab": {
       "get": {
         "operationId": "Health_labMarker",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
       "get": {
         "operationId": "Health_live",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
       "get": {
         "operationId": "Health_ready",
-        "parameters": [],
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/lab/ssrf-probe": {
@@ -970,7 +1028,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

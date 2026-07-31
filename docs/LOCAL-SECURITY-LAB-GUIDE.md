@@ -82,10 +82,11 @@ pnpm e2e:admin
 ## 10–13. Swagger + Authorize + call API
 
 1. Mở http://localhost:3001/docs (và các service 3002–3014 — [SWAGGER-LINKS.md](./SWAGGER-LINKS.md))
-2. Login → lấy `accessToken`
-3. Authorize (Bearer)
-4. Gọi `/api/v1/auth/me` và endpoint protected khác
-5. Quan sát status / header / body trong Swagger
+2. Giữ server **same origin as /docs** (tránh Failed to fetch nếu chọn host không tồn tại)
+3. Login → lấy `accessToken`
+4. Authorize (Bearer)
+5. Gọi `/api/v1/auth/me` và endpoint protected khác
+6. Quan sát status / header / body trong Swagger
 
 Kong: http://localhost:8000 (forward Authorization + correlation headers).
 

@@ -47,14 +47,10 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT access token from identity POST /api/v1/auth/login. Never commit real tokens.
-    userId:
+    idempotencyKey:
       type: apiKey
       in: header
-      name: x-user-id
-    userRoles:
-      type: apiKey
-      in: header
-      name: x-user-roles
+      name: Idempotency-Key
     requestId:
       type: apiKey
       in: header
@@ -63,13 +59,17 @@ components:
       type: apiKey
       in: header
       name: x-trace-id
-    idempotencyKey:
+    userId:
       type: apiKey
       in: header
-      name: Idempotency-Key
+      name: x-user-id
+    userRoles:
+      type: apiKey
+      in: header
+      name: x-user-roles
 info:
   title: NexaTech Catalog Service
-  description: 'Danh mục, thương hiệu, sản phẩm, SKU và giá'
+  description: "Danh mục, thương hiệu, sản phẩm, SKU và giá"
   version: 1.0
 openapi: 3.0.0
 paths:
@@ -283,7 +283,6 @@ paths:
   /api/v1/brands:
     get:
       operationId: CatalogController_brands_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -292,7 +291,6 @@ paths:
   /api/v1/categories:
     get:
       operationId: CatalogController_categories_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -301,7 +299,6 @@ paths:
   /api/v1/products:
     get:
       operationId: CatalogController_products_v1
-      parameters: []
       responses:
         200:
           description: ''
@@ -559,7 +556,6 @@ paths:
   /api/v2/brands:
     get:
       operationId: CatalogController_brands_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -568,7 +564,6 @@ paths:
   /api/v2/categories:
     get:
       operationId: CatalogController_categories_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -577,7 +572,6 @@ paths:
   /api/v2/products:
     get:
       operationId: CatalogController_products_v2
-      parameters: []
       responses:
         200:
           description: ''
@@ -628,7 +622,6 @@ paths:
   /health:
     get:
       operationId: HealthController_health
-      parameters: []
       responses:
         200:
           description: ''
@@ -637,7 +630,6 @@ paths:
   /health/live:
     get:
       operationId: HealthController_live
-      parameters: []
       responses:
         200:
           description: ''
@@ -646,17 +638,16 @@ paths:
   /health/ready:
     get:
       operationId: HealthController_ready
-      parameters: []
       responses:
         200:
           description: ''
       tags:
         - Health
 servers:
-  - url: 'http://localhost:3003'
+  - url: "http://localhost:3003"
     description: catalog-service direct (local)
-  - url: 'http://localhost:8000'
+  - url: "http://localhost:8000"
     description: Kong Gateway (local)
-  - url: 'https://api.example.invalid'
+  - url: "https://api.example.invalid"
     description: Production placeholder
 tags: []

@@ -161,7 +161,33 @@ function normalizeOpenApiDocument(doc, service) {
   };
   if (!normalized.paths) normalized.paths = {};
 
+  const forbiddenHeaders = new Set([
+    'accept',
+    'accept-charset',
+    'accept-encoding',
+    'access-control-request-headers',
+    'access-control-request-method',
+    'connection',
+    'content-length',
+    'cookie',
+    'cookie2',
+    'date',
+    'dnt',
+    'expect',
+    'host',
+    'keep-alive',
+    'origin',
+    'referer',
+    'te',
+    'trailer',
+    'transfer-encoding',
+    'upgrade',
+    'via',
+    'user-agent',
+  ]);
+
   // Make operationIds unique across /api/v1 and /api/v2 mirrors.
+  // Also drop browser-forbidden header params (e.g. user-agent on login).
   const seen = new Map();
   for (const pathKey of Object.keys(normalized.paths)) {
     const item = normalized.paths[pathKey];
@@ -170,6 +196,16 @@ function normalizeOpenApiDocument(doc, service) {
       if (method.startsWith('x-')) continue;
       const op = item[method];
       if (!op || typeof op !== 'object') continue;
+      if (Array.isArray(op.parameters)) {
+        op.parameters = op.parameters.filter((param) => {
+          if (!param || typeof param !== 'object' || param.$ref) return true;
+          if (param.in !== 'header' || typeof param.name !== 'string') {
+            return true;
+          }
+          return !forbiddenHeaders.has(String(param.name).toLowerCase());
+        });
+        if (op.parameters.length === 0) delete op.parameters;
+      }
       const versionMatch = /\/api\/(v\d+)\//.exec(pathKey);
       const versionSuffix = versionMatch ? `_${versionMatch[1]}` : '';
       const base = op.operationId || `${method}_${pathKey}`;

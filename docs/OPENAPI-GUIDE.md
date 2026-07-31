@@ -38,11 +38,20 @@ pnpm openapi:generate
 
 Generation là deterministic (sorted keys) để giảm diff vô nghĩa.
 
-## Servers trong mỗi spec
+## Servers trong mỗi spec (exported `openapi/*`)
 
 1. Direct service `http://localhost:{port}`
 2. Kong local `http://localhost:8000`
-3. Production placeholder `https://api.example.invalid`
+3. Production placeholder `https://api.example.invalid` (chỉ để nhắc override — **không** dùng Try it out)
+
+## Servers trên Swagger UI live (`/docs`)
+
+1. **Same origin** `/` — mặc định; Try it out gọi đúng host đang mở `/docs`
+2. Direct `http://localhost:{port}`
+3. Kong `http://localhost:8000`
+
+Không gắn production placeholder trên live UI (tránh Failed to fetch khi chọn `api.example.invalid`).
+Không document header `User-Agent` trên login (browser cấm set từ fetch).
 
 ## Security schemes
 
