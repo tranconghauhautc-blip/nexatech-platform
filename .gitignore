@@ -64,3 +64,5 @@ test-results/
 # Next.js
 .next
 out
+
+*.tsbuildinfo
