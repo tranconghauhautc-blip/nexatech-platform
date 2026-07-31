@@ -362,3 +362,15 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **OWASP:** Mở rộng security lab lên 30 intentional scenarios với ma trận riêng API Top 10:2023 và Web Top 10:2025 trong `docs/OWASP-SCENARIOS.md`. Bổ sung policy helpers SSRF, deprecated inventory, upstream trust, supply-chain fixture, ORDER BY injection, audit suppress, error leakage, weak secret compare, debug exposure, business-flow quota.
 - **Cấm:** hard-code password; bật lab qua HTTP; PoC ra Internet; malware package download cho A03.
 - **Hệ quả:** Local login/RBAC smoke dùng password do operator đặt; coverage API1–API10 và A01–A10 có evidence automated.
+
+## ADR-043 — Local security training lab (browser + Swagger + OpenAPI 3)
+
+- **Quyết định:** Bổ sung lớp “local security training lab” trên nền M21, không mở milestone roadmap mới:
+  - Tài liệu entry points: `docs/LOCAL-LAB-LINKS.md`, `docs/SWAGGER-LINKS.md`, `docs/LOCAL-SECURITY-LAB-GUIDE.md`, `docs/OPENAPI-GUIDE.md`.
+  - Shared Swagger bootstrap `setupNexaTechSwagger` trong `@nexatech/shared-platform` (servers local/Kong/placeholder, Bearer + gateway headers, ErrorEnvelope, deterministic `operationIdFactory`).
+  - OpenAPI tooling: `pnpm openapi:generate|combine|validate` → `openapi/*.openapi.yaml` + `nexatech-combined.openapi.yaml` (import Burp/ZAP/Postman).
+  - Identity: DTOs/Swagger examples, `GET /api/v1/auth/me` cho Authorize flow; seed accounts giữ gate `DEV_SEED_PASSWORD`.
+  - Admin: `/unauthorized`, `/forbidden`, RBAC route guard theo menu `minimumRole`, `/security-lab` dashboard **chỉ** khi `NEXATECH_SECURITY_LAB=1` + `NEXATECH_DEPLOY_PROFILE=security-lab`.
+  - HTTP smoke `pnpm lab:smoke`; Playwright `e2e/admin/rbac-roles.spec.ts` (cần `E2E_DEV_SEED_PASSWORD`).
+- **Cấm:** hard-code password; public management console production; lab dashboard trên production artifact; secret trong OpenAPI.
+- **Hệ quả:** Người học mở browser login/logout, Swagger call API, import OpenAPI 3; coverage OWASP API1–10 / A01–A10 giữ qua ADR-042.

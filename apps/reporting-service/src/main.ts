@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,19 +18,16 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Reporting Service')
-    .setDescription(
-      'Dashboard báo cáo và audit log projection — tổng hợp read model từ sự kiện RabbitMQ của các service order/payment/shipping/review/warranty/support',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(
     process.env['REPORTING_PORT'] ?? process.env['PORT'] ?? 3014,
   );
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Reporting Service',
+    description: 'Dashboard admin và audit projection',
+    serviceName: 'reporting-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`reporting-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

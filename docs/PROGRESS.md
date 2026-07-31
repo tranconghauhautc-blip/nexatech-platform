@@ -2,12 +2,12 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** _(roadmap M0–M21 hoàn tất — không bắt đầu milestone mới)_
+- **Milestone đang làm:** _(roadmap M0–M21 hoàn tất — hardening local security training lab / ADR-043)_
 - **Milestone đã hoàn thành gần nhất:** M21 (security lab / OWASP)
 - **Cập nhật lần cuối:** 2026-08-01
 - **Branch:** `main`
-- **Local Compose:** 14 Nest backends + storefront + admin + Kong **healthy** (ADR-041 runtime packaging fix)
-- **Post-M21 hardening:** DEV `seed:accounts` + OWASP API 2023 / Web 2025 coverage matrices (30 scenarios)
+- **Local Compose:** 14 Nest backends + storefront + admin + Kong **healthy**
+- **Post-M21:** DEV `seed:accounts` + OpenAPI 3 tooling + browser/Swagger lab docs + RBAC e2e
 
 ## Roadmap milestone
 
@@ -39,6 +39,20 @@
 - [x] Feature commit `20e98bb`
 - [x] Post-M21: `pnpm seed:accounts` (no hard-coded passwords)
 
+## Local security training lab checklist (ADR-043)
+
+- [x] `docs/LOCAL-LAB-LINKS.md` — browser entry points từ Compose ports
+- [x] `docs/SWAGGER-LINKS.md` — 14 Swagger + OpenAPI JSON + Kong
+- [x] `docs/LOCAL-SECURITY-LAB-GUIDE.md` — 19 bước learner guide
+- [x] `docs/OPENAPI-GUIDE.md` + `pnpm openapi:generate|combine|validate`
+- [x] Shared `setupNexaTechSwagger` trên 14 Nest services
+- [x] Identity Swagger auth DTOs + `GET /auth/me`
+- [x] Admin `/unauthorized`, `/forbidden`, RBAC route guard, `/security-lab` (lab-only)
+- [x] Playwright `e2e/admin/rbac-roles.spec.ts` (4 roles)
+- [x] `pnpm lab:smoke` HTTP validation
+- [x] Format / lint / test / build / e2e / lab smoke / OpenAPI validate
+- [x] Local commit (no push)
+
 ## BLOCKED_EXTERNAL
 
 - Citrix ADC whitelist / Imperva lab policy
@@ -47,6 +61,12 @@
 - Production credentials / restore drills
 
 ## Nhật ký
+
+### 2026-08-01 — Local security training lab (ADR-043)
+
+- OpenAPI 3 export/combine/validate; combined spec for Burp/ZAP/Postman.
+- Browser lab docs + Swagger links; admin forbidden/unauthorized + lab dashboard gate.
+- Identity Authorize flow (`/auth/me`); HTTP `lab:smoke`; 4-role Playwright smoke.
 
 ### 2026-08-01 — Dev account seed rewrite + OWASP API/Web coverage expand
 

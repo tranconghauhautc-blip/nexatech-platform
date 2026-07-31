@@ -215,6 +215,50 @@ export class AuthService {
     await this.store.revokeSession(sessionId);
   }
 
+  async me(authorization?: string): Promise<{
+    userId: string;
+    email: string;
+    roles: string[];
+    fullName: string;
+    sessionId?: string;
+    status: string;
+  }> {
+    const token = extractBearerToken(authorization);
+    let payload: jwt.JwtPayload;
+    try {
+      payload = jwt.verify(token, this.config.accessSecret) as jwt.JwtPayload;
+    } catch {
+      throw new AppError({
+        errorCode: ErrorCodes.UNAUTHORIZED,
+        message: 'Access token không hợp lệ hoặc đã hết hạn',
+      });
+    }
+    if (payload['typ'] !== 'access' || !payload.sub) {
+      throw new AppError({
+        errorCode: ErrorCodes.UNAUTHORIZED,
+        message: 'Access token không hợp lệ',
+      });
+    }
+    const user = await this.store.findUserById(String(payload.sub));
+    if (!user) {
+      throw new AppError({
+        errorCode: ErrorCodes.UNAUTHORIZED,
+        message: 'Người dùng không tồn tại',
+      });
+    }
+    return {
+      userId: user.id,
+      email: user.email,
+      roles: user.roles,
+      fullName: user.fullName,
+      sessionId:
+        typeof payload['sessionId'] === 'string'
+          ? payload['sessionId']
+          : undefined,
+      status: user.status,
+    };
+  }
+
   async listSessions(userId: string) {
     return this.store.listSessionsByUser(userId);
   }
@@ -337,4 +381,21 @@ function hashOtp(code: string): string {
 
 function hashToken(token: string): string {
   return createHash('sha256').update(token).digest('hex');
+}
+
+function extractBearerToken(authorization?: string): string {
+  if (!authorization || typeof authorization !== 'string') {
+    throw new AppError({
+      errorCode: ErrorCodes.UNAUTHORIZED,
+      message: 'Thiếu Authorization Bearer token',
+    });
+  }
+  const match = /^Bearer\s+(.+)$/i.exec(authorization.trim());
+  if (!match?.[1]) {
+    throw new AppError({
+      errorCode: ErrorCodes.UNAUTHORIZED,
+      message: 'Authorization phải là Bearer <accessToken>',
+    });
+  }
+  return match[1].trim();
 }

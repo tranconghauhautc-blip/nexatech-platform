@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,19 +18,16 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Notification Service')
-    .setDescription(
-      'Thông báo trong ứng dụng và email — mẫu thông báo tiếng Việt, gửi email, tiêu thụ sự kiện RabbitMQ từ các service khác',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(
     process.env['NOTIFICATION_PORT'] ?? process.env['PORT'] ?? 3013,
   );
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Notification Service',
+    description: 'Thông báo in-app, email và RabbitMQ',
+    serviceName: 'notification-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`notification-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

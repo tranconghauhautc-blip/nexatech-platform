@@ -253,6 +253,24 @@ helm template nexatech-lab deploy/helm/nexatech -f deploy/helm/nexatech/values-s
 
 Docs: `OWASP-SCENARIOS.md`, `SECURITY-LAB-ARCHITECTURE.md`, `SECURITY-LAB-SAFETY.md`, `FINAL-HANDOFF.md`.
 
+## Local security training lab (browser + OpenAPI)
+
+```powershell
+pnpm lab:smoke
+pnpm openapi:generate
+pnpm openapi:combine
+pnpm openapi:validate
+$env:PLAYWRIGHT_SKIP_WEBSERVER='1'
+$env:E2E_DEV_SEED_PASSWORD=$env:DEV_SEED_PASSWORD
+pnpm e2e:admin
+```
+
+- Entry links: `docs/LOCAL-LAB-LINKS.md`, `docs/SWAGGER-LINKS.md`
+- Guide: `docs/LOCAL-SECURITY-LAB-GUIDE.md`
+- OpenAPI: `docs/OPENAPI-GUIDE.md`, artifacts under `openapi/`
+- Admin RBAC unit: `apps/admin-web/specs/auth-guard.spec.ts`
+- Playwright 4-role: `e2e/admin/rbac-roles.spec.ts` (skips without `E2E_DEV_SEED_PASSWORD`)
+
 ## DEV account seed validation
 
 ```powershell

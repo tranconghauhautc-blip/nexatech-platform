@@ -20,7 +20,11 @@
     "security:test:secure": "node tests/security/run.cjs secure",
     "security:test:lab": "cross-env SECURITY_LAB_ACK=YES node tests/security/run.cjs lab",
     "security:smoke": "cross-env SECURITY_LAB_ACK=YES node tests/security/smoke.cjs",
-    "security:validate": "node tests/security/validate.cjs"
+    "security:validate": "node tests/security/validate.cjs",
+    "openapi:generate": "node scripts/openapi/generate.cjs",
+    "openapi:combine": "node scripts/openapi/combine.cjs",
+    "openapi:validate": "node scripts/openapi/validate.cjs",
+    "lab:smoke": "node scripts/local-lab-smoke.cjs"
   },
   "engines": {
     "node": ">=22.0.0",

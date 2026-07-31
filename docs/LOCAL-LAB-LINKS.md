@@ -1,0 +1,46 @@
+# Local Lab Links — NexaTech Security Training
+
+Ports lấy từ `infra/docker/docker-compose.dev.yml` và `infra/docker/docker-compose.apps.yml` (không đoán).
+
+**Không ghi password thật vào tài liệu này.** Credential lấy từ biến môi trường / Compose defaults (local only).
+
+| Thành phần          | URL                                | Chức năng                       | Credential source                                                | Production exposure                | Ghi chú bảo mật                                                        |
+| ------------------- | ---------------------------------- | ------------------------------- | ---------------------------------------------------------------- | ---------------------------------- | ---------------------------------------------------------------------- |
+| Storefront          | http://localhost:3000              | Website khách                   | Session cookie `nt_session` (BFF httpOnly)                       | Public web                         | Không lộ access token cho JS                                           |
+| Admin Portal        | http://localhost:3100              | Cổng quản trị RBAC              | Session cookie `nexatech_admin_session` + `ADMIN_SESSION_SECRET` | Internal / VPN                     | Route guard + menu theo role                                           |
+| Kong Gateway        | http://localhost:8000              | API gateway `/api/v1` `/api/v2` | Forward `Authorization` / cookies                                | Edge API                           | CORS local; production dùng VIP riêng                                  |
+| Kong Admin          | http://localhost:8001              | Kong admin API                  | Local Compose only                                               | **Không public production**        | Chỉ lab/dev                                                            |
+| RabbitMQ Management | http://localhost:15672             | Hàng đợi / exchange UI          | Compose RabbitMQ defaults (local)                                | **Không public production**        | ClusterIP trong Helm prod                                              |
+| MinIO Console       | http://localhost:9001              | Object storage UI               | Compose MinIO root (local)                                       | **Không public production**        | ClusterIP trong Helm prod                                              |
+| MinIO S3 API        | http://localhost:9000              | S3-compatible API               | Same as console (local)                                          | **Không public production**        | Media via media-service                                                |
+| PostgreSQL          | localhost:5432                     | DB per-service                  | `*_DATABASE_URL` / Compose init                                  | Private                            | Không dùng user `postgres` cho app                                     |
+| Redis               | localhost:6379                     | Session / cache                 | `REDIS_URL`                                                      | Private                            |                                                                        |
+| Identity API        | http://localhost:3001              | Auth / RBAC                     | JWT / seed accounts                                              | Via Kong                           | Swagger `/docs`                                                        |
+| Customer API        | http://localhost:3002              | Hồ sơ KH                        | Bearer / `x-user-id`                                             | Via Kong                           |                                                                        |
+| Catalog API         | http://localhost:3003              | Catalog                         | Public read                                                      | Via Kong                           |                                                                        |
+| Media API           | http://localhost:3004              | Media                           | Owner / staff                                                    | Via Kong                           |                                                                        |
+| Inventory API       | http://localhost:3005              | Tồn kho                         | Staff+                                                           | Via Kong                           |                                                                        |
+| Cart API            | http://localhost:3006              | Giỏ hàng                        | Guest token / user                                               | Via Kong                           |                                                                        |
+| Order API           | http://localhost:3007              | Đơn hàng                        | Customer / staff                                                 | Via Kong                           | OWASP BOLA lab                                                         |
+| Payment API         | http://localhost:3008              | Thanh toán                      | Customer / webhook                                               | Via Kong                           |                                                                        |
+| Shipping API        | http://localhost:3009              | Vận chuyển                      | Customer / provider                                              | Via Kong                           |                                                                        |
+| Review API          | http://localhost:3010              | Đánh giá                        | Customer / staff                                                 | Via Kong                           |                                                                        |
+| Warranty API        | http://localhost:3011              | Bảo hành                        | Customer / staff                                                 | Via Kong                           |                                                                        |
+| Support API         | http://localhost:3012              | Ticket                          | Customer / staff                                                 | Via Kong                           |                                                                        |
+| Notification API    | http://localhost:3013              | Thông báo                       | Customer / manager                                               | Via Kong                           |                                                                        |
+| Reporting API       | http://localhost:3014              | Báo cáo                         | Manager+                                                         | Via Kong                           |                                                                        |
+| Security Lab UI     | http://localhost:3100/security-lab | Dashboard OWASP lab             | Admin session + lab profile                                      | **Không** trên production artifact | Cần `NEXATECH_SECURITY_LAB=1` + `NEXATECH_DEPLOY_PROFILE=security-lab` |
+
+## Seed accounts (local)
+
+```powershell
+$env:NODE_ENV="development"
+$env:NEXATECH_ALLOW_DEV_SEED="YES"
+$env:DEV_SEED_PASSWORD="<operator-defined-strong-password>"
+$env:IDENTITY_DATABASE_URL="postgresql://nexatech_identity:changeme@localhost:5432/nexatech_identity"
+pnpm seed:accounts
+```
+
+Emails: `staff@nexatech.local`, `manager@nexatech.local`, `admin@nexatech.local`, `superadmin@nexatech.local`.
+
+Xem thêm: [LOCAL-SECURITY-LAB-GUIDE.md](./LOCAL-SECURITY-LAB-GUIDE.md), [SWAGGER-LINKS.md](./SWAGGER-LINKS.md).

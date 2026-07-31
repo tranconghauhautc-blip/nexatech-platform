@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,19 +18,16 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Warranty Service')
-    .setDescription(
-      'Bảo hành, đổi trả sau bán hàng — verified buyer, state machine, media evidence, order sync',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(
     process.env['WARRANTY_PORT'] ?? process.env['PORT'] ?? 3011,
   );
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Warranty Service',
+    description: 'Bảo hành, đổi trả và đồng bộ đơn hàng',
+    serviceName: 'warranty-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`warranty-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

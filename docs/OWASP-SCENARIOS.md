@@ -104,6 +104,8 @@ pnpm security:validate
 
 PoC runners refuse non-private targets and require `SECURITY_LAB_ACK=YES` for lab mode.
 
+Swagger / OpenAPI mapping for training: see `docs/SWAGGER-LINKS.md`. Lab console UI: `http://localhost:3100/security-lab` (security-lab profile only). Combined spec: `openapi/nexatech-combined.openapi.yaml`.
+
 ## Coverage confirmation rule
 
 A category is marked covered only when **all** of the following exist:

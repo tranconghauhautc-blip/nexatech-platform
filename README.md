@@ -24,6 +24,10 @@ Nx 22.7.7 · pnpm · TypeScript strict · Next.js 15.2.4 · NestJS · Prisma · 
 | [docs/TESTING.md](docs/TESTING.md)                                     | Chiến lược kiểm thử       |
 | [docs/OWASP-SCENARIOS.md](docs/OWASP-SCENARIOS.md)                     | OWASP API 2023 + Web 2025 |
 | [docs/SECURITY-LAB-ARCHITECTURE.md](docs/SECURITY-LAB-ARCHITECTURE.md) | Security lab architecture |
+| [docs/LOCAL-SECURITY-LAB-GUIDE.md](docs/LOCAL-SECURITY-LAB-GUIDE.md)   | Hướng dẫn lab local       |
+| [docs/LOCAL-LAB-LINKS.md](docs/LOCAL-LAB-LINKS.md)                     | Link trình duyệt local    |
+| [docs/SWAGGER-LINKS.md](docs/SWAGGER-LINKS.md)                         | Swagger / OpenAPI links   |
+| [docs/OPENAPI-GUIDE.md](docs/OPENAPI-GUIDE.md)                         | Generate / import OpenAPI |
 | [docs/IMAGE-MATRIX.md](docs/IMAGE-MATRIX.md)                           | Docker image matrix       |
 | [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)                 | Release gate checklist    |
 | [docs/DEPLOYMENT-ORDER.md](docs/DEPLOYMENT-ORDER.md)                   | Deploy order              |
@@ -57,11 +61,24 @@ pnpm build
 pnpm e2e
 pnpm seed:catalog
 pnpm seed:accounts
+pnpm openapi:generate
+pnpm openapi:combine
+pnpm openapi:validate
+pnpm lab:smoke
 .\scripts\docker-build-all.ps1 -Image identity-service
 helm lint deploy/helm/nexatech
 helm lint deploy/helm/nexatech-observability
 .\scripts\validate-production.ps1
 ```
+
+## Local security training lab
+
+Sau khi Compose healthy:
+
+- Storefront http://localhost:3000 · Admin http://localhost:3100 · Kong http://localhost:8000
+- Swagger từng service: http://localhost:3001/docs … http://localhost:3014/docs
+- Combined OpenAPI: `openapi/nexatech-combined.openapi.yaml`
+- Guide: [docs/LOCAL-SECURITY-LAB-GUIDE.md](docs/LOCAL-SECURITY-LAB-GUIDE.md)
 
 ## Deploy packaging
 

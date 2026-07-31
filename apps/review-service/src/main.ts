@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,19 +18,16 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Review Service')
-    .setDescription(
-      'Đánh giá sản phẩm verified buyer, moderation, aggregate, media, reply, report',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(
     process.env['REVIEW_PORT'] ?? process.env['PORT'] ?? 3010,
   );
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Review Service',
+    description: 'Đánh giá sản phẩm, kiểm duyệt và media đánh giá',
+    serviceName: 'review-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`review-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

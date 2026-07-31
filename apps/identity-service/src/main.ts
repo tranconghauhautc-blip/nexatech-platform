@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -26,17 +26,16 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Identity Service')
-    .setDescription('Auth, session, OTP và RBAC')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(
     process.env['IDENTITY_PORT'] ?? process.env['PORT'] ?? 3001,
   );
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Identity Service',
+    description: 'Auth, session, OTP và RBAC',
+    serviceName: 'identity-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`identity-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,17 +18,14 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Cart Service')
-    .setDescription(
-      'Giỏ hàng khách/user, merge, wishlist, so sánh và sản phẩm đã xem',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(process.env['CART_PORT'] ?? process.env['PORT'] ?? 3006);
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Cart Service',
+    description: 'Giỏ hàng, wishlist, so sánh và sản phẩm đã xem',
+    serviceName: 'cart-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`cart-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { setupNexaTechSwagger } from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -18,19 +18,16 @@ async function bootstrap() {
     }),
   );
 
-  const swagger = new DocumentBuilder()
-    .setTitle('NexaTech Support Service')
-    .setDescription(
-      'Hỗ trợ khách hàng — ticket, hội thoại, state machine, media evidence, liên kết đơn hàng/bảo hành/đổi trả',
-    )
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
-  SwaggerModule.setup('docs', app, SwaggerModule.createDocument(app, swagger));
-
   const port = Number(
     process.env['SUPPORT_PORT'] ?? process.env['PORT'] ?? 3012,
   );
+  setupNexaTechSwagger(app, {
+    title: 'NexaTech Support Service',
+    description: 'Ticket hỗ trợ và hội thoại',
+    serviceName: 'support-service',
+    port,
+  });
+
   await app.listen(port);
   Logger.log(`support-service listening on http://localhost:${port}/api`);
   Logger.log(`swagger: http://localhost:${port}/docs`);

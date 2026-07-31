@@ -5,7 +5,7 @@ import { AppError } from '@nexatech/shared-errors';
 describe('AuthService', () => {
   const createService = () => new AuthService(new InMemoryIdentityStore());
 
-  it('registers, verifies email, logs in and refreshes session', async () => {
+  it('registers, verifies email, logs in, me, and refreshes session', async () => {
     const service = createService();
     const registered = await service.register({
       email: 'khach@nexatech.vn',
@@ -22,6 +22,10 @@ describe('AuthService', () => {
     });
     expect(tokens.accessToken).toBeTruthy();
     expect(tokens.refreshToken).toBeTruthy();
+
+    const me = await service.me(`Bearer ${tokens.accessToken}`);
+    expect(me.email).toBe('khach@nexatech.vn');
+    expect(me.userId).toBe(tokens.userId);
 
     const refreshed = await service.refresh(tokens.refreshToken);
     expect(refreshed.accessToken).not.toEqual(tokens.accessToken);
