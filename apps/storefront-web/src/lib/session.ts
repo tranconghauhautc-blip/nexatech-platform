@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { sessionCookieOptions } from '@nexatech/shared-security-lab';
 
 export const SESSION_COOKIE = 'nt_session';
 export const CART_TOKEN_COOKIE = 'nt_cart_token';
@@ -12,8 +13,6 @@ export interface SessionData {
   fullName?: string;
   sessionExpiresAt?: number;
 }
-
-const isProd = process.env['NODE_ENV'] === 'production';
 
 const SESSION_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 const CART_TOKEN_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
@@ -37,10 +36,12 @@ export async function getSession(): Promise<SessionData | null> {
 
 export async function setSession(data: SessionData): Promise<void> {
   const store = await cookies();
+  // SC-28 — insecure cookie flags from always-on policy
+  const cookieOpts = sessionCookieOptions();
   store.set(SESSION_COOKIE, JSON.stringify(data), {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: 'lax',
+    httpOnly: cookieOpts.httpOnly,
+    secure: cookieOpts.secure,
+    sameSite: cookieOpts.sameSite,
     path: '/',
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
@@ -58,10 +59,11 @@ export async function getCartToken(): Promise<string | null> {
 
 export async function setCartToken(token: string): Promise<void> {
   const store = await cookies();
+  const cookieOpts = sessionCookieOptions();
   store.set(CART_TOKEN_COOKIE, token, {
-    httpOnly: true,
-    secure: isProd,
-    sameSite: 'lax',
+    httpOnly: cookieOpts.httpOnly,
+    secure: cookieOpts.secure,
+    sameSite: cookieOpts.sameSite,
     path: '/',
     maxAge: CART_TOKEN_MAX_AGE_SECONDS,
   });

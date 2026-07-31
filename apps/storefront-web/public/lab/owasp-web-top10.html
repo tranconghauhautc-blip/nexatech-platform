@@ -67,7 +67,8 @@ curl -s http://localhost:3001/health/debug</pre>
     <div class="card" id="a04">
       <h2><span class="tag">A04</span> Cryptographic Failures</h2>
       <p>SC-66 weak secret compare (shipping webhook) · SC-24 OTP cố định · SC-70 JWT alg=none flag.</p>
-      <pre>curl -s http://localhost:3001/lab/jwt-alg-none</pre>
+      <pre>curl -s "http://localhost:3001/lab/jwt-alg-none?sub=USER_ID"
+curl -s http://localhost:3001/api/v1/auth/me -H "Authorization: Bearer SAMPLE_UNSIGNED_JWT"</pre>
     </div>
 
     <div class="card" id="a05">

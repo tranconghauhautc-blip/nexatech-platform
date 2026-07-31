@@ -1,10 +1,12 @@
-# Security Lab Deployment — M21+
+# Security Lab Deployment — M21+ / ADR-044
 
-## Build lab images
+**ADR-044:** Intentional vulnerabilities are always-on in application code. Helm/image `NEXATECH_SECURITY_LAB` flags are **legacy isolation markers only** — they do not disable vulns.
+
+## Build images (optional security-lab namespace tags)
 
 ```powershell
 $env:IMAGE_TAG='0.21.0-sec-lab'
-# Bake lab profile into image env (example for identity):
+# Optional namespace/isolation markers (do NOT gate vulns):
 docker build -f apps/identity-service/Dockerfile `
   --build-arg NEXATECH_SECURITY_LAB=1 `
   --build-arg NEXATECH_DEPLOY_PROFILE=security-lab `
@@ -13,7 +15,7 @@ docker build -f apps/identity-service/Dockerfile `
 
 Script helper: `scripts/docker-build-security-lab.ps1` (builds representative set).
 
-Helm still injects `NEXATECH_*` from values — lab values set `securityLab.enabled: true`.
+Helm may still inject `NEXATECH_*` from values for namespace hygiene.
 
 ## Helm (dry-run / template only in unattended)
 
@@ -49,5 +51,5 @@ pnpm seed:accounts
 ## Isolation checks
 
 - Lab values must not reference production hostnames/credentials
-- Production values must keep `securityLab.enabled: false` and `NEXATECH_SECURITY_LAB=0`
+- Do not assume `securityLab.enabled: false` makes the app secure — code paths are always-on vulnerable (ADR-044)
 - PoC runners require `SECURITY_LAB_ACK=YES` + private targets

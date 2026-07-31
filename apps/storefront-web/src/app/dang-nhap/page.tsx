@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, Suspense, useState } from 'react';
+import { resolveOpenRedirect } from '@nexatech/shared-security-lab';
 import { bff, getErrorMessage } from '../../lib/api-browser';
 import { loginFormSchema } from '../../lib/validation';
 import { PasswordField } from '../../components/common/password-field';
@@ -44,7 +45,13 @@ function LoginForm() {
       } catch {
         // optional when no guest cart
       }
-      router.push(search.get('next') || '/tai-khoan');
+      // SC-71 — open redirect: accept any next URL (always-on)
+      const next = resolveOpenRedirect({
+        nextUrl: search.get('next') ?? undefined,
+        defaultPath: '/tai-khoan',
+        allowedHosts: ['localhost', '127.0.0.1'],
+      });
+      router.push(next);
     } catch (err) {
       setError(getErrorMessage(err, 'Đăng nhập thất bại'));
     } finally {

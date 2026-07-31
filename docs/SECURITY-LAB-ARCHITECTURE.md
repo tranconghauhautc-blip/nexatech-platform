@@ -1,35 +1,38 @@
-# Security Lab Architecture — M21+
+# Security Lab Architecture — M21+ / ADR-044
 
-## Dual profile
+## Always-on vulnerable profile (ADR-044)
 
-| Profile      | Helm values                | deployProfile  | SECURITY_LAB | Image tag        |
-| ------------ | -------------------------- | -------------- | ------------ | ---------------- |
-| Production   | `values-production.yaml`   | `production`   | `0`          | `0.17.0`         |
-| Security lab | `values-security-lab.yaml` | `security-lab` | `1`          | `0.21.0-sec-lab` |
+Intentional OWASP API + Web vulnerabilities are **ALWAYS active** in every deploy. There is no `NEXATECH_FORCE_SECURE`, no dual env gate, and no secure policy branch in `@nexatech/shared-security-lab`.
 
-Gate: `libs/shared/security-lab` — `isSecurityLabEnabled()` requires **both** env vars. Not controllable via HTTP header/cookie/query/body.
+| Concern | Behavior |
+| ------- | -------- |
+| `isSecurityLabEnabled()` | Always `true` |
+| Policy helpers | Always return vulnerable outcome |
+| Helm dual profile (legacy ADR-040) | Kept for isolation / NetworkPolicy docs only — **does not disable vulns** |
+| Lab marker | `GET /health/lab` → `profile: always-on-vulnerable` |
 
-## Isolation
+## Isolation (optional namespace hygiene)
+
+Legacy security-lab Helm values may still isolate a namespace for appliance PoC:
 
 - Namespace: `nexatech-security-lab`
 - Secrets: `nexatech-lab-secrets` (fake only)
-- PostgreSQL: lab host/DBs/users only
-- Redis/RabbitMQ/MinIO: chart platform in lab namespace (or dedicated vhost/prefix/bucket)
-- No production PVC sharing
-- No production OAuth/SMTP/VNPay/shipping credentials
-- Lab marker: `GET /health/lab` on identity (404 when not lab)
-- Lab-only probes: `/health/debug`, `/api/v0/internal/routes`, `/lab/ssrf-probe` (404 outside lab)
+- No production PVC / credential reuse recommended
+- Lab probes: `/health/debug`, `/api/v0/internal/routes`, `/lab/ssrf-probe`, `/lab/supply-chain`, `/lab/jwt-alg-none`
 
 ## Vulnerability packaging
 
-Policy helpers in `@nexatech/shared-security-lab` are called from order/payment/review/shipping/warranty/support/media/identity/catalog and BFF sanitizer/outbound URL. Production behavior is the default when flags are off.
+Policy helpers in `@nexatech/shared-security-lab` are called from order/payment/review/shipping/warranty/support/media/identity/catalog and BFF sanitizer/outbound URL. Storefront wires SC-71…SC-74 (open redirect, XSS, CSRF skip, clickjacking headers). Identity wires SC-70/SC-75 (JWT alg=none, auth failure PII).
 
 Coverage targets:
 
 - OWASP API Security Top 10:2023 (API1–API10)
 - OWASP Web Top 10:2025 (A01–A10)
 
-See `docs/OWASP-SCENARIOS.md` for matrices and scenario IDs.
+See `docs/OWASP-SCENARIOS.md` for matrices and scenario IDs. Public guides:
+
+- `http://localhost:3000/lab/owasp-api-top10.html`
+- `http://localhost:3000/lab/owasp-web-top10.html`
 
 ## Related
 
@@ -37,3 +40,4 @@ See `docs/OWASP-SCENARIOS.md` for matrices and scenario IDs.
 - `docs/SECURITY-LAB-SAFETY.md`
 - `docs/OWASP-SCENARIOS.md`
 - `docs/SECURITY-BASELINE.md`
+- `docs/DECISIONS.md` (ADR-044)

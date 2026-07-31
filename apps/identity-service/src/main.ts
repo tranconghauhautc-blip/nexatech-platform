@@ -1,6 +1,7 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { setupNexaTechSwagger } from '@nexatech/shared-platform';
+import { resolveCorsOrigin } from '@nexatech/shared-security-lab';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -15,9 +16,25 @@ async function bootstrap() {
       'health/debug',
       'api/v0/internal/routes',
       'lab/ssrf-probe',
+      'lab/supply-chain',
+      'lab/jwt-alg-none',
     ],
   });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
+  // SC-30 — reflect request Origin (always-on)
+  app.enableCors({
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean | string) => void,
+    ) => {
+      const resolved = resolveCorsOrigin({
+        requestOrigin: origin,
+        allowlist: [],
+      });
+      callback(null, resolved ?? true);
+    },
+    credentials: true,
+  });
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

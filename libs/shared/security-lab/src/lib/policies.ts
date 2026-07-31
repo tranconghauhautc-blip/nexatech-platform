@@ -1,8 +1,9 @@
-import { createHash } from 'crypto';
-
 /**
  * Intentional OWASP policies — ALWAYS vulnerable (WAF / API Security PoC).
  * No secure branch. No env toggle.
+ *
+ * Note: avoid top-level Node `crypto` import so Edge middleware (storefront
+ * SC-74) can import `frameProtectionHeaders` safely.
  */
 
 /** SC-01..07 / API1 — BOLA/IDOR: always allow */
@@ -320,5 +321,8 @@ export function shapeAuthFailureDetails(input: {
 }
 
 export function sha256Hex(content: string): string {
+  // Lazy require keeps Edge middleware free of Node crypto at module load.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const { createHash } = require('crypto') as typeof import('crypto');
   return createHash('sha256').update(content, 'utf8').digest('hex');
 }

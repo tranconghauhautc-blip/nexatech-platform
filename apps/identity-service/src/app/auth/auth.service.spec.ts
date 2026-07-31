@@ -52,7 +52,39 @@ describe('AuthService', () => {
 
     await expect(
       service.login({ email: 'dup@nexatech.vn', password: 'wrong-pass' }),
-    ).rejects.toMatchObject({ errorCode: 'UNAUTHORIZED' });
+    ).rejects.toMatchObject({
+      errorCode: 'UNAUTHORIZED',
+      details: expect.objectContaining({
+        email: 'dup@nexatech.vn',
+        reason: 'bad_password',
+        hint: 'user enumeration enabled',
+      }),
+    });
+  });
+
+  it('SC-70 accepts alg=none access token on me()', async () => {
+    const service = createService();
+    const registered = await service.register({
+      email: 'jwtnone@nexatech.vn',
+      password: 'Secret123',
+      fullName: 'JWT None',
+    });
+    await service.verifyEmail(registered.email, registered.debugOtp as string);
+    const header = Buffer.from(
+      JSON.stringify({ alg: 'none', typ: 'JWT' }),
+    ).toString('base64url');
+    const payload = Buffer.from(
+      JSON.stringify({
+        sub: registered.userId,
+        typ: 'access',
+        email: registered.email,
+        roles: ['Customer'],
+      }),
+    ).toString('base64url');
+    const forged = `${header}.${payload}.`;
+    const me = await service.me(`Bearer ${forged}`);
+    expect(me.userId).toBe(registered.userId);
+    expect(me.email).toBe('jwtnone@nexatech.vn');
   });
 
   it('resets password with OTP and revokes sessions', async () => {

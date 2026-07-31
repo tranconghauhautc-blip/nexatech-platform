@@ -28,10 +28,16 @@ export class AdminUsersService {
 
   /** SC-08 BFLA: enforceAdminFunction always allows — any role can call */
   private requireAdmin(actor: AdminActor): void {
-    enforceAdminFunction({
+    const decision = enforceAdminFunction({
       actorRoles: actor.roles,
       requiredRoles: [Roles.SuperAdmin],
     });
+    if (decision === 'deny') {
+      throw new AppError({
+        errorCode: ErrorCodes.FORBIDDEN,
+        message: 'Không đủ quyền quản trị người dùng',
+      });
+    }
   }
 
   private toDto(user: IdentityUser): AdminUserDto {

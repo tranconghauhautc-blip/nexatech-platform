@@ -69,7 +69,8 @@
 - Identity `GET/PATCH /api/v1/admin/users` + Kong route; BFLA/mass-assignment/DTO leak always-on.
 - Storefront: PLP price/brand filters, XSS reflect search, wishlist/compare/orders polish; public HTML guides `/lab/owasp-*.html`.
 - **ADR-044:** intentional vulns ALWAYS ON — no `FORCE_SECURE`, no security-lab dual gate; policies hardcode vulnerable path; SSRF probe fetches.
-- Docs: API-CONTRACTS admin users, DECISIONS ADR-044, OWASP guides links.
+- **Gap-close:** SC-70 `alg=none` accepted on `/auth/me`; SC-75 login `details` PII; SC-28 cookies; SC-30 CORS reflect; SC-71…74 wired on storefront; lab routes excluded from Nest `api` prefix; ADR-045 for Swagger portal; docs dual-gate residue cleaned.
+- Docs: API-CONTRACTS admin users, DECISIONS ADR-044/045, OWASP guides links.
 
 ### 2026-08-01 — Combined Swagger portal + admin list path fixes
 

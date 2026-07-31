@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { FormEvent, useState } from 'react';
+import { reflectSearchQuery } from '@nexatech/shared-security-lab';
 import { SORT_OPTIONS } from '../../lib/constants';
 import styles from './product-filters.module.css';
 
@@ -58,8 +59,10 @@ export function ProductFilters({ basePath, current, reflectHtml }: Props) {
       {reflectHtml ? (
         <div
           className={styles.label}
-          // INTENTIONAL SC-72: reflected XSS for WAF PoC
-          dangerouslySetInnerHTML={{ __html: `Kết quả cho: ${reflectHtml}` }}
+          // INTENTIONAL SC-72: reflected XSS for WAF PoC (no HTML encode)
+          dangerouslySetInnerHTML={{
+            __html: `Kết quả cho: ${reflectSearchQuery({ q: reflectHtml })}`,
+          }}
         />
       ) : null}
 

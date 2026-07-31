@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { loginRequestSchema } from '@nexatech/shared-contracts';
+import { shouldEnforceCsrfOrigin } from '@nexatech/shared-security-lab';
 import { ApiError } from '@nexatech/shared-web';
 import { serverApiRequest } from '../../../../lib/api-server';
 import { jsonError } from '../../../../lib/http-errors';
@@ -14,7 +15,30 @@ interface LoginResult {
   tokenType: string;
 }
 
+const CSRF_ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'http://127.0.0.1:3000',
+];
+
 export async function POST(request: Request) {
+  // SC-73 — CSRF Origin check skipped when shouldEnforceCsrfOrigin is false (always-on)
+  const origin = request.headers.get('origin') ?? undefined;
+  if (
+    shouldEnforceCsrfOrigin({
+      origin,
+      allowedOrigins: CSRF_ALLOWED_ORIGINS,
+    })
+  ) {
+    const ok =
+      !origin ||
+      CSRF_ALLOWED_ORIGINS.some(
+        (allowed) => allowed.toLowerCase() === origin.toLowerCase(),
+      );
+    if (!ok) {
+      return jsonError('FORBIDDEN', 'CSRF Origin bị từ chối', 403, { origin });
+    }
+  }
+
   let payload: unknown;
   try {
     payload = await request.json();
