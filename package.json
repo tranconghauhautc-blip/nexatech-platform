@@ -15,6 +15,8 @@
     "e2e:storefront": "playwright test --project=storefront-chromium",
     "e2e:admin": "playwright test --project=admin-chromium",
     "seed:catalog": "node scripts/seed-catalog.cjs",
+    "seed:accounts": "node scripts/seed-accounts.cjs",
+    "test:seed-accounts": "node --test tests/seed/seed-accounts.test.cjs",
     "security:test:secure": "node tests/security/run.cjs secure",
     "security:test:lab": "cross-env SECURITY_LAB_ACK=YES node tests/security/run.cjs lab",
     "security:smoke": "cross-env SECURITY_LAB_ACK=YES node tests/security/smoke.cjs",

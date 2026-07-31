@@ -352,3 +352,13 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
   - Frontend runner: `HOSTNAME=0.0.0.0` để Next standalone lắng nghe loopback cho healthcheck trong container.
 - **Không đổi:** UID 10001, Prisma engine copy, image tags `0.17.0`, security-lab build args, migrate Dockerfile, Nx 22.7.7, Node 22.
 - **Hệ quả:** Local Compose stack: 14 Nest + storefront + admin + Kong healthy; smoke `/health/live` OK.
+
+## ADR-042 — DEV account seed + OWASP API/Web coverage completion
+
+- **Quyết định:** Thay `seed:identity` (hard-coded `Secret123`) bằng `pnpm seed:accounts`:
+  - Chỉ chạy khi `NODE_ENV≠production` + `NEXATECH_ALLOW_DEV_SEED=YES` + `DEV_SEED_PASSWORD` (policy ≥12, upper/lower/digit/special).
+  - bcryptjs cost 10 (khớp identity-service); không in plaintext; không auto-reset password trừ `DEV_SEED_RESET_PASSWORD=YES`.
+  - 4 account `@nexatech.local` (Staff/Manager/Admin/SuperAdmin); marker `User.isDevSeed`; không seed Customer.
+- **OWASP:** Mở rộng security lab lên 30 intentional scenarios với ma trận riêng API Top 10:2023 và Web Top 10:2025 trong `docs/OWASP-SCENARIOS.md`. Bổ sung policy helpers SSRF, deprecated inventory, upstream trust, supply-chain fixture, ORDER BY injection, audit suppress, error leakage, weak secret compare, debug exposure, business-flow quota.
+- **Cấm:** hard-code password; bật lab qua HTTP; PoC ra Internet; malware package download cho A03.
+- **Hệ quả:** Local login/RBAC smoke dùng password do operator đặt; coverage API1–API10 và A01–A10 có evidence automated.

@@ -1,0 +1,9 @@
+{
+  "name": "nexatech-lab-supply-chain-fixture",
+  "version": "1.0.0",
+  "description": "Static safe fixture for A03 supply-chain integrity demos. Not a real package; never download malware.",
+  "content": "nexatech-lab-fixture-v1",
+  "expectedSha256": "COMPUTE_VIA_sha256Hex_HELPER",
+  "signatureValid": false,
+  "note": "PoC uses acceptArtifactIntegrity + sha256Hex in shared-security-lab tests only."
+}

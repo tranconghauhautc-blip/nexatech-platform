@@ -1,4 +1,5 @@
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { buildOrderByClause } from '@nexatech/shared-security-lab';
 import type { ProductStatus as DomainProductStatus } from '@nexatech/shared-contracts';
 import {
   MediaRole,
@@ -547,12 +548,17 @@ export class PrismaCatalogRepository implements CatalogRepository {
     const total = countRows[0]?.total ?? 0;
 
     const offset = (filters.page - 1) * filters.pageSize;
-    const orderBy =
-      filters.sort === 'newest'
-        ? `p."createdAt" DESC`
-        : filters.sort === 'name'
-          ? `p."name" ASC`
-          : `ts_rank(p."searchVector", plainto_tsquery('simple', $1)) DESC`;
+    const orderBy = buildOrderByClause({
+      requestedSort: filters.sort,
+      allowlist: {
+        newest: `p."createdAt" DESC`,
+        name: `p."name" ASC`,
+        relevance: `ts_rank(p."searchVector", plainto_tsquery('simple', $1)) DESC`,
+        price_asc: `MIN(pr."amount") ASC`,
+        price_desc: `MIN(pr."amount") DESC`,
+      },
+      defaultKey: 'relevance',
+    });
 
     const dataSql = `
       SELECT p."id", p."slug", p."name", p."status", c."slug" AS "categorySlug",

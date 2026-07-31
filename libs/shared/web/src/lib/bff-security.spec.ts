@@ -1,5 +1,6 @@
 import {
   bffTimeoutMs,
+  resolveBffOutboundUrl,
   sanitizeBffPathParts,
   upstreamUnavailableEnvelope,
 } from './bff-security';
@@ -40,5 +41,20 @@ describe('bff-security', () => {
     if (prev !== undefined) {
       process.env['BFF_UPSTREAM_TIMEOUT_MS'] = prev;
     }
+  });
+
+  it('SC-59 secure mode blocks metadata SSRF URL', () => {
+    const prevLab = process.env['NEXATECH_SECURITY_LAB'];
+    const prevProfile = process.env['NEXATECH_DEPLOY_PROFILE'];
+    process.env['NEXATECH_SECURITY_LAB'] = '0';
+    process.env['NEXATECH_DEPLOY_PROFILE'] = 'production';
+    expect(
+      resolveBffOutboundUrl('http://169.254.169.254/latest/meta-data/').ok,
+    ).toBe(false);
+    if (prevLab === undefined) delete process.env['NEXATECH_SECURITY_LAB'];
+    else process.env['NEXATECH_SECURITY_LAB'] = prevLab;
+    if (prevProfile === undefined)
+      delete process.env['NEXATECH_DEPLOY_PROFILE'];
+    else process.env['NEXATECH_DEPLOY_PROFILE'] = prevProfile;
   });
 });

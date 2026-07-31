@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "User" ADD COLUMN "isDevSeed" BOOLEAN NOT NULL DEFAULT false;

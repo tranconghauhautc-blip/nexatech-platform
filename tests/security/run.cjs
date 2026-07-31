@@ -102,6 +102,8 @@ if (mode === 'validate') {
   failed += run('node', [__filename, 'secure']) === 0 ? 0 : 1;
   process.env.SECURITY_LAB_ACK = 'YES';
   failed += run('node', [__filename, 'lab']) === 0 ? 0 : 1;
+  failed +=
+    run('node', ['--test', 'tests/seed/seed-accounts.test.cjs']) === 0 ? 0 : 1;
   process.exit(failed > 0 ? 1 : 0);
 }
 

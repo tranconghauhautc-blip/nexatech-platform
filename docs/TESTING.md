@@ -238,13 +238,35 @@ k6 load scenarios remain M20 (`tests/k6/`).
 .\scripts\validate-alerts.ps1
 ```
 
-## Security lab validation (M21)
+## Security lab validation (M21+)
+
+Covers OWASP API Security Top 10:2023 and OWASP Web Top 10:2025 — see dual matrices in `docs/OWASP-SCENARIOS.md` (30 intentional scenarios).
 
 ```powershell
 pnpm security:test:secure
 $env:SECURITY_LAB_ACK='YES'; pnpm security:test:lab
 pnpm security:validate
+pnpm test:seed-accounts
+helm template nexatech deploy/helm/nexatech -f deploy/helm/nexatech/values-production.yaml -n nexatech | Out-Null
 helm template nexatech-lab deploy/helm/nexatech -f deploy/helm/nexatech/values-security-lab.yaml -n nexatech-security-lab | Out-Null
 ```
 
-Docs: `OWASP-SCENARIOS.md`, `SECURITY-LAB-ARCHITECTURE.md`, `FINAL-HANDOFF.md`.
+Docs: `OWASP-SCENARIOS.md`, `SECURITY-LAB-ARCHITECTURE.md`, `SECURITY-LAB-SAFETY.md`, `FINAL-HANDOFF.md`.
+
+## DEV account seed validation
+
+```powershell
+pnpm test:seed-accounts
+$env:NODE_ENV="development"
+$env:NEXATECH_ALLOW_DEV_SEED="YES"
+$env:DEV_SEED_PASSWORD="<operator-defined-strong-password>"
+$env:IDENTITY_DATABASE_URL="postgresql://nexatech_identity:changeme@localhost:5432/nexatech_identity"
+pnpm exec prisma migrate status --schema=apps/identity-service/prisma/schema.prisma
+pnpm seed:accounts
+pnpm seed:accounts   # idempotent second run
+# Login smoke (identity):
+# POST http://localhost:3001/api/v1/auth/login  { email, password }
+# Emails: staff|manager|admin|superadmin@nexatech.local
+```
+
+Guards must fail (exit ≠ 0) when production / missing ack / missing or weak password.

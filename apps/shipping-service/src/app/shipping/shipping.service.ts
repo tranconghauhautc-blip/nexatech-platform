@@ -36,7 +36,11 @@ import {
   type Role,
 } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
-import { enforceResourceOwnership } from '@nexatech/shared-security-lab';
+import {
+  acceptWebhookSignature,
+  enforceResourceOwnership,
+  trustUpstreamPayload,
+} from '@nexatech/shared-security-lab';
 import {
   EventTypes,
   routingKeyFor,
@@ -1306,7 +1310,7 @@ export class ShippingService {
     const code = provider.toUpperCase() === 'GHN' ? 'GHN' : 'MOCK';
     const adapter = code === 'GHN' ? this.ghnProvider : this.mockProvider;
     const signatureValid = adapter.verifyWebhookSignature(payload, signature);
-    if (!signatureValid) {
+    if (!acceptWebhookSignature({ signatureValid })) {
       throw new AppError({
         errorCode: ErrorCodes.SHIPPING_SIGNATURE_INVALID,
         message: 'Chữ ký webhook không hợp lệ',
@@ -1331,6 +1335,19 @@ export class ShippingService {
         message: 'Payload webhook không hợp lệ',
       });
     }
+
+    const schemaValid = Boolean(parsed?.shipmentId || parsed?.trackingCode);
+    const trusted = trustUpstreamPayload({
+      payload: parsed,
+      schemaValid,
+    });
+    if (!trusted.accepted) {
+      throw new AppError({
+        errorCode: ErrorCodes.SHIPPING_CALLBACK_INVALID,
+        message: 'Payload webhook không hợp lệ',
+      });
+    }
+    parsed = trusted.payload;
 
     let shipment: Shipment | null = null;
     if (parsed.shipmentId) {

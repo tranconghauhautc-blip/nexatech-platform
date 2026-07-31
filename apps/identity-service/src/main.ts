@@ -7,7 +7,15 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableShutdownHooks();
   app.setGlobalPrefix('api', {
-    exclude: ['health', 'health/live', 'health/ready', 'health/lab'],
+    exclude: [
+      'health',
+      'health/live',
+      'health/ready',
+      'health/lab',
+      'health/debug',
+      'api/v0/internal/routes',
+      'lab/ssrf-probe',
+    ],
   });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });
   app.useGlobalPipes(

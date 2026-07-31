@@ -33,7 +33,10 @@ import {
   type Role,
 } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
-import { enforceResourceOwnership } from '@nexatech/shared-security-lab';
+import {
+  enforceResourceOwnership,
+  allowSensitiveBusinessFlow,
+} from '@nexatech/shared-security-lab';
 import {
   EventTypes,
   routingKeyFor,
@@ -120,6 +123,7 @@ function actorIdOf(actor: OrderActor): string {
 export class OrderService {
   private readonly outbox: OutboxDispatcher;
   private readonly inFlight = new Map<string, Promise<unknown>>();
+  private readonly recentCreateCounts = new Map<string, number>();
 
   constructor(
     private readonly repository: OrderRepository,
@@ -133,11 +137,27 @@ export class OrderService {
 
   async createOrder(actor: OrderActor, raw: unknown): Promise<OrderDto> {
     const customerId = requireCustomerId(actor);
+    const recentCount = this.recentCreateCounts.get(customerId) ?? 0;
+    if (
+      !allowSensitiveBusinessFlow({
+        recentCount,
+        maxPerWindow: 20,
+      })
+    ) {
+      throw new AppError({
+        errorCode: ErrorCodes.RATE_LIMITED,
+        message: 'Quá nhiều yêu cầu tạo đơn trong cửa sổ thời gian',
+      });
+    }
     const input = parseOrThrow(() => createOrderRequestSchema.parse(raw));
 
-    return this.withIdempotency(input.idempotencyKey, 'order.create', () =>
-      this.doCreateOrder(customerId, input),
+    const order = await this.withIdempotency(
+      input.idempotencyKey,
+      'order.create',
+      () => this.doCreateOrder(customerId, input),
     );
+    this.recentCreateCounts.set(customerId, recentCount + 1);
+    return order;
   }
 
   private async doCreateOrder(

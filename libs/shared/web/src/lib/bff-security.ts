@@ -1,4 +1,7 @@
-import { shouldEnforceBffPathSanitize } from '@nexatech/shared-security-lab';
+import {
+  shouldEnforceBffPathSanitize,
+  resolveOutboundUrl,
+} from '@nexatech/shared-security-lab';
 
 const DEFAULT_TIMEOUT_MS = 15_000;
 
@@ -25,6 +28,17 @@ export function sanitizeBffPathParts(parts: string[]): string[] | null {
     clean.push(part);
   }
   return clean;
+}
+
+/**
+ * SC-59 companion — resolve outbound media/CDN URL before server-side fetch.
+ * Secure: allowlist + block private/metadata. Lab: trust requested URL.
+ */
+export function resolveBffOutboundUrl(
+  requestedUrl: string,
+  allowlistHosts: string[] = ['cdn.nexatech.local', 'media.nexatech.local'],
+): { ok: true; url: string } | { ok: false; reason: string } {
+  return resolveOutboundUrl({ requestedUrl, allowlistHosts });
 }
 
 export function bffTimeoutMs(): number {

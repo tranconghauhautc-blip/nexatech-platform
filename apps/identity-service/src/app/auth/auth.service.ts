@@ -6,6 +6,7 @@ import { Roles } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
 import {
   issueVerificationToken,
+  shouldEmitSecurityAudit,
   shouldRateLimitAuth,
 } from '@nexatech/shared-security-lab';
 import {
@@ -150,6 +151,10 @@ export class AuthService {
   }
 
   private recordLoginFailure(key: string, now: number): void {
+    if (shouldEmitSecurityAudit({ event: 'LOGIN_FAILURE' })) {
+      // Secure path: audit/alert sink would record actor + trace here.
+      // Lab path intentionally skips (SC-64 / A09).
+    }
     const bucket = loginAttempts.get(key);
     if (!bucket || bucket.resetAt <= now) {
       loginAttempts.set(key, { count: 1, resetAt: now + LOGIN_WINDOW_MS });

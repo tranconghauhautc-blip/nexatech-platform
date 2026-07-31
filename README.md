@@ -22,13 +22,13 @@ Nx 22.7.7 · pnpm · TypeScript strict · Next.js 15.2.4 · NestJS · Prisma · 
 | [docs/K8S-OPS.md](docs/K8S-OPS.md)                                     | Kubernetes operations     |
 | [docs/SECURITY-BASELINE.md](docs/SECURITY-BASELINE.md)                 | Security baseline         |
 | [docs/TESTING.md](docs/TESTING.md)                                     | Chiến lược kiểm thử       |
-| [docs/OWASP-SCENARIOS.md](docs/OWASP-SCENARIOS.md)                     | Kịch bản OWASP API (sau)  |
+| [docs/OWASP-SCENARIOS.md](docs/OWASP-SCENARIOS.md)                     | OWASP API 2023 + Web 2025 |
+| [docs/SECURITY-LAB-ARCHITECTURE.md](docs/SECURITY-LAB-ARCHITECTURE.md) | Security lab architecture |
 | [docs/IMAGE-MATRIX.md](docs/IMAGE-MATRIX.md)                           | Docker image matrix       |
 | [docs/RELEASE-CHECKLIST.md](docs/RELEASE-CHECKLIST.md)                 | Release gate checklist    |
 | [docs/DEPLOYMENT-ORDER.md](docs/DEPLOYMENT-ORDER.md)                   | Deploy order              |
 | [docs/KNOWN-LIMITATIONS.md](docs/KNOWN-LIMITATIONS.md)                 | Known limitations         |
 | [docs/FINAL-HANDOFF.md](docs/FINAL-HANDOFF.md)                         | Final project handoff     |
-| [docs/OWASP-SCENARIOS.md](docs/OWASP-SCENARIOS.md)                     | OWASP / security lab      |
 
 ## Trạng thái
 
@@ -56,6 +56,7 @@ pnpm test
 pnpm build
 pnpm e2e
 pnpm seed:catalog
+pnpm seed:accounts
 .\scripts\docker-build-all.ps1 -Image identity-service
 helm lint deploy/helm/nexatech
 helm lint deploy/helm/nexatech-observability
@@ -68,3 +69,16 @@ helm lint deploy/helm/nexatech-observability
 - Observability chart: `deploy/helm/nexatech-observability` (v0.18.0)
 - Kong production: `infra/kong/kong.production.yml` → MetalLB VIP `192.168.4.204`
 - Operator runbook: `docs/DEPLOY-RUNBOOK-PRODUCTION.md`
+
+## DEV internal accounts (local only)
+
+```powershell
+$env:NODE_ENV="development"
+$env:NEXATECH_ALLOW_DEV_SEED="YES"
+$env:DEV_SEED_PASSWORD="<operator-defined-strong-password>"
+$env:IDENTITY_DATABASE_URL="postgresql://nexatech_identity:changeme@localhost:5432/nexatech_identity"
+pnpm seed:accounts
+```
+
+Accounts: `staff@nexatech.local`, `manager@nexatech.local`, `admin@nexatech.local`, `superadmin@nexatech.local`.  
+Password is never hard-coded; set `DEV_SEED_RESET_PASSWORD=YES` only when intentionally resetting seeded passwords.

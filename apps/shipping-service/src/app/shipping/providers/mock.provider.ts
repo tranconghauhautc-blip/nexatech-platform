@@ -1,6 +1,7 @@
 import { createHmac, createHash } from 'node:crypto';
 import { ORDER_SHIPPING_FEE_VND } from '@nexatech/shared-contracts';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { compareSecrets } from '@nexatech/shared-security-lab';
 import type { ShipmentStatus } from '../shipping.types';
 import type {
   CreateShipmentProviderInput,
@@ -156,11 +157,15 @@ export class MockShippingProvider implements ShippingProviderAdapter {
     if (!signature) {
       return false;
     }
-    if (signature === secret) {
+    // SC-66 / A04 — compareSecrets is timing-safe in production; weak in lab
+    if (compareSecrets({ provided: signature, expected: secret })) {
       return true;
     }
     const body = JSON.stringify(payload);
     const expected = createHmac('sha256', secret).update(body).digest('hex');
-    return signature === expected || signature === `sha256=${expected}`;
+    return (
+      compareSecrets({ provided: signature, expected }) ||
+      compareSecrets({ provided: signature, expected: `sha256=${expected}` })
+    );
   }
 }

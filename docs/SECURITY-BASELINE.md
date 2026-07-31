@@ -128,7 +128,7 @@ M18 maintains normal secure defaults:
 - Prisma parameterized queries (no raw SQL injection by default)
 - File upload validation in media-service
 
-**Explicit:** M18 does **not** add intentional OWASP API Top 10 vulnerabilities, backdoors, or weak crypto for training scenarios. That work belongs to the OWASP milestone after normal business flows are production-stable.
+**Explicit:** Production profile does **not** enable intentional OWASP vulnerabilities. Security-lab profile (`values-security-lab.yaml`) hosts intentional scenarios documented in `docs/OWASP-SCENARIOS.md` (API Top 10:2023 + Web Top 10:2025). Production must keep `securityLab.enabled: false` and `deployProfile: production`.
 
 ## Ingress and TLS
 
@@ -152,12 +152,13 @@ M18 maintains normal secure defaults:
 - [ ] NetworkPolicy plan documented (enabled or staged)
 - [ ] Postgres `.208` not publicly routable
 - [ ] Backup encrypted off-repo
-- [ ] OWASP intentional scenarios **not** deployed (M21+)
+- [ ] OWASP intentional scenarios **not** deployed on production profile (lab-only)
 
 ## Related documents
 
 - `docs/K8S-OPS.md`
 - `docs/DEPLOY-RUNBOOK-PRODUCTION.md`
 - `docs/BACKUP-RESTORE.md`
-- `docs/OWASP-SCENARIOS.md` (future milestone)
+- `docs/OWASP-SCENARIOS.md`
+- `docs/SECURITY-LAB-ARCHITECTURE.md`
 - `deploy/helm/nexatech/secret-values.example.yaml`

@@ -1,20 +1,32 @@
 import {
+  acceptArtifactIntegrity,
   acceptPaymentAmount,
   acceptWebhookSignature,
   allowMediaAccess,
+  allowSensitiveBusinessFlow,
   buildIdempotencyScope,
+  buildOrderByClause,
   clampPageSize,
+  compareSecrets,
   enforceAdminFunction,
   enforceResourceOwnership,
+  failOpenOnDependencyError,
   filterMassAssignment,
   issueVerificationToken,
   resolveCorsOrigin,
+  resolveOutboundUrl,
   resolveTrustedAmount,
   sessionCookieOptions,
+  sha256Hex,
+  shapeErrorDetails,
   shapePublicResource,
+  shouldEmitSecurityAudit,
   shouldEnforceBffPathSanitize,
+  shouldExposeDebugEndpoint,
+  shouldExposeDeprecatedApi,
   shouldRateLimitAuth,
   shouldRejectDuplicateCallback,
+  trustUpstreamPayload,
 } from './policies';
 import { isSecurityLabEnabled } from './lab-profile';
 
@@ -88,7 +100,7 @@ describe('secure vs lab policies', () => {
     );
   });
 
-  it('SC-12 amount manipulation only in lab', () => {
+  it('SC-12 / API6 amount manipulation only in lab', () => {
     expect(
       resolveTrustedAmount({
         serverAmount: 1000,
@@ -105,7 +117,7 @@ describe('secure vs lab policies', () => {
     ).toBe(1);
   });
 
-  it('SC-18/20 webhook signature + amount', () => {
+  it('SC-18 / A08 webhook signature + SC-20 / API6 amount', () => {
     expect(
       acceptWebhookSignature({ signatureValid: false, env: secureEnv }),
     ).toBe(false);
@@ -194,7 +206,7 @@ describe('secure vs lab policies', () => {
     ).toBe('pay:k');
   });
 
-  it('SC-17 duplicate callback', () => {
+  it('SC-17 / API6 duplicate callback', () => {
     expect(
       shouldRejectDuplicateCallback({
         alreadyProcessed: true,
@@ -206,12 +218,12 @@ describe('secure vs lab policies', () => {
     ).toBe(false);
   });
 
-  it('SC-28 insecure cookies in lab', () => {
+  it('SC-28 / A02 insecure cookies in lab', () => {
     expect(sessionCookieOptions(secureEnv).httpOnly).toBe(true);
     expect(sessionCookieOptions(labEnv).httpOnly).toBe(false);
   });
 
-  it('SC-30 insecure CORS in lab', () => {
+  it('SC-30 / A02 insecure CORS in lab', () => {
     expect(
       resolveCorsOrigin({
         requestOrigin: 'https://evil.example',
@@ -235,5 +247,190 @@ describe('secure vs lab policies', () => {
     expect(clampPageSize({ requested: 99999, max: 100, env: labEnv })).toBe(
       99999,
     );
+  });
+
+  it('SC-58 / API6 sensitive business flow', () => {
+    expect(
+      allowSensitiveBusinessFlow({
+        recentCount: 99,
+        maxPerWindow: 5,
+        env: secureEnv,
+      }),
+    ).toBe(false);
+    expect(
+      allowSensitiveBusinessFlow({
+        recentCount: 99,
+        maxPerWindow: 5,
+        env: labEnv,
+      }),
+    ).toBe(true);
+  });
+
+  it('SC-59 / API7 SSRF outbound URL', () => {
+    const meta = 'http://169.254.169.254/latest/meta-data/';
+    expect(
+      resolveOutboundUrl({
+        requestedUrl: meta,
+        allowlistHosts: ['cdn.nexatech.local'],
+        env: secureEnv,
+      }).ok,
+    ).toBe(false);
+    expect(
+      resolveOutboundUrl({
+        requestedUrl: meta,
+        allowlistHosts: ['cdn.nexatech.local'],
+        env: labEnv,
+      }),
+    ).toEqual({ ok: true, url: meta });
+    expect(
+      resolveOutboundUrl({
+        requestedUrl: 'https://cdn.nexatech.local/a.png',
+        allowlistHosts: ['cdn.nexatech.local'],
+        env: secureEnv,
+      }).ok,
+    ).toBe(true);
+  });
+
+  it('SC-60 / API9 deprecated API inventory', () => {
+    expect(shouldExposeDeprecatedApi(secureEnv)).toBe(false);
+    expect(shouldExposeDeprecatedApi(labEnv)).toBe(true);
+  });
+
+  it('SC-61 / API10 trust upstream payload', () => {
+    const forged = { status: 'delivered', paid: true };
+    expect(
+      trustUpstreamPayload({
+        payload: forged,
+        schemaValid: false,
+        env: secureEnv,
+      }).accepted,
+    ).toBe(false);
+    expect(
+      trustUpstreamPayload({
+        payload: forged,
+        schemaValid: false,
+        env: labEnv,
+      }).accepted,
+    ).toBe(true);
+  });
+
+  it('SC-62 / A03 artifact integrity (fixture hash)', () => {
+    const digest = sha256Hex('nexatech-lab-fixture-v1');
+    expect(digest).toHaveLength(64);
+    expect(
+      acceptArtifactIntegrity({
+        checksumValid: false,
+        signatureValid: false,
+        env: secureEnv,
+      }),
+    ).toBe(false);
+    expect(
+      acceptArtifactIntegrity({
+        checksumValid: false,
+        signatureValid: false,
+        env: labEnv,
+      }),
+    ).toBe(true);
+  });
+
+  it('SC-63 / A05 ORDER BY injection channel', () => {
+    const allowlist = {
+      name: 'p."name" ASC',
+      newest: 'p."createdAt" DESC',
+    };
+    expect(
+      buildOrderByClause({
+        requestedSort: 'name',
+        allowlist,
+        defaultKey: 'newest',
+        env: secureEnv,
+      }),
+    ).toBe('p."name" ASC');
+    expect(
+      buildOrderByClause({
+        requestedSort: 'name; DROP TABLE "Product";--',
+        allowlist,
+        defaultKey: 'newest',
+        env: secureEnv,
+      }),
+    ).toBe('p."createdAt" DESC');
+    expect(
+      buildOrderByClause({
+        requestedSort: 'name; DROP TABLE "Product";--',
+        allowlist,
+        defaultKey: 'newest',
+        env: labEnv,
+      }),
+    ).toContain('DROP TABLE');
+  });
+
+  it('SC-66 / A04 weak secret compare', () => {
+    expect(
+      compareSecrets({
+        provided: 'abc',
+        expected: 'abc',
+        env: secureEnv,
+      }),
+    ).toBe(true);
+    expect(
+      compareSecrets({
+        provided: 'abc',
+        expected: 'abd',
+        env: secureEnv,
+      }),
+    ).toBe(false);
+    expect(
+      compareSecrets({
+        provided: 'anything',
+        expected: '',
+        env: labEnv,
+      }),
+    ).toBe(true);
+  });
+
+  it('SC-64 / A09 suppress security audit in lab', () => {
+    expect(
+      shouldEmitSecurityAudit({ event: 'LOGIN_FAILURE', env: secureEnv }),
+    ).toBe(true);
+    expect(
+      shouldEmitSecurityAudit({ event: 'LOGIN_FAILURE', env: labEnv }),
+    ).toBe(false);
+  });
+
+  it('SC-65 / A10 error leakage + fail-open', () => {
+    const err = new Error('boom');
+    const lab = shapeErrorDetails({
+      secureDetails: { name: 'Error' },
+      error: err,
+      internalUrl: 'http://redis:6379',
+      env: labEnv,
+    });
+    expect(lab['stack']).toBeDefined();
+    expect(lab['internalUrl']).toBe('http://redis:6379');
+    expect(
+      shapeErrorDetails({
+        secureDetails: { name: 'Error' },
+        error: err,
+        internalUrl: 'http://redis:6379',
+        env: secureEnv,
+      }),
+    ).toEqual({ name: 'Error' });
+    expect(
+      failOpenOnDependencyError({
+        dependencyFailed: true,
+        env: secureEnv,
+      }),
+    ).toBe('deny');
+    expect(
+      failOpenOnDependencyError({
+        dependencyFailed: true,
+        env: labEnv,
+      }),
+    ).toBe('allow');
+  });
+
+  it('SC-67 / API8 debug endpoint exposure', () => {
+    expect(shouldExposeDebugEndpoint(secureEnv)).toBe(false);
+    expect(shouldExposeDebugEndpoint(labEnv)).toBe(true);
   });
 });

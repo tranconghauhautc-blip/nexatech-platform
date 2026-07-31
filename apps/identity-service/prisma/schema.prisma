@@ -23,6 +23,8 @@ model User {
   fullName        String
   passwordHash    String?
   roles           String[]   @default(["Customer"])
+  /// Marker for local/dev seed accounts (never production PII).
+  isDevSeed       Boolean    @default(false)
   createdAt       DateTime   @default(now())
   updatedAt       DateTime   @updatedAt
   oauthAccounts   OAuthAccount[]
