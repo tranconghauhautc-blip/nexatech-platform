@@ -7,7 +7,7 @@
 - **Cập nhật lần cuối:** 2026-08-01
 - **Branch:** `main`
 - **Baseline docs:** `docs/CURRENT-PROJECT-BASELINE.md`, `CUSTOM-CHANGES-INVENTORY.md`, `FULL-SYSTEM-AUDIT.md`
-- **Latest commit note:** Security Guide auth + OpenAPI 3.0.3 re-baseline pushed (`16355e8`+)
+- **Latest commit note:** Checkout smoke + image import + 36 SSoT scenarios
 
 ## Re-baseline in progress
 
@@ -17,13 +17,14 @@
 - [x] Force OpenAPI **3.0.3** (generate/validate/diff/check) + ADR
 - [x] Security Guide portal scaffold (`:3200`) + `pnpm security-guide:setup`
 - [x] Scenario SSoT seed (`security-scenarios/`)
-- [x] Expand security-scenarios SSoT (24 scenarios; API1–10 covered)
+- [x] Expand security-scenarios SSoT (36 scenarios; API1–10 + Web A01–A10)
 - [x] Authenticated Security Guide tests (`pnpm security-guide:test`)
 - [x] Product image import script (`scripts/import-product-images.cjs`)
 - [x] Authenticated guide serves HTML OWASP guides (storefront `/lab` = redirect stub)
-- [x] Full storefront/admin HTTP smoke (`pnpm lab:smoke` PASSED after storefront rebuild)
-- [ ] Owner-supplied product images import
-- [ ] Full browser E2E checkout (needs seed password)
+- [x] Full storefront/admin HTTP smoke (`pnpm lab:smoke` PASSED)
+- [x] Placeholder product images generated + uploaded to MinIO (217 media)
+- [x] Customer checkout smoke (`pnpm checkout:smoke` register→cart→order→COD PASSED)
+- [x] Seed accounts + inventory restocked for lab
 
 ## Roadmap milestone
 
@@ -33,7 +34,7 @@
 | M19    | Deployment preflight / release readiness         | ✅ Done    | `2fad006` |
 | M20    | Performance / reliability / DR                   | ✅ Done    | `53247e4` |
 | M21    | Security lab / OWASP intentional vulnerabilities | ✅ Done    | ADR-040   |
-| RB     | Full re-baseline / OpenAPI 3.0.3 / Guide auth    | 🔄 Active | `0f6f88b`+ |
+| RB     | Full re-baseline / OpenAPI 3.0.3 / Guide auth    | ✅ Done    | `d5d8af4`+ |
 
 ## Commits
 

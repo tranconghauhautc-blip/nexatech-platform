@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server';
 import { canAccessAdminPortal } from '@nexatech/shared-auth';
-import { sessionCookieOptions } from '@nexatech/shared-security-lab';
 import { resolveServiceBaseUrl } from '../../../../lib/service-urls';
 import {
   decodeJwtPayloadUnsafe,
@@ -143,12 +142,11 @@ export async function POST(request: Request) {
     roles: claims.roles,
   });
 
-  // SC-28 — insecure cookie flags from always-on policy
-  const cookieOpts = sessionCookieOptions();
+  // Functional session cookie (Lax). SC-28 insecure flags live on identity /lab/set-cookie.
   response.cookies.set(ADMIN_SESSION_COOKIE, sessionToken, {
-    httpOnly: cookieOpts.httpOnly,
-    secure: cookieOpts.secure,
-    sameSite: cookieOpts.sameSite,
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
     path: '/',
     maxAge: ADMIN_SESSION_MAX_AGE_SECONDS,
   });

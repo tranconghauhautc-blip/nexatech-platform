@@ -37,15 +37,25 @@ Rules:
 ## Batch script
 
 ```powershell
-# Dry-run mapping report (no upload)
-node scripts/import-product-images.cjs --dir imports/product-images --dry-run --report report.json
+# Generate lab placeholder PNGs (slug + sku stems) when owner photos are not ready
+pnpm generate:product-images -- --dir imports/product-images
 
-# Upload + confirm + best-effort link
-$env:NEXATECH_ALLOW_DEV_SEED='YES'
-node scripts/import-product-images.cjs --dir imports/product-images --report report.json
+# Dry-run mapping report (no upload)
+pnpm import:product-images -- --dir imports/product-images --dry-run --report report.json
+
+# Upload via Compose network (presigned URL uses Host=minio)
+docker run --rm --network nexatech-dev `
+  -v "${PWD}:/work" -w /work `
+  -e NEXATECH_ALLOW_DEV_SEED=YES `
+  -e CATALOG_API_BASE=http://catalog-service:3003 `
+  -e MEDIA_API_BASE=http://media-service:3004 `
+  node:22-bookworm-slim `
+  node scripts/import-product-images.cjs --dir imports/product-images --report report.json
 ```
 
 Also: `pnpm import:product-images -- --dir imports/product-images --dry-run`
+
+> Host-side upload against `http://minio:9000` fails signature. Prefer the Docker network runner above.
 
 ## Fallback
 

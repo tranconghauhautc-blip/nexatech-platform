@@ -33,6 +33,8 @@
     "security-guide:test": "node scripts/security-guide/test.cjs",
     "security-guide:expand-scenarios": "node scripts/security-guide/expand-scenarios.cjs",
     "import:product-images": "node scripts/import-product-images.cjs",
+    "generate:product-images": "node scripts/generate-placeholder-product-images.cjs",
+    "checkout:smoke": "node scripts/checkout-smoke.cjs",
     "lab:smoke": "node scripts/local-lab-smoke.cjs"
   },
   "engines": {

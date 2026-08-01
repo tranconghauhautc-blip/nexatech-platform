@@ -168,19 +168,37 @@ Filename stem must match product slug or skuCode.`);
         body: JSON.stringify({
           fileName: base,
           contentType: mime,
-          byteSize: buf.length,
-          purpose: 'product',
+          sizeBytes: buf.length,
+          ownerType: 'product',
+          ownerId: hit.product.id,
+          role: 'thumbnail',
         }),
       });
       // Prefer PUT to uploadUrl when provided; otherwise record for manual upload.
       if (presign.uploadUrl) {
-        const put = await fetch(presign.uploadUrl, {
+        let uploadUrl = String(presign.uploadUrl);
+        const headers = { 'content-type': mime };
+        // When running on host against Compose, rewrite minio hostname if signed for public host.
+        // Prefer running this script on the Docker network (see PRODUCT-IMAGE-IMPORT-GUIDE).
+        try {
+          const u = new URL(uploadUrl);
+          const publicHost = process.env.MINIO_PUBLIC_HOST;
+          if (publicHost && u.hostname === 'minio') {
+            u.hostname = publicHost;
+            uploadUrl = u.toString();
+          }
+        } catch {
+          // keep original
+        }
+        const put = await fetch(uploadUrl, {
           method: 'PUT',
-          headers: { 'content-type': mime },
+          headers,
           body: buf,
         });
         if (!put.ok) {
-          throw new Error(`upload PUT ${put.status}`);
+          throw new Error(
+            `upload PUT ${put.status} ${(await put.text().catch(() => '')).slice(0, 180)}`,
+          );
         }
         await api(MEDIA_API, `/api/v1/media/${presign.mediaId}/confirm`, {
           method: 'POST',

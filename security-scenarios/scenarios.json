@@ -283,6 +283,58 @@
       "guidePath": "/security-guide/scenarios/NX-API-070"
     },
     {
+      "id": "NX-API-073",
+      "title": "Login CSRF Origin skip",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "A08",
+      "owaspApi2023": [
+        "API2"
+      ],
+      "owaspWeb2025": [
+        "A08"
+      ],
+      "service": "storefront-web",
+      "method": "POST",
+      "path": "/api/auth/login",
+      "operationId": "storefront_auth_login_csrf",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-73"
+      ],
+      "expectedVulnerableBehavior": "Accepts cross-origin login without Origin check",
+      "wafClass": "csrf",
+      "apiSecurityClass": "broken-auth",
+      "guidePath": "/security-guide/scenarios/NX-API-073"
+    },
+    {
+      "id": "NX-API-075",
+      "title": "Login PII enumeration in details",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API2",
+      "owaspApi2023": [
+        "API2"
+      ],
+      "owaspWeb2025": [
+        "A07"
+      ],
+      "service": "identity-service",
+      "method": "POST",
+      "path": "/api/v1/auth/login",
+      "operationId": "identity_auth_login_pii",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-75"
+      ],
+      "expectedVulnerableBehavior": "AppError.details leaks email/reason/passwordLength",
+      "wafClass": "auth",
+      "apiSecurityClass": "broken-auth",
+      "guidePath": "/security-guide/scenarios/NX-API-075"
+    },
+    {
       "id": "NX-API-076",
       "title": "BFLA admin user create",
       "status": "EXPLOITABLE",
@@ -307,6 +359,32 @@
       "wafClass": "access-control",
       "apiSecurityClass": "bfla",
       "guidePath": "/security-guide/scenarios/NX-API-076"
+    },
+    {
+      "id": "NX-API-077",
+      "title": "BFLA soft-disable admin users",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API5",
+      "owaspApi2023": [
+        "API5"
+      ],
+      "owaspWeb2025": [
+        "A01"
+      ],
+      "service": "identity-service",
+      "method": "POST",
+      "path": "/api/v1/admin/users/{id}/disable",
+      "operationId": "identity_admin_users_disable",
+      "roles": [
+        "Staff"
+      ],
+      "legacyIds": [
+        "SC-77"
+      ],
+      "expectedVulnerableBehavior": "Disable users without proper privilege gate",
+      "wafClass": "access-control",
+      "apiSecurityClass": "bfla",
+      "guidePath": "/security-guide/scenarios/NX-API-077"
     },
     {
       "id": "NX-API-078",
@@ -335,6 +413,32 @@
       "guidePath": "/security-guide/scenarios/NX-API-078"
     },
     {
+      "id": "NX-API-079",
+      "title": "Session revoke IDOR",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API1",
+      "owaspApi2023": [
+        "API1"
+      ],
+      "owaspWeb2025": [
+        "A01"
+      ],
+      "service": "identity-service",
+      "method": "DELETE",
+      "path": "/api/v1/auth/sessions/{sessionId}",
+      "operationId": "identity_auth_sessions_revoke",
+      "roles": [
+        "Customer"
+      ],
+      "legacyIds": [
+        "SC-79"
+      ],
+      "expectedVulnerableBehavior": "Revoke another user session by id",
+      "wafClass": "access-control",
+      "apiSecurityClass": "bola",
+      "guidePath": "/security-guide/scenarios/NX-API-079"
+    },
+    {
       "id": "NX-API-080",
       "title": "Forgot-password user existence leak",
       "status": "EXPLOITABLE",
@@ -359,6 +463,84 @@
       "wafClass": "auth",
       "apiSecurityClass": "broken-auth",
       "guidePath": "/security-guide/scenarios/NX-API-080"
+    },
+    {
+      "id": "NX-API-081",
+      "title": "Host-header reset URL poison",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API8",
+      "owaspApi2023": [
+        "API8"
+      ],
+      "owaspWeb2025": [
+        "A05"
+      ],
+      "service": "identity-service",
+      "method": "POST",
+      "path": "/api/v1/auth/forgot-password",
+      "operationId": "identity_auth_forgot_host",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-81"
+      ],
+      "expectedVulnerableBehavior": "X-Forwarded-Host poisons resetUrl",
+      "wafClass": "injection",
+      "apiSecurityClass": "misconfig",
+      "guidePath": "/security-guide/scenarios/NX-API-081"
+    },
+    {
+      "id": "NX-API-083",
+      "title": "Header reflection lab probe",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API8",
+      "owaspApi2023": [
+        "API8"
+      ],
+      "owaspWeb2025": [
+        "A09"
+      ],
+      "service": "identity-service",
+      "method": "GET",
+      "path": "/lab/reflect-headers",
+      "operationId": "identity_lab_reflectHeaders",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-83"
+      ],
+      "expectedVulnerableBehavior": "Reflects request headers into response/body",
+      "wafClass": "misconfig",
+      "apiSecurityClass": "misconfig",
+      "guidePath": "/security-guide/scenarios/NX-API-083"
+    },
+    {
+      "id": "NX-API-084",
+      "title": "Access token via query string",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API2",
+      "owaspApi2023": [
+        "API2"
+      ],
+      "owaspWeb2025": [
+        "A07"
+      ],
+      "service": "identity-service",
+      "method": "GET",
+      "path": "/api/v1/auth/me?access_token=",
+      "operationId": "identity_auth_me_query_token",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-84"
+      ],
+      "expectedVulnerableBehavior": "Accepts access_token query parameter",
+      "wafClass": "auth",
+      "apiSecurityClass": "broken-auth",
+      "guidePath": "/security-guide/scenarios/NX-API-084"
     },
     {
       "id": "NX-API-086",
@@ -387,6 +569,32 @@
       "guidePath": "/security-guide/scenarios/NX-API-086"
     },
     {
+      "id": "NX-API-087",
+      "title": "Register mass-assignment roles",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API3",
+      "owaspApi2023": [
+        "API3"
+      ],
+      "owaspWeb2025": [
+        "A01"
+      ],
+      "service": "identity-service",
+      "method": "POST",
+      "path": "/api/v1/auth/register",
+      "operationId": "identity_auth_register_roles",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-87"
+      ],
+      "expectedVulnerableBehavior": "Accepts roles in register body",
+      "wafClass": "access-control",
+      "apiSecurityClass": "bopla",
+      "guidePath": "/security-guide/scenarios/NX-API-087"
+    },
+    {
       "id": "NX-API-088",
       "title": "Raw error stack disclosure",
       "status": "EXPLOITABLE",
@@ -413,6 +621,59 @@
       "guidePath": "/security-guide/scenarios/NX-API-088"
     },
     {
+      "id": "NX-API-089",
+      "title": "CORS credentials + reflected Origin",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API8",
+      "owaspApi2023": [
+        "API8"
+      ],
+      "owaspWeb2025": [
+        "A02"
+      ],
+      "service": "identity-service",
+      "method": "OPTIONS",
+      "path": "/api/v1/auth/login",
+      "operationId": "identity_cors_reflect",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-89",
+        "SC-30"
+      ],
+      "expectedVulnerableBehavior": "Reflects Origin with Access-Control-Allow-Credentials",
+      "wafClass": "misconfig",
+      "apiSecurityClass": "misconfig",
+      "guidePath": "/security-guide/scenarios/NX-API-089"
+    },
+    {
+      "id": "NX-API-090",
+      "title": "API inventory disclosure",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API9",
+      "owaspApi2023": [
+        "API9"
+      ],
+      "owaspWeb2025": [
+        "A02"
+      ],
+      "service": "identity-service",
+      "method": "GET",
+      "path": "/lab/api-inventory",
+      "operationId": "identity_lab_apiInventory",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-90"
+      ],
+      "expectedVulnerableBehavior": "Lists internal/lab endpoints inventory",
+      "wafClass": "misconfig",
+      "apiSecurityClass": "inventory",
+      "guidePath": "/security-guide/scenarios/NX-API-090"
+    },
+    {
       "id": "NX-API-092",
       "title": "Email verify bypass",
       "status": "EXPLOITABLE",
@@ -437,6 +698,58 @@
       "wafClass": "auth",
       "apiSecurityClass": "broken-auth",
       "guidePath": "/security-guide/scenarios/NX-API-092"
+    },
+    {
+      "id": "NX-API-093",
+      "title": "OAuth callback token in Location",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API2",
+      "owaspApi2023": [
+        "API2"
+      ],
+      "owaspWeb2025": [
+        "A04"
+      ],
+      "service": "identity-service",
+      "method": "GET",
+      "path": "/lab/oauth-callback?token=&next=",
+      "operationId": "identity_lab_oauthCallback",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-93"
+      ],
+      "expectedVulnerableBehavior": "Leaks token in redirect Location",
+      "wafClass": "auth",
+      "apiSecurityClass": "broken-auth",
+      "guidePath": "/security-guide/scenarios/NX-API-093"
+    },
+    {
+      "id": "NX-API-094",
+      "title": "Dangerous content-type accepted",
+      "status": "EXPLOITABLE",
+      "primaryCategory": "API8",
+      "owaspApi2023": [
+        "API8"
+      ],
+      "owaspWeb2025": [
+        "A05"
+      ],
+      "service": "identity-service",
+      "method": "GET",
+      "path": "/lab/content-type?type=",
+      "operationId": "identity_lab_contentType",
+      "roles": [
+        "Public"
+      ],
+      "legacyIds": [
+        "SC-94"
+      ],
+      "expectedVulnerableBehavior": "Echoes attacker-controlled Content-Type",
+      "wafClass": "injection",
+      "apiSecurityClass": "misconfig",
+      "guidePath": "/security-guide/scenarios/NX-API-094"
     },
     {
       "id": "NX-API-095",
@@ -466,7 +779,7 @@
     },
     {
       "id": "NX-WEB-001",
-      "title": "Reflected XSS on search reflect",
+      "title": "Reflected XSS on search q",
       "status": "EXPLOITABLE",
       "primaryCategory": "A05",
       "owaspApi2023": [],
@@ -476,19 +789,22 @@
       "service": "storefront-web",
       "method": "GET",
       "path": "/tim-kiem?q=",
-      "operationId": "storefront_search_reflect",
+      "operationId": "storefront_search_xss",
       "roles": [
         "Public"
       ],
       "preconditions": [],
-      "expectedVulnerableBehavior": "Unencoded q reflected into HTML (SC-72)",
-      "wafClass": "xss",
-      "apiSecurityClass": "injection",
-      "guidePath": "/security-guide/scenarios/NX-WEB-001"
+      "expectedVulnerableBehavior": "Search query reflected without encoding",
+      "wafClass": "injection",
+      "apiSecurityClass": "xss",
+      "guidePath": "/security-guide/scenarios/NX-WEB-001",
+      "legacyIds": [
+        "SC-72"
+      ]
     },
     {
       "id": "NX-WEB-002",
-      "title": "Insecure session cookie flags",
+      "title": "Insecure Set-Cookie lab probe",
       "status": "EXPLOITABLE",
       "primaryCategory": "A02",
       "owaspApi2023": [
@@ -497,24 +813,28 @@
       "owaspWeb2025": [
         "A02"
       ],
-      "service": "storefront-web",
-      "method": "POST",
-      "path": "/api/auth/login",
-      "operationId": "storefront_auth_login_cookie",
+      "service": "identity-service",
+      "method": "GET",
+      "path": "/lab/set-cookie",
+      "operationId": "identity_lab_setCookie",
       "roles": [
         "Public"
       ],
       "preconditions": [
         "Successful login"
       ],
-      "expectedVulnerableBehavior": "Session cookie httpOnly=false / SameSite=None (SC-28)",
+      "expectedVulnerableBehavior": "Sets cookies without Secure/HttpOnly/SameSite",
       "wafClass": "misconfig",
       "apiSecurityClass": "misconfig",
-      "guidePath": "/security-guide/scenarios/NX-WEB-002"
+      "guidePath": "/security-guide/scenarios/NX-WEB-002",
+      "legacyIds": [
+        "SC-91",
+        "SC-28"
+      ]
     },
     {
       "id": "NX-WEB-003",
-      "title": "Open redirect after login",
+      "title": "Open redirect via next param",
       "status": "EXPLOITABLE",
       "primaryCategory": "A01",
       "owaspApi2023": [],
@@ -524,17 +844,20 @@
       "service": "storefront-web",
       "method": "GET",
       "path": "/dang-nhap?next=",
-      "operationId": "storefront_auth_openRedirect",
+      "operationId": "storefront_login_open_redirect",
       "roles": [
         "Public"
       ],
       "preconditions": [
         "Login success with crafted next URL"
       ],
-      "expectedVulnerableBehavior": "Redirects to external URL (SC-71)",
+      "expectedVulnerableBehavior": "Allows external next URL after login",
       "wafClass": "access-control",
       "apiSecurityClass": "open-redirect",
-      "guidePath": "/security-guide/scenarios/NX-WEB-003"
+      "guidePath": "/security-guide/scenarios/NX-WEB-003",
+      "legacyIds": [
+        "SC-71"
+      ]
     },
     {
       "id": "NX-WEB-004",

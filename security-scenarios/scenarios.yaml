@@ -1,4 +1,4 @@
 # See scenarios.json for runtime SSoT (Guide loads JSON).
-# Keep YAML in sync when editing scenarios.
+# Keep this note file; expand via `pnpm security-guide:expand-scenarios`.
 version: 1
-note: Canonical runtime file is scenarios.json (10 seeded scenarios NX-API-* / NX-WEB-*).
+note: Canonical runtime file is scenarios.json (36 scenarios covering API1–API10 and Web A01–A10).

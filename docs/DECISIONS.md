@@ -402,3 +402,4 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Security Guide:** portal `apps/security-guide-portal` port **3200**, credential qua `pnpm security-guide:setup` → gitignored `.env.security-guide.local` (bcrypt hash, no plaintext password). Fail-closed nếu thiếu config. HTML OWASP guides phục vụ tại `/security-guide/guides/*` (session required).
 - Scenario SSoT: `security-scenarios/scenarios.{yaml,json}`.
 - **Cấm:** upgrade OpenAPI 3.1/3.2 không ADR; hard-code guide password; public default guide credentials; public exploit recipe HTML trên storefront.
+- **Session cookies (functional):** storefront `nt_session` và admin session dùng `HttpOnly` + `SameSite=Lax` (local HTTP). SC-28 insecure cookie flags chỉ còn trên `GET /lab/set-cookie` (identity) để PoC WAF — không phá login thật.

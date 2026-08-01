@@ -1,5 +1,4 @@
 import { cookies } from 'next/headers';
-import { sessionCookieOptions } from '@nexatech/shared-security-lab';
 
 export const SESSION_COOKIE = 'nt_session';
 export const CART_TOKEN_COOKIE = 'nt_cart_token';
@@ -36,12 +35,11 @@ export async function getSession(): Promise<SessionData | null> {
 
 export async function setSession(data: SessionData): Promise<void> {
   const store = await cookies();
-  // SC-28 — insecure cookie flags from always-on policy
-  const cookieOpts = sessionCookieOptions();
+  // Functional session cookie (Lax). SC-28 insecure flags live on identity /lab/set-cookie.
   store.set(SESSION_COOKIE, JSON.stringify(data), {
-    httpOnly: cookieOpts.httpOnly,
-    secure: cookieOpts.secure,
-    sameSite: cookieOpts.sameSite,
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
     path: '/',
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
