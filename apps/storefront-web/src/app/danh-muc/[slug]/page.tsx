@@ -71,12 +71,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   const [result, facets] = await Promise.all([
     searchProducts(listQuery),
-    getProductFacets({
-      categorySlug: slug,
-      q,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
-    }),
+    // Brand list theo danh mục (không phụ thuộc từ khóa/giá) — UX kiểu TGDD.
+    getProductFacets({ categorySlug: slug }),
   ]);
 
   const label = 'name' in category ? category.name : category.label;
@@ -96,7 +92,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
           basePath={`/danh-muc/${slug}`}
           brandFacets={facets.brands}
           priceRange={facets.priceRange}
-          current={{ q, brandSlug, sort, page, minPrice, maxPrice }}
+          hideKeyword
+          current={{ brandSlug, sort, page, minPrice, maxPrice }}
         />
         <div>
           {result.items.length === 0 ? (

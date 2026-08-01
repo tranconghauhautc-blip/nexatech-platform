@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { reflectSearchQuery } from '@nexatech/shared-security-lab';
 import { ProductGrid } from '../../components/product/product-grid';
 import { EmptyState } from '../../components/common/empty-state';
 import { Pagination } from '../../components/common/pagination';
@@ -56,10 +57,8 @@ export default async function SearchPage({ searchParams }: Props) {
   const [result, facets, tree] = await Promise.all([
     searchProducts(listQuery),
     getProductFacets({
-      q,
       categorySlug,
-      minPrice: minPrice ? Number(minPrice) : undefined,
-      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+      // Search: brand theo danh mục đã chọn (không theo q) để không bị trống oan.
     }),
     getCategoryTree(),
   ]);
@@ -78,6 +77,15 @@ export default async function SearchPage({ searchParams }: Props) {
       <h1 style={{ fontFamily: 'var(--font-space-grotesk), sans-serif' }}>
         {q ? `Kết quả cho “${q}”` : 'Tìm kiếm sản phẩm'}
       </h1>
+      {q ? (
+        <div
+          style={{ color: '#4b6478', marginBottom: '0.5rem' }}
+          // INTENTIONAL SC-72: reflected XSS for WAF PoC (no HTML encode)
+          dangerouslySetInnerHTML={{
+            __html: `Gợi ý tìm kiếm: ${reflectSearchQuery({ q })}`,
+          }}
+        />
+      ) : null}
       <p style={{ color: '#4b6478' }}>
         {result.meta.totalItems} sản phẩm phù hợp
       </p>
@@ -103,7 +111,6 @@ export default async function SearchPage({ searchParams }: Props) {
             minPrice,
             maxPrice,
           }}
-          reflectHtml={q || undefined}
         />
         <div>
           {result.items.length === 0 ? (
