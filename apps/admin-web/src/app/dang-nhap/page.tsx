@@ -44,9 +44,30 @@ function LoginForm() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(parsed.data),
       });
-      const payload = await response.json();
+      const raw = await response.text();
+      let payload: { message?: string; errorCode?: string } = {};
+      if (raw.trim()) {
+        try {
+          payload = JSON.parse(raw) as { message?: string; errorCode?: string };
+        } catch {
+          setFormError('Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.');
+          return;
+        }
+      }
       if (!response.ok) {
-        setFormError(payload.message ?? 'Đăng nhập thất bại');
+        const msg = payload.message?.trim();
+        const looksHtml =
+          !!msg &&
+          (msg.startsWith('<!DOCTYPE') ||
+            msg.startsWith('<html') ||
+            msg.includes('<script'));
+        setFormError(
+          !msg || looksHtml
+            ? response.status === 401
+              ? 'Email hoặc mật khẩu không đúng'
+              : 'Đăng nhập thất bại. Vui lòng thử lại.'
+            : msg,
+        );
         return;
       }
       router.replace(redirectTo);

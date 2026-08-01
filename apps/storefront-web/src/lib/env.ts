@@ -46,14 +46,14 @@ export function isServiceName(value: string): value is ServiceName {
 
 /**
  * Trả về base URL nội bộ (server-side) cho một service.
- * Nếu `INTERNAL_API_BASE_URL` (gateway/BFF gốc) được cấu hình thì ưu tiên
- * định tuyến qua gateway theo path `/{service}`; ngược lại dùng biến môi
- * trường riêng của từng service (mặc định localhost cho dev không Kong).
+ * Nếu `INTERNAL_API_BASE_URL` (Kong) được cấu hình thì dùng gateway đó —
+ * Kong route theo path `/api/v1/...` (không có prefix `/{service}`).
+ * Ngược lại dùng biến môi trường riêng của từng service.
  */
 export function getInternalServiceBaseUrl(service: ServiceName): string {
   const gatewayBase = process.env['INTERNAL_API_BASE_URL']?.trim();
   if (gatewayBase) {
-    return `${gatewayBase.replace(/\/+$/, '')}/${service}`;
+    return gatewayBase.replace(/\/+$/, '');
   }
   const { envKey, fallback } = SERVICE_ENV_MAP[service];
   const value = process.env[envKey]?.trim();

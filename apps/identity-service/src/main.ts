@@ -1,6 +1,6 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { setupNexaTechSwagger } from '@nexatech/shared-platform';
+import { setupNexaTechSwagger, useNexaTechExceptionFilter } from '@nexatech/shared-platform';
 import { resolveCorsOrigin } from '@nexatech/shared-security-lab';
 import { AppModule } from './app/app.module';
 
@@ -50,6 +50,7 @@ async function bootstrap() {
       forbidNonWhitelisted: false,
     }),
   );
+  useNexaTechExceptionFilter(app);
 
   const port = Number(
     process.env['IDENTITY_PORT'] ?? process.env['PORT'] ?? 3001,

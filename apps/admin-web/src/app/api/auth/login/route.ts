@@ -84,12 +84,24 @@ export async function POST(request: Request) {
 
   if (!upstreamResponse.ok) {
     const envelope = payload as
-      | { errorCode?: string; message?: string }
+      | { errorCode?: string; message?: string; statusCode?: number }
       | undefined;
+    const rawMessage = envelope?.message?.trim();
+    const isGeneric =
+      !rawMessage ||
+      /^internal server error$/i.test(rawMessage) ||
+      rawMessage.startsWith('<!');
+    const message = isGeneric
+      ? upstreamResponse.status === 401
+        ? 'Email hoặc mật khẩu không đúng'
+        : 'Đăng nhập thất bại'
+      : rawMessage;
     return errorResponse(
-      upstreamResponse.status,
+      upstreamResponse.status === 500 && envelope?.errorCode === 'UNAUTHORIZED'
+        ? 401
+        : upstreamResponse.status,
       envelope?.errorCode ?? 'BFF_LOGIN_FAILED',
-      envelope?.message ?? 'Đăng nhập thất bại',
+      message,
     );
   }
 

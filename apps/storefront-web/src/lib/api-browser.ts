@@ -4,6 +4,29 @@ export interface BffFetchOptions extends RequestInit {
   query?: Record<string, string | number | boolean | undefined | null>;
 }
 
+function looksLikeHtml(value: string): boolean {
+  const trimmed = value.trimStart().slice(0, 64).toLowerCase();
+  return (
+    trimmed.startsWith('<!doctype') ||
+    trimmed.startsWith('<html') ||
+    trimmed.includes('<head') ||
+    trimmed.includes('<script')
+  );
+}
+
+function safeClientMessage(data: unknown, fallback: string): string {
+  if (typeof data !== 'string' || !data.trim()) {
+    return fallback;
+  }
+  if (looksLikeHtml(data)) {
+    return fallback;
+  }
+  const normalized = data.replace(/\s+/g, ' ').trim();
+  return normalized.length > 280
+    ? `${normalized.slice(0, 279)}…`
+    : normalized;
+}
+
 function buildPath(path: string, query?: BffFetchOptions['query']): string {
   if (!query) {
     return path;
@@ -51,10 +74,7 @@ export async function bffFetch<T = unknown>(
     throw new ApiError(
       {
         errorCode: 'INTERNAL_ERROR',
-        message:
-          typeof data === 'string' && data.length > 0
-            ? data
-            : 'Đã xảy ra lỗi, vui lòng thử lại',
+        message: safeClientMessage(data, 'Đã xảy ra lỗi, vui lòng thử lại'),
         traceId: 'client',
         timestamp: new Date().toISOString(),
       },
@@ -92,9 +112,15 @@ export function getErrorMessage(
   fallback = 'Đã xảy ra lỗi, vui lòng thử lại',
 ): string {
   if (error instanceof ApiError) {
+    if (looksLikeHtml(error.message)) {
+      return fallback;
+    }
     return error.message || fallback;
   }
   if (error instanceof Error) {
+    if (looksLikeHtml(error.message)) {
+      return fallback;
+    }
     return error.message || fallback;
   }
   return fallback;

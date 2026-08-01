@@ -29,6 +29,24 @@ function createId(): string {
   return `nt-${Date.now()}-${Math.random().toString(16).slice(2)}`;
 }
 
+function looksLikeHtml(value: string): boolean {
+  const trimmed = value.trimStart().slice(0, 64).toLowerCase();
+  return (
+    trimmed.startsWith('<!doctype') ||
+    trimmed.startsWith('<html') ||
+    trimmed.includes('<head') ||
+    trimmed.includes('<script')
+  );
+}
+
+function truncateMessage(value: string, max = 280): string {
+  const normalized = value.replace(/\s+/g, ' ').trim();
+  if (normalized.length <= max) {
+    return normalized;
+  }
+  return `${normalized.slice(0, max - 1)}…`;
+}
+
 function buildUrl(
   baseUrl: string,
   path: string,
@@ -117,8 +135,8 @@ export class ApiClient {
         const envelope: ApiErrorEnvelope = {
           errorCode: 'HTTP_ERROR',
           message:
-            typeof data === 'string' && data.length > 0
-              ? data
+            typeof data === 'string' && data.length > 0 && !looksLikeHtml(data)
+              ? truncateMessage(data)
               : response.statusText || 'Yêu cầu thất bại',
           traceId,
           timestamp: new Date().toISOString(),
@@ -193,10 +211,14 @@ export class ApiClient {
 
 export function mapApiErrorMessage(error: unknown): string {
   if (error instanceof ApiError) {
-    return error.message;
+    return looksLikeHtml(error.message)
+      ? 'Đã xảy ra lỗi, vui lòng thử lại'
+      : truncateMessage(error.message);
   }
   if (error instanceof Error) {
-    return error.message;
+    return looksLikeHtml(error.message)
+      ? 'Đã xảy ra lỗi, vui lòng thử lại'
+      : truncateMessage(error.message);
   }
   return 'Đã xảy ra lỗi không xác định';
 }
