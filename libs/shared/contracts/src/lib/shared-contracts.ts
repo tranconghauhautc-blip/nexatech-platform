@@ -2322,6 +2322,16 @@ export const patchAdminUserRequestSchema = z.object({
 });
 export type PatchAdminUserRequest = z.infer<typeof patchAdminUserRequestSchema>;
 
+/** Admin create user — password min 1 for SC-85 weak-password PoC */
+export const createAdminUserRequestSchema = z.object({
+  email: z.string().email(),
+  fullName: z.string().trim().min(1).max(120),
+  password: z.string().min(1).max(128),
+  roles: z.array(identityRoleSchema).min(1).max(5).default(['Customer']),
+  status: identityUserStatusSchema.optional().default('ACTIVE'),
+});
+export type CreateAdminUserRequest = z.infer<typeof createAdminUserRequestSchema>;
+
 export interface AdminUserDto {
   id: string;
   email: string;

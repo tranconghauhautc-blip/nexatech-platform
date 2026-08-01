@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
   Patch,
+  Post,
   Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -30,6 +32,32 @@ export class AdminUsersController {
     return this.adminUsersService.list(
       parseAdminActor(userId, roles),
       query ?? {},
+    );
+  }
+
+  @Get('export')
+  @ApiOperation({
+    summary: 'SC-95 — bulk user export (BFLA / unauthenticated export flag)',
+  })
+  exportAll(
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-roles') roles?: string,
+  ) {
+    return this.adminUsersService.exportAll(parseAdminActor(userId, roles));
+  }
+
+  @Post()
+  @ApiOperation({
+    summary: 'SC-76 — create user (BFLA; weak password SC-85)',
+  })
+  create(
+    @Headers('x-user-id') actorId?: string,
+    @Headers('x-user-roles') roles?: string,
+    @Body() body?: Record<string, unknown>,
+  ) {
+    return this.adminUsersService.create(
+      parseAdminActor(actorId, roles),
+      body ?? {},
     );
   }
 
@@ -60,6 +88,34 @@ export class AdminUsersController {
       parseAdminActor(actorId, roles),
       userId,
       body ?? {},
+    );
+  }
+
+  @Post(':userId/disable')
+  @ApiOperation({ summary: 'SC-77 — soft-disable user (BFLA)' })
+  disable(
+    @Param('userId') userId: string,
+    @Headers('x-user-id') actorId?: string,
+    @Headers('x-user-roles') roles?: string,
+  ) {
+    return this.adminUsersService.disable(
+      parseAdminActor(actorId, roles),
+      userId,
+    );
+  }
+
+  @Delete(':userId')
+  @ApiOperation({
+    summary: 'Soft-disable via DELETE (no hard delete — maps to SC-77)',
+  })
+  softDelete(
+    @Param('userId') userId: string,
+    @Headers('x-user-id') actorId?: string,
+    @Headers('x-user-roles') roles?: string,
+  ) {
+    return this.adminUsersService.disable(
+      parseAdminActor(actorId, roles),
+      userId,
     );
   }
 }

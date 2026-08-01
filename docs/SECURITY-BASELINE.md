@@ -1,6 +1,6 @@
 # Security Baseline — NexaTech M18
 
-Production security defaults for Kubernetes packaging (M17/M18). **M21** adds an isolated security-lab profile (`values-security-lab.yaml`) with intentional vulnerabilities — production profile must keep `securityLab.enabled: false` and `deployProfile: production`.
+Production packaging defaults for Kubernetes (M17/M18). **ADR-044:** intentional OWASP vulnerabilities in application code are **ALWAYS ON** for WAF / API Security PoC — there is no runtime dual-gate / `FORCE_SECURE` toggle. Helm `securityLab.enabled` / `NEXATECH_SECURITY_LAB` remain isolation markers only (namespace/image tagging); they do **not** disable vulns.
 
 ## Container hardening
 
@@ -128,7 +128,7 @@ M18 maintains normal secure defaults:
 - Prisma parameterized queries (no raw SQL injection by default)
 - File upload validation in media-service
 
-**Explicit:** Production profile does **not** enable intentional OWASP vulnerabilities. Security-lab profile (`values-security-lab.yaml`) hosts intentional scenarios documented in `docs/OWASP-SCENARIOS.md` (API Top 10:2023 + Web Top 10:2025). Production must keep `securityLab.enabled: false` and `deployProfile: production`.
+**Explicit (ADR-044):** Intentional OWASP scenarios in `docs/OWASP-SCENARIOS.md` are **always active** in running app code (API Top 10:2023 + Web Top 10:2025). Do not assume `securityLab.enabled: false` or `deployProfile: production` makes the application secure — WAF/appliance PoC requires vulns always-on. Helm profiles only isolate deploy topology (namespace, tags, NetworkPolicy).
 
 ## Ingress and TLS
 

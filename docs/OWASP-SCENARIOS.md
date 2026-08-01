@@ -14,91 +14,98 @@ Official references:
 
 PoC / tests: `pnpm security:test:secure`, `SECURITY_LAB_ACK=YES pnpm security:test:lab`, `pnpm security:validate`. Policies live in `libs/shared/security-lab`.
 
-**Committed intentional count:** 30+ core (SC-01 … SC-67) plus SC-70…SC-75 web/API extras (JWT alg=none flag, open redirect, reflected XSS, CSRF Origin skip, clickjacking headers omit, auth failure PII). Non-contiguous IDs preserved for history.
+**Committed intentional count:** core SC-01…SC-67 + SC-70…SC-75 + **SC-76…SC-95** HTTP-executable extras. Non-contiguous IDs preserved for history.
+
+**Density target:** ~30+ API-mapped and ~30+ Web-mapped scenario IDs in the matrices below (overlap OK).
 
 | Extra ID | Primary | Endpoint / flow |
 | -------- | ------- | --------------- |
 | SC-70 | API2 / A04 | `GET /lab/jwt-alg-none` + `GET /api/v1/auth/me` accepts `alg=none` |
-| SC-71 | A01 | Storefront `/dang-nhap?next=` open redirect (`resolveOpenRedirect`) |
-| SC-72 | A05 | `/tim-kiem?q=` reflected XSS (`reflectSearchQuery` + `dangerouslySetInnerHTML`) |
-| SC-73 | A08 | Storefront `POST /api/auth/login` skips CSRF Origin (`shouldEnforceCsrfOrigin` false) |
-| SC-74 | A02 | Storefront middleware applies empty `frameProtectionHeaders` |
-| SC-75 | A07 | Login `AppError.details` via `shapeAuthFailureDetails` (email enumeration) |
+| SC-71 | A01 | Storefront `/dang-nhap?next=` open redirect |
+| SC-72 | A05 | `/tim-kiem?q=` reflected XSS |
+| SC-73 | A08 | Storefront `POST /api/auth/login` skips CSRF Origin |
+| SC-74 | A02 | Storefront middleware empty `frameProtectionHeaders` |
+| SC-75 | A07 | Login `AppError.details` PII / enumeration |
+| SC-76 | API5 / A01 | `POST /api/v1/admin/users` create (BFLA) |
+| SC-77 | API5 / A01 | `POST\|DELETE /api/v1/admin/users/:id/disable` soft-disable |
+| SC-78 | API1 / A01 | `GET /api/v1/auth/sessions/:userId` session IDOR |
+| SC-79 | API1 / A01 | `DELETE /api/v1/auth/sessions/:sessionId` revoke IDOR |
+| SC-80 | API2 / A07 | `POST /api/v1/auth/forgot-password` returns `exists` |
+| SC-81 | API8 / A05 | forgot-password `X-Forwarded-Host` → poisoned `resetUrl` |
+| SC-82 | API8 / A02 | login `Cache-Control: public` |
+| SC-83 | API8 / A09 | `GET /lab/reflect-headers` header reflection |
+| SC-84 | API2 / A07 | `GET /api/v1/auth/me?access_token=` |
+| SC-85 | API3 / A07 | admin create accepts weak password (`acceptWeakPassword`) |
+| SC-86 | API2 / A04 | `GET /lab/login-get?email=&password=` |
+| SC-87 | API3 / A01 | `POST /api/v1/auth/register` accepts `roles` |
+| SC-88 | API8 / A10 | `GET /lab/error-stack` raw stack |
+| SC-89 | API8 / A02 | CORS `credentials:true` + reflected Origin (identity) |
+| SC-90 | API9 / A02 | `GET /lab/api-inventory` + `/docs-json` |
+| SC-91 | A02 | `GET /lab/set-cookie` insecure Set-Cookie |
+| SC-92 | API2 / A07 | `GET /lab/verify-bypass?email=` skip OTP |
+| SC-93 | API2 / A04 | `GET /lab/oauth-callback` token in `Location` |
+| SC-94 | API8 / A05 | `GET /lab/content-type?type=` dangerous MIME accepted |
+| SC-95 | API3 / A01 | `GET /api/v1/admin/users/export` bulk dump |
 
-SSRF SC-59 now **fetches** via `GET /lab/ssrf-probe?url=` (timeout capped).
-
----
-
-## Scenario catalog
-
-| Scenario ID | Primary OWASP         | Secondary | CWE      | Component                 | Vulnerable endpoint/flow            | Impact                              | PoC / test                                    | Vulnerable evidence        | Secure control   | Regression                                          | Remediation      | Control  |
-| ----------- | --------------------- | --------- | -------- | ------------------------- | ----------------------------------- | ----------------------------------- | --------------------------------------------- | -------------------------- | ---------------- | --------------------------------------------------- | ---------------- | --------- |
-| SC-01       | API1:2023 / A01:2025  | —         | CWE-639  | order-service             | GET order by id                     | Read other customer order           | `enforceResourceOwnership`                    | cross-user get 200 in lab  | ownership deny   | policies.spec + order specs                         | keep ownership   | lab ns/DB |
-| SC-02       | API1:2023 / A01:2025  | —         | CWE-639  | order-service             | cancel / status                     | Cancel others' orders               | same                                          | cancel allowed in lab      | ownership        | order.service.spec                                  | keep assert      | lab       |
-| SC-03       | API1:2023 / A01:2025  | —         | CWE-639  | payment-service           | GET payment                         | Read others' payments               | assertOwnership lab                           | getPayment allows          | ownership        | payment specs                                       | keep assert      | lab       |
-| SC-04       | API1:2023 / A01:2025  | —         | CWE-639  | shipping-service          | shipment/tracking                   | Read others' shipments              | assertOwnership lab                           | shipping allow             | ownership        | shipping specs                                      | keep assert      | lab       |
-| SC-05       | API1:2023 / A01:2025  | —         | CWE-639  | review-service            | update review                       | Edit others' reviews                | ownership skip lab                            | update allowed             | owner-only       | review specs                                        | keep owner check | lab       |
-| SC-06       | API1:2023 / A01:2025  | —         | CWE-639  | warranty-service          | get claim                           | Read others' claims                 | ownership lab                                 | getClaim allow             | ownership        | warranty specs                                      | keep             | lab       |
-| SC-07       | API1:2023 / A01:2025  | —         | CWE-639  | support-service           | get ticket                          | Read others' tickets                | ownership lab                                 | getTicket allow            | ownership        | support specs                                       | keep             | lab       |
-| SC-08       | API5:2023 / A01:2025  | —         | CWE-285  | shared policies           | admin function gate                 | Customer invokes admin ops          | `enforceAdminFunction`                        | allow Customer             | role check       | policies.spec                                       | RBAC             | lab       |
-| SC-10       | API3:2023             | —         | CWE-915  | shared policies           | filterMassAssignment                | Inject roles/price                  | lab returns full body                         | roles retained             | strip keys       | policies.spec                                       | strip forbidden  | lab       |
-| SC-12       | API6:2023 / A06:2025  | —         | CWE-472  | shared policies + order   | resolveTrustedAmount                | Price manipulation                  | client amount trusted                         | amount=1                   | server price     | policies.spec                                       | ignore client    | lab       |
-| SC-16       | API6:2023             | API8      | CWE-345  | shared policies           | idempotency scope                   | Cross-user key reuse                | scoped without userId                         | `pay:k`                    | user-scoped      | policies.spec                                       | include userId   | lab       |
-| SC-17       | API6:2023 / A08:2025  | —         | CWE-294  | payment-service           | VNPay callback replay               | Duplicate processing                | shouldRejectDuplicateCallback false           | reprocess                  | reject processed | policies + payment                                  | reject replay    | lab       |
-| SC-18       | A08:2025              | API2      | CWE-347  | payment-service           | VNPay signature                     | Accept forged callback              | acceptWebhookSignature                        | invalid sig OK             | HMAC verify      | policies + payment                                  | verify HMAC      | lab       |
-| SC-20       | API6:2023 / A06:2025  | —         | CWE-345  | payment-service           | VNPay amount                        | Wrong amount accepted               | acceptPaymentAmount                           | mismatch OK                | amount match     | policies + payment                                  | enforce amount   | lab       |
-| SC-21       | API4:2023 / A07:2025  | —         | CWE-307  | identity-service          | login                               | Brute force                         | shouldRateLimitAuth false                     | no limit                   | RATE_LIMITED     | policies + auth                                     | rate limit       | lab       |
-| SC-24       | API2:2023 / A07:2025  | A04       | CWE-330  | identity-service          | OTP/token                           | Predictable OTP                     | issueVerificationToken `000000`               | fixed OTP                  | crypto random    | policies + auth                                     | random OTP       | lab       |
-| SC-28       | A02:2025              | —         | CWE-614  | shared policies           | session cookies                     | Session theft                       | httpOnly false                                | insecure flags             | httpOnly+secure  | policies.spec                                       | secure cookies   | lab       |
-| SC-30       | A02:2025 / API8:2023  | —         | CWE-942  | shared policies           | CORS                                | Origin reflection                   | any origin                                    | evil origin                | allowlist        | policies.spec                                       | allowlist        | lab       |
-| SC-31       | API3:2023             | —         | CWE-200  | shared policies           | shapePublicResource                 | Leak internal fields                | return all keys                               | internalCost visible       | omit internals   | policies.spec                                       | DTO filter       | lab       |
-| SC-33       | A01:2025              | —         | CWE-22   | shared-web BFF            | sanitizeBffPathParts                | Path traversal                      | skip sanitize in lab                          | `..` accepted              | sanitize         | bff-security.spec                                   | enforce sanitize | lab       |
-| SC-36       | API1:2023 / A01:2025  | —         | CWE-639  | media-service             | download/delete                     | Unauthorized media                  | allowMediaAccess                              | always allow               | owner/staff      | media specs                                         | ownership        | lab       |
-| SC-57       | API4:2023             | —         | CWE-770  | shared policies           | clampPageSize                       | Huge pageSize                       | no clamp in lab                               | 99999                      | max clamp        | policies.spec                                       | clamp            | lab       |
-| SC-58       | API6:2023 / A06:2025  | —         | CWE-841  | order-service             | createOrder volume                  | Checkout spam                       | allowSensitiveBusinessFlow                    | always allow               | maxPerWindow     | policies.spec + order                               | enforce quota    | lab       |
-| SC-59       | API7:2023             | —         | CWE-918  | identity + BFF            | resolveOutboundUrl / lab/ssrf-probe | SSRF to metadata/private            | lab returns raw URL                           | 169.254… ok                | allowlist+block  | policies.spec + bff-security.spec                   | block private    | lab       |
-| SC-60       | API9:2023             | —         | CWE-1059 | identity-service          | GET /api/v0/internal/routes         | Shadow API inventory                | shouldExposeDeprecatedApi                     | 200 + route list           | 404              | policies.spec                                       | hide deprecated  | lab       |
-| SC-61       | API10:2023 / A08:2025 | —         | CWE-20   | shipping-service          | provider webhook payload            | Trust forged partner JSON           | trustUpstreamPayload                          | schemaValid=false accepted | schema gate      | policies.spec + shipping                            | validate schema  | lab       |
-| SC-62       | A03:2025              | —         | CWE-494  | shared policies + fixture | acceptArtifactIntegrity             | Accept bad checksum                 | lab true                                      | checksumValid=false OK     | require digest   | policies.spec + fixtures/supply-chain-artifact.json | verify integrity | lab       |
-| SC-63       | A05:2025              | —         | CWE-89   | catalog-service           | buildOrderByClause                  | SQL injection via ORDER BY          | raw sort in lab                               | DROP TABLE in clause       | allowlist        | policies.spec                                       | allowlist only   | lab       |
-| SC-64       | A09:2025              | —         | CWE-778  | identity-service          | LOGIN_FAILURE audit                 | No alert on brute force             | shouldEmitSecurityAudit false                 | audit skipped              | emit audit       | policies.spec + auth                                | always audit     | lab       |
-| SC-65       | A10:2025              | —         | CWE-209  | identity-service          | GET /health/debug?fail=1            | Stack/internal URL leak + fail-open | shapeErrorDetails / failOpenOnDependencyError | stack+internalUrl          | generic details  | policies.spec                                       | sanitize errors  | lab       |
-| SC-66       | A04:2025              | —         | CWE-208  | shipping mock webhook     | compareSecrets                      | Weak secret compare                 | empty expected accepted in lab                | true                       | timingSafeEqual  | policies.spec                                       | timing-safe      | lab       |
-| SC-67       | API8:2023 / A02:2025  | —         | CWE-489  | identity-service          | GET /health/debug                   | Debug/management exposure           | shouldExposeDebugEndpoint                     | 200 configDump             | 404              | policies.spec                                       | hide debug       | lab       |
+SSRF SC-59 **fetches** via `GET /lab/ssrf-probe?url=` (timeout capped).
 
 ---
 
-## OWASP API Security Top 10:2023 coverage matrix
+## Scenario catalog (selected)
 
-| Category                                                  | Scenario ID (primary)                   | Component                                            | Vulnerable endpoint/flow                          | PoC                                     | Vulnerable evidence                       | Secure regression                    | Remediation                | Control           |
-| --------------------------------------------------------- | --------------------------------------- | ---------------------------------------------------- | ------------------------------------------------- | --------------------------------------- | ----------------------------------------- | ------------------------------------ | -------------------------- | -------------------------- |
-| API1:2023 Broken Object Level Authorization               | SC-01 (also SC-02–07, SC-36)            | order/payment/shipping/review/warranty/support/media | resource GET/mutate by id                         | `pnpm security:test:lab` policies SC-01 | always returns `allow` for cross-user     | n/a (always-on)                      | enforce ownership          | always-on (ADR-044)        |
-| API2:2023 Broken Authentication                           | SC-24                                   | identity-service                                     | OTP / verify-email                                | policies SC-24 + auth OTP path          | predictable `000000`                      | secure random OTP                    | crypto random              | always-on (ADR-044)        |
-| API3:2023 Broken Object Property Level Authorization      | SC-10, SC-31                            | shared policies                                      | mass assignment / public DTO                      | policies SC-10/31                       | roles/price retained; internalCost leaked | strip/omit in secure                 | DTO allowlist              | always-on (ADR-044)                   |
-| API4:2023 Unrestricted Resource Consumption               | SC-21, SC-57                            | identity + pagination                                | login + pageSize                                  | policies SC-21/57                       | no rate limit; pageSize 99999             | rate limit + clamp                   | enforce limits             | always-on (ADR-044)                   |
-| API5:2023 Broken Function Level Authorization             | SC-08                                   | shared policies                                      | admin function gate                               | policies SC-08                          | Customer allowed                          | role deny                            | RBAC                       | always-on (ADR-044)                   |
-| API6:2023 Unrestricted Access to Sensitive Business Flows | SC-58 (also SC-12, SC-16, SC-17, SC-20) | order/payment                                        | checkout spam / price / replay / amount           | policies SC-58/12/16/17/20              | always allow / trust client               | quota + server price + reject replay | business controls          | always-on (ADR-044)                   |
-| API7:2023 Server Side Request Forgery                     | SC-59                                   | identity lab probe + BFF                             | `GET /lab/ssrf-probe?url=` / `resolveOutboundUrl` | policies SC-59 + bff-security.spec      | metadata URL accepted + fetched           | n/a (always-on)                      | allowlist + SSRF blocklist | always-on (ADR-044)        |
-| API8:2023 Security Misconfiguration                       | SC-67 (also SC-30)                      | identity + CORS                                      | `/health/debug`, CORS reflect                     | policies SC-67/30                       | debug 200; evil origin                    | 404 + allowlist                      | hide debug; CORS allowlist | always-on (ADR-044)                   |
-| API9:2023 Improper Inventory Management                   | SC-60                                   | identity-service                                     | `GET /api/v0/internal/routes`                     | policies SC-60                          | shadow route list                         | 404                                  | remove/gate deprecated     | always-on (ADR-044)                   |
-| API10:2023 Unsafe Consumption of APIs                     | SC-61                                   | shipping-service                                     | provider webhook body                             | policies SC-61 + shipping webhook       | forged payload accepted                   | schemaValid required                 | validate partner schema    | always-on (ADR-044)                   |
+| Scenario ID | Primary OWASP         | Component                 | Vulnerable endpoint/flow            | Vulnerable evidence        | Control           |
+| ----------- | --------------------- | ------------------------- | ----------------------------------- | -------------------------- | ----------------- |
+| SC-01…07    | API1 / A01            | multi-service             | resource by id                      | cross-user allow           | always-on         |
+| SC-08       | API5 / A01            | shared policies           | admin function gate                 | Customer allowed           | always-on         |
+| SC-10,31    | API3                  | admin users / DTO         | mass assignment / leak              | roles + passwordHash       | always-on         |
+| SC-12,16    | API6                  | policies                  | price / idempotency                 | client trusted             | policy (+ wire)   |
+| SC-17,18,20 | API6 / A08            | payment/shipping          | replay / sig / amount               | forged OK                  | always-on         |
+| SC-21,24    | API4 / API2 / A07     | identity                  | login / OTP                         | no limit; `000000`         | always-on         |
+| SC-28,30,67 | A02 / API8            | cookies/CORS/debug        | insecure flags; reflect; debug      | evil origin; dump          | always-on         |
+| SC-33,36    | A01 / API1            | BFF / media               | path traversal / media access       | `..` / always allow        | always-on         |
+| SC-57…66    | API4–10 / A03–A10     | identity/catalog/shipping | pageSize / SSRF / SQLi / audit / …  | see prior catalog rows     | always-on         |
+| SC-70…75    | mixed                 | identity + storefront     | JWT/XSS/CSRF/frames/PII             | HTTP executable            | always-on         |
+| SC-76…95    | mixed                 | identity lab + admin      | create/disable/sessions/lab probes  | HTTP executable            | always-on         |
+
+Full historical rows for SC-01…SC-67 remain valid; extras SC-70+ are listed above and in the matrices.
 
 ---
 
-## OWASP Web Top 10:2025 coverage matrix
+## OWASP API Security Top 10:2023 coverage matrix (~30+ mapped)
 
-| Category                                        | Scenario ID (primary)            | Component                       | Vulnerable endpoint/flow                      | PoC                                                                   | Vulnerable evidence                   | Secure regression            | Remediation                   | Control                   |
-| ----------------------------------------------- | -------------------------------- | ------------------------------- | --------------------------------------------- | --------------------------------------------------------------------- | ------------------------------------- | ---------------------------- | ----------------------------- | ---------------------------------- |
-| A01:2025 Broken Access Control                  | SC-01 (also SC-08, SC-33, SC-36) | multi-service + BFF             | IDOR / BFLA / path traversal                  | security:test:lab                                                     | cross-user allow; `..` allowed        | deny + sanitize              | ownership + RBAC + sanitize   | always-on (ADR-044)                           |
-| A02:2025 Security Misconfiguration              | SC-28, SC-30, SC-67              | cookies/CORS/debug              | sessionCookieOptions / CORS / `/health/debug` | policies SC-28/30/67                                                  | insecure flags; evil CORS; debug dump | secure defaults              | harden config                 | always-on (ADR-044)                           |
-| A03:2025 Software Supply Chain Failures         | SC-62                            | shared-security-lab + fixture   | acceptArtifactIntegrity                       | policies SC-62 + `tests/security/fixtures/supply-chain-artifact.json` | bad checksum accepted                 | require checksum/signature   | verify digests; pin images    | fixture-only (no malware download) |
-| A04:2025 Cryptographic Failures                 | SC-66 (SC-24 secondary)          | shipping webhook + OTP          | compareSecrets / predictable OTP              | policies SC-66/24                                                     | empty secret accepted; fixed OTP      | timingSafeEqual + random     | strong crypto                 | always-on (ADR-044)                           |
-| A05:2025 Injection                              | SC-63                            | catalog-service                 | buildOrderByClause                            | policies SC-63                                                        | raw `DROP TABLE` clause in lab        | allowlist only               | parameterized + allowlist     | always-on (ADR-044)                           |
-| A06:2025 Insecure Design                        | SC-12, SC-20, SC-58              | order/payment                   | price trust / amount / checkout quota         | policies SC-12/20/58                                                  | client amount / unlimited create      | server authority + quotas    | secure design controls        | always-on (ADR-044)                           |
-| A07:2025 Authentication Failures                | SC-21, SC-24                     | identity-service                | login rate limit / OTP                        | policies + auth                                                       | no limit; fixed OTP                   | rate limit + random          | harden auth                   | always-on (ADR-044)                           |
-| A08:2025 Software or Data Integrity Failures    | SC-18, SC-17, SC-61              | payment/shipping                | forged/replayed/unvalidated callbacks         | policies SC-18/17/61                                                  | invalid sig / replay / forged JSON    | HMAC + anti-replay + schema  | verify integrity              | always-on (ADR-044)                           |
-| A09:2025 Security Logging and Alerting Failures | SC-64                            | identity-service                | LOGIN_FAILURE audit suppress                  | policies SC-64 + auth.recordLoginFailure                              | shouldEmit=false                      | shouldEmit=true              | always audit sensitive events | always-on (ADR-044)                           |
-| A10:2025 Mishandling of Exceptional Conditions  | SC-65                            | identity `/health/debug?fail=1` | shapeErrorDetails / failOpenOnDependencyError | policies SC-65                                                        | stack + internalUrl; fail-open        | generic details; fail-closed | sanitize + fail-closed        | always-on (ADR-044)                           |
+| Category | Scenario IDs (API-mapped) | Live HTTP evidence (examples) | Control |
+| -------- | ------------------------- | ----------------------------- | ------- |
+| API1 BOLA | SC-01,02,03,04,05,06,07,36,78,79 | `GET /orders/:id`, sessions IDOR | always-on |
+| API2 Broken Auth | SC-24,70,75,80,84,86,92,93 | OTP `000000`, alg=none, forgot exists, JWT query, login-get, verify-bypass, oauth Location | always-on |
+| API3 Property / mass assign | SC-10,31,85,87,95 | PATCH roles, DTO leak, weak password create, register roles, `/admin/users/export` | always-on |
+| API4 Resource consumption | SC-21,57 | login spam, `pageSize=99999` | always-on |
+| API5 BFLA | SC-08,76,77 | Customer → admin users create/disable/list | always-on |
+| API6 Business flows | SC-12,16,17,20,58 | price trust, idempotency, VNPay replay/amount, checkout spam | always-on |
+| API7 SSRF | SC-59 | `GET /lab/ssrf-probe?url=` fetch | always-on |
+| API8 Misconfiguration | SC-28,30,67,81,82,83,88,89,90,91,94 | debug, CORS+credentials, host poison, Cache-Control, reflect-headers, error-stack, inventory, set-cookie, content-type | always-on |
+| API9 Inventory | SC-60,90 | `/api/v0/internal/routes`, `/lab/api-inventory`, `/docs-json` | always-on |
+| API10 Unsafe API consumption | SC-61,62 | shipping webhook trust, supply-chain digest | always-on |
+
+**API-mapped unique IDs (≥30):** SC-01,02,03,04,05,06,07,08,10,12,16,17,20,21,24,28,30,31,36,57,58,59,60,61,62,67,70,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95 (+ SC-18 secondary).
+
+---
+
+## OWASP Web Top 10:2025 coverage matrix (~30+ mapped)
+
+| Category | Scenario IDs (Web-mapped) | Live HTTP / browser evidence | Control |
+| -------- | ------------------------- | ---------------------------- | ------- |
+| A01 Access Control | SC-01,02,03,04,05,06,07,08,33,36,71,76,77,78,79,87,95 | IDOR/BFLA/path/open-redirect/admin create/disable/sessions/register roles/export | always-on |
+| A02 Misconfiguration | SC-28,30,67,74,82,89,90,91 | cookies, CORS, debug, clickjacking headers, Cache-Control, credentials CORS, inventory, set-cookie | always-on |
+| A03 Supply Chain | SC-62 | `GET /lab/supply-chain?digest=` | always-on |
+| A04 Crypto Failures | SC-24,66,70,86,93 | OTP, weak secret compare, alg=none, GET password, token in Location | always-on |
+| A05 Injection | SC-63,72,81,83,94 | ORDER BY SQLi, XSS search, host header, header reflect, dangerous MIME | always-on |
+| A06 Insecure Design | SC-12,20,58 | price trust, amount mismatch, checkout quota | always-on |
+| A07 Auth Failures | SC-21,24,75,80,84,85,92 | no rate limit, OTP, PII details, exists enum, JWT query, weak password, verify bypass | always-on |
+| A08 Integrity | SC-17,18,61,73 | replay, forged sig, forged webhook, CSRF Origin skip | always-on |
+| A09 Logging | SC-64,83 | audit suppress, reflected trace headers | always-on |
+| A10 Exceptional Conditions | SC-65,88 | `/health/debug?fail=1`, `/lab/error-stack` | always-on |
+
+**Web-mapped unique IDs (≥30):** SC-01,02,03,04,05,06,07,08,12,17,18,20,21,24,28,30,33,36,58,61,62,63,64,65,66,67,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95.
 
 ---
 

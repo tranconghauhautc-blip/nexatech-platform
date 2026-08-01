@@ -13,6 +13,7 @@ export default function Page() {
   const [page, setPage] = useState(1);
   const [domainInput, setDomainInput] = useState('');
   const [domain, setDomain] = useState('');
+  const [sort, setSort] = useState('date_desc');
   const { items, meta, loading, error, refetch } = useListQuery<
     Record<string, unknown>
   >({
@@ -21,6 +22,20 @@ export default function Page() {
     page,
     filters: domain ? { domain } : undefined,
   });
+  const sortedItems = useMemo(() => {
+    const rows = [...items];
+    rows.sort((a, b) => {
+      const dateA = String(a['date'] ?? a['day'] ?? '');
+      const dateB = String(b['date'] ?? b['day'] ?? '');
+      const revA = Number(a['revenue'] ?? a['gmv'] ?? 0);
+      const revB = Number(b['revenue'] ?? b['gmv'] ?? 0);
+      if (sort === 'date_asc') return dateA.localeCompare(dateB);
+      if (sort === 'revenue_desc') return revB - revA;
+      if (sort === 'revenue_asc') return revA - revB;
+      return dateB.localeCompare(dateA);
+    });
+    return rows;
+  }, [items, sort]);
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
       {
@@ -63,6 +78,14 @@ export default function Page() {
         onSearchChange={setDomainInput}
         searchPlaceholder="order / payment / …"
         searchLabel="Domain"
+        sortValue={sort}
+        onSortChange={setSort}
+        sortOptions={[
+          { value: 'date_desc', label: 'Ngày mới nhất' },
+          { value: 'date_asc', label: 'Ngày cũ nhất' },
+          { value: 'revenue_desc', label: 'Doanh thu giảm' },
+          { value: 'revenue_asc', label: 'Doanh thu tăng' },
+        ]}
         onApply={() => {
           setDomain(domainInput.trim());
           setPage(1);
@@ -70,12 +93,13 @@ export default function Page() {
         onReset={() => {
           setDomainInput('');
           setDomain('');
+          setSort('date_desc');
           setPage(1);
         }}
       />
       <DataTable
         columns={columns}
-        rows={items}
+        rows={sortedItems}
         getRowKey={(r) =>
           String(r.id ?? `${r['date']}-${r['domain']}` ?? Math.random())
         }

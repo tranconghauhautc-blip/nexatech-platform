@@ -1,26 +1,40 @@
 import {
   Controller,
   Get,
+  Headers,
   NotFoundException,
   Query,
+  Res,
   VERSION_NEUTRAL,
 } from '@nestjs/common';
+import type { Response } from 'express';
 import { createHealthResponse } from '@nexatech/shared-contracts';
 import {
   acceptArtifactIntegrity,
+  acceptDangerousContentType,
   acceptUnsignedJwt,
+  allowCredentialsInQuery,
+  allowEmailVerifyBypass,
+  buildOAuthRedirectWithToken,
+  exposeApiInventory,
+  exposeErrorStack,
   isSecurityLabEnabled,
   LAB_MARKER_BODY,
   LAB_MARKER_PATH,
+  reflectRequestHeaders,
   resolveOutboundUrl,
+  sessionCookieOptions,
   sha256Hex,
   shapeErrorDetails,
   shouldExposeDebugEndpoint,
   shouldExposeDeprecatedApi,
 } from '@nexatech/shared-security-lab';
+import { AuthService } from './auth/auth.service';
 
 @Controller({ version: VERSION_NEUTRAL })
 export class HealthController {
+  constructor(private readonly authService: AuthService) {}
+
   @Get('health')
   health() {
     return createHealthResponse('identity-service');
@@ -54,15 +68,7 @@ export class HealthController {
     return {
       deprecated: true,
       warning: 'always-on shadow inventory for WAF PoC',
-      routes: [
-        '/api/v0/internal/routes',
-        '/health/debug',
-        '/api/v1/admin/users',
-        '/api/v1/payments/internal',
-        '/lab/ssrf-probe',
-        '/lab/supply-chain',
-        '/lab/jwt-alg-none',
-      ],
+      routes: exposeApiInventory(),
     };
   }
 
@@ -174,6 +180,108 @@ export class HealthController {
         header: `Authorization: Bearer ${sampleUnsignedJwt}`,
       },
       note: 'GET /api/v1/auth/me accepts alg=none JWT (SC-70 always-on). Replace sub with a real user id.',
+    };
+  }
+
+  /** SC-83 — reflect request headers (log injection / XSS vector) */
+  @Get('lab/reflect-headers')
+  reflectHeaders(
+    @Headers() headers: Record<string, string | string[] | undefined>,
+  ) {
+    return reflectRequestHeaders({ headers });
+  }
+
+  /** SC-86 — credentials in GET query */
+  @Get('lab/login-get')
+  async loginGet(
+    @Query('email') email?: string,
+    @Query('password') password?: string,
+  ) {
+    if (!allowCredentialsInQuery()) {
+      throw new NotFoundException();
+    }
+    try {
+      const tokens = await this.authService.login({
+        email: email ?? '',
+        password: password ?? '',
+      });
+      return { ok: true, ...tokens, note: 'SC-86 credentials via GET query' };
+    } catch (error) {
+      return {
+        ok: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
+  }
+
+  /** SC-88 — raw exception stack */
+  @Get('lab/error-stack')
+  errorStack() {
+    return {
+      ok: false,
+      details: exposeErrorStack({
+        error: new Error('lab intentional stack leak'),
+      }),
+    };
+  }
+
+  /** SC-90 — shadow OpenAPI / API inventory */
+  @Get('lab/api-inventory')
+  apiInventory() {
+    return {
+      deprecated: true,
+      routes: exposeApiInventory(),
+      docsJson: '/docs-json',
+    };
+  }
+
+  /** SC-91 — insecure Set-Cookie */
+  @Get('lab/set-cookie')
+  setCookie(@Res({ passthrough: true }) res: Response) {
+    const flags = sessionCookieOptions();
+    const parts = [
+      'nexatech_lab_session=lab-insecure-value',
+      'Path=/',
+      flags.httpOnly ? 'HttpOnly' : '',
+      flags.secure ? 'Secure' : '',
+      flags.sameSite ? `SameSite=${flags.sameSite}` : '',
+    ].filter(Boolean);
+    res.setHeader('Set-Cookie', parts.join('; '));
+    return { ok: true, cookieFlags: flags, note: 'SC-91 insecure Set-Cookie' };
+  }
+
+  /** SC-92 — email verify without OTP */
+  @Get('lab/verify-bypass')
+  verifyBypass(@Query('email') email?: string) {
+    if (!allowEmailVerifyBypass()) {
+      throw new NotFoundException();
+    }
+    return this.authService.verifyEmailBypass(email ?? '');
+  }
+
+  /** SC-93 — token in Location redirect */
+  @Get('lab/oauth-callback')
+  oauthCallback(
+    @Query('token') token: string | undefined,
+    @Query('next') next: string | undefined,
+    @Res() res: Response,
+  ) {
+    const location = buildOAuthRedirectWithToken({
+      nextUrl: next && next.length > 0 ? next : 'https://evil.example/cb',
+      accessToken: token && token.length > 0 ? token : 'lab-leaked-token',
+    });
+    res.setHeader('Location', location);
+    res.status(302).json({ redirectedTo: location, note: 'SC-93' });
+  }
+
+  /** SC-94 — accept dangerous content types */
+  @Get('lab/content-type')
+  contentType(@Query('type') type?: string) {
+    const contentType = type ?? 'image/svg+xml';
+    return {
+      contentType,
+      accepted: acceptDangerousContentType({ contentType }),
+      note: 'SC-94 dangerous content-type accepted',
     };
   }
 }

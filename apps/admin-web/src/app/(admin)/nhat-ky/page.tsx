@@ -10,8 +10,14 @@ import {
 import { ListToolbar } from '../../../components/ui/ListToolbar';
 import { Pagination } from '../../../components/ui/Pagination';
 
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Mới nhất' },
+  { value: 'oldest', label: 'Cũ nhất' },
+];
+
 export default function Page() {
   const controls = useListControls({
+    defaultSort: 'newest',
     searchToFilters: (search) => ({ action: search }),
   });
   const { items, meta, loading, error, refetch } = useListQuery<
@@ -73,6 +79,12 @@ export default function Page() {
         onSearchChange={controls.setSearchInput}
         searchPlaceholder="Tên hành động…"
         searchLabel="Action"
+        sortValue={controls.sort}
+        onSortChange={(v) => {
+          controls.setSort(v);
+          controls.setPage(1);
+        }}
+        sortOptions={SORT_OPTIONS}
         onApply={controls.apply}
         onReset={controls.reset}
       />

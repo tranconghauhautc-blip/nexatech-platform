@@ -332,11 +332,12 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 
 ## ADR-040 — Security lab intentional vulnerabilities (M21)
 
-- **Quyết định:** Giữ một repo với hai deploy profile. Production (`values-production.yaml`): `deployProfile=production`, `securityLab.enabled=false`, `NEXATECH_SECURITY_LAB=0`. Security lab (`values-security-lab.yaml`): namespace `nexatech-security-lab`, image tag `0.21.0-sec-lab`, `deployProfile=security-lab`, `securityLab.enabled=true`. Gate tập trung trong `@nexatech/shared-security-lab` (`isSecurityLabEnabled` đòi hỏi **cả hai** env). Không bật lab qua HTTP header/cookie/query.
-- **Vulnerabilities:** ≥20 kịch bản thật (BOLA, BFLA, mass assignment, price trust, webhook signature/amount, replay, rate limit missing, predictable OTP, insecure cookie/CORS, excessive data, BFF path sanitize skip, media ownership, pageSize) — xem `docs/OWASP-SCENARIOS.md`.
-- **Tests:** `pnpm security:test:secure|lab`, `security:smoke`, `security:validate`; lab runners yêu cầu `SECURITY_LAB_ACK=YES` + private target guard.
-- **Cấm:** weaken production path để lab xanh; secret thật; public lab không allowlist; PoC Internet.
-- **Hệ quả:** Roadmap M0–M21 hoàn tất; không tự bắt đầu milestone mới.
+- **Quyết định (lịch sử M21):** Hai deploy profile Helm (production vs `nexatech-security-lab`) cho isolation namespace/image/NetworkPolicy.
+- **Superseded bởi ADR-044:** Dual-gate `isSecurityLabEnabled` (đòi hỏi cả hai env) và secure policy branch **đã bị gỡ**. Intentional vulns **ALWAYS ON** trong `@nexatech/shared-security-lab` cho WAF PoC; Helm flags chỉ còn isolation marker.
+- **Vulnerabilities:** xem `docs/OWASP-SCENARIOS.md` (SC-01… + SC-70…SC-95).
+- **Tests:** `pnpm security:test:secure|lab` đều assert hành vi vulnerable; runners HTTP cần `SECURITY_LAB_ACK=YES` + private target guard.
+- **Cấm:** secret thật; PoC Internet công cộng không kiểm soát.
+- **Hệ quả:** Roadmap M0–M21 hoàn tất; PoC appliance theo ADR-044.
 
 ## ADR-041 — Nest production Docker runtime dependencies
 
@@ -379,7 +380,7 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 
 - **Quyết định:** Bỏ toàn bộ dual-gate / `FORCE_SECURE` / secure policy branch. `@nexatech/shared-security-lab` **luôn** trả về hành vi vulnerable; `isSecurityLabEnabled()` luôn `true`.
 - **Mục đích:** Chứng minh WAF và API Security appliance phát hiện/chặn tấn công trên ứng dụng sống (mọi môi trường: local Compose, K8s, …).
-- **HTTP executable:** BOLA/BFLA/mass-assignment (admin users), SSRF fetch thật `/lab/ssrf-probe`, SQLi ORDER BY, XSS reflect `/tim-kiem?q=`, open redirect `?next=`, JWT `alg=none` trên `/auth/me`, CSRF Origin skip, debug leak, supply-chain digest, OTP `000000`, insecure cookies, CORS reflect, v.v.
+- **HTTP executable:** BOLA/BFLA/mass-assignment (admin users create/disable/export), SSRF `/lab/ssrf-probe`, SQLi ORDER BY, XSS `/tim-kiem?q=`, open redirect, JWT `alg=none` + query token, CSRF Origin skip, debug leak, host-header reset poison, GET login, verify-bypass, SC-70…SC-95 lab probes, v.v.
 - **Public guides (không auth):** `http://localhost:3000/lab/owasp-api-top10.html`, `http://localhost:3000/lab/owasp-web-top10.html`.
 - **Cấm:** thêm lại toggle tắt lỗ hổng cho runtime PoC; coi đây là production hardening mặc định.
 - **Hệ quả:** ADR-040 dual-profile lab gate bị thay thế cho mục tiêu appliance PoC.

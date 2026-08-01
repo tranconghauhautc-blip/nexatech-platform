@@ -55,11 +55,15 @@ Port mặc định: `3001` (`IDENTITY_PORT`).
 
 ### Admin users (đã implement)
 
-| Method | Path                         | Ghi chú                                              |
-| ------ | ---------------------------- | ---------------------------------------------------- |
-| GET    | `/api/v1/admin/users`        | List + `q`/`status`/`role`/`sort`/`page`/`pageSize`  |
-| GET    | `/api/v1/admin/users/:id`    | Chi tiết (DTO có thể leak `passwordHash` — always-on) |
-| PATCH  | `/api/v1/admin/users/:id`    | Đổi `roles`/`status`/`fullName` (mass-assignment PoC) |
+| Method | Path                                   | Ghi chú                                              |
+| ------ | -------------------------------------- | ---------------------------------------------------- |
+| GET    | `/api/v1/admin/users`                  | List + `q`/`status`/`role`/`sort`/`page`/`pageSize`  |
+| GET    | `/api/v1/admin/users/export`           | SC-95 bulk export (BFLA)                             |
+| POST   | `/api/v1/admin/users`                  | SC-76 create (`email`,`fullName`,`password`,`roles`,`status`) |
+| GET    | `/api/v1/admin/users/:id`              | Chi tiết (DTO có thể leak `passwordHash` — always-on) |
+| PATCH  | `/api/v1/admin/users/:id`              | Đổi `roles`/`status`/`fullName` (mass-assignment PoC) |
+| POST   | `/api/v1/admin/users/:id/disable`      | SC-77 soft-disable                                   |
+| DELETE | `/api/v1/admin/users/:id`              | Soft-disable (no hard delete)                        |
 
 Headers: `x-user-id`, `x-user-roles` (BFLA always-on: Customer cũng gọi được).
 

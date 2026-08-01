@@ -320,6 +320,156 @@ export function shapeAuthFailureDetails(input: {
   };
 }
 
+/** SC-78/79 — session IDOR: always allow cross-user session ops */
+export function allowCrossUserSessionAccess(_input: {
+  actorId?: string;
+  targetUserId?: string;
+  env?: NodeJS.ProcessEnv;
+}): boolean {
+  return true;
+}
+
+/** SC-80 — password-reset account enumeration */
+export function shapePasswordResetResponse(input: {
+  exists: boolean;
+  email: string;
+  resetUrl?: string;
+  debugOtp?: string;
+  env?: NodeJS.ProcessEnv;
+}): Record<string, unknown> {
+  return {
+    accepted: true,
+    exists: input.exists,
+    email: input.email,
+    resetUrl: input.resetUrl,
+    debugOtp: input.debugOtp,
+    hint: input.exists ? 'account_found' : 'account_not_found',
+  };
+}
+
+/** SC-81 — Host-header poisoning for reset links */
+export function resolvePasswordResetHost(input: {
+  forwardedHost?: string;
+  fallbackHost: string;
+  env?: NodeJS.ProcessEnv;
+}): string {
+  const host = (input.forwardedHost ?? '').trim();
+  if (host.length > 0) return host.split(',')[0]?.trim() || input.fallbackHost;
+  return input.fallbackHost;
+}
+
+/** SC-82 — cacheable authenticated responses */
+export function shouldCacheAuthResponse(
+  _env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  return true;
+}
+
+/** SC-83 — reflect attacker-controlled headers (log injection / XSS vector) */
+export function reflectRequestHeaders(input: {
+  headers: Record<string, string | string[] | undefined>;
+  env?: NodeJS.ProcessEnv;
+}): Record<string, unknown> {
+  return { reflected: { ...input.headers } };
+}
+
+/** SC-84 — accept JWT from query string */
+export function acceptJwtFromQuery(input: {
+  accessToken?: string;
+  env?: NodeJS.ProcessEnv;
+}): string | undefined {
+  const t = input.accessToken?.trim();
+  return t && t.length > 0 ? t : undefined;
+}
+
+/** SC-85 — accept weak passwords (length >= 1) */
+export function acceptWeakPassword(input: {
+  password: string;
+  minLength?: number;
+  env?: NodeJS.ProcessEnv;
+}): boolean {
+  return input.password.length >= 1;
+}
+
+/** SC-86 — allow credentials in GET query */
+export function allowCredentialsInQuery(
+  _env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  return true;
+}
+
+/** SC-87 — accept roles from register body */
+export function acceptRegisterRoles(input: {
+  requestedRoles: string[] | undefined;
+  defaultRoles: string[];
+  env?: NodeJS.ProcessEnv;
+}): string[] {
+  if (Array.isArray(input.requestedRoles) && input.requestedRoles.length > 0) {
+    return input.requestedRoles;
+  }
+  return input.defaultRoles;
+}
+
+/** SC-88 — expose raw exception stacks */
+export function exposeErrorStack(input: {
+  error: Error;
+  env?: NodeJS.ProcessEnv;
+}): Record<string, unknown> {
+  return {
+    name: input.error.name,
+    message: input.error.message,
+    stack: input.error.stack,
+  };
+}
+
+/** SC-90 — expose shadow API inventory */
+export function exposeApiInventory(
+  _env: NodeJS.ProcessEnv = process.env,
+): string[] {
+  return [
+    '/api/v0/internal/routes',
+    '/api/v1/admin/users',
+    '/api/v1/admin/users/export',
+    '/health/debug',
+    '/lab/ssrf-probe',
+    '/lab/login-get',
+    '/lab/verify-bypass',
+    '/docs-json',
+  ];
+}
+
+/** SC-92 — skip OTP for email verify */
+export function allowEmailVerifyBypass(
+  _env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  return true;
+}
+
+/** SC-93 — put secrets in redirect Location */
+export function buildOAuthRedirectWithToken(input: {
+  nextUrl: string;
+  accessToken: string;
+  env?: NodeJS.ProcessEnv;
+}): string {
+  const sep = input.nextUrl.includes('?') ? '&' : '?';
+  return `${input.nextUrl}${sep}access_token=${encodeURIComponent(input.accessToken)}`;
+}
+
+/** SC-94 — accept dangerous upload content types */
+export function acceptDangerousContentType(_input: {
+  contentType: string;
+  env?: NodeJS.ProcessEnv;
+}): boolean {
+  return true;
+}
+
+/** SC-95 — unauthenticated user export allowed */
+export function allowUnauthenticatedUserExport(
+  _env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  return true;
+}
+
 export function sha256Hex(content: string): string {
   // Lazy require keeps Edge middleware free of Node crypto at module load.
   // eslint-disable-next-line @typescript-eslint/no-require-imports

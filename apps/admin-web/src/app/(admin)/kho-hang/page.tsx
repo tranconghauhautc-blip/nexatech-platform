@@ -11,6 +11,7 @@ import { ListToolbar } from '../../../components/ui/ListToolbar';
 export default function Page() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('sku_asc');
   const { items, loading, error, refetch } = useArrayQuery<
     Record<string, unknown>
   >({
@@ -18,6 +19,20 @@ export default function Page() {
     path: 'stock',
     query: search ? { skuCode: search } : undefined,
   });
+  const sortedItems = useMemo(() => {
+    const rows = [...items];
+    rows.sort((a, b) => {
+      const skuA = String(a['skuCode'] ?? a.id ?? '');
+      const skuB = String(b['skuCode'] ?? b.id ?? '');
+      const availA = Number(a['available'] ?? a['onHand'] ?? 0);
+      const availB = Number(b['available'] ?? b['onHand'] ?? 0);
+      if (sort === 'sku_desc') return skuB.localeCompare(skuA);
+      if (sort === 'available_desc') return availB - availA;
+      if (sort === 'available_asc') return availA - availB;
+      return skuA.localeCompare(skuB);
+    });
+    return rows;
+  }, [items, sort]);
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
       {
@@ -63,15 +78,24 @@ export default function Page() {
         onSearchChange={setSearchInput}
         searchPlaceholder="Mã SKU…"
         searchLabel="SKU"
+        sortValue={sort}
+        onSortChange={setSort}
+        sortOptions={[
+          { value: 'sku_asc', label: 'SKU A→Z' },
+          { value: 'sku_desc', label: 'SKU Z→A' },
+          { value: 'available_desc', label: 'Khả dụng giảm' },
+          { value: 'available_asc', label: 'Khả dụng tăng' },
+        ]}
         onApply={() => setSearch(searchInput.trim())}
         onReset={() => {
           setSearchInput('');
           setSearch('');
+          setSort('sku_asc');
         }}
       />
       <DataTable
         columns={columns}
-        rows={items}
+        rows={sortedItems}
         getRowKey={(r) =>
           String(r.id ?? `${r['skuCode']}-${r['locationId']}` ?? Math.random())
         }

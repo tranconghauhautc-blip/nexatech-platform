@@ -6,7 +6,9 @@ import {
   Headers,
   Param,
   Post,
+  Query,
   Req,
+  Res,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -15,6 +17,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import type { Response } from 'express';
+import { shouldCacheAuthResponse } from '@nexatech/shared-security-lab';
 import { AuthService } from './auth.service';
 import {
   AuthTokenResponseDto,
@@ -40,7 +44,7 @@ export class AuthController {
 
   @Post('register')
   @ApiOperation({
-    summary: 'Đăng ký tài khoản Customer',
+    summary: 'Đăng ký tài khoản Customer (SC-87: roles in body accepted)',
   })
   @ApiBody({ type: RegisterRequestDto })
   @ApiResponse({ status: 201, description: 'Registered' })
@@ -56,9 +60,15 @@ export class AuthController {
   @ApiBody({ type: LoginRequestDto })
   @ApiResponse({ status: 200, type: AuthTokenResponseDto })
   @ApiResponse({ status: 401, type: ErrorEnvelopeDto })
-  login(@Body() body: LoginRequestDto, @Req() req: RequestWithHeaders) {
-    // Read User-Agent from the real request — do not expose as Swagger
-    // parameter (browsers forbid setting User-Agent from fetch/XHR).
+  async login(
+    @Body() body: LoginRequestDto,
+    @Req() req: RequestWithHeaders,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // SC-82 — cacheable auth response
+    if (shouldCacheAuthResponse()) {
+      res.setHeader('Cache-Control', 'public, max-age=60');
+    }
     const raw = req.headers['user-agent'];
     const userAgent = Array.isArray(raw) ? raw[0] : raw;
     return this.authService.login(body, userAgent);
@@ -92,11 +102,18 @@ export class AuthController {
 
   @Post('forgot-password')
   @ApiOperation({
-    summary: 'Yêu cầu OTP đặt lại mật khẩu',
+    summary: 'Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)',
   })
   @ApiBody({ type: ForgotPasswordRequestDto })
-  forgotPassword(@Body() body: ForgotPasswordRequestDto) {
-    return this.authService.requestPasswordReset(body.email);
+  forgotPassword(
+    @Body() body: ForgotPasswordRequestDto,
+    @Headers('x-forwarded-host') forwardedHost?: string,
+    @Headers('host') host?: string,
+  ) {
+    return this.authService.requestPasswordReset(
+      body.email,
+      forwardedHost ?? host,
+    );
   }
 
   @Post('reset-password')
@@ -115,29 +132,39 @@ export class AuthController {
   @Get('me')
   @ApiBearerAuth('bearer')
   @ApiOperation({
-    summary: 'Thông tin user từ Bearer access token (Swagger Authorize flow)',
+    summary:
+      'Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)',
   })
   @ApiResponse({ status: 200, type: MeResponseDto })
   @ApiResponse({ status: 401, type: ErrorEnvelopeDto })
-  me(@Headers('authorization') authorization?: string) {
-    return this.authService.me(authorization);
+  me(
+    @Headers('authorization') authorization?: string,
+    @Query('access_token') accessToken?: string,
+  ) {
+    return this.authService.me(authorization, accessToken);
   }
 
   @Get('sessions/:userId')
   @ApiBearerAuth('bearer')
   @ApiOperation({
-    summary: 'Liệt kê phiên đăng nhập của user',
+    summary: 'SC-78 — liệt kê phiên bất kỳ user (IDOR)',
   })
-  listSessions(@Param('userId') userId: string) {
-    return this.authService.listSessions(userId);
+  listSessions(
+    @Param('userId') userId: string,
+    @Headers('x-user-id') actorId?: string,
+  ) {
+    return this.authService.listSessions(actorId, userId);
   }
 
   @Delete('sessions/:sessionId')
   @ApiBearerAuth('bearer')
   @ApiOperation({
-    summary: 'Thu hồi một phiên',
+    summary: 'SC-79 — thu hồi phiên bất kỳ (IDOR)',
   })
-  revokeSession(@Param('sessionId') sessionId: string) {
-    return this.authService.logout(sessionId);
+  revokeSession(
+    @Param('sessionId') sessionId: string,
+    @Headers('x-user-id') actorId?: string,
+  ) {
+    return this.authService.revokeSession(actorId, sessionId);
   }
 }

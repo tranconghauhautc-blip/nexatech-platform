@@ -2,12 +2,19 @@ import { createHash, randomInt } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
-import { Roles } from '@nexatech/shared-auth';
+import { isRole, Roles, type Role } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
 import {
+  acceptJwtFromQuery,
+  acceptRegisterRoles,
   acceptUnsignedJwt,
+  allowCrossUserSessionAccess,
+  allowEmailVerifyBypass,
+  filterMassAssignment,
   issueVerificationToken,
+  resolvePasswordResetHost,
   shapeAuthFailureDetails,
+  shapePasswordResetResponse,
   shouldEmitSecurityAudit,
   shouldRateLimitAuth,
 } from '@nexatech/shared-security-lab';
@@ -42,10 +49,7 @@ export interface RegisterResult {
   debugOtp?: string;
 }
 
-export interface PasswordResetResult {
-  accepted: true;
-  debugOtp?: string;
-}
+export type PasswordResetResult = Record<string, unknown>;
 
 @Injectable()
 export class AuthService {
@@ -65,12 +69,26 @@ export class AuthService {
       });
     }
 
+    // SC-87 — accept roles from register body (mass-assignment)
+    const raw =
+      typeof input === 'object' && input !== null
+        ? (input as Record<string, unknown>)
+        : {};
+    const filtered = filterMassAssignment(raw, ['roles']);
+    const requestedRoles = Array.isArray(filtered['roles'])
+      ? (filtered['roles'] as string[]).filter(isRole)
+      : undefined;
+    const roles = acceptRegisterRoles({
+      requestedRoles,
+      defaultRoles: [Roles.Customer],
+    }).filter(isRole) as Role[];
+
     const passwordHash = await bcrypt.hash(data.password, 10);
     const user = await this.store.createUser({
       email: data.email,
       fullName: data.fullName,
       passwordHash,
-      roles: [Roles.Customer],
+      roles: roles.length > 0 ? roles : [Roles.Customer],
     });
 
     const otp = issueVerificationToken({
@@ -232,7 +250,10 @@ export class AuthService {
     await this.store.revokeSession(sessionId);
   }
 
-  async me(authorization?: string): Promise<{
+  async me(
+    authorization?: string,
+    accessTokenQuery?: string,
+  ): Promise<{
     userId: string;
     email: string;
     roles: string[];
@@ -240,7 +261,10 @@ export class AuthService {
     sessionId?: string;
     status: string;
   }> {
-    const token = extractBearerToken(authorization);
+    // SC-84 — Bearer header or ?access_token=
+    const token =
+      this.resolveAccessToken(authorization, accessTokenQuery) ??
+      extractBearerToken(authorization);
     let payload: jwt.JwtPayload;
     try {
       payload = this.verifyAccessToken(token);
@@ -276,14 +300,55 @@ export class AuthService {
     };
   }
 
-  async listSessions(userId: string) {
+  /** SC-78 — list any user's sessions (no ownership check) */
+  async listSessions(actorId: string | undefined, userId: string) {
+    if (
+      !allowCrossUserSessionAccess({
+        actorId,
+        targetUserId: userId,
+      })
+    ) {
+      throw new AppError({
+        errorCode: ErrorCodes.FORBIDDEN,
+        message: 'Không được xem phiên của người khác',
+      });
+    }
     return this.store.listSessionsByUser(userId);
   }
 
-  async requestPasswordReset(email: string): Promise<PasswordResetResult> {
+  /** SC-79 — revoke any session id */
+  async revokeSession(actorId: string | undefined, sessionId: string) {
+    if (
+      !allowCrossUserSessionAccess({
+        actorId,
+        targetUserId: sessionId,
+      })
+    ) {
+      throw new AppError({
+        errorCode: ErrorCodes.FORBIDDEN,
+        message: 'Không được thu hồi phiên của người khác',
+      });
+    }
+    return this.logout(sessionId);
+  }
+
+  async requestPasswordReset(
+    email: string,
+    forwardedHost?: string,
+  ): Promise<PasswordResetResult> {
     const user = await this.store.findUserByEmail(email);
+    const host = resolvePasswordResetHost({
+      forwardedHost,
+      fallbackHost: 'localhost:3000',
+    });
+    const resetUrl = `http://${host}/dat-lai-mat-khau?email=${encodeURIComponent(email)}`;
     if (!user) {
-      return { accepted: true };
+      // SC-80 — enumerate non-existing accounts
+      return shapePasswordResetResponse({
+        exists: false,
+        email,
+        resetUrl,
+      });
     }
     const otp = issueVerificationToken({
       secureToken: String(randomInt(100000, 999999)),
@@ -295,10 +360,42 @@ export class AuthService {
       codeHash: hashOtp(otp),
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
-    return {
-      accepted: true,
+    // SC-80/81 — exists + poisoned host in resetUrl
+    return shapePasswordResetResponse({
+      exists: true,
+      email: user.email,
+      resetUrl,
       debugOtp: process.env['NODE_ENV'] === 'production' ? undefined : otp,
-    };
+    });
+  }
+
+  /** SC-92 — activate email without OTP */
+  async verifyEmailBypass(email: string): Promise<{ ok: true; bypassed: true }> {
+    if (!allowEmailVerifyBypass()) {
+      throw new AppError({
+        errorCode: ErrorCodes.FORBIDDEN,
+        message: 'Verify bypass disabled',
+      });
+    }
+    const user = await this.store.findUserByEmail(email);
+    if (!user) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy người dùng',
+      });
+    }
+    user.emailVerifiedAt = new Date();
+    user.status = 'ACTIVE';
+    await this.store.updateUser(user);
+    return { ok: true, bypassed: true };
+  }
+
+  /** SC-84 — resolve Bearer or query access_token */
+  resolveAccessToken(authorization?: string, accessTokenQuery?: string): string | undefined {
+    if (authorization?.toLowerCase().startsWith('bearer ')) {
+      return authorization.slice(7).trim();
+    }
+    return acceptJwtFromQuery({ accessToken: accessTokenQuery });
   }
 
   async resetPassword(

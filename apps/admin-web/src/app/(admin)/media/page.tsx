@@ -12,6 +12,7 @@ export default function Page() {
   const [entityType, setEntityType] = useState('product');
   const [entityIdInput, setEntityIdInput] = useState('');
   const [entityId, setEntityId] = useState('');
+  const [sort, setSort] = useState('id_asc');
   const enabled = entityId.length > 0;
   const { items, loading, error, refetch } = useArrayQuery<
     Record<string, unknown>
@@ -20,6 +21,20 @@ export default function Page() {
     path: `media/by-entity/${encodeURIComponent(entityType)}/${encodeURIComponent(entityId || '_')}`,
     enabled,
   });
+  const sortedItems = useMemo(() => {
+    const rows = [...items];
+    rows.sort((a, b) => {
+      const idA = String(a['id'] ?? '');
+      const idB = String(b['id'] ?? '');
+      const kindA = String(a['kind'] ?? a['mimeType'] ?? '');
+      const kindB = String(b['kind'] ?? b['mimeType'] ?? '');
+      if (sort === 'id_desc') return idB.localeCompare(idA);
+      if (sort === 'kind_asc') return kindA.localeCompare(kindB);
+      if (sort === 'kind_desc') return kindB.localeCompare(kindA);
+      return idA.localeCompare(idB);
+    });
+    return rows;
+  }, [items, sort]);
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
       {
@@ -69,16 +84,25 @@ export default function Page() {
           { value: 'review', label: 'review' },
           { value: 'user', label: 'user' },
         ]}
+        sortValue={sort}
+        onSortChange={setSort}
+        sortOptions={[
+          { value: 'id_asc', label: 'ID A→Z' },
+          { value: 'id_desc', label: 'ID Z→A' },
+          { value: 'kind_asc', label: 'Loại A→Z' },
+          { value: 'kind_desc', label: 'Loại Z→A' },
+        ]}
         onApply={() => setEntityId(entityIdInput.trim())}
         onReset={() => {
           setEntityIdInput('');
           setEntityId('');
           setEntityType('product');
+          setSort('id_asc');
         }}
       />
       <DataTable
         columns={columns}
-        rows={enabled ? items : []}
+        rows={enabled ? sortedItems : []}
         getRowKey={(r) => String(r.id ?? Math.random())}
         loading={enabled && loading}
         error={enabled ? error : null}

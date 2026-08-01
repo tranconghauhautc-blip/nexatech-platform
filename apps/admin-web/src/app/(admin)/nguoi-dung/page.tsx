@@ -11,7 +11,9 @@ import {
 import { ListToolbar } from '../../../components/ui/ListToolbar';
 import { Pagination } from '../../../components/ui/Pagination';
 import { Badge } from '../../../components/ui/Badge';
-import { SelectField } from '../../../components/ui/form';
+import { Drawer } from '../../../components/ui/Drawer';
+import { SelectField, TextField } from '../../../components/ui/form';
+import { useToast } from '../../../components/ui/toast';
 
 interface AdminUserRow {
   id: string;
@@ -44,7 +46,24 @@ const SORT_OPTIONS = [
   { value: 'email_desc', label: 'Email Z→A' },
 ];
 
+interface CreateForm {
+  email: string;
+  fullName: string;
+  password: string;
+  role: string;
+  status: string;
+}
+
+const EMPTY_CREATE: CreateForm = {
+  email: '',
+  fullName: '',
+  password: '',
+  role: 'Staff',
+  status: 'ACTIVE',
+};
+
 export default function UsersPage() {
+  const { showToast } = useToast();
   const controls = useListControls({
     defaultSort: 'createdAt_desc',
     searchToFilters: (search) => ({ q: search }),
@@ -68,6 +87,9 @@ export default function UsersPage() {
   const [editStatus, setEditStatus] = useState('ACTIVE');
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
+  const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
+  const [creating, setCreating] = useState(false);
 
   const columns = useMemo<DataTableColumn<AdminUserRow>[]>(
     () => [
@@ -89,8 +111,33 @@ export default function UsersPage() {
         render: (r) =>
           r.passwordHash ? String(r.passwordHash).slice(0, 16) + '…' : '—',
       },
+      {
+        key: 'actions',
+        header: '',
+        render: (r) => (
+          <button
+            type="button"
+            className="nx-link-btn"
+            disabled={r.status === 'DISABLED'}
+            onClick={async (e) => {
+              e.stopPropagation();
+              try {
+                await bffRequest('identity', `admin/users/${r.id}/disable`, {
+                  method: 'POST',
+                });
+                showToast('Đã vô hiệu hóa người dùng', 'success');
+                refetch();
+              } catch (err) {
+                showToast(getErrorMessage(err), 'error');
+              }
+            }}
+          >
+            Vô hiệu hóa
+          </button>
+        ),
+      },
     ],
-    [],
+    [refetch, showToast],
   );
 
   async function savePatch() {
@@ -111,15 +158,50 @@ export default function UsersPage() {
     }
   }
 
+  async function createUser(event: React.FormEvent) {
+    event.preventDefault();
+    setCreating(true);
+    try {
+      await bffRequest('identity', 'admin/users', {
+        method: 'POST',
+        body: {
+          email: createForm.email.trim(),
+          fullName: createForm.fullName.trim(),
+          password: createForm.password,
+          roles: [createForm.role],
+          status: createForm.status,
+        },
+      });
+      showToast('Đã tạo người dùng', 'success');
+      setCreateOpen(false);
+      setCreateForm(EMPTY_CREATE);
+      refetch();
+    } catch (err) {
+      showToast(getErrorMessage(err), 'error');
+    } finally {
+      setCreating(false);
+    }
+  }
+
   return (
     <div className="nx-page">
       <div className="nx-page-header">
         <div>
           <div className="nx-page-title">Người dùng & vai trò</div>
           <div className="nx-page-subtitle">
-            Super Admin — identity users (BFLA/mass-assignment luôn mở cho WAF PoC)
+            Super Admin — tạo / sửa / vô hiệu hóa (BFLA luôn mở cho WAF PoC)
           </div>
         </div>
+        <button
+          type="button"
+          className="nx-btn nx-btn-primary"
+          onClick={() => {
+            setCreateForm(EMPTY_CREATE);
+            setCreateOpen(true);
+          }}
+        >
+          + Tạo người dùng
+        </button>
       </div>
       <ListToolbar
         searchValue={controls.searchInput}
@@ -230,6 +312,73 @@ export default function UsersPage() {
           </div>
         </div>
       ) : null}
+
+      <Drawer
+        open={createOpen}
+        title="Tạo người dùng"
+        onClose={() => setCreateOpen(false)}
+      >
+        <form onSubmit={createUser} className="nx-page" style={{ gap: 16 }}>
+          <TextField
+            label="Email"
+            type="email"
+            value={createForm.email}
+            onChange={(e) =>
+              setCreateForm((f) => ({ ...f, email: e.target.value }))
+            }
+            required
+          />
+          <TextField
+            label="Họ tên"
+            value={createForm.fullName}
+            onChange={(e) =>
+              setCreateForm((f) => ({ ...f, fullName: e.target.value }))
+            }
+            required
+          />
+          <TextField
+            label="Mật khẩu"
+            type="password"
+            value={createForm.password}
+            onChange={(e) =>
+              setCreateForm((f) => ({ ...f, password: e.target.value }))
+            }
+            required
+          />
+          <SelectField
+            label="Vai trò"
+            value={createForm.role}
+            onChange={(e) =>
+              setCreateForm((f) => ({ ...f, role: e.target.value }))
+            }
+            options={ROLE_OPTIONS}
+          />
+          <SelectField
+            label="Trạng thái"
+            value={createForm.status}
+            onChange={(e) =>
+              setCreateForm((f) => ({ ...f, status: e.target.value }))
+            }
+            options={STATUS_OPTIONS}
+          />
+          <div className="nx-form-actions">
+            <button
+              type="button"
+              className="nx-btn nx-btn-secondary"
+              onClick={() => setCreateOpen(false)}
+            >
+              Hủy
+            </button>
+            <button
+              type="submit"
+              className="nx-btn nx-btn-primary"
+              disabled={creating}
+            >
+              {creating ? 'Đang tạo…' : 'Tạo'}
+            </button>
+          </div>
+        </form>
+      </Drawer>
     </div>
   );
 }

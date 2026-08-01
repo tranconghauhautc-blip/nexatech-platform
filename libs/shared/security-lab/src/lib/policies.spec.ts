@@ -1,29 +1,44 @@
 import {
   acceptArtifactIntegrity,
+  acceptDangerousContentType,
+  acceptJwtFromQuery,
   acceptPaymentAmount,
+  acceptRegisterRoles,
   acceptUnsignedJwt,
+  acceptWeakPassword,
   acceptWebhookSignature,
+  allowCredentialsInQuery,
+  allowCrossUserSessionAccess,
+  allowEmailVerifyBypass,
   allowMediaAccess,
   allowSensitiveBusinessFlow,
+  allowUnauthenticatedUserExport,
   buildIdempotencyScope,
+  buildOAuthRedirectWithToken,
   buildOrderByClause,
   clampPageSize,
   compareSecrets,
   enforceAdminFunction,
   enforceResourceOwnership,
+  exposeApiInventory,
+  exposeErrorStack,
   failOpenOnDependencyError,
   filterMassAssignment,
   frameProtectionHeaders,
   issueVerificationToken,
+  reflectRequestHeaders,
   reflectSearchQuery,
   resolveCorsOrigin,
   resolveOpenRedirect,
   resolveOutboundUrl,
+  resolvePasswordResetHost,
   resolveTrustedAmount,
   sessionCookieOptions,
   shapeAuthFailureDetails,
   shapeErrorDetails,
+  shapePasswordResetResponse,
   shapePublicResource,
+  shouldCacheAuthResponse,
   shouldEmitSecurityAudit,
   shouldEnforceBffPathSanitize,
   shouldEnforceCsrfOrigin,
@@ -203,5 +218,57 @@ describe('intentional vulnerable policies (WAF PoC)', () => {
         passwordLength: 12,
       }),
     ).toMatchObject({ email: 'victim@nexatech.local', hint: 'user enumeration enabled' });
+  });
+
+  it('SC-76..95 HTTP extras always vulnerable', () => {
+    expect(
+      allowCrossUserSessionAccess({
+        actorId: 'attacker',
+        targetUserId: 'victim',
+      }),
+    ).toBe(true);
+    expect(
+      shapePasswordResetResponse({
+        exists: true,
+        email: 'a@b.c',
+        resetUrl: 'http://evil/reset',
+      }),
+    ).toMatchObject({ exists: true, hint: 'account_found' });
+    expect(
+      resolvePasswordResetHost({
+        forwardedHost: 'evil.example',
+        fallbackHost: 'localhost:3000',
+      }),
+    ).toBe('evil.example');
+    expect(shouldCacheAuthResponse()).toBe(true);
+    expect(
+      reflectRequestHeaders({
+        headers: { 'x-trace-id': 'evil\nInjected' },
+      })['reflected'],
+    ).toMatchObject({ 'x-trace-id': 'evil\nInjected' });
+    expect(acceptJwtFromQuery({ accessToken: 'tok' })).toBe('tok');
+    expect(acceptWeakPassword({ password: '1' })).toBe(true);
+    expect(allowCredentialsInQuery()).toBe(true);
+    expect(
+      acceptRegisterRoles({
+        requestedRoles: ['SuperAdmin'],
+        defaultRoles: ['Customer'],
+      }),
+    ).toEqual(['SuperAdmin']);
+    expect(
+      exposeErrorStack({ error: new Error('boom') })['stack'],
+    ).toBeDefined();
+    expect(exposeApiInventory().length).toBeGreaterThan(3);
+    expect(allowEmailVerifyBypass()).toBe(true);
+    expect(
+      buildOAuthRedirectWithToken({
+        nextUrl: 'https://evil.example/cb',
+        accessToken: 'secret',
+      }),
+    ).toContain('access_token=secret');
+    expect(acceptDangerousContentType({ contentType: 'image/svg+xml' })).toBe(
+      true,
+    );
+    expect(allowUnauthenticatedUserExport()).toBe(true);
   });
 });

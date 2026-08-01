@@ -44,10 +44,11 @@ export default function BrandsPage() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [sort, setSort] = useState('name_asc');
 
   const filteredItems = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return items.filter((brand) => {
+    const rows = items.filter((brand) => {
       if (statusFilter === 'active' && !brand.isActive) return false;
       if (statusFilter === 'inactive' && brand.isActive) return false;
       if (!q) return true;
@@ -56,7 +57,15 @@ export default function BrandsPage() {
         brand.slug.toLowerCase().includes(q)
       );
     });
-  }, [items, search, statusFilter]);
+    const sorted = [...rows];
+    sorted.sort((a, b) => {
+      if (sort === 'name_desc') return b.name.localeCompare(a.name);
+      if (sort === 'slug_asc') return a.slug.localeCompare(b.slug);
+      if (sort === 'slug_desc') return b.slug.localeCompare(a.slug);
+      return a.name.localeCompare(b.name);
+    });
+    return sorted;
+  }, [items, search, statusFilter, sort]);
 
   const openCreate = () => {
     setEditingId(null);
@@ -204,11 +213,20 @@ export default function BrandsPage() {
           { value: 'active', label: 'Hoạt động' },
           { value: 'inactive', label: 'Đã ẩn' },
         ]}
+        sortValue={sort}
+        onSortChange={setSort}
+        sortOptions={[
+          { value: 'name_asc', label: 'Tên A→Z' },
+          { value: 'name_desc', label: 'Tên Z→A' },
+          { value: 'slug_asc', label: 'Slug A→Z' },
+          { value: 'slug_desc', label: 'Slug Z→A' },
+        ]}
         onApply={() => setSearch(searchInput.trim())}
         onReset={() => {
           setSearchInput('');
           setSearch('');
           setStatusFilter('');
+          setSort('name_asc');
         }}
       />
       <div className="nx-card">

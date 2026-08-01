@@ -18,8 +18,14 @@ const STATUS_OPTIONS = [
   { value: 'BOUNCED', label: 'Bounce' },
 ];
 
+const SORT_OPTIONS = [
+  { value: 'newest', label: 'Mới nhất' },
+  { value: 'oldest', label: 'Cũ nhất' },
+];
+
 export default function Page() {
   const controls = useListControls({
+    defaultSort: 'newest',
     searchToFilters: (search) => ({ q: search }),
   });
   const { items, meta, loading, error, refetch } = useListQuery<
@@ -78,6 +84,12 @@ export default function Page() {
           controls.setPage(1);
         }}
         statusOptions={STATUS_OPTIONS}
+        sortValue={controls.sort}
+        onSortChange={(v) => {
+          controls.setSort(v);
+          controls.setPage(1);
+        }}
+        sortOptions={SORT_OPTIONS}
         onApply={controls.apply}
         onReset={controls.reset}
       />

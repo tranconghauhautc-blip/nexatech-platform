@@ -11,6 +11,7 @@ import { ListToolbar } from '../../../components/ui/ListToolbar';
 export default function Page() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState('name_asc');
   const { items, loading, error, refetch } = useArrayQuery<
     Record<string, unknown>
   >({
@@ -18,14 +19,26 @@ export default function Page() {
     path: 'warehouses',
   });
   const filtered = useMemo(() => {
-    if (!search) return items;
     const q = search.toLowerCase();
-    return items.filter((row) =>
-      [row['name'], row['code'], row['id'], row['city']]
-        .map((v) => String(v ?? '').toLowerCase())
-        .some((v) => v.includes(q)),
-    );
-  }, [items, search]);
+    const rows = !search
+      ? [...items]
+      : items.filter((row) =>
+          [row['name'], row['code'], row['id'], row['city']]
+            .map((v) => String(v ?? '').toLowerCase())
+            .some((v) => v.includes(q)),
+        );
+    rows.sort((a, b) => {
+      const nameA = String(a['name'] ?? '');
+      const nameB = String(b['name'] ?? '');
+      const codeA = String(a['code'] ?? a['id'] ?? '');
+      const codeB = String(b['code'] ?? b['id'] ?? '');
+      if (sort === 'name_desc') return nameB.localeCompare(nameA);
+      if (sort === 'code_asc') return codeA.localeCompare(codeB);
+      if (sort === 'code_desc') return codeB.localeCompare(codeA);
+      return nameA.localeCompare(nameB);
+    });
+    return rows;
+  }, [items, search, sort]);
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
       {
@@ -64,10 +77,19 @@ export default function Page() {
         searchValue={searchInput}
         onSearchChange={setSearchInput}
         searchPlaceholder="Tên hoặc mã kho…"
+        sortValue={sort}
+        onSortChange={setSort}
+        sortOptions={[
+          { value: 'name_asc', label: 'Tên A→Z' },
+          { value: 'name_desc', label: 'Tên Z→A' },
+          { value: 'code_asc', label: 'Mã A→Z' },
+          { value: 'code_desc', label: 'Mã Z→A' },
+        ]}
         onApply={() => setSearch(searchInput.trim())}
         onReset={() => {
           setSearchInput('');
           setSearch('');
+          setSort('name_asc');
         }}
       />
       <DataTable

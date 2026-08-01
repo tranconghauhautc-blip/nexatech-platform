@@ -18,6 +18,14 @@ async function bootstrap() {
       'lab/ssrf-probe',
       'lab/supply-chain',
       'lab/jwt-alg-none',
+      'lab/reflect-headers',
+      'lab/login-get',
+      'lab/error-stack',
+      'lab/api-inventory',
+      'lab/set-cookie',
+      'lab/verify-bypass',
+      'lab/oauth-callback',
+      'lab/content-type',
     ],
   });
   app.enableVersioning({ type: VersioningType.URI, defaultVersion: '1' });

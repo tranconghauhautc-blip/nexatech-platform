@@ -50,11 +50,12 @@ export default function CategoriesPage() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
+  const [sort, setSort] = useState('name_asc');
 
   const flat = useMemo(() => flattenCategoryTree(items), [items]);
   const filteredFlat = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return flat.filter(({ node }) => {
+    const rows = flat.filter(({ node }) => {
       if (statusFilter === 'active' && !node.isActive) return false;
       if (statusFilter === 'inactive' && node.isActive) return false;
       if (!q) return true;
@@ -63,7 +64,15 @@ export default function CategoriesPage() {
         node.slug.toLowerCase().includes(q)
       );
     });
-  }, [flat, search, statusFilter]);
+    const sorted = [...rows];
+    sorted.sort((a, b) => {
+      if (sort === 'name_desc') return b.node.name.localeCompare(a.node.name);
+      if (sort === 'sortOrder_asc') return a.node.sortOrder - b.node.sortOrder;
+      if (sort === 'sortOrder_desc') return b.node.sortOrder - a.node.sortOrder;
+      return a.node.name.localeCompare(b.node.name);
+    });
+    return sorted;
+  }, [flat, search, statusFilter, sort]);
   const parentOptions = useMemo(
     () =>
       excludeSubtree(flat, editingId).map(({ node, depth }) => ({
@@ -234,11 +243,20 @@ export default function CategoriesPage() {
           { value: 'active', label: 'Hoạt động' },
           { value: 'inactive', label: 'Đã ẩn' },
         ]}
+        sortValue={sort}
+        onSortChange={setSort}
+        sortOptions={[
+          { value: 'name_asc', label: 'Tên A→Z' },
+          { value: 'name_desc', label: 'Tên Z→A' },
+          { value: 'sortOrder_asc', label: 'Thứ tự tăng' },
+          { value: 'sortOrder_desc', label: 'Thứ tự giảm' },
+        ]}
         onApply={() => setSearch(searchInput.trim())}
         onReset={() => {
           setSearchInput('');
           setSearch('');
           setStatusFilter('');
+          setSort('name_asc');
         }}
       />
       <div className="nx-card">

@@ -62,6 +62,14 @@
 
 ## Nhật ký
 
+### 2026-08-01 — Audit gap-close (sort, admin users CRUD, SC-76…95, ADR-044 docs)
+
+- Admin `danh-muc` / `thuong-hieu` (+ kho, cửa hàng, media, thông báo, nhật ký, báo cáo) ListToolbar `sortOptions`.
+- Identity `POST /admin/users`, `POST|DELETE …/disable`, `GET …/export`; Super Admin UI create + soft-disable.
+- OWASP density: SC-76…SC-95 HTTP-executable always-on; matrices ~30+ API / ~30+ Web; public HTML guides updated.
+- Docs: SECURITY-BASELINE / FINAL-HANDOFF / DECISIONS ADR-040 aligned with ADR-044 (vulns always on).
+- Focused tests: `shared-security-lab` (+ identity auth where needed).
+
 ### 2026-08-01 — Storefront filters: brand/category selects + guest tracking
 
 - ProductFilters: brand `<select>` từ `GET /brands`; search page thêm category select từ cây danh mục.

