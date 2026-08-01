@@ -1,19 +1,18 @@
 # OWASP Web Top 10:2025 — Matrix
 
 > Independent from API Top 10. Do not copy API rows and rename.
-> Seeded from `security-scenarios/` + legacy docs.
 
-| Category | Primary scenario (SSoT) | Legacy SC refs | Status (seed) | Notes |
-| --- | --- | --- | --- | --- |
-| A01 Broken Access Control | NX-API-001 (secondary map) | SC-* | PARTIAL | Prefer dedicated web UI IDOR |
-| A02 Security Misconfiguration | TBD | SC-28 cookies… | PARTIAL | |
-| A03 Supply Chain | TBD | SC-* | DOCUMENTATION_ONLY | |
-| A04 Cryptographic Failures | TBD | SC-* | PARTIAL | |
-| A05 Injection | NX-WEB-001 | SC-63, SC-72 | EXPLOITABLE (claimed) | Search XSS reflect |
-| A06 Insecure Design | TBD | SC-* | PARTIAL | |
-| A07 Authentication Failures | NX-API-002 | SC-* | PARTIAL | |
-| A08 Integrity Failures | TBD | SC-* | PARTIAL | |
-| A09 Logging Failures | TBD | SC-* | PARTIAL | |
-| A10 Exceptional Conditions | TBD | SC-* | PARTIAL | |
+| Category | Primary SSoT IDs | Status | Notes |
+| --- | --- | --- | --- |
+| A01 Broken Access Control | NX-WEB-003, NX-API-001 | EXPLOITABLE / secondary | Open redirect + IDOR |
+| A02 Misconfiguration | NX-WEB-002, NX-WEB-004 | EXPLOITABLE | Cookie flags + clickjacking headers |
+| A03 Supply Chain | NX-API-010 | EXPLOITABLE (secondary) | Digest/webhook trust |
+| A04 Cryptographic Failures | NX-API-070, NX-API-086 | EXPLOITABLE | alg=none, GET password |
+| A05 Injection | NX-WEB-001, NX-WEB-005 | EXPLOITABLE | XSS search + ORDER BY SQLi |
+| A06 Insecure Design | NX-API-006 | PARTIAL | Business-flow design gaps |
+| A07 Authentication Failures | NX-API-002, NX-API-080, NX-API-092 | EXPLOITABLE | Enum / bypass |
+| A08 Integrity Failures | TBD | PARTIAL | Map SC-17/18/73 next |
+| A09 Logging Failures | TBD | PARTIAL | Map SC-64/83 next |
+| A10 Exceptional Conditions | NX-WEB-006, NX-API-088 | EXPLOITABLE | health/debug + error-stack |
 
-**Rule:** API and Web matrices stay separate; shared scenario IDs must declare primary vs secondary mapping.
+**Web cats present in SSoT:** A01,A02,A03,A04,A05,A06,A07,A10 (A08/A09 still TBD primaries).

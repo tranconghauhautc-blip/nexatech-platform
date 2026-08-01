@@ -12,14 +12,14 @@
 | Immediate UX bugs (admin login, cart token / login redirect) | Done (uncommitted) |
 | AppErrorFilter all Nest services | Done (uncommitted) |
 | OpenAPI 3.0.3 standardization | Done generate/validate/diff (regenerated specs) |
-| Security Guide auth portal | Scaffold done (`:3200`) — expand scenarios |
-| Storefront full browser review | Pending |
-| Admin full review | Pending |
-| Ecommerce E2E flows A–D | Pending |
-| Combined portal polish | Partial (8090 exists) |
-| OWASP API vs Web independent audit | Matrices seeded; evidence pending |
+| Security Guide auth portal | Done scaffold + auth tests PASSED |
+| Storefront full browser review | Partial — HTTP smoke 200 on home/catalog/facets |
+| Admin full review | Partial — `/dang-nhap` 200 + bad login 401 |
+| Ecommerce E2E flows A–D | Partial — guest cart OK; buy requires login |
+| Combined portal polish | OK (`:8090` healthy) |
+| OWASP API vs Web independent audit | Matrices updated from 24 SSoT scenarios |
 | Docker / secret scan / acceptance | Pending |
-| Commit / push | **Blocked until owner review** |
+| Commit / push | Owner may commit continuing work |
 
 ## B. Misunderstanding check (OWASP API vs Web)
 

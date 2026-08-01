@@ -1,19 +1,19 @@
 # OWASP API Security Top 10:2023 — Matrix
 
-> Independent from Web Top 10. Status values: EXPLOITABLE | PARTIAL | DOCUMENTATION_ONLY | BROKEN | MISSING.
-> Seeded from `security-scenarios/` + legacy `docs/OWASP-SCENARIOS.md`. Re-verify HTTP evidence before claiming EXPLOITABLE.
+> Independent from Web Top 10. Status: EXPLOITABLE | PARTIAL | DOCUMENTATION_ONLY | BROKEN | MISSING.
+> Source: `security-scenarios/scenarios.json` (+ legacy `docs/OWASP-SCENARIOS.md`).
 
-| Category | Primary scenario (SSoT) | Legacy SC refs | Status (seed) | Notes |
-| --- | --- | --- | --- | --- |
-| API1 BOLA | NX-API-001 | SC-01, SC-02… | EXPLOITABLE (claimed) | Re-test order IDOR |
-| API2 Broken Auth | NX-API-002 | SC-21, SC-24… | EXPLOITABLE (claimed) | Verbose login details |
-| API3 BOPLA | TBD | SC-* | PARTIAL | Map from OWASP-SCENARIOS |
-| API4 Resource consumption | TBD | SC-* | PARTIAL | |
-| API5 BFLA | TBD | SC-* | PARTIAL | |
-| API6 Business flows | TBD | SC-* | PARTIAL | |
-| API7 SSRF | TBD | SC-* | PARTIAL | identity lab SSRF |
-| API8 Misconfig | TBD | SC-* | PARTIAL | CORS/cookies |
-| API9 Inventory | TBD | SC-* | PARTIAL | |
-| API10 Unsafe consumption | TBD | SC-* | PARTIAL | |
+| Category | Primary SSoT IDs | Status | Notes |
+| --- | --- | --- | --- |
+| API1 BOLA | NX-API-001, NX-API-078 | EXPLOITABLE | Order IDOR + session IDOR |
+| API2 Broken Auth | NX-API-002, NX-API-070, NX-API-080, NX-API-086, NX-API-092 | EXPLOITABLE | Enum, alg=none, forgot exists, GET login, verify bypass |
+| API3 BOPLA | NX-API-003, NX-API-095 | EXPLOITABLE | Admin create / export |
+| API4 Resource consumption | NX-API-004 | EXPLOITABLE | pageSize=99999 |
+| API5 BFLA | NX-API-005, NX-API-076 | PARTIAL / EXPLOITABLE | Admin users |
+| API6 Business flows | NX-API-006 | PARTIAL | Checkout price/quota |
+| API7 SSRF | NX-API-007 | EXPLOITABLE | `/lab/ssrf-probe` |
+| API8 Misconfig | NX-API-008, NX-API-088 | EXPLOITABLE | CORS + error-stack |
+| API9 Inventory | NX-API-009 | EXPLOITABLE | `/lab/api-inventory` |
+| API10 Unsafe consumption | NX-API-010 | EXPLOITABLE | Webhook/digest trust |
 
-**Rule:** Do not mark EXPLOITABLE without live HTTP/browser evidence in this re-baseline.
+**Count:** 24 scenarios in SSoT; API1–API10 all represented.

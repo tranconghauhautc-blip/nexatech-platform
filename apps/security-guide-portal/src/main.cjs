@@ -36,16 +36,30 @@ function resolveRootCandidates() {
 }
 
 function loadConfig() {
-  const env = { ...process.env };
+  const fromFiles = {};
   for (const root of resolveRootCandidates()) {
     const local = path.join(root, '.env.security-guide.local');
-    Object.assign(env, loadEnvFile(local));
+    Object.assign(fromFiles, loadEnvFile(local));
   }
+  // Process env wins so tests can inject temporary credentials safely.
   return {
-    username: env.SECURITY_GUIDE_USERNAME || '',
-    passwordHash: env.SECURITY_GUIDE_PASSWORD_HASH || '',
-    sessionSecret: env.SECURITY_GUIDE_SESSION_SECRET || '',
-    ttlSeconds: Number(env.SECURITY_GUIDE_SESSION_TTL_SECONDS || 28800),
+    username:
+      process.env.SECURITY_GUIDE_USERNAME ||
+      fromFiles.SECURITY_GUIDE_USERNAME ||
+      '',
+    passwordHash:
+      process.env.SECURITY_GUIDE_PASSWORD_HASH ||
+      fromFiles.SECURITY_GUIDE_PASSWORD_HASH ||
+      '',
+    sessionSecret:
+      process.env.SECURITY_GUIDE_SESSION_SECRET ||
+      fromFiles.SECURITY_GUIDE_SESSION_SECRET ||
+      '',
+    ttlSeconds: Number(
+      process.env.SECURITY_GUIDE_SESSION_TTL_SECONDS ||
+        fromFiles.SECURITY_GUIDE_SESSION_TTL_SECONDS ||
+        28800,
+    ),
   };
 }
 
@@ -154,13 +168,18 @@ const ready =
   config.username.length >= 3 &&
   config.passwordHash.length > 20 &&
   config.sessionSecret.length >= 32;
+/** @type {Set<string>} */
+const revokedNonces = new Set();
 
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
   const cookies = parseCookies(req.headers.cookie);
-  const session = ready
+  let session = ready
     ? verifySession(cookies[COOKIE], config.sessionSecret)
     : null;
+  if (session?.nonce && revokedNonces.has(String(session.nonce))) {
+    session = null;
+  }
 
   if (!ready) {
     send(res, 503, unavailablePage());
@@ -231,6 +250,9 @@ const server = http.createServer(async (req, res) => {
   }
 
   if (url.pathname === '/security-guide/logout') {
+    if (session?.nonce) {
+      revokedNonces.add(String(session.nonce));
+    }
     res.writeHead(302, {
       Location: '/security-guide/login',
       'Set-Cookie': `${COOKIE}=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0`,

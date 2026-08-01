@@ -34,15 +34,18 @@ Rules:
 3. Attach media id to product
 4. Verify Storefront PDP gallery
 
-## Batch script (planned)
+## Batch script
 
 ```powershell
-# Forthcoming: scripts/import-product-images.cjs
-#   --dir imports/product-images
-#   --report missing.csv
+# Dry-run mapping report (no upload)
+node scripts/import-product-images.cjs --dir imports/product-images --dry-run --report report.json
+
+# Upload + confirm + best-effort link
+$env:NEXATECH_ALLOW_DEV_SEED='YES'
+node scripts/import-product-images.cjs --dir imports/product-images --report report.json
 ```
 
-This session does **not** generate fake AI images. Operator supplies files.
+Also: `pnpm import:product-images -- --dir imports/product-images --dry-run`
 
 ## Fallback
 

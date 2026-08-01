@@ -16,11 +16,12 @@
 - [x] Force OpenAPI **3.0.3** (generate/validate/diff/check) + ADR
 - [x] Security Guide portal scaffold (`:3200`) + `pnpm security-guide:setup`
 - [x] Scenario SSoT seed (`security-scenarios/`)
-- [ ] Expand all SC-* into SSoT with HTTP evidence
+- [x] Expand security-scenarios SSoT (24 scenarios; API1–10 covered)
+- [x] Authenticated Security Guide tests (`pnpm security-guide:test`)
+- [x] Product image import script (`scripts/import-product-images.cjs`)
 - [ ] Authenticated guide replaces public `/lab/*.html` (keep until migrated)
-- [ ] Full storefront/admin browser acceptance
-- [ ] Product image import pipeline
-- [ ] Owner review → commit
+- [ ] Full storefront/admin browser acceptance (HTTP smoke OK)
+- [ ] Owner-supplied product images import
 
 ## Roadmap milestone
 
@@ -30,7 +31,7 @@
 | M19    | Deployment preflight / release readiness         | ✅ Done    | `2fad006` |
 | M20    | Performance / reliability / DR                   | ✅ Done    | `53247e4` |
 | M21    | Security lab / OWASP intentional vulnerabilities | ✅ Done    | ADR-040   |
-| RB     | Full re-baseline / OpenAPI 3.0.3 / Guide auth    | 🔄 Active | no commit yet |
+| RB     | Full re-baseline / OpenAPI 3.0.3 / Guide auth    | 🔄 Active | `0f6f88b`+ |
 
 ## Commits
 

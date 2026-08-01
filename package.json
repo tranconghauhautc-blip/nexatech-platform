@@ -30,6 +30,9 @@
     "security-guide:setup": "node scripts/security-guide/setup.cjs",
     "security-guide:rotate-credentials": "node scripts/security-guide/rotate-credentials.cjs",
     "security-guide:serve": "node apps/security-guide-portal/src/main.cjs",
+    "security-guide:test": "node scripts/security-guide/test.cjs",
+    "security-guide:expand-scenarios": "node scripts/security-guide/expand-scenarios.cjs",
+    "import:product-images": "node scripts/import-product-images.cjs",
     "lab:smoke": "node scripts/local-lab-smoke.cjs"
   },
   "engines": {
