@@ -86,14 +86,26 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
         type: 'success',
         message: 'Đã thêm sản phẩm vào giỏ hàng.',
       });
+      return true;
     } catch (error) {
       setFeedback({ type: 'error', message: getErrorMessage(error) });
+      return false;
     }
   }
 
   async function handleBuyNow() {
-    await handleAddToCart();
-    router.push('/gio-hang');
+    setFeedback(null);
+    try {
+      await addItem(selectedSku!.skuCode, quantity);
+      // TGDD-style: mua ngay → thanh toán nếu đã đăng nhập, không thì giỏ hàng.
+      if (isAuthenticated) {
+        router.push('/thanh-toan');
+      } else {
+        router.push('/gio-hang');
+      }
+    } catch (error) {
+      setFeedback({ type: 'error', message: getErrorMessage(error) });
+    }
   }
 
   async function handleAddWishlist() {
@@ -213,7 +225,7 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
           type="button"
           className="nt-btn nt-btn--outline nt-btn--block"
           onClick={handleAddToCart}
-          disabled={mutating}
+          disabled={mutating || !inStock}
         >
           Thêm vào giỏ hàng
         </button>
@@ -221,7 +233,7 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
           type="button"
           className="nt-btn nt-btn--primary nt-btn--block"
           onClick={handleBuyNow}
-          disabled={mutating}
+          disabled={mutating || !inStock}
         >
           Mua ngay
         </button>

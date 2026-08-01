@@ -126,10 +126,6 @@ routes:
     service: identity-service
     paths: ['/api/v1/admin/users', '/api/v2/admin/users']
     strip_path: false
-  - name: identity-admin-users
-    service: identity-service
-    paths: ['/api/v1/admin/users', '/api/v2/admin/users']
-    strip_path: false
   - name: customer
     service: customer-service
     paths: ['/api/v1/customers', '/api/v2/customers']
@@ -188,8 +184,12 @@ routes:
       [
         '/api/v1/cart',
         '/api/v2/cart',
+        '/api/v1/carts',
+        '/api/v2/carts',
         '/api/v1/wishlist',
         '/api/v2/wishlist',
+        '/api/v1/comparison',
+        '/api/v2/comparison',
         '/api/v1/comparisons',
         '/api/v2/comparisons',
         '/api/v1/recently-viewed',

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { sessionCookieOptions } from '@nexatech/shared-security-lab';
 import {
   bffTimeoutMs,
   fetchWithTimeout,
@@ -7,6 +8,8 @@ import {
 } from '@nexatech/shared-web';
 import { CART_TOKEN_COOKIE, SESSION_COOKIE, type SessionData } from './session';
 import { getInternalServiceBaseUrl, isServiceName } from './env';
+
+const CART_TOKEN_MAX_AGE_SECONDS = 30 * 24 * 60 * 60;
 
 function readSession(req: NextRequest): SessionData | null {
   const raw = req.cookies.get(SESSION_COOKIE)?.value;
@@ -19,6 +22,22 @@ function readSession(req: NextRequest): SessionData | null {
       return null;
     }
     return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function extractGuestCartToken(body: ArrayBuffer, contentType: string | null): string | null {
+  if (!contentType?.includes('application/json') || body.byteLength === 0) {
+    return null;
+  }
+  try {
+    const text = new TextDecoder().decode(body);
+    const parsed = JSON.parse(text) as { guestCartToken?: unknown };
+    return typeof parsed.guestCartToken === 'string' &&
+      parsed.guestCartToken.trim().length >= 16
+      ? parsed.guestCartToken.trim()
+      : null;
   } catch {
     return null;
   }
@@ -100,10 +119,28 @@ export async function proxyToService(
     }
     responseHeaders.set('x-request-id', headers.get('x-request-id') ?? traceId);
     responseHeaders.set('x-trace-id', headers.get('x-trace-id') ?? traceId);
-    return new NextResponse(body, {
+
+    const response = new NextResponse(body, {
       status: upstream.status,
       headers: responseHeaders,
     });
+
+    // Persist guest cart token so subsequent BFF calls include x-cart-token.
+    if (service === 'cart' && upstream.ok) {
+      const guestToken = extractGuestCartToken(body, contentType);
+      if (guestToken) {
+        const cookieOpts = sessionCookieOptions();
+        response.cookies.set(CART_TOKEN_COOKIE, guestToken, {
+          httpOnly: cookieOpts.httpOnly,
+          secure: cookieOpts.secure,
+          sameSite: cookieOpts.sameSite,
+          path: '/',
+          maxAge: CART_TOKEN_MAX_AGE_SECONDS,
+        });
+      }
+    }
+
+    return response;
   } catch {
     return NextResponse.json(upstreamUnavailableEnvelope(traceId), {
       status: 502,

@@ -46,18 +46,21 @@ export function isServiceName(value: string): value is ServiceName {
 
 /**
  * Trả về base URL nội bộ (server-side) cho một service.
- * Nếu `INTERNAL_API_BASE_URL` (Kong) được cấu hình thì dùng gateway đó —
- * Kong route theo path `/api/v1/...` (không có prefix `/{service}`).
- * Ngược lại dùng biến môi trường riêng của từng service.
+ * Ưu tiên `*_SERVICE_URL` (gọi thẳng microservice trong Docker).
+ * Nếu không có, dùng `INTERNAL_API_BASE_URL` (Kong) với path `/api/v1/...`
+ * (Kong không dùng prefix `/{service}`).
  */
 export function getInternalServiceBaseUrl(service: ServiceName): string {
+  const { envKey, fallback } = SERVICE_ENV_MAP[service];
+  const value = process.env[envKey]?.trim();
+  if (value && value.length > 0) {
+    return value.replace(/\/+$/, '');
+  }
   const gatewayBase = process.env['INTERNAL_API_BASE_URL']?.trim();
   if (gatewayBase) {
     return gatewayBase.replace(/\/+$/, '');
   }
-  const { envKey, fallback } = SERVICE_ENV_MAP[service];
-  const value = process.env[envKey]?.trim();
-  return value && value.length > 0 ? value : fallback;
+  return fallback;
 }
 
 /** URL public (trình duyệt) tới media-service để hiển thị ảnh/video. */

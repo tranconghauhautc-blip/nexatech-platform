@@ -13,20 +13,25 @@ export default function CartPage() {
   const {
     cart,
     loading,
-    error,
+    loadError,
+    actionError: cartActionError,
     subtotal,
     refresh,
     updateItem,
     removeItem,
     mutating,
+    clearActionError,
   } = useCart();
   const [actionError, setActionError] = useState<string | null>(null);
   const [issues, setIssues] = useState<CartValidationIssue[]>([]);
   const [busy, setBusy] = useState(false);
 
+  const displayError = actionError ?? cartActionError;
+
   async function onRefreshPrices() {
     setBusy(true);
     setActionError(null);
+    clearActionError();
     try {
       await bff.post('/api/bff/cart/carts/current/refresh');
       await refresh();
@@ -40,6 +45,7 @@ export default function CartPage() {
   async function onValidate() {
     setBusy(true);
     setActionError(null);
+    clearActionError();
     try {
       const result = await bff.post<{ issues?: CartValidationIssue[] }>(
         '/api/bff/cart/carts/current/validate',
@@ -64,12 +70,12 @@ export default function CartPage() {
     );
   }
 
-  if (error) {
+  if (loadError && !cart) {
     return (
       <div className="nt-container" style={{ padding: '2rem 0' }}>
         <EmptyState
           title="Không tải được giỏ hàng"
-          description={error}
+          description={loadError}
           action={
             <button
               type="button"
@@ -104,9 +110,9 @@ export default function CartPage() {
   return (
     <div className={`nt-container ${styles.root}`}>
       <h1 className={styles.title}>Giỏ hàng</h1>
-      {actionError ? (
+      {displayError ? (
         <p className={styles.error} role="alert">
-          {actionError}
+          {displayError}
         </p>
       ) : null}
       {issues.length > 0 ? (
