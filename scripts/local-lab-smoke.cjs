@@ -123,6 +123,38 @@ async function main() {
     }
   }
 
+  // Security Guide portal (authenticated recipes) + storefront redirect stubs
+  for (const [name, url, opts] of [
+    [
+      'security-guide-health',
+      'http://127.0.0.1:3200/health',
+      { include: 'ready' },
+    ],
+    [
+      'security-guide-unauth',
+      'http://127.0.0.1:3200/security-guide',
+      { expectStatus: 302 },
+    ],
+    [
+      'storefront-lab-api-stub',
+      'http://127.0.0.1:3000/lab/owasp-api-top10.html',
+      { include: 'Security Guide' },
+    ],
+    [
+      'storefront-lab-web-stub',
+      'http://127.0.0.1:3000/lab/owasp-web-top10.html',
+      { include: 'Security Guide' },
+    ],
+  ]) {
+    try {
+      const status = await check(url, opts);
+      console.log(`[lab-smoke] OK ${name} → ${status}`);
+    } catch (err) {
+      failures.push(`${name}: ${err.message}`);
+      console.error(`[lab-smoke] FAIL ${name}: ${err.message}`);
+    }
+  }
+
   // Identity Swagger Authorize flow (login + me) when seed password provided
   const seedPassword =
     process.env.DEV_SEED_PASSWORD || process.env.E2E_DEV_SEED_PASSWORD;

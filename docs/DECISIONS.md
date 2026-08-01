@@ -381,7 +381,7 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - **Quyết định:** Bỏ toàn bộ dual-gate / `FORCE_SECURE` / secure policy branch. `@nexatech/shared-security-lab` **luôn** trả về hành vi vulnerable; `isSecurityLabEnabled()` luôn `true`.
 - **Mục đích:** Chứng minh WAF và API Security appliance phát hiện/chặn tấn công trên ứng dụng sống (mọi môi trường: local Compose, K8s, …).
 - **HTTP executable:** BOLA/BFLA/mass-assignment (admin users create/disable/export), SSRF `/lab/ssrf-probe`, SQLi ORDER BY, XSS `/tim-kiem?q=`, open redirect, JWT `alg=none` + query token, CSRF Origin skip, debug leak, host-header reset poison, GET login, verify-bypass, SC-70…SC-95 lab probes, v.v.
-- **Public guides (không auth):** `http://localhost:3000/lab/owasp-api-top10.html`, `http://localhost:3000/lab/owasp-web-top10.html`.
+- **Exploit guides:** recipes nằm sau Security Guide auth (`:3200/security-guide/guides/…`). Storefront `/lab/owasp-*.html` chỉ còn redirect stub.
 - **Cấm:** thêm lại toggle tắt lỗ hổng cho runtime PoC; coi đây là production hardening mặc định.
 - **Hệ quả:** ADR-040 dual-profile lab gate bị thay thế cho mục tiêu appliance PoC.
 
@@ -399,6 +399,6 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 ## ADR-046 — OpenAPI 3.0.3 mandatory + authenticated Security Guide
 
 - **Quyết định:** Toàn bộ specs = OpenAPI **3.0.3** (xem `docs/adr/ADR-OPENAPI-3-0-3.md`). Commands: `openapi:generate|combine|validate|diff|check`.
-- **Security Guide:** portal `apps/security-guide-portal` port **3200**, credential qua `pnpm security-guide:setup` → gitignored `.env.security-guide.local` (bcrypt hash, no plaintext password). Fail-closed nếu thiếu config.
+- **Security Guide:** portal `apps/security-guide-portal` port **3200**, credential qua `pnpm security-guide:setup` → gitignored `.env.security-guide.local` (bcrypt hash, no plaintext password). Fail-closed nếu thiếu config. HTML OWASP guides phục vụ tại `/security-guide/guides/*` (session required).
 - Scenario SSoT: `security-scenarios/scenarios.{yaml,json}`.
-- **Cấm:** upgrade OpenAPI 3.1/3.2 không ADR; hard-code guide password; public default guide credentials.
+- **Cấm:** upgrade OpenAPI 3.1/3.2 không ADR; hard-code guide password; public default guide credentials; public exploit recipe HTML trên storefront.

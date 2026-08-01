@@ -139,6 +139,22 @@ async function main() {
     assert(api.status === 200, `api ${api.status}`);
     assert(api.body.includes('scenarios'), 'scenarios json');
 
+    const guideUnauth = await request('GET', '/security-guide/guides/owasp-api-top10');
+    assert(guideUnauth.status === 302, `guide unauth ${guideUnauth.status}`);
+    assert(
+      String(guideUnauth.headers.location || '').includes('/security-guide/login'),
+      'guide redirects login',
+    );
+
+    const guideAuth = await request('GET', '/security-guide/guides/owasp-api-top10', {
+      headers: { cookie },
+    });
+    assert(guideAuth.status === 200, `guide auth ${guideAuth.status}`);
+    assert(
+      guideAuth.body.includes('API1') || guideAuth.body.includes('BOLA'),
+      'guide html body',
+    );
+
     const logout = await request('GET', '/security-guide/logout', {
       headers: { cookie },
     });

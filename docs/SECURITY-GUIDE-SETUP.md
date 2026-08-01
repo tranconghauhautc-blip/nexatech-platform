@@ -46,4 +46,13 @@ Without the env file the portal **fail-closes** (HTTP 503) — no default creden
 
 `security-scenarios/scenarios.json` (+ YAML twin). Expand this file; Guide reads JSON at runtime.
 
+## HTML guides (authenticated)
+
+- http://localhost:3200/security-guide/guides/owasp-api-top10
+- http://localhost:3200/security-guide/guides/owasp-web-top10
+
+Source files: `apps/security-guide-portal/guides/*.html`. Unauthenticated requests redirect to login.
+
+Storefront `/lab/owasp-*.html` are **redirect stubs only** (no exploit recipes).
+
 Do **not** put operator passwords in docs, OpenAPI, or Git.

@@ -16,7 +16,7 @@
 | Storefront ProductFilters | Brand list + price chips | UX | Category PLP | Yes | Polish empty states | — |
 | Admin `/nguoi-dung` + Identity admin users | Real CRUD vs stub | Admin UX | List/create/patch/disable | Yes | RBAC audit | BOLA lab scenarios nearby |
 | PasswordField (admin+storefront) | Eye toggle when value | UX | Works | Yes | — | — |
-| Public `/lab/owasp-*.html` | Unauthenticated exploit guides | Quick PoC | Public | Keep until Security Guide auth portal replaces | Move behind auth per new requirements | Public exploit recipes |
+| Authenticated HTML guides | `apps/security-guide-portal/guides` + storefront redirect stubs | Recipes behind Guide auth | Lab operators | Keep | Done — public recipes removed | Redirect stubs only on :3000 |
 | `scripts/seed-inventory.cjs` | Stock all SKUs | Cart/checkout demo | Local only | Yes | Wire into docs/seed story | — |
 | Kong `kong.yml` | carts/comparison paths; dedupe admin users | Routing | Healthy after fix | Yes | Validate full path matrix | Duplicate names crash Kong |
 | OpenAPI generated files | Mix 3.0.0 / combined 3.0.3; `api.example.invalid` | Docs tooling | Drift | Specs | Force 3.0.3; reorder servers | Tooling import issues |

@@ -301,6 +301,8 @@ const server = http.createServer(async (req, res) => {
         <p>Scenarios: ${scenarios.length} · EXPLOITABLE: ${exploitable}</p>
         <p><a href="/security-guide/api-2023">OWASP API Top 10:2023</a> ·
            <a href="/security-guide/web-2025">OWASP Web Top 10:2025</a> ·
+           <a href="/security-guide/guides/owasp-api-top10">API HTML guide</a> ·
+           <a href="/security-guide/guides/owasp-web-top10">Web HTML guide</a> ·
            <a href="http://localhost:8090/">Combined Swagger</a> ·
            <a href="http://localhost:8000/openapi/nexatech-combined.openapi.yaml">OpenAPI YAML</a></p>
         </div>
@@ -386,6 +388,50 @@ const server = http.createServer(async (req, res) => {
       JSON.stringify(catalog),
       'application/json; charset=utf-8',
     );
+    return;
+  }
+
+  const guideMatch = /^\/security-guide\/guides\/([a-z0-9-]+)(?:\.html)?$/.exec(
+    url.pathname,
+  );
+  if (guideMatch) {
+    const name = guideMatch[1];
+    const allowed = new Set(['owasp-api-top10', 'owasp-web-top10']);
+    if (!allowed.has(name)) {
+      send(
+        res,
+        404,
+        layout('404', `<div class="card"><h1>Guide not found</h1></div>`, {
+          user: session,
+        }),
+      );
+      return;
+    }
+    let html = null;
+    for (const root of resolveRootCandidates()) {
+      const candidates = [
+        path.join(root, 'apps/security-guide-portal/guides', `${name}.html`),
+        path.join(__dirname, '../guides', `${name}.html`),
+      ];
+      for (const p of candidates) {
+        if (fs.existsSync(p)) {
+          html = fs.readFileSync(p, 'utf8');
+          break;
+        }
+      }
+      if (html) break;
+    }
+    if (!html) {
+      send(
+        res,
+        404,
+        layout('404', `<div class="card"><h1>Guide file missing</h1></div>`, {
+          user: session,
+        }),
+      );
+      return;
+    }
+    send(res, 200, html);
     return;
   }
 

@@ -48,10 +48,14 @@ export function SiteFooter() {
               <Link href="/thanh-toan">Hướng dẫn thanh toán</Link>
             </li>
             <li>
-              <a href="/lab/owasp-api-top10.html">Lab OWASP API (PoC)</a>
+              <a href="http://localhost:3200/security-guide/guides/owasp-api-top10">
+                Lab OWASP API (Security Guide)
+              </a>
             </li>
             <li>
-              <a href="/lab/owasp-web-top10.html">Lab OWASP Web (PoC)</a>
+              <a href="http://localhost:3200/security-guide/guides/owasp-web-top10">
+                Lab OWASP Web (Security Guide)
+              </a>
             </li>
           </ul>
         </div>

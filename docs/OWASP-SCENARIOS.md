@@ -4,8 +4,8 @@
 
 Public browser guides (no auth):
 
-- `/lab/owasp-api-top10.html`
-- `/lab/owasp-web-top10.html`
+- `/security-guide/guides/owasp-api-top10` (authenticated Security Guide)
+- `/security-guide/guides/owasp-web-top10` (authenticated Security Guide)
 
 Official references:
 

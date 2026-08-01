@@ -18,6 +18,7 @@ Missing username, password hash, or session secret → portal returns **503** �
 | --- | --- |
 | `/security-guide/login` | Public |
 | `/security-guide`, `/security-guide/*` | Session required (HTML → redirect) |
+| `/security-guide/guides/*` | Session required (OWASP HTML recipes) |
 | `/api/security-guide/*` | Session required (401 JSON) |
 | `/health` | Public |
 

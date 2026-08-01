@@ -140,8 +140,10 @@ Intentional OWASP API + Web risks **luôn bật** — không cần `NEXATECH_SEC
 
 Public guides (customer mở được, không auth):
 
-- http://localhost:3000/lab/owasp-api-top10.html
-- http://localhost:3000/lab/owasp-web-top10.html
+- http://localhost:3200/security-guide/guides/owasp-api-top10 (auth)
+- http://localhost:3200/security-guide/guides/owasp-web-top10 (auth)
+
+Storefront stubs (redirect only): `/lab/owasp-api-top10.html`, `/lab/owasp-web-top10.html`.
 
 Admin dashboard: http://localhost:3100/security-lab (Staff+ session).
 

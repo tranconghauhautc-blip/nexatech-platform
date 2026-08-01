@@ -5,8 +5,9 @@
 - **Milestone đang làm:** Full project re-baseline (OpenAPI 3.0.3, Security Guide auth, functional audit)
 - **Milestone đã hoàn thành gần nhất:** M21 (security lab / OWASP) + post-hardening
 - **Cập nhật lần cuối:** 2026-08-01
-- **Branch:** `main` (working tree dirty — **chưa commit** theo yêu cầu review)
+- **Branch:** `main`
 - **Baseline docs:** `docs/CURRENT-PROJECT-BASELINE.md`, `CUSTOM-CHANGES-INVENTORY.md`, `FULL-SYSTEM-AUDIT.md`
+- **Latest commit note:** Security Guide auth + OpenAPI 3.0.3 re-baseline pushed (`16355e8`+)
 
 ## Re-baseline in progress
 
@@ -19,9 +20,10 @@
 - [x] Expand security-scenarios SSoT (24 scenarios; API1–10 covered)
 - [x] Authenticated Security Guide tests (`pnpm security-guide:test`)
 - [x] Product image import script (`scripts/import-product-images.cjs`)
-- [ ] Authenticated guide replaces public `/lab/*.html` (keep until migrated)
-- [ ] Full storefront/admin browser acceptance (HTTP smoke OK)
+- [x] Authenticated guide serves HTML OWASP guides (storefront `/lab` = redirect stub)
+- [x] Full storefront/admin HTTP smoke (`pnpm lab:smoke` PASSED after storefront rebuild)
 - [ ] Owner-supplied product images import
+- [ ] Full browser E2E checkout (needs seed password)
 
 ## Roadmap milestone
 
