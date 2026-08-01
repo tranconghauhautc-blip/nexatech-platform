@@ -17,6 +17,11 @@ export class CatalogController {
     return this.catalogService.listBrands();
   }
 
+  @Get('products/facets')
+  productFacets(@Query() query: Record<string, unknown>) {
+    return this.catalogService.getProductFacets(query);
+  }
+
   @Get('products')
   products(@Query() query: Record<string, unknown>) {
     return this.catalogService.searchProducts(query);

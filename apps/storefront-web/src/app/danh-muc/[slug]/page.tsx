@@ -8,8 +8,8 @@ import { Breadcrumbs } from '../../../components/common/breadcrumbs';
 import { ProductFilters } from '../../../components/catalog/product-filters';
 import {
   findCategoryBySlug,
-  getBrands,
   getCategoryTree,
+  getProductFacets,
   searchProducts,
 } from '../../../lib/catalog-server';
 import { NAV_CATEGORIES } from '../../../lib/constants';
@@ -50,7 +50,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const minPrice = first(sp['minPrice']);
   const maxPrice = first(sp['maxPrice']);
 
-  const [tree, brands] = await Promise.all([getCategoryTree(), getBrands()]);
+  const tree = await getCategoryTree();
   const category =
     findCategoryBySlug(tree, slug) ??
     NAV_CATEGORIES.find((c) => c.slug === slug);
@@ -58,7 +58,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     notFound();
   }
 
-  const result = await searchProducts({
+  const listQuery = {
     categorySlug: slug,
     page,
     pageSize: 12,
@@ -67,7 +67,17 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     brandSlug,
     minPrice: minPrice ? Number(minPrice) : undefined,
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
-  });
+  };
+
+  const [result, facets] = await Promise.all([
+    searchProducts(listQuery),
+    getProductFacets({
+      categorySlug: slug,
+      q,
+      minPrice: minPrice ? Number(minPrice) : undefined,
+      maxPrice: maxPrice ? Number(maxPrice) : undefined,
+    }),
+  ]);
 
   const label = 'name' in category ? category.name : category.label;
 
@@ -84,7 +94,8 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       <div className={styles.layout}>
         <ProductFilters
           basePath={`/danh-muc/${slug}`}
-          brands={brands}
+          brandFacets={facets.brands}
+          priceRange={facets.priceRange}
           current={{ q, brandSlug, sort, page, minPrice, maxPrice }}
         />
         <div>

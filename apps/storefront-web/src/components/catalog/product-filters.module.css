@@ -22,3 +22,9 @@
   outline: 2px solid #0284c7;
   outline-offset: 1px;
 }
+.hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.35;
+}

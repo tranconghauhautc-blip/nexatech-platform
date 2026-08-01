@@ -1,10 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { reflectSearchQuery } from '@nexatech/shared-security-lab';
 import { SORT_OPTIONS } from '../../lib/constants';
-import type { Brand } from '../../lib/types';
+import type { ProductFacetBrand } from '../../lib/types';
 import styles from './product-filters.module.css';
 
 export interface FilterCategoryOption {
@@ -23,7 +23,9 @@ interface Props {
     minPrice?: string;
     maxPrice?: string;
   };
-  brands: Brand[];
+  /** Brands available for current category/scope (from facets API). */
+  brandFacets: ProductFacetBrand[];
+  priceRange?: { min: number; max: number } | null;
   /** Optional category dropdown (search page). Omit on category PLP. */
   categories?: FilterCategoryOption[];
   /** SC-72 reflected XSS echo — raw query for WAF PoC when provided */
@@ -33,7 +35,8 @@ interface Props {
 export function ProductFilters({
   basePath,
   current,
-  brands,
+  brandFacets,
+  priceRange,
   categories,
   reflectHtml,
 }: Props) {
@@ -45,7 +48,22 @@ export function ProductFilters({
   const [minPrice, setMinPrice] = useState(current.minPrice ?? '');
   const [maxPrice, setMaxPrice] = useState(current.maxPrice ?? '');
 
-  const activeBrands = brands.filter((b) => b.isActive !== false);
+  const facetSlugs = useMemo(
+    () => new Set(brandFacets.map((b) => b.slug)),
+    [brandFacets],
+  );
+
+  // Drop brand when it is no longer in the narrowed facet list.
+  useEffect(() => {
+    if (brandSlug && facetSlugs.size > 0 && !facetSlugs.has(brandSlug)) {
+      setBrandSlug('');
+    }
+  }, [brandSlug, facetSlugs]);
+
+  function onCategoryChange(next: string) {
+    setCategorySlug(next);
+    setBrandSlug('');
+  }
 
   function onSubmit(event: FormEvent) {
     event.preventDefault();
@@ -98,7 +116,7 @@ export function ProductFilters({
             id="filter-category"
             className={styles.input}
             value={categorySlug}
-            onChange={(e) => setCategorySlug(e.target.value)}
+            onChange={(e) => onCategoryChange(e.target.value)}
           >
             <option value="">Tất cả danh mục</option>
             {categories.map((cat) => (
@@ -118,14 +136,22 @@ export function ProductFilters({
         className={styles.input}
         value={brandSlug}
         onChange={(e) => setBrandSlug(e.target.value)}
+        disabled={brandFacets.length === 0}
       >
-        <option value="">Tất cả thương hiệu</option>
-        {activeBrands.map((brand) => (
+        <option value="">
+          {brandFacets.length === 0
+            ? 'Không có thương hiệu phù hợp'
+            : 'Tất cả thương hiệu'}
+        </option>
+        {brandFacets.map((brand) => (
           <option key={brand.id} value={brand.slug}>
-            {brand.name}
+            {brand.name} ({brand.productCount})
           </option>
         ))}
       </select>
+      <p className={styles.hint}>
+        Chỉ hiện thương hiệu có sản phẩm trong phạm vi lọc hiện tại.
+      </p>
 
       <label className={styles.label} htmlFor="filter-min">
         Giá từ
@@ -137,7 +163,9 @@ export function ProductFilters({
         min={0}
         value={minPrice}
         onChange={(e) => setMinPrice(e.target.value)}
-        placeholder="0"
+        placeholder={
+          priceRange ? String(priceRange.min) : '0'
+        }
       />
 
       <label className={styles.label} htmlFor="filter-max">
@@ -150,8 +178,17 @@ export function ProductFilters({
         min={0}
         value={maxPrice}
         onChange={(e) => setMaxPrice(e.target.value)}
-        placeholder="Không giới hạn"
+        placeholder={
+          priceRange ? String(priceRange.max) : 'Không giới hạn'
+        }
       />
+      {priceRange ? (
+        <p className={styles.hint}>
+          Khoảng giá trong phạm vi:{' '}
+          {priceRange.min.toLocaleString('vi-VN')} –{' '}
+          {priceRange.max.toLocaleString('vi-VN')} ₫
+        </p>
+      ) : null}
 
       <label className={styles.label} htmlFor="filter-sort">
         Sắp xếp

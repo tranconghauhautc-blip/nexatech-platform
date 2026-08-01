@@ -24,7 +24,7 @@ const prisma = new PrismaClient();
 const CATEGORIES = [
   { slug: 'dien-thoai', name: 'Điện thoại', sortOrder: 1 },
   { slug: 'laptop', name: 'Laptop', sortOrder: 2 },
-  { slug: 'may-tinh-bang', name: 'Máy tính bảng', sortOrder: 3 },
+  { slug: 'tablet', name: 'Tablet', sortOrder: 3 },
   { slug: 'dong-ho-thong-minh', name: 'Đồng hồ thông minh', sortOrder: 4 },
   { slug: 'tai-nghe-loa', name: 'Tai nghe & loa', sortOrder: 5 },
   { slug: 'phu-kien', name: 'Phụ kiện', sortOrder: 6 },
@@ -52,7 +52,7 @@ const TEMPLATES = [
   { categorySlug: 'dien-thoai', prefix: 'Điện thoại', basePrice: 8_990_000 },
   { categorySlug: 'laptop', prefix: 'Laptop', basePrice: 18_990_000 },
   {
-    categorySlug: 'may-tinh-bang',
+    categorySlug: 'tablet',
     prefix: 'Máy tính bảng',
     basePrice: 9_490_000,
   },
@@ -76,6 +76,22 @@ function slugify(value) {
 }
 
 async function main() {
+  // Align legacy seed slug with shared-contracts CATEGORY_SLUGS (`tablet`).
+  const legacyTablet = await prisma.category.findUnique({
+    where: { slug: 'may-tinh-bang' },
+  });
+  if (legacyTablet) {
+    const tabletExists = await prisma.category.findUnique({
+      where: { slug: 'tablet' },
+    });
+    if (!tabletExists) {
+      await prisma.category.update({
+        where: { id: legacyTablet.id },
+        data: { slug: 'tablet', name: 'Tablet' },
+      });
+    }
+  }
+
   const categoryRows = [];
   for (const c of CATEGORIES) {
     const row = await prisma.category.upsert({

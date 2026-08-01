@@ -4,6 +4,7 @@ import type {
   CategoryTreeNode,
   PaginatedResponse,
   ProductDetail,
+  ProductSearchFacets,
   ProductSearchItem,
   RecommendationItem,
   StockSource,
@@ -27,6 +28,20 @@ export async function getBrands(): Promise<Brand[]> {
     return await serverApiRequest<Brand[]>('catalog', '/brands');
   } catch {
     return [];
+  }
+}
+
+export async function getProductFacets(
+  query: ProductListQuery,
+): Promise<ProductSearchFacets> {
+  try {
+    return await serverApiRequest<ProductSearchFacets>(
+      'catalog',
+      '/products/facets',
+      { query: query as Record<string, string | number | undefined> },
+    );
+  } catch {
+    return { brands: [], priceRange: null };
   }
 }
 

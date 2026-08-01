@@ -30,6 +30,7 @@ import type {
   ProductDetail,
   ProductMediaLink,
   ProductSearchFilters,
+  ProductSearchFacets,
   ProductSearchItem,
   ProductSearchResult,
   ProductSpecValue,
@@ -333,6 +334,88 @@ export class PrismaCatalogRepository implements CatalogRepository {
       orderBy: { name: 'asc' },
     });
     return rows.map(mapBrand);
+  }
+
+  async getSearchFacets(
+    filters: ProductSearchFilters,
+  ): Promise<ProductSearchFacets> {
+    const where: Record<string, unknown> = {
+      status: toPrismaStatus(filters.status ?? 'active'),
+    };
+    if (filters.categorySlug) {
+      where['category'] = { slug: filters.categorySlug };
+    }
+    if (filters.q) {
+      where['OR'] = [
+        { name: { contains: filters.q, mode: 'insensitive' } },
+        { slug: { contains: filters.q, mode: 'insensitive' } },
+      ];
+    }
+
+    // Brand facet intentionally ignores brandSlug (progressive narrowing within category/q/price).
+    const products = await this.prisma.product.findMany({
+      where,
+      select: {
+        brandId: true,
+        brand: { select: { id: true, slug: true, name: true } },
+        skus: { select: { price: { select: { amount: true } } } },
+      },
+    });
+
+    let filtered = products;
+    if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
+      filtered = filtered.filter((product) => {
+        const amounts = product.skus
+          .map((sku) => sku.price?.amount)
+          .filter((v): v is number => typeof v === 'number');
+        const minPrice = amounts.length > 0 ? Math.min(...amounts) : 0;
+        if (filters.minPrice !== undefined && minPrice < filters.minPrice) {
+          return false;
+        }
+        if (filters.maxPrice !== undefined && minPrice > filters.maxPrice) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    const brandCounts = new Map<
+      string,
+      { id: string; slug: string; name: string; productCount: number }
+    >();
+    let min = Number.POSITIVE_INFINITY;
+    let max = 0;
+
+    for (const product of filtered) {
+      const key = product.brand.id;
+      const existing = brandCounts.get(key);
+      if (existing) {
+        existing.productCount += 1;
+      } else {
+        brandCounts.set(key, {
+          id: product.brand.id,
+          slug: product.brand.slug,
+          name: product.brand.name,
+          productCount: 1,
+        });
+      }
+      const amounts = product.skus
+        .map((sku) => sku.price?.amount)
+        .filter((v): v is number => typeof v === 'number');
+      if (amounts.length > 0) {
+        const productMin = Math.min(...amounts);
+        if (productMin < min) min = productMin;
+        if (productMin > max) max = productMin;
+      }
+    }
+
+    return {
+      brands: [...brandCounts.values()].sort((a, b) =>
+        a.name.localeCompare(b.name),
+      ),
+      priceRange:
+        filtered.length > 0 && Number.isFinite(min) ? { min, max } : null,
+    };
   }
 
   async createSpecTemplate(

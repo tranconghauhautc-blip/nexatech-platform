@@ -26,6 +26,18 @@ export interface Brand {
   updatedAt: string;
 }
 
+export interface ProductFacetBrand {
+  id: string;
+  slug: string;
+  name: string;
+  productCount: number;
+}
+
+export interface ProductSearchFacets {
+  brands: ProductFacetBrand[];
+  priceRange: { min: number; max: number } | null;
+}
+
 export interface ProductSearchItem {
   id: string;
   slug: string;

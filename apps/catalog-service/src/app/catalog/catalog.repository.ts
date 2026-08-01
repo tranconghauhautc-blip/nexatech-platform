@@ -14,6 +14,7 @@ import type {
   ProductDetail,
   ProductMediaLink,
   ProductSearchFilters,
+  ProductSearchFacets,
   ProductSearchItem,
   ProductSearchResult,
   ProductSpecValue,
@@ -39,6 +40,7 @@ export interface CatalogRepository {
   getBrandById(id: string): Promise<Brand | null>;
   getBrandBySlug(slug: string): Promise<Brand | null>;
   listBrands(): Promise<Brand[]>;
+  getSearchFacets(filters: ProductSearchFilters): Promise<ProductSearchFacets>;
 
   createSpecTemplate(input: CreateSpecTemplateInput): Promise<SpecTemplate>;
   getSpecTemplatesByCategory(categoryId: string): Promise<SpecTemplate[]>;
@@ -231,6 +233,46 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     return [...this.brands.values()].sort((a, b) =>
       a.name.localeCompare(b.name),
     );
+  }
+
+  async getSearchFacets(
+    filters: ProductSearchFilters,
+  ): Promise<ProductSearchFacets> {
+    // Facets ignore brandSlug so user can switch brands within current scope.
+    const base = await this.searchProducts({
+      ...filters,
+      brandSlug: undefined,
+      page: 1,
+      pageSize: 10_000,
+    });
+    const brandCounts = new Map<string, number>();
+    let min = Number.POSITIVE_INFINITY;
+    let max = 0;
+    for (const item of base.items) {
+      brandCounts.set(item.brandName, (brandCounts.get(item.brandName) ?? 0) + 1);
+      if (item.minPrice < min) min = item.minPrice;
+      if (item.minPrice > max) max = item.minPrice;
+    }
+    const brands: ProductSearchFacets['brands'] = [];
+    for (const brand of await this.listBrands()) {
+      const count = brandCounts.get(brand.name) ?? 0;
+      if (count > 0) {
+        brands.push({
+          id: brand.id,
+          slug: brand.slug,
+          name: brand.name,
+          productCount: count,
+        });
+      }
+    }
+    brands.sort((a, b) => a.name.localeCompare(b.name));
+    return {
+      brands,
+      priceRange:
+        base.items.length > 0 && Number.isFinite(min)
+          ? { min, max }
+          : null,
+    };
   }
 
   async createSpecTemplate(

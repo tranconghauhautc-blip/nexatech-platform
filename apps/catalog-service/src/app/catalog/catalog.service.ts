@@ -98,6 +98,27 @@ export class CatalogService {
     return this.repository.listBrands();
   }
 
+  async getProductFacets(rawQuery: Record<string, unknown>) {
+    const query = productSearchQuerySchema.parse({
+      ...rawQuery,
+      page: rawQuery['page'] ?? 1,
+      pageSize: rawQuery['pageSize'] ?? 20,
+    }) as ProductSearchQuery;
+    return this.repository.getSearchFacets({
+      q: query.q,
+      categorySlug: query.categorySlug,
+      brandSlug: query.brandSlug,
+      status: query.status ?? 'active',
+      minPrice: query.minPrice,
+      maxPrice: query.maxPrice,
+      attributeKey: query.attributeKey,
+      attributeValue: query.attributeValue,
+      sort: query.sort,
+      page: query.page,
+      pageSize: query.pageSize,
+    });
+  }
+
   async createBrand(input: CreateBrandRequest, roles: Role[]): Promise<Brand> {
     this.requireStaff(roles);
     const brand = await this.repository.createBrand(input);

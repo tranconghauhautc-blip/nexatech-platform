@@ -171,6 +171,18 @@ export interface ProductSearchResult {
   total: number;
 }
 
+export interface ProductFacetBrand {
+  id: string;
+  slug: string;
+  name: string;
+  productCount: number;
+}
+
+export interface ProductSearchFacets {
+  brands: ProductFacetBrand[];
+  priceRange: { min: number; max: number } | null;
+}
+
 export interface CreateCategoryInput {
   slug: string;
   name: string;

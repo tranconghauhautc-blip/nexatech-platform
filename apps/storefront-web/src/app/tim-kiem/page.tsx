@@ -6,8 +6,8 @@ import { Pagination } from '../../components/common/pagination';
 import { ProductFilters } from '../../components/catalog/product-filters';
 import {
   flattenCategories,
-  getBrands,
   getCategoryTree,
+  getProductFacets,
   searchProducts,
 } from '../../lib/catalog-server';
 import { NAV_CATEGORIES } from '../../lib/constants';
@@ -42,18 +42,25 @@ export default async function SearchPage({ searchParams }: Props) {
   const minPrice = first(sp['minPrice']);
   const maxPrice = first(sp['maxPrice']);
 
-  const [result, brands, tree] = await Promise.all([
-    searchProducts({
+  const listQuery = {
+    q,
+    page,
+    pageSize: 12,
+    sort,
+    brandSlug,
+    categorySlug,
+    minPrice: minPrice ? Number(minPrice) : undefined,
+    maxPrice: maxPrice ? Number(maxPrice) : undefined,
+  };
+
+  const [result, facets, tree] = await Promise.all([
+    searchProducts(listQuery),
+    getProductFacets({
       q,
-      page,
-      pageSize: 12,
-      sort,
-      brandSlug,
       categorySlug,
       minPrice: minPrice ? Number(minPrice) : undefined,
       maxPrice: maxPrice ? Number(maxPrice) : undefined,
     }),
-    getBrands(),
     getCategoryTree(),
   ]);
 
@@ -84,7 +91,8 @@ export default async function SearchPage({ searchParams }: Props) {
       >
         <ProductFilters
           basePath="/tim-kiem"
-          brands={brands}
+          brandFacets={facets.brands}
+          priceRange={facets.priceRange}
           categories={categories}
           current={{
             q,
@@ -101,7 +109,7 @@ export default async function SearchPage({ searchParams }: Props) {
           {result.items.length === 0 ? (
             <EmptyState
               title="Không có kết quả"
-              description="Thử từ khóa khác hoặc bỏ bớt bộ lọc."
+              description="Thử từ khóa hoặc bộ lọc khác."
               action={
                 <Link href="/" className="nt-btn nt-btn-primary">
                   Về trang chủ
