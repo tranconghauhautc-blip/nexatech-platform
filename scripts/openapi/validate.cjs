@@ -37,8 +37,8 @@ function validateDoc(label, doc, { requirePaths }) {
   const errors = [];
   const warnings = [];
 
-  if (!doc.openapi || !String(doc.openapi).startsWith('3.')) {
-    errors.push(`${label}: openapi must be 3.x (got ${doc.openapi})`);
+  if (!doc.openapi || String(doc.openapi) !== '3.0.3') {
+    errors.push(`${label}: openapi must be exactly 3.0.3 (got ${doc.openapi})`);
   }
   if (!doc.info || !doc.info.title || !doc.info.version) {
     errors.push(`${label}: info.title and info.version required`);

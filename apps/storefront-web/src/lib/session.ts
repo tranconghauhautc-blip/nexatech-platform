@@ -59,11 +59,11 @@ export async function getCartToken(): Promise<string | null> {
 
 export async function setCartToken(token: string): Promise<void> {
   const store = await cookies();
-  const cookieOpts = sessionCookieOptions();
+  // Guest cart must work on http://localhost — SameSite=None without Secure is rejected by browsers.
   store.set(CART_TOKEN_COOKIE, token, {
-    httpOnly: cookieOpts.httpOnly,
-    secure: cookieOpts.secure,
-    sameSite: cookieOpts.sameSite,
+    httpOnly: true,
+    secure: false,
+    sameSite: 'lax',
     path: '/',
     maxAge: CART_TOKEN_MAX_AGE_SECONDS,
   });

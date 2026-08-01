@@ -53,6 +53,8 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.nx
+.env.security-guide.local
+*.security-guide.session*
 
 # Prisma generated clients (run prisma generate per service)
 apps/*/src/generated/

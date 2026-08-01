@@ -82,7 +82,7 @@ function sortObjectDeep(value) {
  */
 function normalizeOpenApiDocument(doc, service) {
   const normalized = sortObjectDeep(doc);
-  normalized.openapi = normalized.openapi || '3.0.3';
+  normalized.openapi = '3.0.3';
   normalized.info = {
     title: service.title,
     description: service.description,
@@ -95,8 +95,17 @@ function normalizeOpenApiDocument(doc, service) {
     },
     { url: 'http://localhost:8000', description: 'Kong Gateway (local)' },
     {
+      url: 'http://{host}:{port}',
+      description: 'Kubernetes / origin placeholder (override host+port)',
+      variables: {
+        host: { default: 'catalog-service.nexatech.svc.cluster.local' },
+        port: { default: String(service.port) },
+      },
+    },
+    {
       url: 'https://api.example.invalid',
-      description: 'Production placeholder',
+      description:
+        'Protected public placeholder ONLY — do not use for Try it out',
     },
   ];
   normalized.components = normalized.components || {};

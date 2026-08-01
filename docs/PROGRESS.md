@@ -2,12 +2,25 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** _(roadmap M0–M21 hoàn tất — hardening local security training lab / ADR-043)_
-- **Milestone đã hoàn thành gần nhất:** M21 (security lab / OWASP)
+- **Milestone đang làm:** Full project re-baseline (OpenAPI 3.0.3, Security Guide auth, functional audit)
+- **Milestone đã hoàn thành gần nhất:** M21 (security lab / OWASP) + post-hardening
 - **Cập nhật lần cuối:** 2026-08-01
-- **Branch:** `main`
-- **Local Compose:** 14 Nest backends + storefront + admin + Kong **healthy**
-- **Post-M21:** DEV `seed:accounts` + OpenAPI 3 tooling + browser/Swagger lab docs + RBAC e2e
+- **Branch:** `main` (working tree dirty — **chưa commit** theo yêu cầu review)
+- **Baseline docs:** `docs/CURRENT-PROJECT-BASELINE.md`, `CUSTOM-CHANGES-INVENTORY.md`, `FULL-SYSTEM-AUDIT.md`
+
+## Re-baseline in progress
+
+- [x] Git inventory + baseline docs
+- [x] Admin wrong-password visible error + cart login redirect + cart cookie Lax
+- [x] `AppErrorFilter` on all 14 Nest services
+- [x] Force OpenAPI **3.0.3** (generate/validate/diff/check) + ADR
+- [x] Security Guide portal scaffold (`:3200`) + `pnpm security-guide:setup`
+- [x] Scenario SSoT seed (`security-scenarios/`)
+- [ ] Expand all SC-* into SSoT with HTTP evidence
+- [ ] Authenticated guide replaces public `/lab/*.html` (keep until migrated)
+- [ ] Full storefront/admin browser acceptance
+- [ ] Product image import pipeline
+- [ ] Owner review → commit
 
 ## Roadmap milestone
 
@@ -17,6 +30,7 @@
 | M19    | Deployment preflight / release readiness         | ✅ Done    | `2fad006` |
 | M20    | Performance / reliability / DR                   | ✅ Done    | `53247e4` |
 | M21    | Security lab / OWASP intentional vulnerabilities | ✅ Done    | ADR-040   |
+| RB     | Full re-baseline / OpenAPI 3.0.3 / Guide auth    | 🔄 Active | no commit yet |
 
 ## Commits
 

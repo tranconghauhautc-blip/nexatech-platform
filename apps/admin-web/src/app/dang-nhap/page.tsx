@@ -24,6 +24,7 @@ function LoginForm() {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    event.stopPropagation();
     setFormError(null);
 
     const parsed = loginFormSchema.safeParse({ email, password });
@@ -33,6 +34,7 @@ function LoginForm() {
         errors[String(issue.path[0])] = issue.message;
       }
       setFieldErrors(errors);
+      setFormError('Vui lòng kiểm tra lại thông tin đăng nhập.');
       return;
     }
     setFieldErrors({});
@@ -41,8 +43,12 @@ function LoginForm() {
     try {
       const response = await fetch('/api/auth/login', {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: {
+          'content-type': 'application/json',
+          accept: 'application/json',
+        },
         body: JSON.stringify(parsed.data),
+        cache: 'no-store',
       });
       const raw = await response.text();
       let payload: { message?: string; errorCode?: string } = {};
@@ -50,24 +56,25 @@ function LoginForm() {
         try {
           payload = JSON.parse(raw) as { message?: string; errorCode?: string };
         } catch {
-          setFormError('Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.');
+          setFormError(
+            'Đăng nhập thất bại. Vui lòng kiểm tra email và mật khẩu.',
+          );
           return;
         }
       }
       if (!response.ok) {
-        const msg = payload.message?.trim();
+        const msg = (payload.message ?? '').trim();
         const looksHtml =
-          !!msg &&
-          (msg.startsWith('<!DOCTYPE') ||
-            msg.startsWith('<html') ||
-            msg.includes('<script'));
-        setFormError(
-          !msg || looksHtml
-            ? response.status === 401
-              ? 'Email hoặc mật khẩu không đúng'
-              : 'Đăng nhập thất bại. Vui lòng thử lại.'
-            : msg,
-        );
+          msg.startsWith('<!DOCTYPE') ||
+          msg.startsWith('<html') ||
+          msg.includes('<script');
+        const friendly =
+          response.status === 401 || payload.errorCode === 'UNAUTHORIZED'
+            ? 'Email hoặc mật khẩu không đúng'
+            : response.status === 403
+              ? 'Tài khoản không có quyền truy cập trang quản trị'
+              : 'Đăng nhập thất bại. Vui lòng thử lại.';
+        setFormError(!msg || looksHtml ? friendly : msg);
         return;
       }
       router.replace(redirectTo);
@@ -93,6 +100,12 @@ function LoginForm() {
         <p className={styles.subheading}>
           Dành cho Staff, Manager, Admin và Super Admin
         </p>
+
+        {formError ? (
+          <div className={styles.formError} role="alert" aria-live="assertive">
+            {formError}
+          </div>
+        ) : null}
 
         <form onSubmit={handleSubmit} className={styles.form} noValidate>
           <div className="nx-field">
@@ -122,12 +135,6 @@ function LoginForm() {
             placeholder="••••••••"
             error={fieldErrors.password}
           />
-
-          {formError ? (
-            <div className={styles.formError} role="alert">
-              {formError}
-            </div>
-          ) : null}
 
           <button
             type="submit"

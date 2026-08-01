@@ -92,13 +92,13 @@
   "info": {
     "title": "NexaTech Catalog Service",
     "description": "Danh mục, thương hiệu, sản phẩm, SKU và giá",
-    "version": "1.0"
+    "version": "1.0.0"
   },
-  "openapi": "3.0.0",
+  "openapi": "3.0.3",
   "paths": {
     "/api/v1/admin/catalog/brands": {
       "post": {
-        "operationId": "AdminCatalogController_createBrand_v1",
+        "operationId": "AdminCatalog_createBrand_v1",
         "parameters": [
           {
             "in": "header",
@@ -121,7 +121,7 @@
     },
     "/api/v1/admin/catalog/brands/{id}": {
       "patch": {
-        "operationId": "AdminCatalogController_updateBrand_v1",
+        "operationId": "AdminCatalog_updateBrand_v1",
         "parameters": [
           {
             "in": "header",
@@ -152,7 +152,7 @@
     },
     "/api/v1/admin/catalog/categories": {
       "post": {
-        "operationId": "AdminCatalogController_createCategory_v1",
+        "operationId": "AdminCatalog_createCategory_v1",
         "parameters": [
           {
             "in": "header",
@@ -175,7 +175,7 @@
     },
     "/api/v1/admin/catalog/categories/{id}": {
       "patch": {
-        "operationId": "AdminCatalogController_updateCategory_v1",
+        "operationId": "AdminCatalog_updateCategory_v1",
         "parameters": [
           {
             "in": "header",
@@ -206,7 +206,7 @@
     },
     "/api/v1/admin/catalog/products": {
       "post": {
-        "operationId": "AdminCatalogController_createProduct_v1",
+        "operationId": "AdminCatalog_createProduct_v1",
         "parameters": [
           {
             "in": "header",
@@ -229,7 +229,7 @@
     },
     "/api/v1/admin/catalog/products/{id}": {
       "patch": {
-        "operationId": "AdminCatalogController_updateProduct_v1",
+        "operationId": "AdminCatalog_updateProduct_v1",
         "parameters": [
           {
             "in": "header",
@@ -260,7 +260,7 @@
     },
     "/api/v1/admin/catalog/products/{id}/status": {
       "patch": {
-        "operationId": "AdminCatalogController_updateProductStatus_v1",
+        "operationId": "AdminCatalog_updateProductStatus_v1",
         "parameters": [
           {
             "in": "header",
@@ -291,7 +291,7 @@
     },
     "/api/v1/admin/catalog/products/{productId}/media-links": {
       "post": {
-        "operationId": "AdminCatalogController_linkMedia_v1",
+        "operationId": "AdminCatalog_linkMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -322,7 +322,7 @@
     },
     "/api/v1/admin/catalog/skus": {
       "post": {
-        "operationId": "AdminCatalogController_createSku_v1",
+        "operationId": "AdminCatalog_createSku_v1",
         "parameters": [
           {
             "in": "header",
@@ -345,7 +345,7 @@
     },
     "/api/v1/admin/catalog/skus/{skuId}/prices": {
       "post": {
-        "operationId": "AdminCatalogController_updatePrice_v1",
+        "operationId": "AdminCatalog_updatePrice_v1",
         "parameters": [
           {
             "in": "header",
@@ -384,7 +384,7 @@
     },
     "/api/v1/admin/catalog/spec-templates": {
       "get": {
-        "operationId": "AdminCatalogController_listSpecTemplates_v1",
+        "operationId": "AdminCatalog_listSpecTemplates_v1",
         "parameters": [
           {
             "in": "header",
@@ -413,7 +413,7 @@
         ]
       },
       "post": {
-        "operationId": "AdminCatalogController_createSpecTemplate_v1",
+        "operationId": "AdminCatalog_createSpecTemplate_v1",
         "parameters": [
           {
             "in": "header",
@@ -436,7 +436,7 @@
     },
     "/api/v1/brands": {
       "get": {
-        "operationId": "CatalogController_brands_v1",
+        "operationId": "Catalog_brands_v1",
         "responses": {
           "200": {
             "description": ""
@@ -449,7 +449,7 @@
     },
     "/api/v1/categories": {
       "get": {
-        "operationId": "CatalogController_categories_v1",
+        "operationId": "Catalog_categories_v1",
         "responses": {
           "200": {
             "description": ""
@@ -462,7 +462,20 @@
     },
     "/api/v1/products": {
       "get": {
-        "operationId": "CatalogController_products_v1",
+        "operationId": "Catalog_products_v1",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v1/products/facets": {
+      "get": {
+        "operationId": "Catalog_productFacets_v1",
         "responses": {
           "200": {
             "description": ""
@@ -475,7 +488,7 @@
     },
     "/api/v1/products/{id}/recommendations": {
       "get": {
-        "operationId": "CatalogController_recommendations_v1",
+        "operationId": "Catalog_recommendations_v1",
         "parameters": [
           {
             "in": "path",
@@ -498,7 +511,7 @@
     },
     "/api/v1/products/{slug}": {
       "get": {
-        "operationId": "CatalogController_productBySlug_v1",
+        "operationId": "Catalog_productBySlug_v1",
         "parameters": [
           {
             "in": "path",
@@ -521,7 +534,7 @@
     },
     "/api/v1/skus/{skuCode}": {
       "get": {
-        "operationId": "CatalogController_sku_v1",
+        "operationId": "Catalog_sku_v1",
         "parameters": [
           {
             "in": "path",
@@ -544,7 +557,7 @@
     },
     "/api/v2/admin/catalog/brands": {
       "post": {
-        "operationId": "AdminCatalogController_createBrand_v2",
+        "operationId": "AdminCatalog_createBrand_v2",
         "parameters": [
           {
             "in": "header",
@@ -567,7 +580,7 @@
     },
     "/api/v2/admin/catalog/brands/{id}": {
       "patch": {
-        "operationId": "AdminCatalogController_updateBrand_v2",
+        "operationId": "AdminCatalog_updateBrand_v2",
         "parameters": [
           {
             "in": "header",
@@ -598,7 +611,7 @@
     },
     "/api/v2/admin/catalog/categories": {
       "post": {
-        "operationId": "AdminCatalogController_createCategory_v2",
+        "operationId": "AdminCatalog_createCategory_v2",
         "parameters": [
           {
             "in": "header",
@@ -621,7 +634,7 @@
     },
     "/api/v2/admin/catalog/categories/{id}": {
       "patch": {
-        "operationId": "AdminCatalogController_updateCategory_v2",
+        "operationId": "AdminCatalog_updateCategory_v2",
         "parameters": [
           {
             "in": "header",
@@ -652,7 +665,7 @@
     },
     "/api/v2/admin/catalog/products": {
       "post": {
-        "operationId": "AdminCatalogController_createProduct_v2",
+        "operationId": "AdminCatalog_createProduct_v2",
         "parameters": [
           {
             "in": "header",
@@ -675,7 +688,7 @@
     },
     "/api/v2/admin/catalog/products/{id}": {
       "patch": {
-        "operationId": "AdminCatalogController_updateProduct_v2",
+        "operationId": "AdminCatalog_updateProduct_v2",
         "parameters": [
           {
             "in": "header",
@@ -706,7 +719,7 @@
     },
     "/api/v2/admin/catalog/products/{id}/status": {
       "patch": {
-        "operationId": "AdminCatalogController_updateProductStatus_v2",
+        "operationId": "AdminCatalog_updateProductStatus_v2",
         "parameters": [
           {
             "in": "header",
@@ -737,7 +750,7 @@
     },
     "/api/v2/admin/catalog/products/{productId}/media-links": {
       "post": {
-        "operationId": "AdminCatalogController_linkMedia_v2",
+        "operationId": "AdminCatalog_linkMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -768,7 +781,7 @@
     },
     "/api/v2/admin/catalog/skus": {
       "post": {
-        "operationId": "AdminCatalogController_createSku_v2",
+        "operationId": "AdminCatalog_createSku_v2",
         "parameters": [
           {
             "in": "header",
@@ -791,7 +804,7 @@
     },
     "/api/v2/admin/catalog/skus/{skuId}/prices": {
       "post": {
-        "operationId": "AdminCatalogController_updatePrice_v2",
+        "operationId": "AdminCatalog_updatePrice_v2",
         "parameters": [
           {
             "in": "header",
@@ -830,7 +843,7 @@
     },
     "/api/v2/admin/catalog/spec-templates": {
       "get": {
-        "operationId": "AdminCatalogController_listSpecTemplates_v2",
+        "operationId": "AdminCatalog_listSpecTemplates_v2",
         "parameters": [
           {
             "in": "header",
@@ -859,7 +872,7 @@
         ]
       },
       "post": {
-        "operationId": "AdminCatalogController_createSpecTemplate_v2",
+        "operationId": "AdminCatalog_createSpecTemplate_v2",
         "parameters": [
           {
             "in": "header",
@@ -882,7 +895,7 @@
     },
     "/api/v2/brands": {
       "get": {
-        "operationId": "CatalogController_brands_v2",
+        "operationId": "Catalog_brands_v2",
         "responses": {
           "200": {
             "description": ""
@@ -895,7 +908,7 @@
     },
     "/api/v2/categories": {
       "get": {
-        "operationId": "CatalogController_categories_v2",
+        "operationId": "Catalog_categories_v2",
         "responses": {
           "200": {
             "description": ""
@@ -908,7 +921,20 @@
     },
     "/api/v2/products": {
       "get": {
-        "operationId": "CatalogController_products_v2",
+        "operationId": "Catalog_products_v2",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "catalog"
+        ]
+      }
+    },
+    "/api/v2/products/facets": {
+      "get": {
+        "operationId": "Catalog_productFacets_v2",
         "responses": {
           "200": {
             "description": ""
@@ -921,7 +947,7 @@
     },
     "/api/v2/products/{id}/recommendations": {
       "get": {
-        "operationId": "CatalogController_recommendations_v2",
+        "operationId": "Catalog_recommendations_v2",
         "parameters": [
           {
             "in": "path",
@@ -944,7 +970,7 @@
     },
     "/api/v2/products/{slug}": {
       "get": {
-        "operationId": "CatalogController_productBySlug_v2",
+        "operationId": "Catalog_productBySlug_v2",
         "parameters": [
           {
             "in": "path",
@@ -967,7 +993,7 @@
     },
     "/api/v2/skus/{skuCode}": {
       "get": {
-        "operationId": "CatalogController_sku_v2",
+        "operationId": "Catalog_sku_v2",
         "parameters": [
           {
             "in": "path",
@@ -990,7 +1016,7 @@
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health",
+        "operationId": "Health_health",
         "responses": {
           "200": {
             "description": ""
@@ -1003,7 +1029,7 @@
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_live",
+        "operationId": "Health_live",
         "responses": {
           "200": {
             "description": ""
@@ -1016,7 +1042,7 @@
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_ready",
+        "operationId": "Health_ready",
         "responses": {
           "200": {
             "description": ""
@@ -1038,8 +1064,20 @@
       "description": "Kong Gateway (local)"
     },
     {
+      "url": "http://{host}:{port}",
+      "description": "Kubernetes / origin placeholder (override host+port)",
+      "variables": {
+        "host": {
+          "default": "catalog-service.nexatech.svc.cluster.local"
+        },
+        "port": {
+          "default": "3003"
+        }
+      }
+    },
+    {
       "url": "https://api.example.invalid",
-      "description": "Production placeholder"
+      "description": "Protected public placeholder ONLY — do not use for Try it out"
     }
   ],
   "tags": []

@@ -224,7 +224,7 @@ info:
   title: NexaTech Identity Service
   description: "Auth, session, OTP và RBAC"
   version: 1.0.0
-openapi: 3.0.0
+openapi: 3.0.3
 paths:
   /api/v0/internal/routes:
     get:
@@ -234,9 +234,242 @@ paths:
           description: ''
       tags:
         - Health
+  /api/v1/admin/users:
+    get:
+      operationId: AdminUsers_list_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: List users (SuperAdmin; BFLA in always-on lab)
+      tags:
+        - admin-users
+    post:
+      operationId: AdminUsers_create_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: ''
+      summary: SC-76 — create user (BFLA; weak password SC-85)
+      tags:
+        - admin-users
+  /api/v1/admin/users/export:
+    get:
+      operationId: AdminUsers_exportAll_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: SC-95 — bulk user export (BFLA / unauthenticated export flag)
+      tags:
+        - admin-users
+  /api/v1/admin/users/{userId}:
+    delete:
+      operationId: AdminUsers_softDelete_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: Soft-disable via DELETE (no hard delete — maps to SC-77)
+      tags:
+        - admin-users
+    get:
+      operationId: AdminUsers_get_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: Get user by id
+      tags:
+        - admin-users
+    patch:
+      operationId: AdminUsers_patch_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: Patch user roles/status (mass-assignment in always-on lab)
+      tags:
+        - admin-users
+  /api/v1/admin/users/{userId}/disable:
+    post:
+      operationId: AdminUsers_disable_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: ''
+      summary: SC-77 — soft-disable user (BFLA)
+      tags:
+        - admin-users
   /api/v1/auth/forgot-password:
     post:
       operationId: Auth_forgotPassword_v1
+      parameters:
+        - in: header
+          name: x-forwarded-host
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -246,7 +479,7 @@ paths:
       responses:
         201:
           description: ''
-      summary: Yêu cầu OTP đặt lại mật khẩu
+      summary: Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)
       tags:
         - auth
   /api/v1/auth/login:
@@ -298,6 +531,11 @@ paths:
           required: true
           schema:
             type: string
+        - in: query
+          name: access_token
+          required: true
+          schema:
+            type: string
       responses:
         200:
           content:
@@ -313,7 +551,7 @@ paths:
           description: ''
       security:
         - bearer: []
-      summary: Thông tin user từ Bearer access token (Swagger Authorize flow)
+      summary: "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)"
       tags:
         - auth
   /api/v1/auth/refresh:
@@ -353,7 +591,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
-      summary: Đăng ký tài khoản Customer
+      summary: "Đăng ký tài khoản Customer (SC-87: roles in body accepted)"
       tags:
         - auth
   /api/v1/auth/reset-password:
@@ -380,12 +618,17 @@ paths:
           required: true
           schema:
             type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: ''
       security:
         - bearer: []
-      summary: Thu hồi một phiên
+      summary: SC-79 — thu hồi phiên bất kỳ (IDOR)
       tags:
         - auth
   /api/v1/auth/sessions/{userId}:
@@ -397,12 +640,17 @@ paths:
           required: true
           schema:
             type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: ''
       security:
         - bearer: []
-      summary: Liệt kê phiên đăng nhập của user
+      summary: SC-78 — liệt kê phiên bất kỳ user (IDOR)
       tags:
         - auth
   /api/v1/auth/verify-email:
@@ -420,9 +668,242 @@ paths:
       summary: Xác minh email OTP
       tags:
         - auth
+  /api/v2/admin/users:
+    get:
+      operationId: AdminUsers_list_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: List users (SuperAdmin; BFLA in always-on lab)
+      tags:
+        - admin-users
+    post:
+      operationId: AdminUsers_create_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: ''
+      summary: SC-76 — create user (BFLA; weak password SC-85)
+      tags:
+        - admin-users
+  /api/v2/admin/users/export:
+    get:
+      operationId: AdminUsers_exportAll_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: SC-95 — bulk user export (BFLA / unauthenticated export flag)
+      tags:
+        - admin-users
+  /api/v2/admin/users/{userId}:
+    delete:
+      operationId: AdminUsers_softDelete_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: Soft-disable via DELETE (no hard delete — maps to SC-77)
+      tags:
+        - admin-users
+    get:
+      operationId: AdminUsers_get_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: Get user by id
+      tags:
+        - admin-users
+    patch:
+      operationId: AdminUsers_patch_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      summary: Patch user roles/status (mass-assignment in always-on lab)
+      tags:
+        - admin-users
+  /api/v2/admin/users/{userId}/disable:
+    post:
+      operationId: AdminUsers_disable_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: ''
+      summary: SC-77 — soft-disable user (BFLA)
+      tags:
+        - admin-users
   /api/v2/auth/forgot-password:
     post:
       operationId: Auth_forgotPassword_v2
+      parameters:
+        - in: header
+          name: x-forwarded-host
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -432,7 +913,7 @@ paths:
       responses:
         201:
           description: ''
-      summary: Yêu cầu OTP đặt lại mật khẩu
+      summary: Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)
       tags:
         - auth
   /api/v2/auth/login:
@@ -484,6 +965,11 @@ paths:
           required: true
           schema:
             type: string
+        - in: query
+          name: access_token
+          required: true
+          schema:
+            type: string
       responses:
         200:
           content:
@@ -499,7 +985,7 @@ paths:
           description: ''
       security:
         - bearer: []
-      summary: Thông tin user từ Bearer access token (Swagger Authorize flow)
+      summary: "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)"
       tags:
         - auth
   /api/v2/auth/refresh:
@@ -539,7 +1025,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
-      summary: Đăng ký tài khoản Customer
+      summary: "Đăng ký tài khoản Customer (SC-87: roles in body accepted)"
       tags:
         - auth
   /api/v2/auth/reset-password:
@@ -566,12 +1052,17 @@ paths:
           required: true
           schema:
             type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: ''
       security:
         - bearer: []
-      summary: Thu hồi một phiên
+      summary: SC-79 — thu hồi phiên bất kỳ (IDOR)
       tags:
         - auth
   /api/v2/auth/sessions/{userId}:
@@ -583,12 +1074,17 @@ paths:
           required: true
           schema:
             type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: ''
       security:
         - bearer: []
-      summary: Liệt kê phiên đăng nhập của user
+      summary: SC-78 — liệt kê phiên bất kỳ user (IDOR)
       tags:
         - auth
   /api/v2/auth/verify-email:
@@ -652,6 +1148,93 @@ paths:
           description: ''
       tags:
         - Health
+  /lab/api-inventory:
+    get:
+      operationId: Health_apiInventory
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/content-type:
+    get:
+      operationId: Health_contentType
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/error-stack:
+    get:
+      operationId: Health_errorStack
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/jwt-alg-none:
+    get:
+      operationId: Health_jwtAlgNone
+      parameters:
+        - in: query
+          name: sub
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/login-get:
+    get:
+      operationId: Health_loginGet
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+        - in: query
+          name: password
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/oauth-callback:
+    get:
+      operationId: Health_oauthCallback
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/reflect-headers:
+    get:
+      operationId: Health_reflectHeaders
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/set-cookie:
+    get:
+      operationId: Health_setCookie
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
   /lab/ssrf-probe:
     get:
       operationId: Health_ssrfProbe
@@ -666,11 +1249,46 @@ paths:
           description: ''
       tags:
         - Health
+  /lab/supply-chain:
+    get:
+      operationId: Health_supplyChain
+      parameters:
+        - in: query
+          name: digest
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
+  /lab/verify-bypass:
+    get:
+      operationId: Health_verifyBypass
+      parameters:
+        - in: query
+          name: email
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Health
 servers:
   - url: "http://localhost:3001"
     description: identity-service direct (local)
   - url: "http://localhost:8000"
     description: Kong Gateway (local)
+  - url: "http://{host}:{port}"
+    description: Kubernetes / origin placeholder (override host+port)
+    variables:
+      host:
+        default: catalog-service.nexatech.svc.cluster.local
+      port:
+        default: 3001
   - url: "https://api.example.invalid"
-    description: Production placeholder
+    description: Protected public placeholder ONLY — do not use for Try it out
 tags: []

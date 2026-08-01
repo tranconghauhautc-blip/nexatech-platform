@@ -78,8 +78,19 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
   const totalAvailable = stockSources.reduce((sum, s) => sum + s.available, 0);
   const inStock = totalAvailable > 0;
 
+  async function requireLoginOrContinue(): Promise<boolean> {
+    if (isAuthenticated) {
+      return true;
+    }
+    router.push(`/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`);
+    return false;
+  }
+
   async function handleAddToCart() {
     setFeedback(null);
+    if (!(await requireLoginOrContinue())) {
+      return false;
+    }
     try {
       await addItem(selectedSku!.skuCode, quantity);
       setFeedback({
@@ -88,23 +99,35 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
       });
       return true;
     } catch (error) {
-      setFeedback({ type: 'error', message: getErrorMessage(error) });
+      const message = getErrorMessage(error);
+      if (/cart token|đăng nhập|UNAUTHORIZED/i.test(message)) {
+        router.push(
+          `/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`,
+        );
+        return false;
+      }
+      setFeedback({ type: 'error', message });
       return false;
     }
   }
 
   async function handleBuyNow() {
     setFeedback(null);
+    if (!(await requireLoginOrContinue())) {
+      return;
+    }
     try {
       await addItem(selectedSku!.skuCode, quantity);
-      // TGDD-style: mua ngay → thanh toán nếu đã đăng nhập, không thì giỏ hàng.
-      if (isAuthenticated) {
-        router.push('/thanh-toan');
-      } else {
-        router.push('/gio-hang');
-      }
+      router.push('/thanh-toan');
     } catch (error) {
-      setFeedback({ type: 'error', message: getErrorMessage(error) });
+      const message = getErrorMessage(error);
+      if (/cart token|đăng nhập|UNAUTHORIZED/i.test(message)) {
+        router.push(
+          `/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`,
+        );
+        return;
+      }
+      setFeedback({ type: 'error', message });
     }
   }
 

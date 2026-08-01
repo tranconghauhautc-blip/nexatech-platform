@@ -354,7 +354,7 @@
     },
     "/api/v1/admin/catalog/brands": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createBrand_v1",
+        "operationId": "catalog_AdminCatalog_createBrand_v1",
         "parameters": [
           {
             "in": "header",
@@ -378,7 +378,7 @@
     },
     "/api/v1/admin/catalog/brands/{id}": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateBrand_v1",
+        "operationId": "catalog_AdminCatalog_updateBrand_v1",
         "parameters": [
           {
             "in": "header",
@@ -410,7 +410,7 @@
     },
     "/api/v1/admin/catalog/categories": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createCategory_v1",
+        "operationId": "catalog_AdminCatalog_createCategory_v1",
         "parameters": [
           {
             "in": "header",
@@ -434,7 +434,7 @@
     },
     "/api/v1/admin/catalog/categories/{id}": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateCategory_v1",
+        "operationId": "catalog_AdminCatalog_updateCategory_v1",
         "parameters": [
           {
             "in": "header",
@@ -466,7 +466,7 @@
     },
     "/api/v1/admin/catalog/products": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createProduct_v1",
+        "operationId": "catalog_AdminCatalog_createProduct_v1",
         "parameters": [
           {
             "in": "header",
@@ -490,7 +490,7 @@
     },
     "/api/v1/admin/catalog/products/{id}": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateProduct_v1",
+        "operationId": "catalog_AdminCatalog_updateProduct_v1",
         "parameters": [
           {
             "in": "header",
@@ -522,7 +522,7 @@
     },
     "/api/v1/admin/catalog/products/{id}/status": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateProductStatus_v1",
+        "operationId": "catalog_AdminCatalog_updateProductStatus_v1",
         "parameters": [
           {
             "in": "header",
@@ -554,7 +554,7 @@
     },
     "/api/v1/admin/catalog/products/{productId}/media-links": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_linkMedia_v1",
+        "operationId": "catalog_AdminCatalog_linkMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -586,7 +586,7 @@
     },
     "/api/v1/admin/catalog/skus": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createSku_v1",
+        "operationId": "catalog_AdminCatalog_createSku_v1",
         "parameters": [
           {
             "in": "header",
@@ -610,7 +610,7 @@
     },
     "/api/v1/admin/catalog/skus/{skuId}/prices": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_updatePrice_v1",
+        "operationId": "catalog_AdminCatalog_updatePrice_v1",
         "parameters": [
           {
             "in": "header",
@@ -650,7 +650,7 @@
     },
     "/api/v1/admin/catalog/spec-templates": {
       "get": {
-        "operationId": "catalog_AdminCatalogController_listSpecTemplates_v1",
+        "operationId": "catalog_AdminCatalog_listSpecTemplates_v1",
         "parameters": [
           {
             "in": "header",
@@ -680,7 +680,7 @@
         "x-nexatech-service": "catalog-service"
       },
       "post": {
-        "operationId": "catalog_AdminCatalogController_createSpecTemplate_v1",
+        "operationId": "catalog_AdminCatalog_createSpecTemplate_v1",
         "parameters": [
           {
             "in": "header",
@@ -3134,6 +3134,375 @@
         "x-nexatech-service": "support-service"
       }
     },
+    "/api/v1/admin/users": {
+      "get": {
+        "operationId": "identity_AdminUsers_list_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "List users (SuperAdmin; BFLA in always-on lab)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      },
+      "post": {
+        "operationId": "identity_AdminUsers_create_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "SC-76 — create user (BFLA; weak password SC-85)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/api/v1/admin/users/export": {
+      "get": {
+        "operationId": "identity_AdminUsers_exportAll_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/api/v1/admin/users/{userId}": {
+      "delete": {
+        "operationId": "identity_AdminUsers_softDelete_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      },
+      "get": {
+        "operationId": "identity_AdminUsers_get_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get user by id",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      },
+      "patch": {
+        "operationId": "identity_AdminUsers_patch_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Patch user roles/status (mass-assignment in always-on lab)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/api/v1/admin/users/{userId}/disable": {
+      "post": {
+        "operationId": "identity_AdminUsers_disable_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "SC-77 — soft-disable user (BFLA)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
     "/api/v1/admin/warranty/claims": {
       "get": {
         "operationId": "warranty_AdminWarrantyController_listClaims_v1",
@@ -3305,6 +3674,16 @@
     "/api/v1/auth/forgot-password": {
       "post": {
         "operationId": "identity_Auth_forgotPassword_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-forwarded-host",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -3320,7 +3699,7 @@
             "description": ""
           }
         },
-        "summary": "Yêu cầu OTP đặt lại mật khẩu",
+        "summary": "Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)",
         "tags": [
           "Identity"
         ],
@@ -3405,6 +3784,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "access_token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3434,7 +3821,7 @@
             "bearer": []
           }
         ],
-        "summary": "Thông tin user từ Bearer access token (Swagger Authorize flow)",
+        "summary": "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)",
         "tags": [
           "Identity"
         ],
@@ -3501,7 +3888,7 @@
             "description": ""
           }
         },
-        "summary": "Đăng ký tài khoản Customer",
+        "summary": "Đăng ký tài khoản Customer (SC-87: roles in body accepted)",
         "tags": [
           "Identity"
         ],
@@ -3544,6 +3931,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3556,7 +3951,7 @@
             "bearer": []
           }
         ],
-        "summary": "Thu hồi một phiên",
+        "summary": "SC-79 — thu hồi phiên bất kỳ (IDOR)",
         "tags": [
           "Identity"
         ],
@@ -3574,6 +3969,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -3586,7 +3989,7 @@
             "bearer": []
           }
         ],
-        "summary": "Liệt kê phiên đăng nhập của user",
+        "summary": "SC-78 — liệt kê phiên bất kỳ user (IDOR)",
         "tags": [
           "Identity"
         ],
@@ -3620,7 +4023,7 @@
     },
     "/api/v1/brands": {
       "get": {
-        "operationId": "catalog_CatalogController_brands_v1",
+        "operationId": "catalog_Catalog_brands_v1",
         "responses": {
           "200": {
             "description": ""
@@ -3634,7 +4037,7 @@
     },
     "/api/v1/carts/convert": {
       "post": {
-        "operationId": "cart_CartController_convert_v1",
+        "operationId": "cart_Cart_convert_v1",
         "parameters": [
           {
             "in": "header",
@@ -3674,7 +4077,7 @@
     },
     "/api/v1/carts/current": {
       "delete": {
-        "operationId": "cart_CartController_clear_v1",
+        "operationId": "cart_Cart_clear_v1",
         "parameters": [
           {
             "in": "header",
@@ -3720,7 +4123,7 @@
         "x-nexatech-service": "cart-service"
       },
       "get": {
-        "operationId": "cart_CartController_current_v1",
+        "operationId": "cart_Cart_current_v1",
         "parameters": [
           {
             "in": "header",
@@ -3768,7 +4171,7 @@
     },
     "/api/v1/carts/current/items": {
       "post": {
-        "operationId": "cart_CartController_addItem_v1",
+        "operationId": "cart_Cart_addItem_v1",
         "parameters": [
           {
             "in": "header",
@@ -3816,7 +4219,7 @@
     },
     "/api/v1/carts/current/items/{skuId}": {
       "delete": {
-        "operationId": "cart_CartController_removeItem_v1",
+        "operationId": "cart_Cart_removeItem_v1",
         "parameters": [
           {
             "in": "header",
@@ -3870,7 +4273,7 @@
         "x-nexatech-service": "cart-service"
       },
       "patch": {
-        "operationId": "cart_CartController_updateItem_v1",
+        "operationId": "cart_Cart_updateItem_v1",
         "parameters": [
           {
             "in": "header",
@@ -3926,7 +4329,7 @@
     },
     "/api/v1/carts/current/refresh": {
       "post": {
-        "operationId": "cart_CartController_refresh_v1",
+        "operationId": "cart_Cart_refresh_v1",
         "parameters": [
           {
             "in": "header",
@@ -3974,7 +4377,7 @@
     },
     "/api/v1/carts/current/validate": {
       "post": {
-        "operationId": "cart_CartController_validate_v1",
+        "operationId": "cart_Cart_validate_v1",
         "parameters": [
           {
             "in": "header",
@@ -4030,7 +4433,7 @@
     },
     "/api/v1/carts/guest": {
       "post": {
-        "operationId": "cart_CartController_createGuest_v1",
+        "operationId": "cart_Cart_createGuest_v1",
         "parameters": [
           {
             "in": "header",
@@ -4062,7 +4465,7 @@
     },
     "/api/v1/carts/merge": {
       "post": {
-        "operationId": "cart_CartController_merge_v1",
+        "operationId": "cart_Cart_merge_v1",
         "parameters": [
           {
             "in": "header",
@@ -4102,7 +4505,7 @@
     },
     "/api/v1/categories": {
       "get": {
-        "operationId": "catalog_CatalogController_categories_v1",
+        "operationId": "catalog_Catalog_categories_v1",
         "responses": {
           "200": {
             "description": ""
@@ -4116,7 +4519,7 @@
     },
     "/api/v1/comparison": {
       "delete": {
-        "operationId": "cart_ComparisonController_clear_v1",
+        "operationId": "cart_Comparison_clear_v1",
         "parameters": [
           {
             "in": "header",
@@ -4138,7 +4541,7 @@
         "x-nexatech-service": "cart-service"
       },
       "get": {
-        "operationId": "cart_ComparisonController_list_v1",
+        "operationId": "cart_Comparison_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -4160,7 +4563,7 @@
         "x-nexatech-service": "cart-service"
       },
       "post": {
-        "operationId": "cart_ComparisonController_add_v1",
+        "operationId": "cart_Comparison_add_v1",
         "parameters": [
           {
             "in": "header",
@@ -4184,7 +4587,7 @@
     },
     "/api/v1/comparison/{productId}": {
       "delete": {
-        "operationId": "cart_ComparisonController_remove_v1",
+        "operationId": "cart_Comparison_remove_v1",
         "parameters": [
           {
             "in": "header",
@@ -6030,7 +6433,21 @@
     },
     "/api/v1/products": {
       "get": {
-        "operationId": "catalog_CatalogController_products_v1",
+        "operationId": "catalog_Catalog_products_v1",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v1/products/facets": {
+      "get": {
+        "operationId": "catalog_Catalog_productFacets_v1",
         "responses": {
           "200": {
             "description": ""
@@ -6044,7 +6461,7 @@
     },
     "/api/v1/products/{id}/recommendations": {
       "get": {
-        "operationId": "catalog_CatalogController_recommendations_v1",
+        "operationId": "catalog_Catalog_recommendations_v1",
         "parameters": [
           {
             "in": "path",
@@ -6116,7 +6533,7 @@
     },
     "/api/v1/products/{slug}": {
       "get": {
-        "operationId": "catalog_CatalogController_productBySlug_v1",
+        "operationId": "catalog_Catalog_productBySlug_v1",
         "parameters": [
           {
             "in": "path",
@@ -6140,7 +6557,7 @@
     },
     "/api/v1/recently-viewed": {
       "get": {
-        "operationId": "cart_RecentlyViewedController_list_v1",
+        "operationId": "cart_RecentlyViewed_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -6170,7 +6587,7 @@
         "x-nexatech-service": "cart-service"
       },
       "post": {
-        "operationId": "cart_RecentlyViewedController_track_v1",
+        "operationId": "cart_RecentlyViewed_track_v1",
         "parameters": [
           {
             "in": "header",
@@ -8136,7 +8553,7 @@
     },
     "/api/v1/skus/{skuCode}": {
       "get": {
-        "operationId": "catalog_CatalogController_sku_v1",
+        "operationId": "catalog_Catalog_sku_v1",
         "parameters": [
           {
             "in": "path",
@@ -8998,7 +9415,7 @@
     },
     "/api/v1/wishlist": {
       "get": {
-        "operationId": "cart_WishlistController_list_v1",
+        "operationId": "cart_Wishlist_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -9020,7 +9437,7 @@
         "x-nexatech-service": "cart-service"
       },
       "post": {
-        "operationId": "cart_WishlistController_add_v1",
+        "operationId": "cart_Wishlist_add_v1",
         "parameters": [
           {
             "in": "header",
@@ -9044,7 +9461,7 @@
     },
     "/api/v1/wishlist/{productId}": {
       "delete": {
-        "operationId": "cart_WishlistController_remove_v1",
+        "operationId": "cart_Wishlist_remove_v1",
         "parameters": [
           {
             "in": "header",
@@ -9076,7 +9493,7 @@
     },
     "/api/v2/admin/catalog/brands": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createBrand_v2",
+        "operationId": "catalog_AdminCatalog_createBrand_v2",
         "parameters": [
           {
             "in": "header",
@@ -9100,7 +9517,7 @@
     },
     "/api/v2/admin/catalog/brands/{id}": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateBrand_v2",
+        "operationId": "catalog_AdminCatalog_updateBrand_v2",
         "parameters": [
           {
             "in": "header",
@@ -9132,7 +9549,7 @@
     },
     "/api/v2/admin/catalog/categories": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createCategory_v2",
+        "operationId": "catalog_AdminCatalog_createCategory_v2",
         "parameters": [
           {
             "in": "header",
@@ -9156,7 +9573,7 @@
     },
     "/api/v2/admin/catalog/categories/{id}": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateCategory_v2",
+        "operationId": "catalog_AdminCatalog_updateCategory_v2",
         "parameters": [
           {
             "in": "header",
@@ -9188,7 +9605,7 @@
     },
     "/api/v2/admin/catalog/products": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createProduct_v2",
+        "operationId": "catalog_AdminCatalog_createProduct_v2",
         "parameters": [
           {
             "in": "header",
@@ -9212,7 +9629,7 @@
     },
     "/api/v2/admin/catalog/products/{id}": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateProduct_v2",
+        "operationId": "catalog_AdminCatalog_updateProduct_v2",
         "parameters": [
           {
             "in": "header",
@@ -9244,7 +9661,7 @@
     },
     "/api/v2/admin/catalog/products/{id}/status": {
       "patch": {
-        "operationId": "catalog_AdminCatalogController_updateProductStatus_v2",
+        "operationId": "catalog_AdminCatalog_updateProductStatus_v2",
         "parameters": [
           {
             "in": "header",
@@ -9276,7 +9693,7 @@
     },
     "/api/v2/admin/catalog/products/{productId}/media-links": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_linkMedia_v2",
+        "operationId": "catalog_AdminCatalog_linkMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -9308,7 +9725,7 @@
     },
     "/api/v2/admin/catalog/skus": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_createSku_v2",
+        "operationId": "catalog_AdminCatalog_createSku_v2",
         "parameters": [
           {
             "in": "header",
@@ -9332,7 +9749,7 @@
     },
     "/api/v2/admin/catalog/skus/{skuId}/prices": {
       "post": {
-        "operationId": "catalog_AdminCatalogController_updatePrice_v2",
+        "operationId": "catalog_AdminCatalog_updatePrice_v2",
         "parameters": [
           {
             "in": "header",
@@ -9372,7 +9789,7 @@
     },
     "/api/v2/admin/catalog/spec-templates": {
       "get": {
-        "operationId": "catalog_AdminCatalogController_listSpecTemplates_v2",
+        "operationId": "catalog_AdminCatalog_listSpecTemplates_v2",
         "parameters": [
           {
             "in": "header",
@@ -9402,7 +9819,7 @@
         "x-nexatech-service": "catalog-service"
       },
       "post": {
-        "operationId": "catalog_AdminCatalogController_createSpecTemplate_v2",
+        "operationId": "catalog_AdminCatalog_createSpecTemplate_v2",
         "parameters": [
           {
             "in": "header",
@@ -11856,6 +12273,375 @@
         "x-nexatech-service": "support-service"
       }
     },
+    "/api/v2/admin/users": {
+      "get": {
+        "operationId": "identity_AdminUsers_list_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "List users (SuperAdmin; BFLA in always-on lab)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      },
+      "post": {
+        "operationId": "identity_AdminUsers_create_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "SC-76 — create user (BFLA; weak password SC-85)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/api/v2/admin/users/export": {
+      "get": {
+        "operationId": "identity_AdminUsers_exportAll_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/api/v2/admin/users/{userId}": {
+      "delete": {
+        "operationId": "identity_AdminUsers_softDelete_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      },
+      "get": {
+        "operationId": "identity_AdminUsers_get_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get user by id",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      },
+      "patch": {
+        "operationId": "identity_AdminUsers_patch_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Patch user roles/status (mass-assignment in always-on lab)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/api/v2/admin/users/{userId}/disable": {
+      "post": {
+        "operationId": "identity_AdminUsers_disable_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "summary": "SC-77 — soft-disable user (BFLA)",
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
     "/api/v2/admin/warranty/claims": {
       "get": {
         "operationId": "warranty_AdminWarrantyController_listClaims_v2",
@@ -12027,6 +12813,16 @@
     "/api/v2/auth/forgot-password": {
       "post": {
         "operationId": "identity_Auth_forgotPassword_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-forwarded-host",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -12042,7 +12838,7 @@
             "description": ""
           }
         },
-        "summary": "Yêu cầu OTP đặt lại mật khẩu",
+        "summary": "Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)",
         "tags": [
           "Identity"
         ],
@@ -12127,6 +12923,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "query",
+            "name": "access_token",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -12156,7 +12960,7 @@
             "bearer": []
           }
         ],
-        "summary": "Thông tin user từ Bearer access token (Swagger Authorize flow)",
+        "summary": "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)",
         "tags": [
           "Identity"
         ],
@@ -12223,7 +13027,7 @@
             "description": ""
           }
         },
-        "summary": "Đăng ký tài khoản Customer",
+        "summary": "Đăng ký tài khoản Customer (SC-87: roles in body accepted)",
         "tags": [
           "Identity"
         ],
@@ -12266,6 +13070,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -12278,7 +13090,7 @@
             "bearer": []
           }
         ],
-        "summary": "Thu hồi một phiên",
+        "summary": "SC-79 — thu hồi phiên bất kỳ (IDOR)",
         "tags": [
           "Identity"
         ],
@@ -12296,6 +13108,14 @@
             "schema": {
               "type": "string"
             }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -12308,7 +13128,7 @@
             "bearer": []
           }
         ],
-        "summary": "Liệt kê phiên đăng nhập của user",
+        "summary": "SC-78 — liệt kê phiên bất kỳ user (IDOR)",
         "tags": [
           "Identity"
         ],
@@ -12342,7 +13162,7 @@
     },
     "/api/v2/brands": {
       "get": {
-        "operationId": "catalog_CatalogController_brands_v2",
+        "operationId": "catalog_Catalog_brands_v2",
         "responses": {
           "200": {
             "description": ""
@@ -12356,7 +13176,7 @@
     },
     "/api/v2/carts/convert": {
       "post": {
-        "operationId": "cart_CartController_convert_v2",
+        "operationId": "cart_Cart_convert_v2",
         "parameters": [
           {
             "in": "header",
@@ -12396,7 +13216,7 @@
     },
     "/api/v2/carts/current": {
       "delete": {
-        "operationId": "cart_CartController_clear_v2",
+        "operationId": "cart_Cart_clear_v2",
         "parameters": [
           {
             "in": "header",
@@ -12442,7 +13262,7 @@
         "x-nexatech-service": "cart-service"
       },
       "get": {
-        "operationId": "cart_CartController_current_v2",
+        "operationId": "cart_Cart_current_v2",
         "parameters": [
           {
             "in": "header",
@@ -12490,7 +13310,7 @@
     },
     "/api/v2/carts/current/items": {
       "post": {
-        "operationId": "cart_CartController_addItem_v2",
+        "operationId": "cart_Cart_addItem_v2",
         "parameters": [
           {
             "in": "header",
@@ -12538,7 +13358,7 @@
     },
     "/api/v2/carts/current/items/{skuId}": {
       "delete": {
-        "operationId": "cart_CartController_removeItem_v2",
+        "operationId": "cart_Cart_removeItem_v2",
         "parameters": [
           {
             "in": "header",
@@ -12592,7 +13412,7 @@
         "x-nexatech-service": "cart-service"
       },
       "patch": {
-        "operationId": "cart_CartController_updateItem_v2",
+        "operationId": "cart_Cart_updateItem_v2",
         "parameters": [
           {
             "in": "header",
@@ -12648,7 +13468,7 @@
     },
     "/api/v2/carts/current/refresh": {
       "post": {
-        "operationId": "cart_CartController_refresh_v2",
+        "operationId": "cart_Cart_refresh_v2",
         "parameters": [
           {
             "in": "header",
@@ -12696,7 +13516,7 @@
     },
     "/api/v2/carts/current/validate": {
       "post": {
-        "operationId": "cart_CartController_validate_v2",
+        "operationId": "cart_Cart_validate_v2",
         "parameters": [
           {
             "in": "header",
@@ -12752,7 +13572,7 @@
     },
     "/api/v2/carts/guest": {
       "post": {
-        "operationId": "cart_CartController_createGuest_v2",
+        "operationId": "cart_Cart_createGuest_v2",
         "parameters": [
           {
             "in": "header",
@@ -12784,7 +13604,7 @@
     },
     "/api/v2/carts/merge": {
       "post": {
-        "operationId": "cart_CartController_merge_v2",
+        "operationId": "cart_Cart_merge_v2",
         "parameters": [
           {
             "in": "header",
@@ -12824,7 +13644,7 @@
     },
     "/api/v2/categories": {
       "get": {
-        "operationId": "catalog_CatalogController_categories_v2",
+        "operationId": "catalog_Catalog_categories_v2",
         "responses": {
           "200": {
             "description": ""
@@ -12838,7 +13658,7 @@
     },
     "/api/v2/comparison": {
       "delete": {
-        "operationId": "cart_ComparisonController_clear_v2",
+        "operationId": "cart_Comparison_clear_v2",
         "parameters": [
           {
             "in": "header",
@@ -12860,7 +13680,7 @@
         "x-nexatech-service": "cart-service"
       },
       "get": {
-        "operationId": "cart_ComparisonController_list_v2",
+        "operationId": "cart_Comparison_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -12882,7 +13702,7 @@
         "x-nexatech-service": "cart-service"
       },
       "post": {
-        "operationId": "cart_ComparisonController_add_v2",
+        "operationId": "cart_Comparison_add_v2",
         "parameters": [
           {
             "in": "header",
@@ -12906,7 +13726,7 @@
     },
     "/api/v2/comparison/{productId}": {
       "delete": {
-        "operationId": "cart_ComparisonController_remove_v2",
+        "operationId": "cart_Comparison_remove_v2",
         "parameters": [
           {
             "in": "header",
@@ -14752,7 +15572,21 @@
     },
     "/api/v2/products": {
       "get": {
-        "operationId": "catalog_CatalogController_products_v2",
+        "operationId": "catalog_Catalog_products_v2",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v2/products/facets": {
+      "get": {
+        "operationId": "catalog_Catalog_productFacets_v2",
         "responses": {
           "200": {
             "description": ""
@@ -14766,7 +15600,7 @@
     },
     "/api/v2/products/{id}/recommendations": {
       "get": {
-        "operationId": "catalog_CatalogController_recommendations_v2",
+        "operationId": "catalog_Catalog_recommendations_v2",
         "parameters": [
           {
             "in": "path",
@@ -14838,7 +15672,7 @@
     },
     "/api/v2/products/{slug}": {
       "get": {
-        "operationId": "catalog_CatalogController_productBySlug_v2",
+        "operationId": "catalog_Catalog_productBySlug_v2",
         "parameters": [
           {
             "in": "path",
@@ -14862,7 +15696,7 @@
     },
     "/api/v2/recently-viewed": {
       "get": {
-        "operationId": "cart_RecentlyViewedController_list_v2",
+        "operationId": "cart_RecentlyViewed_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -14892,7 +15726,7 @@
         "x-nexatech-service": "cart-service"
       },
       "post": {
-        "operationId": "cart_RecentlyViewedController_track_v2",
+        "operationId": "cart_RecentlyViewed_track_v2",
         "parameters": [
           {
             "in": "header",
@@ -16858,7 +17692,7 @@
     },
     "/api/v2/skus/{skuCode}": {
       "get": {
-        "operationId": "catalog_CatalogController_sku_v2",
+        "operationId": "catalog_Catalog_sku_v2",
         "parameters": [
           {
             "in": "path",
@@ -17720,7 +18554,7 @@
     },
     "/api/v2/wishlist": {
       "get": {
-        "operationId": "cart_WishlistController_list_v2",
+        "operationId": "cart_Wishlist_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -17742,7 +18576,7 @@
         "x-nexatech-service": "cart-service"
       },
       "post": {
-        "operationId": "cart_WishlistController_add_v2",
+        "operationId": "cart_Wishlist_add_v2",
         "parameters": [
           {
             "in": "header",
@@ -17766,7 +18600,7 @@
     },
     "/api/v2/wishlist/{productId}": {
       "delete": {
-        "operationId": "cart_WishlistController_remove_v2",
+        "operationId": "cart_Wishlist_remove_v2",
         "parameters": [
           {
             "in": "header",
@@ -17876,6 +18710,156 @@
         "x-nexatech-service": "reporting-service"
       }
     },
+    "/lab/api-inventory": {
+      "get": {
+        "operationId": "identity_Health_apiInventory",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/content-type": {
+      "get": {
+        "operationId": "identity_Health_contentType",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/error-stack": {
+      "get": {
+        "operationId": "identity_Health_errorStack",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/jwt-alg-none": {
+      "get": {
+        "operationId": "identity_Health_jwtAlgNone",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "sub",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/login-get": {
+      "get": {
+        "operationId": "identity_Health_loginGet",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "password",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/oauth-callback": {
+      "get": {
+        "operationId": "identity_Health_oauthCallback",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/reflect-headers": {
+      "get": {
+        "operationId": "identity_Health_reflectHeaders",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/set-cookie": {
+      "get": {
+        "operationId": "identity_Health_setCookie",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
     "/lab/ssrf-probe": {
       "get": {
         "operationId": "identity_Health_ssrfProbe",
@@ -17883,6 +18867,54 @@
           {
             "in": "query",
             "name": "url",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/supply-chain": {
+      "get": {
+        "operationId": "identity_Health_supplyChain",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "digest",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Identity"
+        ],
+        "x-nexatech-service": "identity-service"
+      }
+    },
+    "/lab/verify-bypass": {
+      "get": {
+        "operationId": "identity_Health_verifyBypass",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "email",
             "required": true,
             "schema": {
               "type": "string"

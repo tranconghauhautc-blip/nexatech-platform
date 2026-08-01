@@ -1,0 +1,4 @@
+# See scenarios.json for runtime SSoT (Guide loads JSON).
+# Keep YAML in sync when editing scenarios.
+version: 1
+note: Canonical runtime file is scenarios.json (10 seeded scenarios NX-API-* / NX-WEB-*).

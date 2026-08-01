@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sessionCookieOptions } from '@nexatech/shared-security-lab';
 import {
   bffTimeoutMs,
   fetchWithTimeout,
@@ -125,15 +124,15 @@ export async function proxyToService(
       headers: responseHeaders,
     });
 
-    // Persist guest cart token so subsequent BFF calls include x-cart-token.
+    // Persist guest cart token. Do NOT reuse SC-28 SameSite=None cookie flags —
+    // browsers reject SameSite=None without Secure, which breaks guest checkout.
     if (service === 'cart' && upstream.ok) {
       const guestToken = extractGuestCartToken(body, contentType);
       if (guestToken) {
-        const cookieOpts = sessionCookieOptions();
         response.cookies.set(CART_TOKEN_COOKIE, guestToken, {
-          httpOnly: cookieOpts.httpOnly,
-          secure: cookieOpts.secure,
-          sameSite: cookieOpts.sameSite,
+          httpOnly: true,
+          secure: false,
+          sameSite: 'lax',
           path: '/',
           maxAge: CART_TOKEN_MAX_AGE_SECONDS,
         });

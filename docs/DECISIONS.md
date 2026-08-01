@@ -395,3 +395,10 @@ Phiên bản chính xác được khóa trong `package.json` / `pnpm-lock.yaml`.
 - Per-service `/docs` giữ nguyên để debug.
 - Health smoke: `pnpm lab:smoke` kiểm portal + Kong `/docs`.
 - **Cấm:** public combined Swagger trên production edge; làm yếu cookie/BFF auth vì Swagger Bearer lab.
+
+## ADR-046 — OpenAPI 3.0.3 mandatory + authenticated Security Guide
+
+- **Quyết định:** Toàn bộ specs = OpenAPI **3.0.3** (xem `docs/adr/ADR-OPENAPI-3-0-3.md`). Commands: `openapi:generate|combine|validate|diff|check`.
+- **Security Guide:** portal `apps/security-guide-portal` port **3200**, credential qua `pnpm security-guide:setup` → gitignored `.env.security-guide.local` (bcrypt hash, no plaintext password). Fail-closed nếu thiếu config.
+- Scenario SSoT: `security-scenarios/scenarios.{yaml,json}`.
+- **Cấm:** upgrade OpenAPI 3.1/3.2 không ADR; hard-code guide password; public default guide credentials.

@@ -35,6 +35,7 @@ Ports lấy từ `infra/docker/docker-compose.dev.yml` và `infra/docker/docker-
 | Security Lab UI     | http://localhost:3100/security-lab | Dashboard OWASP lab             | Admin session (Staff+)                                           | Always-on vulnerable PoC           | ADR-044 — không cần dual gate                                      |
 | OWASP API Guide     | http://localhost:3000/lab/owasp-api-top10.html | Public exploit guide (API Top 10) | Không auth                                              | Public lab guide                   | Customer cũng mở được                                              |
 | OWASP Web Guide     | http://localhost:3000/lab/owasp-web-top10.html | Public exploit guide (Web Top 10) | Không auth                                              | Public lab guide                   | Customer cũng mở được                                              |
+| **Security Guide**  | http://localhost:3200/security-guide           | Authenticated exploit portal      | `pnpm security-guide:setup` → `.env.security-guide.local` | **Không** production            | Fail-closed; replaces public `/lab` guides over time               |
 
 ## Seed accounts (local)
 

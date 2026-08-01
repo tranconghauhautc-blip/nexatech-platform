@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "NexaTechSecurityScenarios",
+  "type": "object",
+  "required": ["version", "scenarios"],
+  "properties": {
+    "version": { "type": "integer", "minimum": 1 },
+    "scenarios": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status",
+          "primaryCategory",
+          "service",
+          "method",
+          "path"
+        ],
+        "properties": {
+          "id": { "type": "string", "pattern": "^NX-(API|WEB)-[0-9]{3}$" },
+          "title": { "type": "string" },
+          "status": {
+            "type": "string",
+            "enum": [
+              "EXPLOITABLE",
+              "PARTIAL",
+              "DOCUMENTATION_ONLY",
+              "BROKEN",
+              "MISSING"
+            ]
+          },
+          "primaryCategory": { "type": "string" },
+          "owaspApi2023": { "type": "array", "items": { "type": "string" } },
+          "owaspWeb2025": { "type": "array", "items": { "type": "string" } },
+          "service": { "type": "string" },
+          "method": { "type": "string" },
+          "path": { "type": "string" },
+          "operationId": { "type": "string" },
+          "roles": { "type": "array", "items": { "type": "string" } },
+          "preconditions": { "type": "array", "items": { "type": "string" } },
+          "expectedVulnerableBehavior": { "type": "string" },
+          "wafClass": { "type": "string" },
+          "apiSecurityClass": { "type": "string" },
+          "guidePath": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -62,10 +62,15 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       },
       "requestId": {
         "type": "apiKey",
@@ -77,15 +82,10 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       }
     }
   },
@@ -94,7 +94,7 @@
     "description": "Checkout, trạng thái đơn, huỷ và outbox",
     "version": "1.0"
   },
-  "openapi": "3.0.0",
+  "openapi": "3.0.3",
   "paths": {
     "/api/v1/admin/orders": {
       "get": {
@@ -1744,8 +1744,20 @@
       "description": "Kong Gateway (local)"
     },
     {
+      "url": "http://{host}:{port}",
+      "description": "Kubernetes / origin placeholder (override host+port)",
+      "variables": {
+        "host": {
+          "default": "catalog-service.nexatech.svc.cluster.local"
+        },
+        "port": {
+          "default": "3007"
+        }
+      }
+    },
+    {
       "url": "https://api.example.invalid",
-      "description": "Production placeholder"
+      "description": "Protected public placeholder ONLY — do not use for Try it out"
     }
   ],
   "tags": []

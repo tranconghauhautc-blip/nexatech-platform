@@ -109,10 +109,10 @@ export function buildNexaTechOpenApiDocument(
       [
         options.description,
         '',
-        'Local security training lab: use Swagger Authorize with JWT from identity login,',
+        'Local intentionally vulnerable application: use Swagger Authorize with JWT from identity login,',
         'or gateway trust headers (`x-user-id`, `x-user-roles`) behind Kong/BFF.',
-        'Do not paste production secrets. Security-lab intentional vulns require lab deploy profile.',
-        'Servers: prefer “same origin as /docs”; do not pick unreachable hosts for Try it out.',
+        'Do not paste production secrets. Intentional OWASP vulnerabilities are ALWAYS ON (no secure mode).',
+        'Servers: prefer same-origin /docs or direct localhost; never pick api.example.invalid for Try it out.',
       ].join('\n'),
     )
     .setVersion(version)
@@ -122,6 +122,10 @@ export function buildNexaTechOpenApiDocument(
       `${options.serviceName} direct (local)`,
     )
     .addServer('http://localhost:8000', 'Kong Gateway (local)')
+    .addServer(
+      'http://service.nexatech.svc.cluster.local',
+      'Kubernetes internal placeholder (override)',
+    )
     .addBearerAuth(
       {
         type: 'http',
@@ -213,6 +217,9 @@ export function buildNexaTechOpenApiDocument(
   };
 
   stripForbiddenHeaderParameters(document);
+
+  // Nest @nestjs/swagger defaults to 3.0.0 — NexaTech mandates OpenAPI 3.0.3.
+  document.openapi = '3.0.3';
 
   return document;
 }

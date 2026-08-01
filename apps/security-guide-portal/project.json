@@ -1,0 +1,16 @@
+{
+  "name": "security-guide-portal",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/security-guide-portal/src",
+  "projectType": "application",
+  "tags": ["scope:lab", "type:app"],
+  "targets": {
+    "serve": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node apps/security-guide-portal/src/main.cjs",
+        "cwd": "{workspaceRoot}"
+      }
+    }
+  }
+}

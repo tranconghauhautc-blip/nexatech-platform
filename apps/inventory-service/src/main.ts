@@ -1,6 +1,9 @@
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { setupNexaTechSwagger } from '@nexatech/shared-platform';
+import {
+  setupNexaTechSwagger,
+  useNexaTechExceptionFilter,
+} from '@nexatech/shared-platform';
 import { AppModule } from './app/app.module';
 
 async function bootstrap() {
@@ -17,6 +20,7 @@ async function bootstrap() {
       forbidNonWhitelisted: false,
     }),
   );
+  useNexaTechExceptionFilter(app);
 
   const port = Number(
     process.env['INVENTORY_PORT'] ?? process.env['PORT'] ?? 3005,
