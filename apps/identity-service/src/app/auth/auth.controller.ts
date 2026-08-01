@@ -17,8 +17,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import type { Response } from 'express';
 import { shouldCacheAuthResponse } from '@nexatech/shared-security-lab';
+
+/** Avoid express type dependency in Docker webpack builds. */
+type HttpResponse = {
+  setHeader(name: string, value: string): void;
+};
 import { AuthService } from './auth.service';
 import {
   AuthTokenResponseDto,
@@ -63,7 +67,7 @@ export class AuthController {
   async login(
     @Body() body: LoginRequestDto,
     @Req() req: RequestWithHeaders,
-    @Res({ passthrough: true }) res: Response,
+    @Res({ passthrough: true }) res: HttpResponse,
   ) {
     // SC-82 — cacheable auth response
     if (shouldCacheAuthResponse()) {

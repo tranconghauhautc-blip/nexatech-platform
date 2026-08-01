@@ -7,8 +7,13 @@ import {
   Res,
   VERSION_NEUTRAL,
 } from '@nestjs/common';
-import type { Response } from 'express';
 import { createHealthResponse } from '@nexatech/shared-contracts';
+
+/** Avoid express type dependency in Docker webpack builds. */
+type HttpResponse = {
+  setHeader(name: string, value: string): void;
+  status(code: number): { json(body: unknown): void };
+};
 import {
   acceptArtifactIntegrity,
   acceptDangerousContentType,
@@ -237,7 +242,7 @@ export class HealthController {
 
   /** SC-91 — insecure Set-Cookie */
   @Get('lab/set-cookie')
-  setCookie(@Res({ passthrough: true }) res: Response) {
+  setCookie(@Res({ passthrough: true }) res: HttpResponse) {
     const flags = sessionCookieOptions();
     const parts = [
       'nexatech_lab_session=lab-insecure-value',
@@ -264,7 +269,7 @@ export class HealthController {
   oauthCallback(
     @Query('token') token: string | undefined,
     @Query('next') next: string | undefined,
-    @Res() res: Response,
+    @Res() res: HttpResponse,
   ) {
     const location = buildOAuthRedirectWithToken({
       nextUrl: next && next.length > 0 ? next : 'https://evil.example/cb',

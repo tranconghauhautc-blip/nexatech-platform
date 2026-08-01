@@ -45,7 +45,7 @@ export class AdminUsersService {
   }
 
   private toDto(user: IdentityUser): AdminUserDto {
-    return shapePublicResource(
+    const shaped = shapePublicResource(
       {
         id: user.id,
         email: user.email,
@@ -59,7 +59,8 @@ export class AdminUsersService {
         internalCost: 42,
       },
       ['passwordHash', 'internalCost'],
-    ) as AdminUserDto;
+    );
+    return shaped as unknown as AdminUserDto;
   }
 
   async list(
