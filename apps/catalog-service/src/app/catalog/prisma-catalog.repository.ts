@@ -719,10 +719,10 @@ export class PrismaCatalogRepository implements CatalogRepository {
     let filtered = rows;
     if (filters.minPrice !== undefined || filters.maxPrice !== undefined) {
       filtered = filtered.filter((product) => {
-        const minPrice = Math.min(
-          ...product.skus.map((sku) => sku.price?.amount ?? 0),
-          0,
-        );
+        const amounts = product.skus
+          .map((sku) => sku.price?.amount)
+          .filter((amount): amount is number => typeof amount === 'number');
+        const minPrice = amounts.length > 0 ? Math.min(...amounts) : 0;
         if (filters.minPrice !== undefined && minPrice < filters.minPrice) {
           return false;
         }
@@ -757,14 +757,14 @@ export class PrismaCatalogRepository implements CatalogRepository {
 
     if (filters.sort === 'price_asc' || filters.sort === 'price_desc') {
       filtered.sort((a, b) => {
-        const minA = Math.min(
-          ...a.skus.map((sku) => sku.price?.amount ?? 0),
-          0,
-        );
-        const minB = Math.min(
-          ...b.skus.map((sku) => sku.price?.amount ?? 0),
-          0,
-        );
+        const amountsA = a.skus
+          .map((sku) => sku.price?.amount)
+          .filter((amount): amount is number => typeof amount === 'number');
+        const amountsB = b.skus
+          .map((sku) => sku.price?.amount)
+          .filter((amount): amount is number => typeof amount === 'number');
+        const minA = amountsA.length > 0 ? Math.min(...amountsA) : 0;
+        const minB = amountsB.length > 0 ? Math.min(...amountsB) : 0;
         return filters.sort === 'price_asc' ? minA - minB : minB - minA;
       });
     }
@@ -773,20 +773,22 @@ export class PrismaCatalogRepository implements CatalogRepository {
     const start = (filters.page - 1) * filters.pageSize;
     const paged = filtered.slice(start, start + filters.pageSize);
 
-    const items: ProductSearchItem[] = paged.map((product) => ({
-      id: product.id,
-      slug: product.slug,
-      name: product.name,
-      brandName: product.brand.name,
-      categorySlug: product.category.slug,
-      status: toDomainStatus(product.status),
-      minPrice: Math.min(
-        ...product.skus.map((sku) => sku.price?.amount ?? 0),
-        0,
-      ),
-      currency: 'VND',
-      thumbnailUrl: product.mediaLinks[0]?.mediaId,
-    }));
+    const items: ProductSearchItem[] = paged.map((product) => {
+      const amounts = product.skus
+        .map((sku) => sku.price?.amount)
+        .filter((amount): amount is number => typeof amount === 'number');
+      return {
+        id: product.id,
+        slug: product.slug,
+        name: product.name,
+        brandName: product.brand.name,
+        categorySlug: product.category.slug,
+        status: toDomainStatus(product.status),
+        minPrice: amounts.length > 0 ? Math.min(...amounts) : 0,
+        currency: 'VND',
+        thumbnailUrl: product.mediaLinks[0]?.mediaId,
+      };
+    });
 
     return { items, total };
   }

@@ -1,6 +1,37 @@
-import { Body, Controller, Get, Headers, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Headers,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { CustomerService } from './customer.service';
+
+interface AddressBody {
+  label: string;
+  recipient: string;
+  phone: string;
+  line1: string;
+  line2?: string;
+  /** @deprecated legacy free-text ward, prefer wardCode/wardName */
+  ward?: string;
+  /** @deprecated legacy free-text district — 2-level model has no district */
+  district?: string;
+  /** @deprecated legacy free-text city, prefer provinceCode/provinceName */
+  city: string;
+  countryCode?: string;
+  provinceCode?: string;
+  provinceName?: string;
+  wardCode?: string;
+  wardName?: string;
+  postalCode?: string;
+  isDefault?: boolean;
+}
+
+type UpdateAddressBody = Partial<AddressBody>;
 
 @ApiTags('customers')
 @Controller({ path: 'customers', version: ['1', '2'] })
@@ -29,25 +60,19 @@ export class CustomerController {
   }
 
   @Post('me/addresses')
-  addAddress(
-    @Headers('x-user-id') userId: string,
-    @Body()
-    body: {
-      label: string;
-      recipient: string;
-      phone: string;
-      line1: string;
-      line2?: string;
-      ward?: string;
-      district?: string;
-      city: string;
-      postalCode?: string;
-      isDefault?: boolean;
-    },
-  ) {
+  addAddress(@Headers('x-user-id') userId: string, @Body() body: AddressBody) {
     return this.customerService.addAddress(userId, {
       ...body,
       isDefault: body.isDefault ?? false,
     });
+  }
+
+  @Put('me/addresses/:id')
+  updateAddress(
+    @Headers('x-user-id') userId: string,
+    @Param('id') id: string,
+    @Body() body: UpdateAddressBody,
+  ) {
+    return this.customerService.updateAddress(userId, id, body);
   }
 }

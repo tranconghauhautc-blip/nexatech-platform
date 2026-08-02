@@ -1,0 +1,206 @@
+[
+  {
+    "code": "01",
+    "name": "Thành phố Hà Nội",
+    "type": "central_city",
+    "slug": "ha-noi"
+  },
+  {
+    "code": "04",
+    "name": "Cao Bằng",
+    "type": "province",
+    "slug": "cao-bang"
+  },
+  {
+    "code": "08",
+    "name": "Tuyên Quang",
+    "type": "province",
+    "slug": "tuyen-quang"
+  },
+  {
+    "code": "11",
+    "name": "Điện Biên",
+    "type": "province",
+    "slug": "dien-bien"
+  },
+  {
+    "code": "12",
+    "name": "Lai Châu",
+    "type": "province",
+    "slug": "lai-chau"
+  },
+  {
+    "code": "14",
+    "name": "Sơn La",
+    "type": "province",
+    "slug": "son-la"
+  },
+  {
+    "code": "15",
+    "name": "Lào Cai",
+    "type": "province",
+    "slug": "lao-cai"
+  },
+  {
+    "code": "19",
+    "name": "Thái Nguyên",
+    "type": "province",
+    "slug": "thai-nguyen"
+  },
+  {
+    "code": "20",
+    "name": "Lạng Sơn",
+    "type": "province",
+    "slug": "lang-son"
+  },
+  {
+    "code": "22",
+    "name": "Quảng Ninh",
+    "type": "province",
+    "slug": "quang-ninh"
+  },
+  {
+    "code": "24",
+    "name": "Bắc Ninh",
+    "type": "province",
+    "slug": "bac-ninh"
+  },
+  {
+    "code": "25",
+    "name": "Phú Thọ",
+    "type": "province",
+    "slug": "phu-tho"
+  },
+  {
+    "code": "31",
+    "name": "Thành phố Hải Phòng",
+    "type": "central_city",
+    "slug": "hai-phong"
+  },
+  {
+    "code": "33",
+    "name": "Hưng Yên",
+    "type": "province",
+    "slug": "hung-yen"
+  },
+  {
+    "code": "37",
+    "name": "Ninh Bình",
+    "type": "province",
+    "slug": "ninh-binh"
+  },
+  {
+    "code": "38",
+    "name": "Thanh Hóa",
+    "type": "province",
+    "slug": "thanh-hoa"
+  },
+  {
+    "code": "40",
+    "name": "Nghệ An",
+    "type": "province",
+    "slug": "nghe-an"
+  },
+  {
+    "code": "42",
+    "name": "Hà Tĩnh",
+    "type": "province",
+    "slug": "ha-tinh"
+  },
+  {
+    "code": "44",
+    "name": "Quảng Trị",
+    "type": "province",
+    "slug": "quang-tri"
+  },
+  {
+    "code": "46",
+    "name": "Thành phố Huế",
+    "type": "central_city",
+    "slug": "hue"
+  },
+  {
+    "code": "48",
+    "name": "Thành phố Đà Nẵng",
+    "type": "central_city",
+    "slug": "da-nang"
+  },
+  {
+    "code": "51",
+    "name": "Quảng Ngãi",
+    "type": "province",
+    "slug": "quang-ngai"
+  },
+  {
+    "code": "52",
+    "name": "Gia Lai",
+    "type": "province",
+    "slug": "gia-lai"
+  },
+  {
+    "code": "56",
+    "name": "Khánh Hòa",
+    "type": "province",
+    "slug": "khanh-hoa"
+  },
+  {
+    "code": "66",
+    "name": "Đắk Lắk",
+    "type": "province",
+    "slug": "dak-lak"
+  },
+  {
+    "code": "68",
+    "name": "Lâm Đồng",
+    "type": "province",
+    "slug": "lam-dong"
+  },
+  {
+    "code": "75",
+    "name": "Đồng Nai",
+    "type": "province",
+    "slug": "dong-nai"
+  },
+  {
+    "code": "79",
+    "name": "Thành phố Hồ Chí Minh",
+    "type": "central_city",
+    "slug": "ho-chi-minh"
+  },
+  {
+    "code": "72",
+    "name": "Tây Ninh",
+    "type": "province",
+    "slug": "tay-ninh"
+  },
+  {
+    "code": "86",
+    "name": "Vĩnh Long",
+    "type": "province",
+    "slug": "vinh-long"
+  },
+  {
+    "code": "87",
+    "name": "Đồng Tháp",
+    "type": "province",
+    "slug": "dong-thap"
+  },
+  {
+    "code": "91",
+    "name": "An Giang",
+    "type": "province",
+    "slug": "an-giang"
+  },
+  {
+    "code": "92",
+    "name": "Thành phố Cần Thơ",
+    "type": "central_city",
+    "slug": "can-tho"
+  },
+  {
+    "code": "96",
+    "name": "Cà Mau",
+    "type": "province",
+    "slug": "ca-mau"
+  }
+]

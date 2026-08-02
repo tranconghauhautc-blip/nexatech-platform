@@ -1,0 +1,240 @@
+[
+  {
+    "code": "01",
+    "nameLocal": "Hà Nội",
+    "nameEn": "Hanoi",
+    "type": "MUNICIPALITY",
+    "wardCount": 126
+  },
+  {
+    "code": "04",
+    "nameLocal": "Cao Bằng",
+    "nameEn": "Cao Bang",
+    "type": "PROVINCE",
+    "wardCount": 56
+  },
+  {
+    "code": "08",
+    "nameLocal": "Tuyên Quang",
+    "nameEn": "Tuyen Quang",
+    "type": "PROVINCE",
+    "wardCount": 124
+  },
+  {
+    "code": "11",
+    "nameLocal": "Điện Biên",
+    "nameEn": "Dien Bien",
+    "type": "PROVINCE",
+    "wardCount": 45
+  },
+  {
+    "code": "12",
+    "nameLocal": "Lai Châu",
+    "nameEn": "Lai Chau",
+    "type": "PROVINCE",
+    "wardCount": 38
+  },
+  {
+    "code": "14",
+    "nameLocal": "Sơn La",
+    "nameEn": "Son La",
+    "type": "PROVINCE",
+    "wardCount": 75
+  },
+  {
+    "code": "15",
+    "nameLocal": "Lào Cai",
+    "nameEn": "Lao Cai",
+    "type": "PROVINCE",
+    "wardCount": 99
+  },
+  {
+    "code": "19",
+    "nameLocal": "Thái Nguyên",
+    "nameEn": "Thai Nguyen",
+    "type": "PROVINCE",
+    "wardCount": 92
+  },
+  {
+    "code": "20",
+    "nameLocal": "Lạng Sơn",
+    "nameEn": "Lang Son",
+    "type": "PROVINCE",
+    "wardCount": 65
+  },
+  {
+    "code": "22",
+    "nameLocal": "Quảng Ninh",
+    "nameEn": "Quang Ninh",
+    "type": "PROVINCE",
+    "wardCount": 54
+  },
+  {
+    "code": "24",
+    "nameLocal": "Bắc Ninh",
+    "nameEn": "Bac Ninh",
+    "type": "PROVINCE",
+    "wardCount": 99
+  },
+  {
+    "code": "25",
+    "nameLocal": "Phú Thọ",
+    "nameEn": "Phu Tho",
+    "type": "PROVINCE",
+    "wardCount": 148
+  },
+  {
+    "code": "31",
+    "nameLocal": "Hải Phòng",
+    "nameEn": "Hai Phong",
+    "type": "MUNICIPALITY",
+    "wardCount": 114
+  },
+  {
+    "code": "33",
+    "nameLocal": "Hưng Yên",
+    "nameEn": "Hung Yen",
+    "type": "PROVINCE",
+    "wardCount": 104
+  },
+  {
+    "code": "37",
+    "nameLocal": "Ninh Bình",
+    "nameEn": "Ninh Binh",
+    "type": "PROVINCE",
+    "wardCount": 129
+  },
+  {
+    "code": "38",
+    "nameLocal": "Thanh Hóa",
+    "nameEn": "Thanh Hoa",
+    "type": "PROVINCE",
+    "wardCount": 166
+  },
+  {
+    "code": "40",
+    "nameLocal": "Nghệ An",
+    "nameEn": "Nghe An",
+    "type": "PROVINCE",
+    "wardCount": 130
+  },
+  {
+    "code": "42",
+    "nameLocal": "Hà Tĩnh",
+    "nameEn": "Ha Tinh",
+    "type": "PROVINCE",
+    "wardCount": 69
+  },
+  {
+    "code": "44",
+    "nameLocal": "Quảng Trị",
+    "nameEn": "Quang Tri",
+    "type": "PROVINCE",
+    "wardCount": 78
+  },
+  {
+    "code": "46",
+    "nameLocal": "Huế",
+    "nameEn": "Hue",
+    "type": "MUNICIPALITY",
+    "wardCount": 40
+  },
+  {
+    "code": "48",
+    "nameLocal": "Đà Nẵng",
+    "nameEn": "Da Nang",
+    "type": "MUNICIPALITY",
+    "wardCount": 94
+  },
+  {
+    "code": "51",
+    "nameLocal": "Quảng Ngãi",
+    "nameEn": "Quang Ngai",
+    "type": "PROVINCE",
+    "wardCount": 96
+  },
+  {
+    "code": "52",
+    "nameLocal": "Gia Lai",
+    "nameEn": "Gia Lai",
+    "type": "PROVINCE",
+    "wardCount": 135
+  },
+  {
+    "code": "56",
+    "nameLocal": "Khánh Hòa",
+    "nameEn": "Khanh Hoa",
+    "type": "PROVINCE",
+    "wardCount": 65
+  },
+  {
+    "code": "66",
+    "nameLocal": "Đắk Lắk",
+    "nameEn": "Dak Lak",
+    "type": "PROVINCE",
+    "wardCount": 102
+  },
+  {
+    "code": "68",
+    "nameLocal": "Lâm Đồng",
+    "nameEn": "Lam Dong",
+    "type": "PROVINCE",
+    "wardCount": 124
+  },
+  {
+    "code": "75",
+    "nameLocal": "Đồng Nai",
+    "nameEn": "Dong Nai",
+    "type": "PROVINCE",
+    "wardCount": 95
+  },
+  {
+    "code": "79",
+    "nameLocal": "Hồ Chí Minh",
+    "nameEn": "Ho Chi Minh City",
+    "type": "MUNICIPALITY",
+    "wardCount": 168
+  },
+  {
+    "code": "80",
+    "nameLocal": "Tây Ninh",
+    "nameEn": "Tay Ninh",
+    "type": "PROVINCE",
+    "wardCount": 96
+  },
+  {
+    "code": "82",
+    "nameLocal": "Đồng Tháp",
+    "nameEn": "Dong Thap",
+    "type": "PROVINCE",
+    "wardCount": 102
+  },
+  {
+    "code": "86",
+    "nameLocal": "Vĩnh Long",
+    "nameEn": "Vinh Long",
+    "type": "PROVINCE",
+    "wardCount": 124
+  },
+  {
+    "code": "91",
+    "nameLocal": "An Giang",
+    "nameEn": "An Giang",
+    "type": "PROVINCE",
+    "wardCount": 102
+  },
+  {
+    "code": "92",
+    "nameLocal": "Cần Thơ",
+    "nameEn": "Can Tho",
+    "type": "MUNICIPALITY",
+    "wardCount": 103
+  },
+  {
+    "code": "96",
+    "nameLocal": "Cà Mau",
+    "nameEn": "Ca Mau",
+    "type": "PROVINCE",
+    "wardCount": 64
+  }
+]

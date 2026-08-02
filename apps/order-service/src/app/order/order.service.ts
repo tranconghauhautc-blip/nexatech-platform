@@ -542,6 +542,17 @@ export class OrderService {
           orderId: order.id,
           reason: input.reason,
         }),
+        // Audit trail vận hành cho reporting (nhật ký) — bổ sung cùng với
+        // writeAudit local, không thay thế các kịch bản logging-gap bảo mật
+        // (SC-64 vẫn chặn riêng ở tầng security audit).
+        this.buildEvent(EventTypes.AUDIT_RECORDED, traceId, {
+          action: 'order.cancelled',
+          actorId: actorIdOf(actor),
+          actorRoles: actor.roles,
+          resourceType: 'order',
+          orderId: order.id,
+          reason: input.reason,
+        }),
       ],
     });
     await this.repository.writeAudit('order.cancelled', actorIdOf(actor), {
@@ -586,6 +597,13 @@ export class OrderService {
       paidAt: isCod ? undefined : new Date(),
       outboxEvents: [
         this.buildEvent(EventTypes.ORDER_CONFIRMED, traceId, {
+          orderId: order.id,
+        }),
+        this.buildEvent(EventTypes.AUDIT_RECORDED, traceId, {
+          action: 'order.confirmed',
+          actorId: actorIdOf(actor),
+          actorRoles: actor.roles,
+          resourceType: 'order',
           orderId: order.id,
         }),
       ],

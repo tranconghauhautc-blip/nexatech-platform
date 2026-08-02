@@ -22,6 +22,12 @@ export class CatalogController {
     return this.catalogService.getProductFacets(query);
   }
 
+  /** Batch product summaries for wishlist/compare hydration. */
+  @Get('products/summaries')
+  productSummaries(@Query('ids') ids?: string) {
+    return this.catalogService.getProductSummariesByIds(ids);
+  }
+
   @Get('products')
   products(@Query() query: Record<string, unknown>) {
     return this.catalogService.searchProducts(query);

@@ -1,0 +1,308 @@
+[
+  {
+    "code": "01",
+    "name": "Hà Nội",
+    "normalizedName": "ha noi",
+    "type": "MUNICIPALITY",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "04",
+    "name": "Cao Bằng",
+    "normalizedName": "cao bang",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "08",
+    "name": "Tuyên Quang",
+    "normalizedName": "tuyen quang",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "11",
+    "name": "Điện Biên",
+    "normalizedName": "dien bien",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "12",
+    "name": "Lai Châu",
+    "normalizedName": "lai chau",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "14",
+    "name": "Sơn La",
+    "normalizedName": "son la",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "15",
+    "name": "Lào Cai",
+    "normalizedName": "lao cai",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "19",
+    "name": "Thái Nguyên",
+    "normalizedName": "thai nguyen",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "20",
+    "name": "Lạng Sơn",
+    "normalizedName": "lang son",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "22",
+    "name": "Quảng Ninh",
+    "normalizedName": "quang ninh",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "24",
+    "name": "Bắc Ninh",
+    "normalizedName": "bac ninh",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "25",
+    "name": "Phú Thọ",
+    "normalizedName": "phu tho",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "31",
+    "name": "Hải Phòng",
+    "normalizedName": "hai phong",
+    "type": "MUNICIPALITY",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "33",
+    "name": "Hưng Yên",
+    "normalizedName": "hung yen",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "37",
+    "name": "Ninh Bình",
+    "normalizedName": "ninh binh",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "38",
+    "name": "Thanh Hóa",
+    "normalizedName": "thanh hoa",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "40",
+    "name": "Nghệ An",
+    "normalizedName": "nghe an",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "42",
+    "name": "Hà Tĩnh",
+    "normalizedName": "ha tinh",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "44",
+    "name": "Quảng Trị",
+    "normalizedName": "quang tri",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "46",
+    "name": "Huế",
+    "normalizedName": "hue",
+    "type": "MUNICIPALITY",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "48",
+    "name": "Đà Nẵng",
+    "normalizedName": "da nang",
+    "type": "MUNICIPALITY",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "51",
+    "name": "Quảng Ngãi",
+    "normalizedName": "quang ngai",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "52",
+    "name": "Gia Lai",
+    "normalizedName": "gia lai",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "56",
+    "name": "Khánh Hòa",
+    "normalizedName": "khanh hoa",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "66",
+    "name": "Đắk Lắk",
+    "normalizedName": "dak lak",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "68",
+    "name": "Lâm Đồng",
+    "normalizedName": "lam dong",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "75",
+    "name": "Đồng Nai",
+    "normalizedName": "dong nai",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "79",
+    "name": "Hồ Chí Minh",
+    "normalizedName": "ho chi minh",
+    "type": "MUNICIPALITY",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "80",
+    "name": "Tây Ninh",
+    "normalizedName": "tay ninh",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "82",
+    "name": "Đồng Tháp",
+    "normalizedName": "dong thap",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "86",
+    "name": "Vĩnh Long",
+    "normalizedName": "vinh long",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "91",
+    "name": "An Giang",
+    "normalizedName": "an giang",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "92",
+    "name": "Cần Thơ",
+    "normalizedName": "can tho",
+    "type": "MUNICIPALITY",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  },
+  {
+    "code": "96",
+    "name": "Cà Mau",
+    "normalizedName": "ca mau",
+    "type": "PROVINCE",
+    "parentCode": null,
+    "sourceVersion": "2026-06-01",
+    "effectiveVersion": "2025-07-01"
+  }
+]

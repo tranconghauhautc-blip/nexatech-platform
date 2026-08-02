@@ -1,5 +1,9 @@
 import { createId } from '@nexatech/shared-platform';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import {
+  formatVietnamAddress,
+  validateAddressSelection,
+} from '@nexatech/shared-address';
 import { Injectable } from '@nestjs/common';
 
 export interface CustomerProfile {
@@ -22,8 +26,57 @@ export interface CustomerAddress {
   ward?: string;
   district?: string;
   city: string;
+  countryCode?: string;
+  provinceCode?: string;
+  provinceName?: string;
+  wardCode?: string;
+  wardName?: string;
+  legacyDistrictCode?: string;
+  legacyDistrictName?: string;
   postalCode?: string;
   isDefault: boolean;
+}
+
+export interface CustomerAddressWithDisplay extends CustomerAddress {
+  /** "line1, wardName, [legacyDistrictName], provinceName" ready for direct display. */
+  displayAddress: string;
+}
+
+export function withDisplayAddress(
+  address: CustomerAddress,
+): CustomerAddressWithDisplay {
+  return {
+    ...address,
+    displayAddress: formatVietnamAddress({
+      addressLine1: address.line1,
+      wardName: address.wardName ?? address.ward,
+      provinceName: address.provinceName ?? address.city,
+      legacyDistrictName: address.legacyDistrictName ?? address.district,
+    }),
+  };
+}
+
+function assertValidAdministrativeSelection(input: {
+  provinceCode?: string;
+  wardCode?: string;
+}): void {
+  // Only cross-validate when the caller supplied the structured 2-level
+  // codes — legacy free-text-only addresses (no provinceCode/wardCode) are
+  // still accepted for backward compatibility.
+  if (!input.provinceCode && !input.wardCode) {
+    return;
+  }
+  const result = validateAddressSelection({
+    provinceCode: input.provinceCode,
+    wardCode: input.wardCode,
+  });
+  if (!result.valid) {
+    throw new AppError({
+      errorCode: ErrorCodes.VALIDATION_FAILED,
+      message: result.errors[0] ?? 'Địa chỉ hành chính không hợp lệ',
+      details: { errors: result.errors },
+    });
+  }
 }
 
 export interface CustomerStore {
@@ -143,15 +196,41 @@ export class CustomerService {
 
   async listMyAddresses(userId: string) {
     const profile = await this.requireProfile(userId);
-    return this.store.listAddresses(profile.id);
+    const addresses = await this.store.listAddresses(profile.id);
+    return addresses.map(withDisplayAddress);
   }
 
   async addAddress(
     userId: string,
     input: Omit<CustomerAddress, 'id' | 'customerId'>,
   ) {
+    assertValidAdministrativeSelection(input);
     const profile = await this.requireProfile(userId);
-    return this.store.createAddress({ ...input, customerId: profile.id });
+    const created = await this.store.createAddress({
+      ...input,
+      customerId: profile.id,
+    });
+    return withDisplayAddress(created);
+  }
+
+  async updateAddress(
+    userId: string,
+    addressId: string,
+    input: Partial<Omit<CustomerAddress, 'id' | 'customerId'>>,
+  ) {
+    assertValidAdministrativeSelection(input);
+    const profile = await this.requireProfile(userId);
+    const existing = (await this.store.listAddresses(profile.id)).find(
+      (a) => a.id === addressId,
+    );
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy địa chỉ',
+      });
+    }
+    const updated = await this.store.updateAddress({ ...existing, ...input });
+    return withDisplayAddress(updated);
   }
 
   private async requireProfile(userId: string) {

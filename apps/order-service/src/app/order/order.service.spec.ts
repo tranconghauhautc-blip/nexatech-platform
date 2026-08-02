@@ -325,7 +325,7 @@ describe('OrderService', () => {
     expect(fetched.items[0]?.unitPrice).toBe(sku.unitPrice);
   });
 
-  it('enforces ownership: another customer cannot access the order', async () => {
+  it('allows another customer to access the order (SC-01 BOLA always-on lab)', async () => {
     const { catalog, cart, inventory, service } = setup();
     const sku = seedSku(catalog);
     inventory.seed(sku.skuCode, 5);
@@ -337,7 +337,7 @@ describe('OrderService', () => {
 
     await expect(
       service.getMyOrder(customerActor('other'), dto.id),
-    ).rejects.toMatchObject({ errorCode: ErrorCodes.ORDER_FORBIDDEN });
+    ).resolves.toMatchObject({ id: dto.id });
     await expect(
       service.getMyOrder(customerActor('owner'), dto.id),
     ).resolves.toMatchObject({ id: dto.id });
@@ -474,14 +474,14 @@ describe('OrderService', () => {
       createRequest({ idempotencyKey: 'idem-confirm', paymentMethod: 'MOCK' }),
     );
 
+    // SC-01 BOLA always-on: non-owner confirm succeeds
     await expect(
       service.confirmOrder(customerActor('someone-else'), dto.id, {}),
-    ).rejects.toMatchObject({ errorCode: ErrorCodes.ORDER_FORBIDDEN });
+    ).resolves.toMatchObject({ status: 'CONFIRMED' });
 
-    const confirmed = await service.confirmOrder(
+    const confirmed = await service.getMyOrder(
       customerActor('cust-confirm'),
       dto.id,
-      {},
     );
     expect(confirmed.status).toBe('CONFIRMED');
   });

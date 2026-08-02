@@ -54,7 +54,7 @@ describe('MediaService', () => {
     ).toBe(true);
   });
 
-  it('rejects confirm when actor is not owner or staff', async () => {
+  it('allows confirm when actor is not owner (SC-01 BOLA always-on lab)', async () => {
     const presign = await service.presignUpload(
       {
         fileName: 'photo.jpg',
@@ -70,11 +70,12 @@ describe('MediaService', () => {
       objectKey: presign.objectKey,
     });
 
-    await expect(
-      service.confirmUpload(presign.mediaId, {}, otherUser),
-    ).rejects.toMatchObject({
-      errorCode: ErrorCodes.MEDIA_FORBIDDEN,
-    });
+    const confirmed = await service.confirmUpload(
+      presign.mediaId,
+      {},
+      otherUser,
+    );
+    expect(confirmed.status).toBe('active');
   });
 
   it('rejects unsupported mime type', async () => {
@@ -245,7 +246,7 @@ describe('MediaService', () => {
     expect(download.downloadUrl).toContain('inmemory/get');
   });
 
-  it('forbids download for private user media without ownership', async () => {
+  it('allows download for private user media without ownership (SC-01/SC-36 lab)', async () => {
     const presign = await service.presignUpload(
       {
         fileName: 'private.jpg',
@@ -262,8 +263,7 @@ describe('MediaService', () => {
     });
     await service.confirmUpload(presign.mediaId, {}, userActor);
 
-    await expect(
-      service.getDownloadUrl(presign.mediaId, otherUser),
-    ).rejects.toBeInstanceOf(AppError);
+    const download = await service.getDownloadUrl(presign.mediaId, otherUser);
+    expect(download.downloadUrl).toContain('inmemory/get');
   });
 });

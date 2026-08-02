@@ -21,23 +21,32 @@ model CustomerProfile {
 }
 
 model Address {
-  id          String   @id @default(uuid())
-  customerId  String
-  customer    CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
-  label       String
-  recipient   String
-  phone       String
-  line1       String
-  line2       String?
-  ward        String?
-  district    String?
-  city        String
-  postalCode  String?
-  isDefault   Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(uuid())
+  customerId   String
+  customer     CustomerProfile @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  label        String
+  recipient    String
+  phone        String
+  line1        String
+  line2        String?
+  ward         String?
+  district     String?
+  city         String
+  postalCode   String?
+  countryCode  String   @default("VN")
+  provinceCode String?
+  provinceName String?
+  wardCode     String?
+  wardName     String?
+  legacyDistrictCode String?
+  legacyDistrictName String?
+  isDefault    Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   @@index([customerId])
+  @@index([provinceCode])
+  @@index([wardCode])
 }
 
 model CustomerPreference {

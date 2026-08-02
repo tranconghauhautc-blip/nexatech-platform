@@ -38,7 +38,7 @@ components:
           example: Bearer
           type: string
         userId:
-          example: "00000000-0000-4000-8000-000000000001"
+          example: '00000000-0000-4000-8000-000000000001'
           type: string
       required:
         - userId
@@ -95,7 +95,7 @@ components:
     ForgotPasswordRequestDto:
       properties:
         email:
-          example: "user@example.com"
+          example: 'user@example.com'
           type: string
       required:
         - email
@@ -103,12 +103,12 @@ components:
     LoginRequestDto:
       properties:
         email:
-          description: "Email đăng nhập (local seed dùng @nexatech.local)"
-          example: "staff@nexatech.local"
+          description: 'Email đăng nhập (local seed dùng @nexatech.local)'
+          example: 'staff@nexatech.local'
           type: string
         password:
           description: Không commit mật khẩu thật vào OpenAPI/repo
-          example: "<operator-defined-DEV_SEED_PASSWORD>"
+          example: '<operator-defined-DEV_SEED_PASSWORD>'
           type: string
       required:
         - email
@@ -172,13 +172,13 @@ components:
     RegisterRequestDto:
       properties:
         email:
-          example: "customer@example.com"
+          example: 'customer@example.com'
           type: string
         fullName:
           example: Nguyen Van A
           type: string
         password:
-          example: "StrongPass1!"
+          example: 'StrongPass1!'
           minLength: 8
           type: string
       required:
@@ -192,10 +192,10 @@ components:
           example: 123456
           type: string
         email:
-          example: "user@example.com"
+          example: 'user@example.com'
           type: string
         newPassword:
-          example: "NewStrongPass1!"
+          example: 'NewStrongPass1!'
           type: string
       required:
         - email
@@ -208,7 +208,7 @@ components:
           example: 123456
           type: string
         email:
-          example: "customer@example.com"
+          example: 'customer@example.com'
           type: string
       required:
         - email
@@ -242,7 +242,7 @@ components:
       type: apiKey
 info:
   title: NexaTech Combined API
-  description: "Combined OpenAPI 3 specification for local security training. Import into Burp Suite, OWASP ZAP, Postman, Insomnia, or Swagger Editor. Prefer Kong server for gateway testing; direct ports for service debug. Contains no real secrets, passwords, or tokens."
+  description: 'Combined OpenAPI 3 specification for local security training. Import into Burp Suite, OWASP ZAP, Postman, Insomnia, or Swagger Editor. Prefer Kong server for gateway testing; direct ports for service debug. Contains no real secrets, passwords, or tokens.'
   version: 1.0.0
 openapi: 3.0.3
 paths:
@@ -476,7 +476,7 @@ paths:
       x-nexatech-service: catalog-service
   /api/v1/admin/inventory/reservations/{id}/commit:
     post:
-      operationId: inventory_AdminInventoryController_commitReservation_v1
+      operationId: inventory_AdminInventory_commitReservation_v1
       parameters:
         - in: header
           name: x-user-id
@@ -501,7 +501,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/reservations/{id}/release:
     post:
-      operationId: inventory_AdminInventoryController_releaseReservation_v1
+      operationId: inventory_AdminInventory_releaseReservation_v1
       parameters:
         - in: header
           name: x-user-id
@@ -526,7 +526,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/adjust:
     post:
-      operationId: inventory_AdminInventoryController_adjustStock_v1
+      operationId: inventory_AdminInventory_adjustStock_v1
       parameters:
         - in: header
           name: x-user-id
@@ -546,7 +546,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/issue:
     post:
-      operationId: inventory_AdminInventoryController_issueStock_v1
+      operationId: inventory_AdminInventory_issueStock_v1
       parameters:
         - in: header
           name: x-user-id
@@ -566,7 +566,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/receive:
     post:
-      operationId: inventory_AdminInventoryController_receiveStock_v1
+      operationId: inventory_AdminInventory_receiveStock_v1
       parameters:
         - in: header
           name: x-user-id
@@ -586,7 +586,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/reserve:
     post:
-      operationId: inventory_AdminInventoryController_reserveStock_v1
+      operationId: inventory_AdminInventory_reserveStock_v1
       parameters:
         - in: header
           name: x-user-id
@@ -606,7 +606,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stock/return:
     post:
-      operationId: inventory_AdminInventoryController_returnStock_v1
+      operationId: inventory_AdminInventory_returnStock_v1
       parameters:
         - in: header
           name: x-user-id
@@ -626,7 +626,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/stores:
     post:
-      operationId: inventory_AdminInventoryController_createStore_v1
+      operationId: inventory_AdminInventory_createStore_v1
       parameters:
         - in: header
           name: x-user-id
@@ -646,7 +646,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/transfers:
     post:
-      operationId: inventory_AdminInventoryController_transferStock_v1
+      operationId: inventory_AdminInventory_transferStock_v1
       parameters:
         - in: header
           name: x-user-id
@@ -666,7 +666,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/inventory/warehouses:
     post:
-      operationId: inventory_AdminInventoryController_createWarehouse_v1
+      operationId: inventory_AdminInventory_createWarehouse_v1
       parameters:
         - in: header
           name: x-user-id
@@ -686,7 +686,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/admin/notifications/email-deliveries:
     get:
-      operationId: notification_AdminNotificationsController_listEmailDeliveries_v1
+      operationId: notification_AdminNotifications_listEmailDeliveries_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -716,7 +716,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/admin/orders:
     get:
-      operationId: order_AdminOrderController_list_v1
+      operationId: order_AdminOrder_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -746,7 +746,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}:
     get:
-      operationId: order_AdminOrderController_get_v1
+      operationId: order_AdminOrder_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -781,7 +781,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}/cancel:
     post:
-      operationId: order_AdminOrderController_cancel_v1
+      operationId: order_AdminOrder_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -816,7 +816,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}/confirm:
     post:
-      operationId: order_AdminOrderController_confirm_v1
+      operationId: order_AdminOrder_confirm_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -851,7 +851,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/admin/orders/{orderId}/status-transitions:
     post:
-      operationId: order_AdminOrderController_transition_v1
+      operationId: order_AdminOrder_transition_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -886,7 +886,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/admin/payments:
     get:
-      operationId: payment_AdminPaymentController_list_v1
+      operationId: payment_AdminPayment_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -916,7 +916,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/admin/payments/{paymentId}:
     get:
-      operationId: payment_AdminPaymentController_get_v1
+      operationId: payment_AdminPayment_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -951,7 +951,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/admin/payments/{paymentId}/cod-collect:
     post:
-      operationId: payment_AdminPaymentController_codCollect_v1
+      operationId: payment_AdminPayment_codCollect_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -986,7 +986,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/admin/payments/{paymentId}/refunds:
     post:
-      operationId: payment_AdminPaymentController_createRefund_v1
+      operationId: payment_AdminPayment_createRefund_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1021,7 +1021,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/admin/reporting/audit:
     post:
-      operationId: reporting_AdminReportingController_recordAudit_v1
+      operationId: reporting_AdminReporting_recordAudit_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1056,7 +1056,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/audit-logs:
     get:
-      operationId: reporting_AdminReportingController_listAuditLogs_v1
+      operationId: reporting_AdminReporting_listAuditLogs_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1086,7 +1086,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/dashboard:
     get:
-      operationId: reporting_AdminReportingController_dashboard_v1
+      operationId: reporting_AdminReporting_dashboard_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1116,7 +1116,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/metrics/daily:
     get:
-      operationId: reporting_AdminReportingController_dailyMetrics_v1
+      operationId: reporting_AdminReporting_dailyMetrics_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1146,7 +1146,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/orders:
     get:
-      operationId: reporting_AdminReportingController_listOrders_v1
+      operationId: reporting_AdminReporting_listOrders_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1176,7 +1176,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/payments:
     get:
-      operationId: reporting_AdminReportingController_listPayments_v1
+      operationId: reporting_AdminReporting_listPayments_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1206,7 +1206,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/reviews:
     get:
-      operationId: reporting_AdminReportingController_listReviews_v1
+      operationId: reporting_AdminReporting_listReviews_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1236,7 +1236,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/shipments:
     get:
-      operationId: reporting_AdminReportingController_listShipments_v1
+      operationId: reporting_AdminReporting_listShipments_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1266,7 +1266,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/support/tickets:
     get:
-      operationId: reporting_AdminReportingController_listSupportTickets_v1
+      operationId: reporting_AdminReporting_listSupportTickets_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1296,7 +1296,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/warranty/claims:
     get:
-      operationId: reporting_AdminReportingController_listWarrantyClaims_v1
+      operationId: reporting_AdminReporting_listWarrantyClaims_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1326,7 +1326,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/reporting/warranty/returns:
     get:
-      operationId: reporting_AdminReportingController_listWarrantyReturns_v1
+      operationId: reporting_AdminReporting_listWarrantyReturns_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1356,7 +1356,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v1/admin/returns:
     get:
-      operationId: warranty_AdminWarrantyController_listReturns_v1
+      operationId: warranty_AdminWarranty_listReturns_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1386,7 +1386,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/admin/returns/{returnId}:
     get:
-      operationId: warranty_AdminWarrantyController_getReturn_v1
+      operationId: warranty_AdminWarranty_getReturn_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1421,7 +1421,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/admin/returns/{returnId}/transition:
     post:
-      operationId: warranty_AdminWarrantyController_transitionReturn_v1
+      operationId: warranty_AdminWarranty_transitionReturn_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1461,7 +1461,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/admin/review-reports:
     get:
-      operationId: review_AdminReviewController_listReports_v1
+      operationId: review_AdminReview_listReports_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1491,7 +1491,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/admin/review-reports/{reportId}/resolve:
     post:
-      operationId: review_AdminReviewController_resolveReport_v1
+      operationId: review_AdminReview_resolveReport_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1531,7 +1531,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/admin/reviews:
     get:
-      operationId: review_AdminReviewController_list_v1
+      operationId: review_AdminReview_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1561,7 +1561,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/admin/reviews/aggregates/rebuild:
     post:
-      operationId: review_AdminReviewController_rebuild_v1
+      operationId: review_AdminReview_rebuild_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1596,7 +1596,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/admin/reviews/{reviewId}:
     get:
-      operationId: review_AdminReviewController_get_v1
+      operationId: review_AdminReview_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1631,7 +1631,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/admin/reviews/{reviewId}/moderate:
     post:
-      operationId: review_AdminReviewController_moderate_v1
+      operationId: review_AdminReview_moderate_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1671,7 +1671,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/admin/shipments:
     get:
-      operationId: shipping_AdminShippingController_list_v1
+      operationId: shipping_AdminShipping_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1701,7 +1701,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/admin/shipments/{shipmentId}:
     get:
-      operationId: shipping_AdminShippingController_get_v1
+      operationId: shipping_AdminShipping_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1736,7 +1736,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/admin/shipments/{shipmentId}/status-transitions:
     post:
-      operationId: shipping_AdminShippingController_transition_v1
+      operationId: shipping_AdminShipping_transition_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1771,7 +1771,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/admin/support/tickets:
     get:
-      operationId: support_AdminSupportController_listTickets_v1
+      operationId: support_AdminSupport_listTickets_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1801,7 +1801,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}:
     get:
-      operationId: support_AdminSupportController_getTicket_v1
+      operationId: support_AdminSupport_getTicket_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1836,7 +1836,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/assign:
     post:
-      operationId: support_AdminSupportController_assign_v1
+      operationId: support_AdminSupport_assign_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1876,7 +1876,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/messages:
     post:
-      operationId: support_AdminSupportController_addMessage_v1
+      operationId: support_AdminSupport_addMessage_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1916,7 +1916,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/priority:
     patch:
-      operationId: support_AdminSupportController_updatePriority_v1
+      operationId: support_AdminSupport_updatePriority_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -1956,7 +1956,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/admin/support/tickets/{ticketId}/transition:
     post:
-      operationId: support_AdminSupportController_transition_v1
+      operationId: support_AdminSupport_transition_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -2230,7 +2230,7 @@ paths:
       x-nexatech-service: identity-service
   /api/v1/admin/warranty/claims:
     get:
-      operationId: warranty_AdminWarrantyController_listClaims_v1
+      operationId: warranty_AdminWarranty_listClaims_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -2260,7 +2260,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/admin/warranty/claims/{claimId}:
     get:
-      operationId: warranty_AdminWarrantyController_getClaim_v1
+      operationId: warranty_AdminWarranty_getClaim_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -2295,7 +2295,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/admin/warranty/claims/{claimId}/transition:
     post:
-      operationId: warranty_AdminWarrantyController_transitionClaim_v1
+      operationId: warranty_AdminWarranty_transitionClaim_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -2346,7 +2346,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ForgotPasswordRequestDto"
+              $ref: '#/components/schemas/ForgotPasswordRequestDto'
         required: true
       responses:
         201:
@@ -2362,20 +2362,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequestDto"
+              $ref: '#/components/schemas/LoginRequestDto'
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthTokenResponseDto"
+                $ref: '#/components/schemas/AuthTokenResponseDto'
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelopeDto"
+                $ref: '#/components/schemas/ErrorEnvelopeDto'
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
@@ -2388,7 +2388,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LogoutRequestDto"
+              $ref: '#/components/schemas/LogoutRequestDto'
         required: true
       responses:
         201:
@@ -2416,17 +2416,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MeResponseDto"
+                $ref: '#/components/schemas/MeResponseDto'
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelopeDto"
+                $ref: '#/components/schemas/ErrorEnvelopeDto'
           description: ''
       security:
         - bearer: []
-      summary: "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)"
+      summary: 'Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)'
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -2437,14 +2437,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RefreshRequestDto"
+              $ref: '#/components/schemas/RefreshRequestDto'
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthTokenResponseDto"
+                $ref: '#/components/schemas/AuthTokenResponseDto'
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
@@ -2457,7 +2457,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterRequestDto"
+              $ref: '#/components/schemas/RegisterRequestDto'
         required: true
       responses:
         201:
@@ -2466,9 +2466,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelopeDto"
+                $ref: '#/components/schemas/ErrorEnvelopeDto'
           description: ''
-      summary: "Đăng ký tài khoản Customer (SC-87: roles in body accepted)"
+      summary: 'Đăng ký tài khoản Customer (SC-87: roles in body accepted)'
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -2479,7 +2479,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResetPasswordRequestDto"
+              $ref: '#/components/schemas/ResetPasswordRequestDto'
         required: true
       responses:
         201:
@@ -2541,7 +2541,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyEmailRequestDto"
+              $ref: '#/components/schemas/VerifyEmailRequestDto'
         required: true
       responses:
         201:
@@ -2926,7 +2926,7 @@ paths:
       x-nexatech-service: cart-service
   /api/v1/customers/me:
     get:
-      operationId: customer_CustomerController_me_v1
+      operationId: customer_Customer_me_v1
       parameters:
         - in: header
           name: x-user-id
@@ -2940,7 +2940,7 @@ paths:
         - Customer
       x-nexatech-service: customer-service
     put:
-      operationId: customer_CustomerController_updateMe_v1
+      operationId: customer_Customer_updateMe_v1
       parameters:
         - in: header
           name: x-user-id
@@ -2955,7 +2955,7 @@ paths:
       x-nexatech-service: customer-service
   /api/v1/customers/me/addresses:
     get:
-      operationId: customer_CustomerController_addresses_v1
+      operationId: customer_Customer_addresses_v1
       parameters:
         - in: header
           name: x-user-id
@@ -2969,7 +2969,7 @@ paths:
         - Customer
       x-nexatech-service: customer-service
     post:
-      operationId: customer_CustomerController_addAddress_v1
+      operationId: customer_Customer_addAddress_v1
       parameters:
         - in: header
           name: x-user-id
@@ -2982,9 +2982,29 @@ paths:
       tags:
         - Customer
       x-nexatech-service: customer-service
+  /api/v1/customers/me/addresses/{id}:
+    put:
+      operationId: customer_Customer_updateAddress_v1
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Customer
+      x-nexatech-service: customer-service
   /api/v1/media/admin/cleanup-orphans:
     post:
-      operationId: media_MediaController_cleanupOrphans_v1
+      operationId: media_Media_cleanupOrphans_v1
       parameters:
         - in: header
           name: x-user-id
@@ -3009,7 +3029,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/media/by-entity/{entityType}/{entityId}:
     get:
-      operationId: media_MediaController_byEntity_v1
+      operationId: media_Media_byEntity_v1
       parameters:
         - in: path
           name: entityType
@@ -3029,7 +3049,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/media/presign:
     post:
-      operationId: media_MediaController_presign_v1
+      operationId: media_Media_presign_v1
       parameters:
         - in: header
           name: x-user-id
@@ -3049,7 +3069,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/media/{id}:
     delete:
-      operationId: media_MediaController_deleteMedia_v1
+      operationId: media_Media_deleteMedia_v1
       parameters:
         - in: header
           name: x-user-id
@@ -3073,7 +3093,7 @@ paths:
         - Media
       x-nexatech-service: media-service
     get:
-      operationId: media_MediaController_metadata_v1
+      operationId: media_Media_metadata_v1
       parameters:
         - in: path
           name: id
@@ -3088,7 +3108,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/media/{id}/confirm:
     post:
-      operationId: media_MediaController_confirm_v1
+      operationId: media_Media_confirm_v1
       parameters:
         - in: header
           name: x-user-id
@@ -3113,7 +3133,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/media/{id}/download-url:
     get:
-      operationId: media_MediaController_downloadUrl_v1
+      operationId: media_Media_downloadUrl_v1
       parameters:
         - in: header
           name: x-user-id
@@ -3138,7 +3158,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/media/{id}/links:
     post:
-      operationId: media_MediaController_linkMedia_v1
+      operationId: media_Media_linkMedia_v1
       parameters:
         - in: header
           name: x-user-id
@@ -3163,7 +3183,7 @@ paths:
       x-nexatech-service: media-service
   /api/v1/mock-payments/{paymentId}/cancel:
     post:
-      operationId: payment_MockPaymentController_cancel_v1
+      operationId: payment_MockPayment_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3198,7 +3218,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/mock-payments/{paymentId}/checkout:
     get:
-      operationId: payment_MockPaymentController_checkout_v1
+      operationId: payment_MockPayment_checkout_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3223,7 +3243,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/mock-payments/{paymentId}/fail:
     post:
-      operationId: payment_MockPaymentController_fail_v1
+      operationId: payment_MockPayment_fail_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3258,7 +3278,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/mock-payments/{paymentId}/succeed:
     post:
-      operationId: payment_MockPaymentController_succeed_v1
+      operationId: payment_MockPayment_succeed_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3293,7 +3313,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/movements:
     get:
-      operationId: inventory_InventoryController_movements_v1
+      operationId: inventory_Inventory_movements_v1
       parameters:
         - in: query
           name: skuCode
@@ -3318,7 +3338,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/notifications:
     get:
-      operationId: notification_NotificationsController_list_v1
+      operationId: notification_Notifications_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3348,7 +3368,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/notifications/read-all:
     post:
-      operationId: notification_NotificationsController_markAllRead_v1
+      operationId: notification_Notifications_markAllRead_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3378,7 +3398,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/notifications/request:
     post:
-      operationId: notification_NotificationsController_request_v1
+      operationId: notification_Notifications_request_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3418,7 +3438,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/notifications/unread-count:
     get:
-      operationId: notification_NotificationsController_unreadCount_v1
+      operationId: notification_Notifications_unreadCount_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3448,7 +3468,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/notifications/{id}:
     delete:
-      operationId: notification_NotificationsController_remove_v1
+      operationId: notification_Notifications_remove_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3483,7 +3503,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/notifications/{id}/read:
     patch:
-      operationId: notification_NotificationsController_markRead_v1
+      operationId: notification_Notifications_markRead_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3518,7 +3538,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v1/orders:
     get:
-      operationId: order_OrderController_list_v1
+      operationId: order_Order_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3547,7 +3567,7 @@ paths:
         - Order
       x-nexatech-service: order-service
     post:
-      operationId: order_OrderController_create_v1
+      operationId: order_Order_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3577,7 +3597,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}:
     get:
-      operationId: order_OrderController_get_v1
+      operationId: order_Order_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3612,7 +3632,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/cancel:
     post:
-      operationId: order_OrderController_cancel_v1
+      operationId: order_Order_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3647,7 +3667,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/confirm:
     post:
-      operationId: order_OrderController_confirm_v1
+      operationId: order_Order_confirm_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3682,7 +3702,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/packages:
     get:
-      operationId: order_OrderController_packages_v1
+      operationId: order_Order_packages_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3717,7 +3737,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/payment-sync:
     post:
-      operationId: order_OrderController_paymentSync_v1
+      operationId: order_Order_paymentSync_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3752,7 +3772,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/return-sync:
     post:
-      operationId: order_OrderController_returnSync_v1
+      operationId: order_Order_returnSync_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3787,7 +3807,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/shipping-sync:
     post:
-      operationId: order_OrderController_shippingSync_v1
+      operationId: order_Order_shippingSync_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3822,7 +3842,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/orders/{orderId}/status-history:
     get:
-      operationId: order_OrderController_statusHistory_v1
+      operationId: order_Order_statusHistory_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3857,7 +3877,7 @@ paths:
       x-nexatech-service: order-service
   /api/v1/payments:
     post:
-      operationId: payment_PaymentController_create_v1
+      operationId: payment_Payment_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3887,7 +3907,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/payments/by-order/{orderId}:
     get:
-      operationId: payment_PaymentController_getByOrder_v1
+      operationId: payment_Payment_getByOrder_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3920,9 +3940,39 @@ paths:
       tags:
         - Payment
       x-nexatech-service: payment-service
+  /api/v1/payments/me:
+    get:
+      operationId: payment_Payment_listMine_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Payment
+      x-nexatech-service: payment-service
   /api/v1/payments/{paymentId}:
     get:
-      operationId: payment_PaymentController_get_v1
+      operationId: payment_Payment_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3957,7 +4007,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/payments/{paymentId}/cancel:
     post:
-      operationId: payment_PaymentController_cancel_v1
+      operationId: payment_Payment_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -3992,7 +4042,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/payments/{paymentId}/refunds:
     get:
-      operationId: payment_PaymentController_listRefunds_v1
+      operationId: payment_Payment_listRefunds_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4026,7 +4076,7 @@ paths:
         - Payment
       x-nexatech-service: payment-service
     post:
-      operationId: payment_PaymentController_createRefund_v1
+      operationId: payment_Payment_createRefund_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4077,6 +4127,21 @@ paths:
       tags:
         - Catalog
       x-nexatech-service: catalog-service
+  /api/v1/products/summaries:
+    get:
+      operationId: catalog_Catalog_productSummaries_v1
+      parameters:
+        - in: query
+          name: ids
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Catalog
+      x-nexatech-service: catalog-service
   /api/v1/products/{id}/recommendations:
     get:
       operationId: catalog_Catalog_recommendations_v1
@@ -4094,7 +4159,7 @@ paths:
       x-nexatech-service: catalog-service
   /api/v1/products/{productId}/reviews:
     get:
-      operationId: review_ProductsReviewsController_list_v1
+      operationId: review_ProductsReviews_list_v1
       parameters:
         - in: path
           name: productId
@@ -4109,7 +4174,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/products/{productId}/reviews/summary:
     get:
-      operationId: review_ProductsReviewsController_summary_v1
+      operationId: review_ProductsReviews_summary_v1
       parameters:
         - in: path
           name: productId
@@ -4178,7 +4243,7 @@ paths:
       x-nexatech-service: cart-service
   /api/v1/reservations/{id}:
     get:
-      operationId: inventory_InventoryController_reservation_v1
+      operationId: inventory_Inventory_reservation_v1
       parameters:
         - in: path
           name: id
@@ -4193,7 +4258,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/returns:
     get:
-      operationId: warranty_ReturnsController_list_v1
+      operationId: warranty_Returns_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4222,7 +4287,7 @@ paths:
         - Warranty
       x-nexatech-service: warranty-service
     post:
-      operationId: warranty_ReturnsController_create_v1
+      operationId: warranty_Returns_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4257,7 +4322,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/returns/{returnId}:
     get:
-      operationId: warranty_ReturnsController_get_v1
+      operationId: warranty_Returns_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4292,7 +4357,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/returns/{returnId}/cancel:
     post:
-      operationId: warranty_ReturnsController_cancel_v1
+      operationId: warranty_Returns_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4332,7 +4397,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/returns/{returnId}/media:
     post:
-      operationId: warranty_ReturnsController_attachMedia_v1
+      operationId: warranty_Returns_attachMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4372,7 +4437,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/reviews:
     post:
-      operationId: review_ReviewsController_create_v1
+      operationId: review_Reviews_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4405,9 +4470,39 @@ paths:
       tags:
         - Review
       x-nexatech-service: review-service
+  /api/v1/reviews/me:
+    get:
+      operationId: review_Reviews_listMine_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Review
+      x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}:
     delete:
-      operationId: review_ReviewsController_remove_v1
+      operationId: review_Reviews_remove_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4446,7 +4541,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     get:
-      operationId: review_ReviewsController_get_v1
+      operationId: review_Reviews_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4480,7 +4575,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     patch:
-      operationId: review_ReviewsController_update_v1
+      operationId: review_Reviews_update_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4520,7 +4615,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/helpful:
     delete:
-      operationId: review_ReviewsController_removeHelpful_v1
+      operationId: review_Reviews_removeHelpful_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4559,7 +4654,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     post:
-      operationId: review_ReviewsController_addHelpful_v1
+      operationId: review_Reviews_addHelpful_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4599,7 +4694,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/media:
     post:
-      operationId: review_ReviewsController_attachMedia_v1
+      operationId: review_Reviews_attachMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4639,7 +4734,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/media/{mediaId}:
     delete:
-      operationId: review_ReviewsController_unlinkMedia_v1
+      operationId: review_Reviews_unlinkMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4684,7 +4779,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/replies:
     post:
-      operationId: review_ReviewsController_createReply_v1
+      operationId: review_Reviews_createReply_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4724,7 +4819,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/replies/{replyId}:
     delete:
-      operationId: review_ReviewsController_deleteReply_v1
+      operationId: review_Reviews_deleteReply_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4768,7 +4863,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     patch:
-      operationId: review_ReviewsController_updateReply_v1
+      operationId: review_Reviews_updateReply_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4813,7 +4908,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/reviews/{reviewId}/reports:
     post:
-      operationId: review_ReviewsController_report_v1
+      operationId: review_Reviews_report_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4853,7 +4948,7 @@ paths:
       x-nexatech-service: review-service
   /api/v1/shipments:
     post:
-      operationId: shipping_ShipmentsController_create_v1
+      operationId: shipping_Shipments_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4883,7 +4978,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/order/{orderId}:
     get:
-      operationId: shipping_ShipmentsController_byOrder_v1
+      operationId: shipping_Shipments_byOrder_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4918,7 +5013,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}:
     get:
-      operationId: shipping_ShipmentsController_get_v1
+      operationId: shipping_Shipments_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4953,7 +5048,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/book:
     post:
-      operationId: shipping_ShipmentsController_book_v1
+      operationId: shipping_Shipments_book_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -4988,7 +5083,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/cancel:
     post:
-      operationId: shipping_ShipmentsController_cancel_v1
+      operationId: shipping_Shipments_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5023,7 +5118,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/confirm-pickup:
     post:
-      operationId: shipping_ShipmentsController_confirmPickup_v1
+      operationId: shipping_Shipments_confirmPickup_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5058,7 +5153,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/ready-for-pickup:
     post:
-      operationId: shipping_ShipmentsController_readyForPickup_v1
+      operationId: shipping_Shipments_readyForPickup_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5093,7 +5188,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/status-transitions:
     post:
-      operationId: shipping_ShipmentsController_transition_v1
+      operationId: shipping_Shipments_transition_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5128,7 +5223,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipments/{shipmentId}/tracking:
     get:
-      operationId: shipping_ShipmentsController_tracking_v1
+      operationId: shipping_Shipments_tracking_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5163,7 +5258,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/providers/{provider}/webhook:
     post:
-      operationId: shipping_ShippingQuotesSlotsController_webhook_v1
+      operationId: shipping_ShippingQuotesSlots_webhook_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5198,7 +5293,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/quotes:
     post:
-      operationId: shipping_ShippingQuotesSlotsController_createQuote_v1
+      operationId: shipping_ShippingQuotesSlots_createQuote_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5228,7 +5323,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/quotes/{quoteId}:
     get:
-      operationId: shipping_ShippingQuotesSlotsController_getQuote_v1
+      operationId: shipping_ShippingQuotesSlots_getQuote_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5263,7 +5358,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/slot-reservations/{reservationId}:
     delete:
-      operationId: shipping_ShippingQuotesSlotsController_releaseReservation_v1
+      operationId: shipping_ShippingQuotesSlots_releaseReservation_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5298,7 +5393,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/slots:
     get:
-      operationId: shipping_ShippingQuotesSlotsController_listSlots_v1
+      operationId: shipping_ShippingQuotesSlots_listSlots_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5328,7 +5423,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/slots/{slotId}/reserve:
     post:
-      operationId: shipping_ShippingQuotesSlotsController_reserveSlot_v1
+      operationId: shipping_ShippingQuotesSlots_reserveSlot_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5363,7 +5458,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v1/shipping/tracking/{trackingCode}:
     get:
-      operationId: shipping_ShippingQuotesSlotsController_publicTracking_v1
+      operationId: shipping_ShippingQuotesSlots_publicTracking_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5403,7 +5498,7 @@ paths:
       x-nexatech-service: catalog-service
   /api/v1/stock:
     get:
-      operationId: inventory_InventoryController_stock_v1
+      operationId: inventory_Inventory_stock_v1
       parameters:
         - in: query
           name: skuCode
@@ -5428,7 +5523,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/stock/availability:
     get:
-      operationId: inventory_InventoryController_availability_v1
+      operationId: inventory_Inventory_availability_v1
       parameters:
         - in: query
           name: skuCode
@@ -5453,7 +5548,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/stock/low:
     get:
-      operationId: inventory_InventoryController_lowStock_v1
+      operationId: inventory_Inventory_lowStock_v1
       responses:
         200:
           description: ''
@@ -5462,7 +5557,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/stock/sources:
     get:
-      operationId: inventory_InventoryController_sources_v1
+      operationId: inventory_Inventory_sources_v1
       parameters:
         - in: query
           name: skuCode
@@ -5487,7 +5582,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/stores:
     get:
-      operationId: inventory_InventoryController_stores_v1
+      operationId: inventory_Inventory_stores_v1
       responses:
         200:
           description: ''
@@ -5496,7 +5591,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/support/tickets:
     get:
-      operationId: support_TicketsController_list_v1
+      operationId: support_Tickets_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5525,7 +5620,7 @@ paths:
         - Support
       x-nexatech-service: support-service
     post:
-      operationId: support_TicketsController_create_v1
+      operationId: support_Tickets_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5560,7 +5655,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}:
     get:
-      operationId: support_TicketsController_get_v1
+      operationId: support_Tickets_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5595,7 +5690,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}/attachments:
     post:
-      operationId: support_TicketsController_attachMedia_v1
+      operationId: support_Tickets_attachMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5635,7 +5730,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}/cancel:
     post:
-      operationId: support_TicketsController_cancel_v1
+      operationId: support_Tickets_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5675,7 +5770,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/support/tickets/{ticketId}/messages:
     post:
-      operationId: support_TicketsController_addMessage_v1
+      operationId: support_Tickets_addMessage_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5715,7 +5810,7 @@ paths:
       x-nexatech-service: support-service
   /api/v1/vnpay/ipn:
     get:
-      operationId: payment_VnpayController_ipnGet_v1
+      operationId: payment_Vnpay_ipnGet_v1
       responses:
         200:
           description: ''
@@ -5723,7 +5818,7 @@ paths:
         - Payment
       x-nexatech-service: payment-service
     post:
-      operationId: payment_VnpayController_ipnPost_v1
+      operationId: payment_Vnpay_ipnPost_v1
       responses:
         201:
           description: ''
@@ -5732,7 +5827,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/vnpay/return:
     get:
-      operationId: payment_VnpayController_returnGet_v1
+      operationId: payment_Vnpay_returnGet_v1
       responses:
         200:
           description: ''
@@ -5741,7 +5836,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v1/warehouses:
     get:
-      operationId: inventory_InventoryController_warehouses_v1
+      operationId: inventory_Inventory_warehouses_v1
       responses:
         200:
           description: ''
@@ -5750,7 +5845,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v1/warranty/claims:
     get:
-      operationId: warranty_ClaimsController_list_v1
+      operationId: warranty_Claims_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5779,7 +5874,7 @@ paths:
         - Warranty
       x-nexatech-service: warranty-service
     post:
-      operationId: warranty_ClaimsController_create_v1
+      operationId: warranty_Claims_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5814,7 +5909,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/warranty/claims/{claimId}:
     get:
-      operationId: warranty_ClaimsController_get_v1
+      operationId: warranty_Claims_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5849,7 +5944,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/warranty/claims/{claimId}/cancel:
     post:
-      operationId: warranty_ClaimsController_cancel_v1
+      operationId: warranty_Claims_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -5889,7 +5984,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v1/warranty/claims/{claimId}/media:
     post:
-      operationId: warranty_ClaimsController_attachMedia_v1
+      operationId: warranty_Claims_attachMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -6197,7 +6292,7 @@ paths:
       x-nexatech-service: catalog-service
   /api/v2/admin/inventory/reservations/{id}/commit:
     post:
-      operationId: inventory_AdminInventoryController_commitReservation_v2
+      operationId: inventory_AdminInventory_commitReservation_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6222,7 +6317,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/reservations/{id}/release:
     post:
-      operationId: inventory_AdminInventoryController_releaseReservation_v2
+      operationId: inventory_AdminInventory_releaseReservation_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6247,7 +6342,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/adjust:
     post:
-      operationId: inventory_AdminInventoryController_adjustStock_v2
+      operationId: inventory_AdminInventory_adjustStock_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6267,7 +6362,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/issue:
     post:
-      operationId: inventory_AdminInventoryController_issueStock_v2
+      operationId: inventory_AdminInventory_issueStock_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6287,7 +6382,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/receive:
     post:
-      operationId: inventory_AdminInventoryController_receiveStock_v2
+      operationId: inventory_AdminInventory_receiveStock_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6307,7 +6402,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/reserve:
     post:
-      operationId: inventory_AdminInventoryController_reserveStock_v2
+      operationId: inventory_AdminInventory_reserveStock_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6327,7 +6422,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stock/return:
     post:
-      operationId: inventory_AdminInventoryController_returnStock_v2
+      operationId: inventory_AdminInventory_returnStock_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6347,7 +6442,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/stores:
     post:
-      operationId: inventory_AdminInventoryController_createStore_v2
+      operationId: inventory_AdminInventory_createStore_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6367,7 +6462,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/transfers:
     post:
-      operationId: inventory_AdminInventoryController_transferStock_v2
+      operationId: inventory_AdminInventory_transferStock_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6387,7 +6482,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/inventory/warehouses:
     post:
-      operationId: inventory_AdminInventoryController_createWarehouse_v2
+      operationId: inventory_AdminInventory_createWarehouse_v2
       parameters:
         - in: header
           name: x-user-id
@@ -6407,7 +6502,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/admin/notifications/email-deliveries:
     get:
-      operationId: notification_AdminNotificationsController_listEmailDeliveries_v2
+      operationId: notification_AdminNotifications_listEmailDeliveries_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6437,7 +6532,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/admin/orders:
     get:
-      operationId: order_AdminOrderController_list_v2
+      operationId: order_AdminOrder_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6467,7 +6562,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}:
     get:
-      operationId: order_AdminOrderController_get_v2
+      operationId: order_AdminOrder_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6502,7 +6597,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}/cancel:
     post:
-      operationId: order_AdminOrderController_cancel_v2
+      operationId: order_AdminOrder_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6537,7 +6632,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}/confirm:
     post:
-      operationId: order_AdminOrderController_confirm_v2
+      operationId: order_AdminOrder_confirm_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6572,7 +6667,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/admin/orders/{orderId}/status-transitions:
     post:
-      operationId: order_AdminOrderController_transition_v2
+      operationId: order_AdminOrder_transition_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6607,7 +6702,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/admin/payments:
     get:
-      operationId: payment_AdminPaymentController_list_v2
+      operationId: payment_AdminPayment_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6637,7 +6732,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/admin/payments/{paymentId}:
     get:
-      operationId: payment_AdminPaymentController_get_v2
+      operationId: payment_AdminPayment_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6672,7 +6767,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/admin/payments/{paymentId}/cod-collect:
     post:
-      operationId: payment_AdminPaymentController_codCollect_v2
+      operationId: payment_AdminPayment_codCollect_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6707,7 +6802,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/admin/payments/{paymentId}/refunds:
     post:
-      operationId: payment_AdminPaymentController_createRefund_v2
+      operationId: payment_AdminPayment_createRefund_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6742,7 +6837,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/admin/reporting/audit:
     post:
-      operationId: reporting_AdminReportingController_recordAudit_v2
+      operationId: reporting_AdminReporting_recordAudit_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6777,7 +6872,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/audit-logs:
     get:
-      operationId: reporting_AdminReportingController_listAuditLogs_v2
+      operationId: reporting_AdminReporting_listAuditLogs_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6807,7 +6902,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/dashboard:
     get:
-      operationId: reporting_AdminReportingController_dashboard_v2
+      operationId: reporting_AdminReporting_dashboard_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6837,7 +6932,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/metrics/daily:
     get:
-      operationId: reporting_AdminReportingController_dailyMetrics_v2
+      operationId: reporting_AdminReporting_dailyMetrics_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6867,7 +6962,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/orders:
     get:
-      operationId: reporting_AdminReportingController_listOrders_v2
+      operationId: reporting_AdminReporting_listOrders_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6897,7 +6992,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/payments:
     get:
-      operationId: reporting_AdminReportingController_listPayments_v2
+      operationId: reporting_AdminReporting_listPayments_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6927,7 +7022,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/reviews:
     get:
-      operationId: reporting_AdminReportingController_listReviews_v2
+      operationId: reporting_AdminReporting_listReviews_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6957,7 +7052,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/shipments:
     get:
-      operationId: reporting_AdminReportingController_listShipments_v2
+      operationId: reporting_AdminReporting_listShipments_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -6987,7 +7082,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/support/tickets:
     get:
-      operationId: reporting_AdminReportingController_listSupportTickets_v2
+      operationId: reporting_AdminReporting_listSupportTickets_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7017,7 +7112,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/warranty/claims:
     get:
-      operationId: reporting_AdminReportingController_listWarrantyClaims_v2
+      operationId: reporting_AdminReporting_listWarrantyClaims_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7047,7 +7142,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/reporting/warranty/returns:
     get:
-      operationId: reporting_AdminReportingController_listWarrantyReturns_v2
+      operationId: reporting_AdminReporting_listWarrantyReturns_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7077,7 +7172,7 @@ paths:
       x-nexatech-service: reporting-service
   /api/v2/admin/returns:
     get:
-      operationId: warranty_AdminWarrantyController_listReturns_v2
+      operationId: warranty_AdminWarranty_listReturns_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7107,7 +7202,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/admin/returns/{returnId}:
     get:
-      operationId: warranty_AdminWarrantyController_getReturn_v2
+      operationId: warranty_AdminWarranty_getReturn_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7142,7 +7237,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/admin/returns/{returnId}/transition:
     post:
-      operationId: warranty_AdminWarrantyController_transitionReturn_v2
+      operationId: warranty_AdminWarranty_transitionReturn_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7182,7 +7277,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/admin/review-reports:
     get:
-      operationId: review_AdminReviewController_listReports_v2
+      operationId: review_AdminReview_listReports_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7212,7 +7307,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/admin/review-reports/{reportId}/resolve:
     post:
-      operationId: review_AdminReviewController_resolveReport_v2
+      operationId: review_AdminReview_resolveReport_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7252,7 +7347,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/admin/reviews:
     get:
-      operationId: review_AdminReviewController_list_v2
+      operationId: review_AdminReview_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7282,7 +7377,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/admin/reviews/aggregates/rebuild:
     post:
-      operationId: review_AdminReviewController_rebuild_v2
+      operationId: review_AdminReview_rebuild_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7317,7 +7412,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/admin/reviews/{reviewId}:
     get:
-      operationId: review_AdminReviewController_get_v2
+      operationId: review_AdminReview_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7352,7 +7447,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/admin/reviews/{reviewId}/moderate:
     post:
-      operationId: review_AdminReviewController_moderate_v2
+      operationId: review_AdminReview_moderate_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7392,7 +7487,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/admin/shipments:
     get:
-      operationId: shipping_AdminShippingController_list_v2
+      operationId: shipping_AdminShipping_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7422,7 +7517,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/admin/shipments/{shipmentId}:
     get:
-      operationId: shipping_AdminShippingController_get_v2
+      operationId: shipping_AdminShipping_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7457,7 +7552,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/admin/shipments/{shipmentId}/status-transitions:
     post:
-      operationId: shipping_AdminShippingController_transition_v2
+      operationId: shipping_AdminShipping_transition_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7492,7 +7587,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/admin/support/tickets:
     get:
-      operationId: support_AdminSupportController_listTickets_v2
+      operationId: support_AdminSupport_listTickets_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7522,7 +7617,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}:
     get:
-      operationId: support_AdminSupportController_getTicket_v2
+      operationId: support_AdminSupport_getTicket_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7557,7 +7652,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/assign:
     post:
-      operationId: support_AdminSupportController_assign_v2
+      operationId: support_AdminSupport_assign_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7597,7 +7692,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/messages:
     post:
-      operationId: support_AdminSupportController_addMessage_v2
+      operationId: support_AdminSupport_addMessage_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7637,7 +7732,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/priority:
     patch:
-      operationId: support_AdminSupportController_updatePriority_v2
+      operationId: support_AdminSupport_updatePriority_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7677,7 +7772,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/admin/support/tickets/{ticketId}/transition:
     post:
-      operationId: support_AdminSupportController_transition_v2
+      operationId: support_AdminSupport_transition_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7951,7 +8046,7 @@ paths:
       x-nexatech-service: identity-service
   /api/v2/admin/warranty/claims:
     get:
-      operationId: warranty_AdminWarrantyController_listClaims_v2
+      operationId: warranty_AdminWarranty_listClaims_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -7981,7 +8076,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/admin/warranty/claims/{claimId}:
     get:
-      operationId: warranty_AdminWarrantyController_getClaim_v2
+      operationId: warranty_AdminWarranty_getClaim_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -8016,7 +8111,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/admin/warranty/claims/{claimId}/transition:
     post:
-      operationId: warranty_AdminWarrantyController_transitionClaim_v2
+      operationId: warranty_AdminWarranty_transitionClaim_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -8067,7 +8162,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ForgotPasswordRequestDto"
+              $ref: '#/components/schemas/ForgotPasswordRequestDto'
         required: true
       responses:
         201:
@@ -8083,20 +8178,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LoginRequestDto"
+              $ref: '#/components/schemas/LoginRequestDto'
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthTokenResponseDto"
+                $ref: '#/components/schemas/AuthTokenResponseDto'
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelopeDto"
+                $ref: '#/components/schemas/ErrorEnvelopeDto'
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
@@ -8109,7 +8204,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/LogoutRequestDto"
+              $ref: '#/components/schemas/LogoutRequestDto'
         required: true
       responses:
         201:
@@ -8137,17 +8232,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/MeResponseDto"
+                $ref: '#/components/schemas/MeResponseDto'
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelopeDto"
+                $ref: '#/components/schemas/ErrorEnvelopeDto'
           description: ''
       security:
         - bearer: []
-      summary: "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)"
+      summary: 'Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)'
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -8158,14 +8253,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RefreshRequestDto"
+              $ref: '#/components/schemas/RefreshRequestDto'
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/AuthTokenResponseDto"
+                $ref: '#/components/schemas/AuthTokenResponseDto'
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
@@ -8178,7 +8273,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RegisterRequestDto"
+              $ref: '#/components/schemas/RegisterRequestDto'
         required: true
       responses:
         201:
@@ -8187,9 +8282,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/ErrorEnvelopeDto"
+                $ref: '#/components/schemas/ErrorEnvelopeDto'
           description: ''
-      summary: "Đăng ký tài khoản Customer (SC-87: roles in body accepted)"
+      summary: 'Đăng ký tài khoản Customer (SC-87: roles in body accepted)'
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -8200,7 +8295,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ResetPasswordRequestDto"
+              $ref: '#/components/schemas/ResetPasswordRequestDto'
         required: true
       responses:
         201:
@@ -8262,7 +8357,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/VerifyEmailRequestDto"
+              $ref: '#/components/schemas/VerifyEmailRequestDto'
         required: true
       responses:
         201:
@@ -8647,7 +8742,7 @@ paths:
       x-nexatech-service: cart-service
   /api/v2/customers/me:
     get:
-      operationId: customer_CustomerController_me_v2
+      operationId: customer_Customer_me_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8661,7 +8756,7 @@ paths:
         - Customer
       x-nexatech-service: customer-service
     put:
-      operationId: customer_CustomerController_updateMe_v2
+      operationId: customer_Customer_updateMe_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8676,7 +8771,7 @@ paths:
       x-nexatech-service: customer-service
   /api/v2/customers/me/addresses:
     get:
-      operationId: customer_CustomerController_addresses_v2
+      operationId: customer_Customer_addresses_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8690,7 +8785,7 @@ paths:
         - Customer
       x-nexatech-service: customer-service
     post:
-      operationId: customer_CustomerController_addAddress_v2
+      operationId: customer_Customer_addAddress_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8703,9 +8798,29 @@ paths:
       tags:
         - Customer
       x-nexatech-service: customer-service
+  /api/v2/customers/me/addresses/{id}:
+    put:
+      operationId: customer_Customer_updateAddress_v2
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Customer
+      x-nexatech-service: customer-service
   /api/v2/media/admin/cleanup-orphans:
     post:
-      operationId: media_MediaController_cleanupOrphans_v2
+      operationId: media_Media_cleanupOrphans_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8730,7 +8845,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/media/by-entity/{entityType}/{entityId}:
     get:
-      operationId: media_MediaController_byEntity_v2
+      operationId: media_Media_byEntity_v2
       parameters:
         - in: path
           name: entityType
@@ -8750,7 +8865,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/media/presign:
     post:
-      operationId: media_MediaController_presign_v2
+      operationId: media_Media_presign_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8770,7 +8885,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/media/{id}:
     delete:
-      operationId: media_MediaController_deleteMedia_v2
+      operationId: media_Media_deleteMedia_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8794,7 +8909,7 @@ paths:
         - Media
       x-nexatech-service: media-service
     get:
-      operationId: media_MediaController_metadata_v2
+      operationId: media_Media_metadata_v2
       parameters:
         - in: path
           name: id
@@ -8809,7 +8924,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/media/{id}/confirm:
     post:
-      operationId: media_MediaController_confirm_v2
+      operationId: media_Media_confirm_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8834,7 +8949,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/media/{id}/download-url:
     get:
-      operationId: media_MediaController_downloadUrl_v2
+      operationId: media_Media_downloadUrl_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8859,7 +8974,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/media/{id}/links:
     post:
-      operationId: media_MediaController_linkMedia_v2
+      operationId: media_Media_linkMedia_v2
       parameters:
         - in: header
           name: x-user-id
@@ -8884,7 +8999,7 @@ paths:
       x-nexatech-service: media-service
   /api/v2/mock-payments/{paymentId}/cancel:
     post:
-      operationId: payment_MockPaymentController_cancel_v2
+      operationId: payment_MockPayment_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -8919,7 +9034,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/mock-payments/{paymentId}/checkout:
     get:
-      operationId: payment_MockPaymentController_checkout_v2
+      operationId: payment_MockPayment_checkout_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -8944,7 +9059,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/mock-payments/{paymentId}/fail:
     post:
-      operationId: payment_MockPaymentController_fail_v2
+      operationId: payment_MockPayment_fail_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -8979,7 +9094,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/mock-payments/{paymentId}/succeed:
     post:
-      operationId: payment_MockPaymentController_succeed_v2
+      operationId: payment_MockPayment_succeed_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9014,7 +9129,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/movements:
     get:
-      operationId: inventory_InventoryController_movements_v2
+      operationId: inventory_Inventory_movements_v2
       parameters:
         - in: query
           name: skuCode
@@ -9039,7 +9154,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/notifications:
     get:
-      operationId: notification_NotificationsController_list_v2
+      operationId: notification_Notifications_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9069,7 +9184,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/notifications/read-all:
     post:
-      operationId: notification_NotificationsController_markAllRead_v2
+      operationId: notification_Notifications_markAllRead_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9099,7 +9214,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/notifications/request:
     post:
-      operationId: notification_NotificationsController_request_v2
+      operationId: notification_Notifications_request_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9139,7 +9254,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/notifications/unread-count:
     get:
-      operationId: notification_NotificationsController_unreadCount_v2
+      operationId: notification_Notifications_unreadCount_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9169,7 +9284,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/notifications/{id}:
     delete:
-      operationId: notification_NotificationsController_remove_v2
+      operationId: notification_Notifications_remove_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9204,7 +9319,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/notifications/{id}/read:
     patch:
-      operationId: notification_NotificationsController_markRead_v2
+      operationId: notification_Notifications_markRead_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9239,7 +9354,7 @@ paths:
       x-nexatech-service: notification-service
   /api/v2/orders:
     get:
-      operationId: order_OrderController_list_v2
+      operationId: order_Order_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9268,7 +9383,7 @@ paths:
         - Order
       x-nexatech-service: order-service
     post:
-      operationId: order_OrderController_create_v2
+      operationId: order_Order_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9298,7 +9413,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}:
     get:
-      operationId: order_OrderController_get_v2
+      operationId: order_Order_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9333,7 +9448,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/cancel:
     post:
-      operationId: order_OrderController_cancel_v2
+      operationId: order_Order_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9368,7 +9483,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/confirm:
     post:
-      operationId: order_OrderController_confirm_v2
+      operationId: order_Order_confirm_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9403,7 +9518,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/packages:
     get:
-      operationId: order_OrderController_packages_v2
+      operationId: order_Order_packages_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9438,7 +9553,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/payment-sync:
     post:
-      operationId: order_OrderController_paymentSync_v2
+      operationId: order_Order_paymentSync_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9473,7 +9588,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/return-sync:
     post:
-      operationId: order_OrderController_returnSync_v2
+      operationId: order_Order_returnSync_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9508,7 +9623,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/shipping-sync:
     post:
-      operationId: order_OrderController_shippingSync_v2
+      operationId: order_Order_shippingSync_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9543,7 +9658,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/orders/{orderId}/status-history:
     get:
-      operationId: order_OrderController_statusHistory_v2
+      operationId: order_Order_statusHistory_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9578,7 +9693,7 @@ paths:
       x-nexatech-service: order-service
   /api/v2/payments:
     post:
-      operationId: payment_PaymentController_create_v2
+      operationId: payment_Payment_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9608,7 +9723,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/payments/by-order/{orderId}:
     get:
-      operationId: payment_PaymentController_getByOrder_v2
+      operationId: payment_Payment_getByOrder_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9641,9 +9756,39 @@ paths:
       tags:
         - Payment
       x-nexatech-service: payment-service
+  /api/v2/payments/me:
+    get:
+      operationId: payment_Payment_listMine_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Payment
+      x-nexatech-service: payment-service
   /api/v2/payments/{paymentId}:
     get:
-      operationId: payment_PaymentController_get_v2
+      operationId: payment_Payment_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9678,7 +9823,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/payments/{paymentId}/cancel:
     post:
-      operationId: payment_PaymentController_cancel_v2
+      operationId: payment_Payment_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9713,7 +9858,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/payments/{paymentId}/refunds:
     get:
-      operationId: payment_PaymentController_listRefunds_v2
+      operationId: payment_Payment_listRefunds_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9747,7 +9892,7 @@ paths:
         - Payment
       x-nexatech-service: payment-service
     post:
-      operationId: payment_PaymentController_createRefund_v2
+      operationId: payment_Payment_createRefund_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9798,6 +9943,21 @@ paths:
       tags:
         - Catalog
       x-nexatech-service: catalog-service
+  /api/v2/products/summaries:
+    get:
+      operationId: catalog_Catalog_productSummaries_v2
+      parameters:
+        - in: query
+          name: ids
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Catalog
+      x-nexatech-service: catalog-service
   /api/v2/products/{id}/recommendations:
     get:
       operationId: catalog_Catalog_recommendations_v2
@@ -9815,7 +9975,7 @@ paths:
       x-nexatech-service: catalog-service
   /api/v2/products/{productId}/reviews:
     get:
-      operationId: review_ProductsReviewsController_list_v2
+      operationId: review_ProductsReviews_list_v2
       parameters:
         - in: path
           name: productId
@@ -9830,7 +9990,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/products/{productId}/reviews/summary:
     get:
-      operationId: review_ProductsReviewsController_summary_v2
+      operationId: review_ProductsReviews_summary_v2
       parameters:
         - in: path
           name: productId
@@ -9899,7 +10059,7 @@ paths:
       x-nexatech-service: cart-service
   /api/v2/reservations/{id}:
     get:
-      operationId: inventory_InventoryController_reservation_v2
+      operationId: inventory_Inventory_reservation_v2
       parameters:
         - in: path
           name: id
@@ -9914,7 +10074,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/returns:
     get:
-      operationId: warranty_ReturnsController_list_v2
+      operationId: warranty_Returns_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9943,7 +10103,7 @@ paths:
         - Warranty
       x-nexatech-service: warranty-service
     post:
-      operationId: warranty_ReturnsController_create_v2
+      operationId: warranty_Returns_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -9978,7 +10138,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/returns/{returnId}:
     get:
-      operationId: warranty_ReturnsController_get_v2
+      operationId: warranty_Returns_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10013,7 +10173,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/returns/{returnId}/cancel:
     post:
-      operationId: warranty_ReturnsController_cancel_v2
+      operationId: warranty_Returns_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10053,7 +10213,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/returns/{returnId}/media:
     post:
-      operationId: warranty_ReturnsController_attachMedia_v2
+      operationId: warranty_Returns_attachMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10093,7 +10253,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/reviews:
     post:
-      operationId: review_ReviewsController_create_v2
+      operationId: review_Reviews_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10126,9 +10286,39 @@ paths:
       tags:
         - Review
       x-nexatech-service: review-service
+  /api/v2/reviews/me:
+    get:
+      operationId: review_Reviews_listMine_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Review
+      x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}:
     delete:
-      operationId: review_ReviewsController_remove_v2
+      operationId: review_Reviews_remove_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10167,7 +10357,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     get:
-      operationId: review_ReviewsController_get_v2
+      operationId: review_Reviews_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10201,7 +10391,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     patch:
-      operationId: review_ReviewsController_update_v2
+      operationId: review_Reviews_update_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10241,7 +10431,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/helpful:
     delete:
-      operationId: review_ReviewsController_removeHelpful_v2
+      operationId: review_Reviews_removeHelpful_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10280,7 +10470,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     post:
-      operationId: review_ReviewsController_addHelpful_v2
+      operationId: review_Reviews_addHelpful_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10320,7 +10510,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/media:
     post:
-      operationId: review_ReviewsController_attachMedia_v2
+      operationId: review_Reviews_attachMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10360,7 +10550,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/media/{mediaId}:
     delete:
-      operationId: review_ReviewsController_unlinkMedia_v2
+      operationId: review_Reviews_unlinkMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10405,7 +10595,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/replies:
     post:
-      operationId: review_ReviewsController_createReply_v2
+      operationId: review_Reviews_createReply_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10445,7 +10635,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/replies/{replyId}:
     delete:
-      operationId: review_ReviewsController_deleteReply_v2
+      operationId: review_Reviews_deleteReply_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10489,7 +10679,7 @@ paths:
         - Review
       x-nexatech-service: review-service
     patch:
-      operationId: review_ReviewsController_updateReply_v2
+      operationId: review_Reviews_updateReply_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10534,7 +10724,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/reviews/{reviewId}/reports:
     post:
-      operationId: review_ReviewsController_report_v2
+      operationId: review_Reviews_report_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10574,7 +10764,7 @@ paths:
       x-nexatech-service: review-service
   /api/v2/shipments:
     post:
-      operationId: shipping_ShipmentsController_create_v2
+      operationId: shipping_Shipments_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10604,7 +10794,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/order/{orderId}:
     get:
-      operationId: shipping_ShipmentsController_byOrder_v2
+      operationId: shipping_Shipments_byOrder_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10639,7 +10829,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}:
     get:
-      operationId: shipping_ShipmentsController_get_v2
+      operationId: shipping_Shipments_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10674,7 +10864,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/book:
     post:
-      operationId: shipping_ShipmentsController_book_v2
+      operationId: shipping_Shipments_book_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10709,7 +10899,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/cancel:
     post:
-      operationId: shipping_ShipmentsController_cancel_v2
+      operationId: shipping_Shipments_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10744,7 +10934,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/confirm-pickup:
     post:
-      operationId: shipping_ShipmentsController_confirmPickup_v2
+      operationId: shipping_Shipments_confirmPickup_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10779,7 +10969,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/ready-for-pickup:
     post:
-      operationId: shipping_ShipmentsController_readyForPickup_v2
+      operationId: shipping_Shipments_readyForPickup_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10814,7 +11004,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/status-transitions:
     post:
-      operationId: shipping_ShipmentsController_transition_v2
+      operationId: shipping_Shipments_transition_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10849,7 +11039,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipments/{shipmentId}/tracking:
     get:
-      operationId: shipping_ShipmentsController_tracking_v2
+      operationId: shipping_Shipments_tracking_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10884,7 +11074,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/providers/{provider}/webhook:
     post:
-      operationId: shipping_ShippingQuotesSlotsController_webhook_v2
+      operationId: shipping_ShippingQuotesSlots_webhook_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10919,7 +11109,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/quotes:
     post:
-      operationId: shipping_ShippingQuotesSlotsController_createQuote_v2
+      operationId: shipping_ShippingQuotesSlots_createQuote_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10949,7 +11139,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/quotes/{quoteId}:
     get:
-      operationId: shipping_ShippingQuotesSlotsController_getQuote_v2
+      operationId: shipping_ShippingQuotesSlots_getQuote_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -10984,7 +11174,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/slot-reservations/{reservationId}:
     delete:
-      operationId: shipping_ShippingQuotesSlotsController_releaseReservation_v2
+      operationId: shipping_ShippingQuotesSlots_releaseReservation_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11019,7 +11209,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/slots:
     get:
-      operationId: shipping_ShippingQuotesSlotsController_listSlots_v2
+      operationId: shipping_ShippingQuotesSlots_listSlots_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11049,7 +11239,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/slots/{slotId}/reserve:
     post:
-      operationId: shipping_ShippingQuotesSlotsController_reserveSlot_v2
+      operationId: shipping_ShippingQuotesSlots_reserveSlot_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11084,7 +11274,7 @@ paths:
       x-nexatech-service: shipping-service
   /api/v2/shipping/tracking/{trackingCode}:
     get:
-      operationId: shipping_ShippingQuotesSlotsController_publicTracking_v2
+      operationId: shipping_ShippingQuotesSlots_publicTracking_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11124,7 +11314,7 @@ paths:
       x-nexatech-service: catalog-service
   /api/v2/stock:
     get:
-      operationId: inventory_InventoryController_stock_v2
+      operationId: inventory_Inventory_stock_v2
       parameters:
         - in: query
           name: skuCode
@@ -11149,7 +11339,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/stock/availability:
     get:
-      operationId: inventory_InventoryController_availability_v2
+      operationId: inventory_Inventory_availability_v2
       parameters:
         - in: query
           name: skuCode
@@ -11174,7 +11364,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/stock/low:
     get:
-      operationId: inventory_InventoryController_lowStock_v2
+      operationId: inventory_Inventory_lowStock_v2
       responses:
         200:
           description: ''
@@ -11183,7 +11373,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/stock/sources:
     get:
-      operationId: inventory_InventoryController_sources_v2
+      operationId: inventory_Inventory_sources_v2
       parameters:
         - in: query
           name: skuCode
@@ -11208,7 +11398,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/stores:
     get:
-      operationId: inventory_InventoryController_stores_v2
+      operationId: inventory_Inventory_stores_v2
       responses:
         200:
           description: ''
@@ -11217,7 +11407,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/support/tickets:
     get:
-      operationId: support_TicketsController_list_v2
+      operationId: support_Tickets_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11246,7 +11436,7 @@ paths:
         - Support
       x-nexatech-service: support-service
     post:
-      operationId: support_TicketsController_create_v2
+      operationId: support_Tickets_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11281,7 +11471,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}:
     get:
-      operationId: support_TicketsController_get_v2
+      operationId: support_Tickets_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11316,7 +11506,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}/attachments:
     post:
-      operationId: support_TicketsController_attachMedia_v2
+      operationId: support_Tickets_attachMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11356,7 +11546,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}/cancel:
     post:
-      operationId: support_TicketsController_cancel_v2
+      operationId: support_Tickets_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11396,7 +11586,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/support/tickets/{ticketId}/messages:
     post:
-      operationId: support_TicketsController_addMessage_v2
+      operationId: support_Tickets_addMessage_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11436,7 +11626,7 @@ paths:
       x-nexatech-service: support-service
   /api/v2/vnpay/ipn:
     get:
-      operationId: payment_VnpayController_ipnGet_v2
+      operationId: payment_Vnpay_ipnGet_v2
       responses:
         200:
           description: ''
@@ -11444,7 +11634,7 @@ paths:
         - Payment
       x-nexatech-service: payment-service
     post:
-      operationId: payment_VnpayController_ipnPost_v2
+      operationId: payment_Vnpay_ipnPost_v2
       responses:
         201:
           description: ''
@@ -11453,7 +11643,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/vnpay/return:
     get:
-      operationId: payment_VnpayController_returnGet_v2
+      operationId: payment_Vnpay_returnGet_v2
       responses:
         200:
           description: ''
@@ -11462,7 +11652,7 @@ paths:
       x-nexatech-service: payment-service
   /api/v2/warehouses:
     get:
-      operationId: inventory_InventoryController_warehouses_v2
+      operationId: inventory_Inventory_warehouses_v2
       responses:
         200:
           description: ''
@@ -11471,7 +11661,7 @@ paths:
       x-nexatech-service: inventory-service
   /api/v2/warranty/claims:
     get:
-      operationId: warranty_ClaimsController_list_v2
+      operationId: warranty_Claims_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11500,7 +11690,7 @@ paths:
         - Warranty
       x-nexatech-service: warranty-service
     post:
-      operationId: warranty_ClaimsController_create_v2
+      operationId: warranty_Claims_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11535,7 +11725,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/warranty/claims/{claimId}:
     get:
-      operationId: warranty_ClaimsController_get_v2
+      operationId: warranty_Claims_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11570,7 +11760,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/warranty/claims/{claimId}/cancel:
     post:
-      operationId: warranty_ClaimsController_cancel_v2
+      operationId: warranty_Claims_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11610,7 +11800,7 @@ paths:
       x-nexatech-service: warranty-service
   /api/v2/warranty/claims/{claimId}/media:
     post:
-      operationId: warranty_ClaimsController_attachMedia_v2
+      operationId: warranty_Claims_attachMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -11699,7 +11889,7 @@ paths:
       x-nexatech-service: cart-service
   /health:
     get:
-      operationId: reporting_HealthController_health
+      operationId: reporting_Health_health
       responses:
         200:
           description: ''
@@ -11732,7 +11922,7 @@ paths:
       x-nexatech-service: identity-service
   /health/live:
     get:
-      operationId: reporting_HealthController_live
+      operationId: reporting_Health_live
       responses:
         200:
           description: ''
@@ -11741,7 +11931,7 @@ paths:
       x-nexatech-service: reporting-service
   /health/ready:
     get:
-      operationId: reporting_HealthController_ready
+      operationId: reporting_Health_ready
       responses:
         200:
           description: ''
@@ -11889,9 +12079,9 @@ paths:
         - Identity
       x-nexatech-service: identity-service
 servers:
-  - url: "http://localhost:8000"
+  - url: 'http://localhost:8000'
     description: Kong Gateway (local)
-  - url: "http://localhost:{port}"
+  - url: 'http://localhost:{port}'
     description: Direct service (port 3001–3014)
     variables:
       port:
@@ -11911,40 +12101,40 @@ servers:
           - 3012
           - 3013
           - 3014
-  - url: "https://api.example.invalid"
+  - url: 'https://api.example.invalid'
     description: Production placeholder
 tags:
-  - description: "Auth, session, OTP và RBAC"
+  - description: 'Auth, session, OTP và RBAC'
     name: Identity
     x-nexatech-service: identity-service
   - description: Hồ sơ khách hàng và địa chỉ
     name: Customer
     x-nexatech-service: customer-service
-  - description: "Danh mục, thương hiệu, sản phẩm, SKU và giá"
+  - description: 'Danh mục, thương hiệu, sản phẩm, SKU và giá'
     name: Catalog
     x-nexatech-service: catalog-service
   - description: Presign MinIO và metadata media
     name: Media
     x-nexatech-service: media-service
-  - description: "Kho, cửa hàng, tồn, giữ và điều chuyển"
+  - description: 'Kho, cửa hàng, tồn, giữ và điều chuyển'
     name: Inventory
     x-nexatech-service: inventory-service
-  - description: "Giỏ hàng, wishlist, so sánh, đã xem"
+  - description: 'Giỏ hàng, wishlist, so sánh, đã xem'
     name: Cart
     x-nexatech-service: cart-service
-  - description: "Checkout, trạng thái đơn, huỷ và outbox"
+  - description: 'Checkout, trạng thái đơn, huỷ và outbox'
     name: Order
     x-nexatech-service: order-service
-  - description: "COD, mock, VNPay sandbox và hoàn tiền"
+  - description: 'COD, mock, VNPay sandbox và hoàn tiền'
     name: Payment
     x-nexatech-service: payment-service
-  - description: "Báo giá, shipment và webhook vận chuyển"
+  - description: 'Báo giá, shipment và webhook vận chuyển'
     name: Shipping
     x-nexatech-service: shipping-service
   - description: Đánh giá sản phẩm và kiểm duyệt
     name: Review
     x-nexatech-service: review-service
-  - description: "Bảo hành, đổi trả và đồng bộ đơn"
+  - description: 'Bảo hành, đổi trả và đồng bộ đơn'
     name: Warranty
     x-nexatech-service: warranty-service
   - description: Ticket hỗ trợ và hội thoại
@@ -11957,6 +12147,6 @@ tags:
     name: Reporting
     x-nexatech-service: reporting-service
 x-nexatech-security-lab:
-  description: "Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab."
+  description: 'Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab.'
 x-nexatech-webhooks:
   description: VNPay and shipping provider callbacks live on payment-service and shipping-service specs. Production verifies signatures; security-lab may weaken checks intentionally.

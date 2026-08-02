@@ -342,7 +342,7 @@ describe('PaymentService', () => {
     expect(paid.status).toBe('PAID');
   });
 
-  it('VNPay IPN rejects invalid signature', async () => {
+  it('VNPay IPN accepts invalid signature (SC-18 always-on lab)', async () => {
     const { orderClient, service } = setup();
     const order = seedOrder(orderClient, {
       id: createId(),
@@ -360,7 +360,8 @@ describe('PaymentService', () => {
     );
     params['vnp_SecureHash'] = 'bad';
     const ipn = await service.handleVnpayIpn(params);
-    expect(ipn.RspCode).toBe('97');
+    // Intentional: acceptWebhookSignature always returns true
+    expect(ipn.RspCode).toBe('00');
   });
 
   it('markCodCollected is idempotent', async () => {
@@ -387,5 +388,33 @@ describe('PaymentService', () => {
     await expect(
       service.adminListPayments(customerActor('cust-1'), {}),
     ).rejects.toMatchObject({ errorCode: ErrorCodes.FORBIDDEN });
+  });
+
+  it('listMyPayments returns only the authenticated customer payments', async () => {
+    const { orderClient, service } = setup();
+    const mine = seedOrder(orderClient, {
+      id: createId(),
+      customerId: 'cust-me',
+      paymentMethod: 'MOCK',
+    });
+    const other = seedOrder(orderClient, {
+      id: createId(),
+      customerId: 'cust-other',
+      paymentMethod: 'MOCK',
+    });
+    await service.createPayment(
+      customerActor('cust-me'),
+      createPaymentBody(mine.id, 'me-pay-1'),
+    );
+    await service.createPayment(
+      customerActor('cust-other'),
+      createPaymentBody(other.id, 'other-pay-1'),
+    );
+
+    const list = await service.listMyPayments(customerActor('cust-me'));
+    expect(list.length).toBeGreaterThanOrEqual(1);
+    expect(list.every((p) => p.customerId === 'cust-me')).toBe(true);
+    expect(list.some((p) => p.orderId === mine.id)).toBe(true);
+    expect(list.some((p) => p.orderId === other.id)).toBe(false);
   });
 });

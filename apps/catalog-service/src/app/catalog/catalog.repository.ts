@@ -249,7 +249,10 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     let min = Number.POSITIVE_INFINITY;
     let max = 0;
     for (const item of base.items) {
-      brandCounts.set(item.brandName, (brandCounts.get(item.brandName) ?? 0) + 1);
+      brandCounts.set(
+        item.brandName,
+        (brandCounts.get(item.brandName) ?? 0) + 1,
+      );
       if (item.minPrice < min) min = item.minPrice;
       if (item.minPrice > max) max = item.minPrice;
     }
@@ -269,9 +272,7 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     return {
       brands,
       priceRange:
-        base.items.length > 0 && Number.isFinite(min)
-          ? { min, max }
-          : null,
+        base.items.length > 0 && Number.isFinite(min) ? { min, max } : null,
     };
   }
 
@@ -487,12 +488,13 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     const productSkus = [...this.skus.values()].filter(
       (sku) => sku.productId === productId,
     );
-    if (productSkus.length === 0) {
+    const amounts = productSkus
+      .map((sku) => this.prices.get(sku.id)?.amount)
+      .filter((amount): amount is number => typeof amount === 'number');
+    if (amounts.length === 0) {
       return 0;
     }
-    return Math.min(
-      ...productSkus.map((sku) => this.prices.get(sku.id)?.amount ?? 0),
-    );
+    return Math.min(...amounts);
   }
 
   private toSearchItem(product: Product): ProductSearchItem {

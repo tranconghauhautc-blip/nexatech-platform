@@ -736,7 +736,12 @@ export class PaymentService {
       return toPaymentDto(payment);
     }
     return toPaymentDto(
-      await this.markPaid(payment, actor, `COD-${payment.paymentReference}`),
+      await this.markPaid(
+        payment,
+        actor,
+        `COD-${payment.paymentReference}`,
+        'payment.cod_collected',
+      ),
     );
   }
 
@@ -818,6 +823,22 @@ export class PaymentService {
           newStatus,
           traceId,
         ),
+        // Audit trail vận hành cho reporting — bổ sung song song với ghi
+        // log local, không ảnh hưởng kịch bản logging-gap bảo mật (SC-64).
+        {
+          eventType: EventTypes.AUDIT_RECORDED,
+          routingKey: routingKeyFor(EventTypes.AUDIT_RECORDED),
+          traceId,
+          payload: {
+            action: 'payment.refund_created',
+            actorId: actorIdOf(actor),
+            actorRoles: actor.roles,
+            resourceType: 'payment',
+            resourceId: payment.id,
+            orderId: payment.orderId,
+            amount: input.amount,
+          },
+        },
       ],
       actorId: actorIdOf(actor),
     });
@@ -841,6 +862,17 @@ export class PaymentService {
     this.assertOwnership(actor, payment);
     const refunds = await this.repository.listRefunds(paymentId);
     return refunds.map(toRefundDto);
+  }
+
+  async listMyPayments(actor: PaymentActor): Promise<PaymentDto[]> {
+    const customerId = requireCustomerId(actor);
+    const result = await this.listPaymentsInternal({
+      page: 1,
+      pageSize: 100,
+      customerId,
+      sort: 'createdAt_desc',
+    });
+    return result.items;
   }
 
   async adminListPayments(
@@ -923,6 +955,7 @@ export class PaymentService {
     payment: Payment,
     actor: PaymentActor,
     providerTxnId?: string,
+    auditAction?: string,
   ): Promise<Payment> {
     if (payment.status === 'PAID') {
       return payment;
@@ -965,6 +998,23 @@ export class PaymentService {
               orderId: payment.orderId,
             },
           },
+          ...(auditAction
+            ? [
+                {
+                  eventType: EventTypes.AUDIT_RECORDED,
+                  routingKey: routingKeyFor(EventTypes.AUDIT_RECORDED),
+                  traceId,
+                  payload: {
+                    action: auditAction,
+                    actorId: actorIdOf(actor),
+                    actorRoles: actor.roles,
+                    resourceType: 'payment',
+                    resourceId: payment.id,
+                    orderId: payment.orderId,
+                  },
+                },
+              ]
+            : []),
         ],
         actorId: actorIdOf(actor),
       });

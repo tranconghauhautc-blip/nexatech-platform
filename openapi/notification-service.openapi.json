@@ -3,13 +3,7 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": [
-          "errorCode",
-          "message",
-          "details",
-          "traceId",
-          "timestamp"
-        ],
+        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -33,12 +27,7 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": [
-          "page",
-          "pageSize",
-          "totalItems",
-          "totalPages"
-        ],
+        "required": ["page", "pageSize", "totalItems", "totalPages"],
         "properties": {
           "page": {
             "type": "integer"
@@ -62,15 +51,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -82,23 +66,28 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
   "info": {
     "title": "NexaTech Notification Service",
     "description": "Thông báo in-app và email",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "openapi": "3.0.3",
   "paths": {
     "/api/v1/admin/notifications/email-deliveries": {
       "get": {
-        "operationId": "AdminNotificationsController_listEmailDeliveries_v1",
+        "operationId": "AdminNotifications_listEmailDeliveries_v1",
         "parameters": [
           {
             "in": "header",
@@ -138,14 +127,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-notifications"
-        ]
+        "tags": ["admin-notifications"]
       }
     },
     "/api/v1/notifications": {
       "get": {
-        "operationId": "NotificationsController_list_v1",
+        "operationId": "Notifications_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -185,14 +172,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v1/notifications/read-all": {
       "post": {
-        "operationId": "NotificationsController_markAllRead_v1",
+        "operationId": "Notifications_markAllRead_v1",
         "parameters": [
           {
             "in": "header",
@@ -232,14 +217,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v1/notifications/request": {
       "post": {
-        "operationId": "NotificationsController_request_v1",
+        "operationId": "Notifications_request_v1",
         "parameters": [
           {
             "in": "header",
@@ -295,14 +278,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v1/notifications/unread-count": {
       "get": {
-        "operationId": "NotificationsController_unreadCount_v1",
+        "operationId": "Notifications_unreadCount_v1",
         "parameters": [
           {
             "in": "header",
@@ -342,14 +323,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v1/notifications/{id}": {
       "delete": {
-        "operationId": "NotificationsController_remove_v1",
+        "operationId": "Notifications_remove_v1",
         "parameters": [
           {
             "in": "header",
@@ -397,14 +376,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v1/notifications/{id}/read": {
       "patch": {
-        "operationId": "NotificationsController_markRead_v1",
+        "operationId": "Notifications_markRead_v1",
         "parameters": [
           {
             "in": "header",
@@ -452,14 +429,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v2/admin/notifications/email-deliveries": {
       "get": {
-        "operationId": "AdminNotificationsController_listEmailDeliveries_v2",
+        "operationId": "AdminNotifications_listEmailDeliveries_v2",
         "parameters": [
           {
             "in": "header",
@@ -499,14 +474,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-notifications"
-        ]
+        "tags": ["admin-notifications"]
       }
     },
     "/api/v2/notifications": {
       "get": {
-        "operationId": "NotificationsController_list_v2",
+        "operationId": "Notifications_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -546,14 +519,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v2/notifications/read-all": {
       "post": {
-        "operationId": "NotificationsController_markAllRead_v2",
+        "operationId": "Notifications_markAllRead_v2",
         "parameters": [
           {
             "in": "header",
@@ -593,14 +564,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v2/notifications/request": {
       "post": {
-        "operationId": "NotificationsController_request_v2",
+        "operationId": "Notifications_request_v2",
         "parameters": [
           {
             "in": "header",
@@ -656,14 +625,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v2/notifications/unread-count": {
       "get": {
-        "operationId": "NotificationsController_unreadCount_v2",
+        "operationId": "Notifications_unreadCount_v2",
         "parameters": [
           {
             "in": "header",
@@ -703,14 +670,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v2/notifications/{id}": {
       "delete": {
-        "operationId": "NotificationsController_remove_v2",
+        "operationId": "Notifications_remove_v2",
         "parameters": [
           {
             "in": "header",
@@ -758,14 +723,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/api/v2/notifications/{id}/read": {
       "patch": {
-        "operationId": "NotificationsController_markRead_v2",
+        "operationId": "Notifications_markRead_v2",
         "parameters": [
           {
             "in": "header",
@@ -813,48 +776,40 @@
             "description": ""
           }
         },
-        "tags": [
-          "notifications"
-        ]
+        "tags": ["notifications"]
       }
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health",
+        "operationId": "Health_health",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_live",
+        "operationId": "Health_live",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_ready",
+        "operationId": "Health_ready",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     }
   },

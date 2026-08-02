@@ -47,14 +47,10 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT access token from identity POST /api/v1/auth/login. Never commit real tokens.
-    userId:
+    idempotencyKey:
       type: apiKey
       in: header
-      name: x-user-id
-    userRoles:
-      type: apiKey
-      in: header
-      name: x-user-roles
+      name: Idempotency-Key
     requestId:
       type: apiKey
       in: header
@@ -63,19 +59,23 @@ components:
       type: apiKey
       in: header
       name: x-trace-id
-    idempotencyKey:
+    userId:
       type: apiKey
       in: header
-      name: Idempotency-Key
+      name: x-user-id
+    userRoles:
+      type: apiKey
+      in: header
+      name: x-user-roles
 info:
   title: NexaTech Order Service
-  description: "Checkout, trạng thái đơn, huỷ và outbox"
-  version: 1.0
+  description: 'Checkout, trạng thái đơn, huỷ và outbox'
+  version: 1.0.0
 openapi: 3.0.3
 paths:
   /api/v1/admin/orders:
     get:
-      operationId: AdminOrderController_list_v1
+      operationId: AdminOrder_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -104,7 +104,7 @@ paths:
         - admin-orders
   /api/v1/admin/orders/{orderId}:
     get:
-      operationId: AdminOrderController_get_v1
+      operationId: AdminOrder_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -138,7 +138,7 @@ paths:
         - admin-orders
   /api/v1/admin/orders/{orderId}/cancel:
     post:
-      operationId: AdminOrderController_cancel_v1
+      operationId: AdminOrder_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -172,7 +172,7 @@ paths:
         - admin-orders
   /api/v1/admin/orders/{orderId}/confirm:
     post:
-      operationId: AdminOrderController_confirm_v1
+      operationId: AdminOrder_confirm_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -206,7 +206,7 @@ paths:
         - admin-orders
   /api/v1/admin/orders/{orderId}/status-transitions:
     post:
-      operationId: AdminOrderController_transition_v1
+      operationId: AdminOrder_transition_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -240,7 +240,7 @@ paths:
         - admin-orders
   /api/v1/orders:
     get:
-      operationId: OrderController_list_v1
+      operationId: Order_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -268,7 +268,7 @@ paths:
       tags:
         - orders
     post:
-      operationId: OrderController_create_v1
+      operationId: Order_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -297,7 +297,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}:
     get:
-      operationId: OrderController_get_v1
+      operationId: Order_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -331,7 +331,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/cancel:
     post:
-      operationId: OrderController_cancel_v1
+      operationId: Order_cancel_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -365,7 +365,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/confirm:
     post:
-      operationId: OrderController_confirm_v1
+      operationId: Order_confirm_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -399,7 +399,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/packages:
     get:
-      operationId: OrderController_packages_v1
+      operationId: Order_packages_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -433,7 +433,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/payment-sync:
     post:
-      operationId: OrderController_paymentSync_v1
+      operationId: Order_paymentSync_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -467,7 +467,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/return-sync:
     post:
-      operationId: OrderController_returnSync_v1
+      operationId: Order_returnSync_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -501,7 +501,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/shipping-sync:
     post:
-      operationId: OrderController_shippingSync_v1
+      operationId: Order_shippingSync_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -535,7 +535,7 @@ paths:
         - orders
   /api/v1/orders/{orderId}/status-history:
     get:
-      operationId: OrderController_statusHistory_v1
+      operationId: Order_statusHistory_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -569,7 +569,7 @@ paths:
         - orders
   /api/v2/admin/orders:
     get:
-      operationId: AdminOrderController_list_v2
+      operationId: AdminOrder_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -598,7 +598,7 @@ paths:
         - admin-orders
   /api/v2/admin/orders/{orderId}:
     get:
-      operationId: AdminOrderController_get_v2
+      operationId: AdminOrder_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -632,7 +632,7 @@ paths:
         - admin-orders
   /api/v2/admin/orders/{orderId}/cancel:
     post:
-      operationId: AdminOrderController_cancel_v2
+      operationId: AdminOrder_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -666,7 +666,7 @@ paths:
         - admin-orders
   /api/v2/admin/orders/{orderId}/confirm:
     post:
-      operationId: AdminOrderController_confirm_v2
+      operationId: AdminOrder_confirm_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -700,7 +700,7 @@ paths:
         - admin-orders
   /api/v2/admin/orders/{orderId}/status-transitions:
     post:
-      operationId: AdminOrderController_transition_v2
+      operationId: AdminOrder_transition_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -734,7 +734,7 @@ paths:
         - admin-orders
   /api/v2/orders:
     get:
-      operationId: OrderController_list_v2
+      operationId: Order_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -762,7 +762,7 @@ paths:
       tags:
         - orders
     post:
-      operationId: OrderController_create_v2
+      operationId: Order_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -791,7 +791,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}:
     get:
-      operationId: OrderController_get_v2
+      operationId: Order_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -825,7 +825,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/cancel:
     post:
-      operationId: OrderController_cancel_v2
+      operationId: Order_cancel_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -859,7 +859,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/confirm:
     post:
-      operationId: OrderController_confirm_v2
+      operationId: Order_confirm_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -893,7 +893,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/packages:
     get:
-      operationId: OrderController_packages_v2
+      operationId: Order_packages_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -927,7 +927,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/payment-sync:
     post:
-      operationId: OrderController_paymentSync_v2
+      operationId: Order_paymentSync_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -961,7 +961,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/return-sync:
     post:
-      operationId: OrderController_returnSync_v2
+      operationId: Order_returnSync_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -995,7 +995,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/shipping-sync:
     post:
-      operationId: OrderController_shippingSync_v2
+      operationId: Order_shippingSync_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1029,7 +1029,7 @@ paths:
         - orders
   /api/v2/orders/{orderId}/status-history:
     get:
-      operationId: OrderController_statusHistory_v2
+      operationId: Order_statusHistory_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1063,7 +1063,7 @@ paths:
         - orders
   /health:
     get:
-      operationId: HealthController_health
+      operationId: Health_health
       responses:
         200:
           description: ''
@@ -1071,7 +1071,7 @@ paths:
         - Health
   /health/live:
     get:
-      operationId: HealthController_live
+      operationId: Health_live
       responses:
         200:
           description: ''
@@ -1079,24 +1079,24 @@ paths:
         - Health
   /health/ready:
     get:
-      operationId: HealthController_ready
+      operationId: Health_ready
       responses:
         200:
           description: ''
       tags:
         - Health
 servers:
-  - url: "http://localhost:3007"
+  - url: 'http://localhost:3007'
     description: order-service direct (local)
-  - url: "http://localhost:8000"
+  - url: 'http://localhost:8000'
     description: Kong Gateway (local)
-  - url: "http://{host}:{port}"
+  - url: 'http://{host}:{port}'
     description: Kubernetes / origin placeholder (override host+port)
     variables:
       host:
         default: catalog-service.nexatech.svc.cluster.local
       port:
         default: 3007
-  - url: "https://api.example.invalid"
+  - url: 'https://api.example.invalid'
     description: Protected public placeholder ONLY — do not use for Try it out
 tags: []

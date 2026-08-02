@@ -2,8 +2,14 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { formatVnd } from '@nexatech/shared-web';
 import { EmptyState } from '../../../components/common/empty-state';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
+import {
+  DELIVERY_METHOD_LABELS,
+  ORDER_STATUS_LABELS,
+  PAYMENT_METHOD_LABELS,
+} from '../../../lib/constants';
 
 export default function Page() {
   const [items, setItems] = useState<Record<string, unknown>[]>([]);
@@ -62,7 +68,7 @@ export default function Page() {
         description="Bạn chưa có đơn hàng nào."
         action={
           <Link href="/" className="nt-btn nt-btn-primary">
-            Về trang chủ
+            Tiếp tục mua sắm
           </Link>
         }
       />
@@ -82,10 +88,21 @@ export default function Page() {
         }}
       >
         {items.map((record, index) => {
-          const id = String(record['id'] ?? record['code'] ?? index);
-          const code = String(record['code'] ?? id);
-          const status = String(record['status'] ?? '—');
-          const total = record['grandTotal'];
+          const id = String(record['id'] ?? index);
+          const code = String(
+            record['orderCode'] ??
+              record['code'] ??
+              record['orderNumber'] ??
+              id,
+          );
+          const status = String(record['status'] ?? '');
+          const total = Number(record['grandTotal'] ?? 0);
+          const itemCount = Array.isArray(record['items'])
+            ? (record['items'] as unknown[]).length
+            : Number(record['totalQuantity'] ?? 0);
+          const delivery = String(record['deliveryMethod'] ?? '');
+          const payment = String(record['paymentMethod'] ?? '');
+          const createdAt = record['createdAt'];
           return (
             <li
               key={id}
@@ -102,12 +119,23 @@ export default function Page() {
             >
               <div>
                 <strong>{code}</strong>
-                <div style={{ color: '#4b6478' }}>Trạng thái: {status}</div>
-                {typeof total === 'number' ? (
-                  <div style={{ color: '#0b1f3a' }}>
-                    {total.toLocaleString('vi-VN')} ₫
-                  </div>
-                ) : null}
+                <div style={{ color: '#4b6478' }}>
+                  {ORDER_STATUS_LABELS[status] ?? (status || '—')}
+                  {typeof createdAt === 'string'
+                    ? ` · ${new Date(createdAt).toLocaleString('vi-VN')}`
+                    : ''}
+                </div>
+                <div style={{ color: '#4b6478', fontSize: '0.9rem' }}>
+                  {itemCount} sản phẩm ·{' '}
+                  {DELIVERY_METHOD_LABELS[
+                    delivery as keyof typeof DELIVERY_METHOD_LABELS
+                  ] ?? delivery}{' '}
+                  ·{' '}
+                  {PAYMENT_METHOD_LABELS[
+                    payment as keyof typeof PAYMENT_METHOD_LABELS
+                  ] ?? payment}
+                </div>
+                <div style={{ color: '#0b1f3a' }}>{formatVnd(total)}</div>
               </div>
               <Link
                 href={`/tai-khoan/don-hang/${encodeURIComponent(id)}`}

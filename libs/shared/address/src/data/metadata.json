@@ -1,0 +1,14 @@
+{
+  "version": "2025.2-tier",
+  "generatedAt": "2026-08-02T08:41:49.479Z",
+  "model": "province_ward",
+  "note": "Vietnam 2-tier administrative units after 2025 reform (34 provinces/cities). Full ward lists curated for HN/HCM/DN; other provinces selectable with free-text ward fallback.",
+  "provinceCount": 34,
+  "wardCount": 113,
+  "wardsCoverage": {
+    "48": 27,
+    "79": 46,
+    "01": 40
+  },
+  "source": "NexaTech curated lab dataset (scripts/address-data/generate.cjs)"
+}

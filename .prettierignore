@@ -9,3 +9,7 @@
 
 # Local tooling
 /.tools/**
+
+# Lockfile has its own formatter (pnpm); Prettier reformatting it (flow -> block
+# YAML style) creates massive noisy diffs with no functional benefit.
+/pnpm-lock.yaml

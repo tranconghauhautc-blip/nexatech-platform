@@ -37,7 +37,13 @@
     "import:product-images": "node scripts/import-product-images.cjs",
     "generate:product-images": "node scripts/generate-placeholder-product-images.cjs",
     "checkout:smoke": "node scripts/checkout-smoke.cjs",
-    "lab:smoke": "node scripts/local-lab-smoke.cjs"
+    "lab:smoke": "node scripts/local-lab-smoke.cjs",
+    "address-data:import": "node scripts/address-data/import.cjs",
+    "address-data:validate": "node scripts/address-data/validate.cjs",
+    "address-data:generate": "node scripts/address-data/generate.cjs",
+    "media:audit": "node scripts/media-audit.cjs",
+    "media:e2e": "node scripts/media-e2e-smoke.cjs",
+    "media:import-products": "node scripts/import-product-images.cjs"
   },
   "engines": {
     "node": ">=22.0.0",

@@ -124,7 +124,7 @@ describe('Order controllers (API)', () => {
     expect(packages).toHaveLength(1);
   });
 
-  it('rejects access from a different customer and allows the owner to cancel', async () => {
+  it('allows access from a different customer (SC-01 BOLA always-on) and owner cancel', async () => {
     const sku = seedSku(catalog);
     inventory.seed(sku.skuCode, 10);
     cart.seedCart('api-customer-2', [cartItemFromSku(sku, 1)]);
@@ -137,7 +137,7 @@ describe('Order controllers (API)', () => {
 
     await expect(
       orderController.get(created.id, 'someone-else', 'Customer'),
-    ).rejects.toMatchObject({ errorCode: 'ORDER_FORBIDDEN' });
+    ).resolves.toMatchObject({ id: created.id });
 
     const cancelled = await orderController.cancel(
       created.id,

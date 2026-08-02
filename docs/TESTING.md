@@ -260,16 +260,21 @@ pnpm lab:smoke
 pnpm openapi:generate
 pnpm openapi:combine
 pnpm openapi:validate
+pnpm media:audit
+pnpm media:e2e   # requires DEV_SEED_PASSWORD; uploads via Compose network
 $env:PLAYWRIGHT_SKIP_WEBSERVER='1'
 $env:E2E_DEV_SEED_PASSWORD=$env:DEV_SEED_PASSWORD
-pnpm e2e:admin
+pnpm e2e
 ```
 
+- Customer auth e2e: `e2e/storefront/account-payments-reviews.spec.ts`, `account-address-pickup.spec.ts`
+- Next.js `pnpm build` for admin/storefront: set `NODE_ENV=production` (development env breaks Pages `/404` prerender)
 - Entry links: `docs/LOCAL-LAB-LINKS.md`, `docs/SWAGGER-LINKS.md`
 - Guide: `docs/LOCAL-SECURITY-LAB-GUIDE.md`
 - OpenAPI: `docs/OPENAPI-GUIDE.md`, artifacts under `openapi/`
 - Admin RBAC unit: `apps/admin-web/specs/auth-guard.spec.ts`
 - Playwright 4-role: `e2e/admin/rbac-roles.spec.ts` (skips without `E2E_DEV_SEED_PASSWORD`)
+- Acceptance reports: `docs/FUNCTIONAL-ACCEPTANCE-REPORT.md`, `docs/CUSTOMER-FUNCTIONAL-ACCEPTANCE.md`, `docs/ADMIN-FUNCTIONAL-ACCEPTANCE.md`
 
 ## DEV account seed validation
 

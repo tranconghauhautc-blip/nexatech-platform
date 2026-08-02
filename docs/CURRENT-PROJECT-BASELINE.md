@@ -1,114 +1,139 @@
 # CURRENT PROJECT BASELINE
 
-> Snapshot at start of full re-baseline. **Do not treat as complete audit** — living doc until acceptance finishes.
-> Generated from repository + Git + Compose + runtime probes. **No commit in this phase.**
+> Re-baselined **2026-08-02** from Git + source + Docker runtime. Prefer this over older snapshots.
+> **No commit in this phase** (owner review gate).
 
-## 1. HEAD / branch / working tree
+## 1. HEAD / branch / working tree (at session start)
 
-| Item | Value |
-| --- | --- |
-| Branch | `main` |
-| HEAD | `6f261ccd2af4bfc19b59f4d577f5764d1db24d3c` — `fix(cart): persist guest cart token and restore buy-now flow` |
-| Working tree (at doc write) | Dirty — admin login UX, storefront buy-now require-login, cart cookie SameSite=Lax (uncommitted) |
-| Remote | `origin/main` (last push included `6f261cc`; subsequent fixes **not** committed per owner request) |
+| Item                 | Value                                                                            |
+| -------------------- | -------------------------------------------------------------------------------- |
+| Branch               | `main`                                                                           |
+| HEAD                 | `eab86ca` — `feat: add pnpm seed:customers for Storefront Customer lab accounts` |
+| Working tree (start) | **Clean** (up to date with `origin/main`)                                        |
+| Remote               | `origin/main` tracked                                                            |
+
+### Recent commits (relevant)
+
+| Commit    | Summary                                             |
+| --------- | --------------------------------------------------- |
+| `eab86ca` | `seed:customers` Storefront lab accounts            |
+| `0a77d03` | Re-baseline checkout smoke, images, session cookie  |
+| `d5d8af4` | OWASP HTML guides behind Security Guide auth        |
+| `16355e8` | Security scenarios expand + image import tooling    |
+| `0f6f88b` | OpenAPI 3.0.3, security guide portal, login/cart UX |
+| `6f261cc` | Guest cart token + buy-now flow                     |
+| `20e98bb` | M21 security-lab / OWASP                            |
+| `d859687` | Nest Docker runtime deps fix                        |
 
 ## 2. Frontend apps
 
-| App | Port | Image tag (compose) | Notes |
-| --- | --- | --- | --- |
-| storefront-web | 3000 | `nexatech/storefront-web:0.17.0` | Next.js; BFF `/api/bff/*`, `/api/auth/*` |
-| admin-web | 3100 | `nexatech/admin-web:0.17.0` | Next.js Admin Portal |
-| swagger-portal | 8090 | compose service | Combined OpenAPI UI |
+| App                   | Port | Notes                                    |
+| --------------------- | ---- | ---------------------------------------- |
+| storefront-web        | 3000 | Next.js; BFF `/api/bff/*`, `/api/auth/*` |
+| admin-web             | 3100 | Next.js Admin Portal                     |
+| swagger-portal        | 8090 | Combined OpenAPI UI                      |
+| security-guide-portal | 3200 | Authenticated OWASP guides               |
 
 ## 3. Backend microservices (Compose host ports)
 
-| Service | Port |
-| --- | --- |
-| identity-service | 3001 |
-| customer-service | 3002 |
-| catalog-service | 3003 |
-| media-service | 3004 |
-| inventory-service | 3005 |
-| cart-service | 3006 |
-| order-service | 3007 |
-| payment-service | 3008 |
-| shipping-service | 3009 |
-| review-service | 3010 |
-| warranty-service | 3011 |
-| support-service | 3012 |
-| notification-service | 3013 |
-| reporting-service | 3014 |
+| Service      | Port |
+| ------------ | ---- |
+| identity     | 3001 |
+| customer     | 3002 |
+| catalog      | 3003 |
+| media        | 3004 |
+| inventory    | 3005 |
+| cart         | 3006 |
+| order        | 3007 |
+| payment      | 3008 |
+| shipping     | 3009 |
+| review       | 3010 |
+| warranty     | 3011 |
+| support      | 3012 |
+| notification | 3013 |
+| reporting    | 3014 |
 
-## 4. Infrastructure
+Health: `GET /health`, `/health/live`, `/health/ready` (unversioned). API prefix: `/api/v1` (+ `/api/v2`).
 
-| Component | Port(s) | Compose file |
-| --- | --- | --- |
-| PostgreSQL 16 | 5432 | `docker-compose.dev.yml` |
-| Redis | 6379 | same |
-| RabbitMQ | 5672, 15672 | same |
-| MinIO | 9000, 9001 | same |
-| Kong | 8000, 8001 | `docker-compose.apps.yml` |
+## 4. Infrastructure (Docker healthy at audit)
+
+| Component     | Port(s)     | Compose                                |
+| ------------- | ----------- | -------------------------------------- |
+| PostgreSQL 16 | 5432        | `infra/docker/docker-compose.dev.yml`  |
+| Redis         | 6379        | same                                   |
+| RabbitMQ      | 5672, 15672 | same                                   |
+| MinIO         | 9000, 9001  | same                                   |
+| Kong          | 8000, 8001  | `infra/docker/docker-compose.apps.yml` |
+
+**Runtime probe 2026-08-02:** all 14 Nest + storefront + admin + swagger + security-guide + postgres + redis + rabbitmq + minio + kong = **healthy**.
 
 ## 5. Kong
 
-- Routes under `/api/v1/...` and `/api/v2/...` per service (flat paths, **no** `/{service}` prefix).
-- Recent fix: duplicate `identity-admin-users` route removed; cart paths include `/api/v1/carts`.
-- Known risk: restart fails if declarative config has duplicate route names.
+- Flat routes `/api/v1|v2/...` (no service name prefix).
+- Payments, media, admin users, carts, orders routed.
+- Combined docs via portal + Kong `/docs` (lab).
 
-## 6. Seed commands
+## 6. OpenAPI
 
-| Command | Purpose |
-| --- | --- |
-| `pnpm seed:accounts` | Staff/Manager/Admin/SuperAdmin (`DEV_SEED_PASSWORD`, `NEXATECH_ALLOW_DEV_SEED=YES`) |
-| `pnpm seed:catalog` / `node scripts/seed-catalog.cjs` | ~100 catalog products |
-| `node scripts/seed-inventory.cjs` | Demo warehouse stock for all SKUs (`NEXATECH_ALLOW_DEV_SEED=YES`) |
+| Item             | State                                                      |
+| ---------------- | ---------------------------------------------------------- |
+| Required version | **3.0.3 only**                                             |
+| Combined         | `openapi/nexatech-combined.openapi.{json,yaml}` → 3.0.3    |
+| Scripts          | `openapi:generate`, `combine`, `validate`, `diff`, `check` |
+| Approx paths     | **383 paths / 429 operations** (2026-08-02 acceptance)     |
 
-## 7. Swagger / OpenAPI (current)
+## Final acceptance (2026-08-02)
 
-| Item | Current state |
-| --- | --- |
-| Per-service `/docs` | Expected on each backend port |
-| Combined portal | `http://localhost:8090` (+ Kong `http://localhost:8000/docs` if routed) |
-| Combined specs | `openapi/nexatech-combined.openapi.yaml` + `.json` → **`openapi: 3.0.3`** |
-| Per-service YAML/JSON | Mostly **`openapi: 3.0.0`** (Nest default) — **must standardize to 3.0.3** |
-| `api.example.invalid` | Still present as a server entry in generated specs / combined (must not be default Try-it-out) |
-| Scripts | `openapi:generate`, `openapi:combine`, `openapi:validate` — **missing** `openapi:diff`, `openapi:check` |
+Local Compose acceptance completed in working tree (no commit): authenticated payments/reviews PASS; Playwright 23/23; media-e2e PASS; security always-on EXPLOITABLE; format/lint/test/build PASS. See `docs/FUNCTIONAL-ACCEPTANCE-REPORT.md`.
 
-## 8. Security / OWASP status
+## 7. Security / OWASP
 
-| Item | State |
-| --- | --- |
-| Intentional vulns | **ALWAYS ON** (`isSecurityLabEnabled()` → `true`; ADR-044) |
-| Toggle / dual mode | Removed from runtime policy; docs still mention Helm `NEXATECH_SECURITY_LAB` as **isolation marker only** |
-| Scenario catalog | `docs/OWASP-SCENARIOS.md` — ~SC-01…67 + SC-70…95; API Top 10:2023 and Web Top 10:2025 **separate matrices in one file** |
-| Public HTML guides | `/lab/owasp-api-top10.html`, `/lab/owasp-web-top10.html` on storefront (no Security Guide auth yet) |
-| `security-guide:*` scripts | **None** yet |
+| Item                        | State                                                      |
+| --------------------------- | ---------------------------------------------------------- |
+| Intentional vulns           | **ALWAYS ON** (ADR-044); `isSecurityLabEnabled()` → `true` |
+| Dual secure/vulnerable mode | **Forbidden** — do not restore                             |
+| SSoT                        | `security-scenarios/` (~36 scenarios)                      |
+| Guides                      | Authenticated portal `:3200`                               |
 
-## 9. Custom changes (recent HEAD history)
+## 8. Seed commands
 
-See `docs/CUSTOM-CHANGES-INVENTORY.md`. Highlights: always-on OWASP, admin users CRUD, TGDD-style filters, facets API, AppErrorFilter (identity/cart), Kong URL fix, guest cart cookie, inventory seed.
+| Command                      | Purpose                                |
+| ---------------------------- | -------------------------------------- |
+| `pnpm seed:accounts`         | Staff/Manager/Admin/SuperAdmin         |
+| `pnpm seed:customers`        | `customer1@` / `customer2@` Storefront |
+| `pnpm seed:catalog`          | ~100 products                          |
+| `pnpm seed:inventory`        | Stock all SKUs                         |
+| `pnpm import:product-images` | Bulk image import                      |
+| `pnpm checkout:smoke`        | Register→cart→order→COD                |
+| `pnpm lab:smoke`             | HTTP lab smoke                         |
 
-## 10. Known bugs (active)
+## 9. Verified root causes (unintentional bugs)
 
-| Bug | Status |
-| --- | --- |
-| Admin wrong-password no visible feedback | **Fixing** — stronger alert UI + rebuild admin image |
-| Guest cart “Thiếu cart token” | Root cause: SC-28 `SameSite=None; Secure=false` cookie **rejected by browser**; cookie now `SameSite=Lax`. Owner also requires **login redirect** for add/buy when anonymous |
-| OpenAPI 3.0.0 vs required 3.0.3 | Open gap |
-| Product images missing (placeholder) | Open gap |
-| Full functional E2E not re-verified in this snapshot | Pending audit |
+| Symptom                       | Root cause                                                                    | Fix status                                       |
+| ----------------------------- | ----------------------------------------------------------------------------- | ------------------------------------------------ |
+| `Cannot GET /api/v1/payments` | No customer list handler; storefront called `GET /payments`                   | **Fixed** — `GET /payments/me` + frontend        |
+| Admin product price `0 ₫`     | `Math.min(..., 0)` always ≤0 in `prisma-catalog.repository.ts`                | **Fixed in source** (image rebuild)              |
+| Admin order `—`               | UI reads `code`; API `orderCode`                                              | **Fixed in source**                              |
+| Reviews empty → error         | `GET /reviews/me` missing on review-service                                   | **Fixed**                                        |
+| Wishlist UUID only            | Wishlist stores `productId` only; no catalog hydrate                          | **Fixed** via `/products/summaries`              |
+| Pickup raw `storeId`          | Checkout free-text input                                                      | **Fixed** — store selector + `pickupStoreId`     |
+| Cart badge after checkout     | Result page may not refresh cart                                              | **Fixed** — `refresh()` on result page           |
+| Shipment after CONFIRMED      | Confirm publishes event only; no auto-create consumer                         | Pending (explicit create)                        |
+| Audit empty                   | Most services local `writeAudit`; few `AUDIT_RECORDED` → reporting projection | Pending                                          |
+| Address free-text             | No VN province/ward dataset                                                   | **Fixed** — dataset + selector + codes migration |
+| Media Entity ID               | Admin media lookup by raw UUID; limited upload UI                             | **Fixed (UI)** — product selector + upload       |
 
-## 11. Dependency-ordered plan (re-baseline)
+## 10. Assumptions discarded
 
-1. Stabilize login + cart UX (in progress, no commit).
-2. Finish repository inventory docs (this + CUSTOM + FULL-SYSTEM-AUDIT stubs).
-3. OpenAPI 3.0.3 shared swagger setup + regenerate all specs.
-4. Combined portal + Security Guide (authenticated) + scenario SSoT.
-5. OWASP API vs Web independent audit (no false merge).
-6. Functional storefront/admin/ecom E2E + image import guide.
-7. Docker smoke, tests, secret scan.
-8. **Stop for owner review — no commit/push until approved.**
+- Docs claiming OpenAPI still mix 3.0.0 / missing `openapi:diff` — **stale** (scripts exist; combined is 3.0.3).
+- Docs claiming Security Guide scripts missing — **stale**.
+- Docs claiming public storefront OWASP HTML as primary — **stale** (behind Guide auth).
+- Dual security-lab ON/OFF for vulns — **rejected by ADR-044**.
 
-## 12. Assumption purge
+## 11. Related docs
 
-Do **not** rely on: old milestone handoffs as truth, security-lab ON/OFF, secure/vulnerable dual branches, “production-safe” meaning vulns off. Prefer runtime + current source.
+- `docs/CUSTOM-CHANGES-INVENTORY.md`
+- `docs/CUSTOMER-ADMIN-CURRENT-BASELINE.md`
+- `docs/CUSTOMER-ADMIN-FULL-AUDIT.md`
+- `docs/ADMIN-PORTAL-AUDIT.md`
+- `docs/PROGRESS.md`

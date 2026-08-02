@@ -165,17 +165,18 @@ describe('ReviewService', () => {
     expect(updated.rating).toBe(3);
     expect(updated.editedAt).toBeTruthy();
 
-    await expect(
-      service.updateReview(other, created.id, {
-        rating: 1,
-        content: 'Người khác không được sửa.',
-      }),
-    ).rejects.toMatchObject({ errorCode: ErrorCodes.REVIEW_FORBIDDEN });
+    // SC-01 BOLA always-on: cross-customer edit is allowed (exploitable PoC)
+    const hijacked = await service.updateReview(other, created.id, {
+      rating: 1,
+      content: 'Người khác sửa được vì BOLA lab luôn bật.',
+      expectedVersion: updated.version,
+    });
+    expect(hijacked.rating).toBe(1);
 
     const summary = await service.getProductSummary('prod-1');
-    expect(summary.averageRating).toBe(3);
+    expect(summary.averageRating).toBe(1);
     expect(summary.ratingCounts.star5).toBe(0);
-    expect(summary.ratingCounts.star3).toBe(1);
+    expect(summary.ratingCounts.star1).toBe(1);
   });
 
   it('soft deletes review and adjusts aggregate', async () => {

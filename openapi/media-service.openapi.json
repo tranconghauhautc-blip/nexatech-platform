@@ -3,13 +3,7 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": [
-          "errorCode",
-          "message",
-          "details",
-          "traceId",
-          "timestamp"
-        ],
+        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -33,12 +27,7 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": [
-          "page",
-          "pageSize",
-          "totalItems",
-          "totalPages"
-        ],
+        "required": ["page", "pageSize", "totalItems", "totalPages"],
         "properties": {
           "page": {
             "type": "integer"
@@ -62,15 +51,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -82,23 +66,28 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
   "info": {
     "title": "NexaTech Media Service",
     "description": "Presign MinIO và metadata media",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "openapi": "3.0.3",
   "paths": {
     "/api/v1/media/admin/cleanup-orphans": {
       "post": {
-        "operationId": "MediaController_cleanupOrphans_v1",
+        "operationId": "Media_cleanupOrphans_v1",
         "parameters": [
           {
             "in": "header",
@@ -130,14 +119,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/by-entity/{entityType}/{entityId}": {
       "get": {
-        "operationId": "MediaController_byEntity_v1",
+        "operationId": "Media_byEntity_v1",
         "parameters": [
           {
             "in": "path",
@@ -161,14 +148,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/presign": {
       "post": {
-        "operationId": "MediaController_presign_v1",
+        "operationId": "Media_presign_v1",
         "parameters": [
           {
             "in": "header",
@@ -192,14 +177,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/{id}": {
       "delete": {
-        "operationId": "MediaController_deleteMedia_v1",
+        "operationId": "Media_deleteMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -231,12 +214,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       },
       "get": {
-        "operationId": "MediaController_metadata_v1",
+        "operationId": "Media_metadata_v1",
         "parameters": [
           {
             "in": "path",
@@ -252,14 +233,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/{id}/confirm": {
       "post": {
-        "operationId": "MediaController_confirm_v1",
+        "operationId": "Media_confirm_v1",
         "parameters": [
           {
             "in": "header",
@@ -291,14 +270,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/{id}/download-url": {
       "get": {
-        "operationId": "MediaController_downloadUrl_v1",
+        "operationId": "Media_downloadUrl_v1",
         "parameters": [
           {
             "in": "header",
@@ -330,14 +307,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v1/media/{id}/links": {
       "post": {
-        "operationId": "MediaController_linkMedia_v1",
+        "operationId": "Media_linkMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -369,14 +344,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/admin/cleanup-orphans": {
       "post": {
-        "operationId": "MediaController_cleanupOrphans_v2",
+        "operationId": "Media_cleanupOrphans_v2",
         "parameters": [
           {
             "in": "header",
@@ -408,14 +381,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/by-entity/{entityType}/{entityId}": {
       "get": {
-        "operationId": "MediaController_byEntity_v2",
+        "operationId": "Media_byEntity_v2",
         "parameters": [
           {
             "in": "path",
@@ -439,14 +410,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/presign": {
       "post": {
-        "operationId": "MediaController_presign_v2",
+        "operationId": "Media_presign_v2",
         "parameters": [
           {
             "in": "header",
@@ -470,14 +439,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/{id}": {
       "delete": {
-        "operationId": "MediaController_deleteMedia_v2",
+        "operationId": "Media_deleteMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -509,12 +476,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       },
       "get": {
-        "operationId": "MediaController_metadata_v2",
+        "operationId": "Media_metadata_v2",
         "parameters": [
           {
             "in": "path",
@@ -530,14 +495,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/{id}/confirm": {
       "post": {
-        "operationId": "MediaController_confirm_v2",
+        "operationId": "Media_confirm_v2",
         "parameters": [
           {
             "in": "header",
@@ -569,14 +532,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/{id}/download-url": {
       "get": {
-        "operationId": "MediaController_downloadUrl_v2",
+        "operationId": "Media_downloadUrl_v2",
         "parameters": [
           {
             "in": "header",
@@ -608,14 +569,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/api/v2/media/{id}/links": {
       "post": {
-        "operationId": "MediaController_linkMedia_v2",
+        "operationId": "Media_linkMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -647,48 +606,40 @@
             "description": ""
           }
         },
-        "tags": [
-          "media"
-        ]
+        "tags": ["media"]
       }
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health",
+        "operationId": "Health_health",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_live",
+        "operationId": "Health_live",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_ready",
+        "operationId": "Health_ready",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     }
   },

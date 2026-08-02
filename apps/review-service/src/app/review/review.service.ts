@@ -710,6 +710,26 @@ export class ReviewService {
     );
   }
 
+  async listMyReviews(actor: Actor, query: Record<string, unknown>) {
+    requireAuth(actor);
+    const page = Math.max(1, Number(query['page'] ?? 1) || 1);
+    const pageSize = Math.min(
+      100,
+      Math.max(1, Number(query['pageSize'] ?? 50) || 50),
+    );
+    const result = await this.repository.listReviews({
+      customerId: actor.userId,
+      page,
+      pageSize,
+      sort: 'newest',
+    });
+    return createPaginatedResponse(
+      result.items.map((r) => toReviewDto(r, { includeCustomerId: true })),
+      result.totalItems,
+      { page, pageSize },
+    );
+  }
+
   async getProductSummary(productId: string): Promise<ProductRatingSummaryDto> {
     const agg = await this.repository.getAggregate(productId);
     if (!agg) {

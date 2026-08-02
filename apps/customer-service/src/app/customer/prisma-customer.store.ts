@@ -35,6 +35,13 @@ function mapAddress(row: {
   ward: string | null;
   district: string | null;
   city: string;
+  countryCode?: string | null;
+  provinceCode?: string | null;
+  provinceName?: string | null;
+  wardCode?: string | null;
+  wardName?: string | null;
+  legacyDistrictCode?: string | null;
+  legacyDistrictName?: string | null;
   postalCode: string | null;
   isDefault: boolean;
 }): CustomerAddress {
@@ -49,6 +56,13 @@ function mapAddress(row: {
     ward: row.ward ?? undefined,
     district: row.district ?? undefined,
     city: row.city,
+    countryCode: row.countryCode ?? 'VN',
+    provinceCode: row.provinceCode ?? undefined,
+    provinceName: row.provinceName ?? undefined,
+    wardCode: row.wardCode ?? undefined,
+    wardName: row.wardName ?? undefined,
+    legacyDistrictCode: row.legacyDistrictCode ?? undefined,
+    legacyDistrictName: row.legacyDistrictName ?? undefined,
     postalCode: row.postalCode ?? undefined,
     isDefault: row.isDefault,
   };
@@ -123,9 +137,16 @@ export class PrismaCustomerStore implements CustomerStore {
         phone: address.phone,
         line1: address.line1,
         line2: address.line2,
-        ward: address.ward,
-        district: address.district,
-        city: address.city,
+        ward: address.wardName ?? address.ward,
+        district: address.legacyDistrictName ?? address.district,
+        city: address.provinceName ?? address.city,
+        countryCode: address.countryCode ?? 'VN',
+        provinceCode: address.provinceCode,
+        provinceName: address.provinceName,
+        wardCode: address.wardCode,
+        wardName: address.wardName,
+        legacyDistrictCode: address.legacyDistrictCode,
+        legacyDistrictName: address.legacyDistrictName,
         postalCode: address.postalCode,
         isDefault: address.isDefault,
       },
@@ -152,9 +173,16 @@ export class PrismaCustomerStore implements CustomerStore {
         phone: address.phone,
         line1: address.line1,
         line2: address.line2,
-        ward: address.ward,
-        district: address.district,
-        city: address.city,
+        ward: address.wardName ?? address.ward,
+        district: address.legacyDistrictName ?? address.district,
+        city: address.provinceName ?? address.city,
+        countryCode: address.countryCode ?? 'VN',
+        provinceCode: address.provinceCode,
+        provinceName: address.provinceName,
+        wardCode: address.wardCode,
+        wardName: address.wardName,
+        legacyDistrictCode: address.legacyDistrictCode,
+        legacyDistrictName: address.legacyDistrictName,
         postalCode: address.postalCode,
         isDefault: address.isDefault,
       },

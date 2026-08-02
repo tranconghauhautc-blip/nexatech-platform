@@ -1,5 +1,16 @@
 'use client';
 
+import {
+  formatVietnamAddress,
+  validateAddressSelection,
+  vietnamAddressFormSchema,
+} from '@nexatech/shared-address';
+import {
+  EMPTY_VIETNAM_ADDRESS_VALUE,
+  VietnamAddressSelector,
+  type VietnamAddressSelectorErrors,
+  type VietnamAddressSelectorValue,
+} from '../../../../../../libs/shared/web/src/address';
 import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { EmptyState } from '../../../components/common/empty-state';
@@ -11,30 +22,28 @@ interface AddressRow {
   recipient?: string;
   phone?: string;
   line1?: string;
-  line2?: string;
-  ward?: string;
-  district?: string;
-  city?: string;
   isDefault?: boolean;
+  displayAddress?: string;
+  wardName?: string | null;
+  provinceName?: string | null;
+  legacyDistrictName?: string | null;
+  ward?: string | null;
+  district?: string | null;
+  city?: string | null;
 }
-
-const EMPTY_FORM = {
-  label: 'Nhà',
-  recipient: '',
-  phone: '',
-  line1: '',
-  line2: '',
-  ward: '',
-  district: '',
-  city: '',
-  isDefault: true,
-};
 
 export default function Page() {
   const [items, setItems] = useState<AddressRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [form, setForm] = useState(EMPTY_FORM);
+  const [form, setForm] = useState<VietnamAddressSelectorValue>({
+    ...EMPTY_VIETNAM_ADDRESS_VALUE,
+    label: 'Nhà',
+    isDefault: true,
+  });
+  const [fieldErrors, setFieldErrors] = useState<VietnamAddressSelectorErrors>(
+    {},
+  );
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
 
@@ -60,24 +69,48 @@ export default function Page() {
   async function onAdd(event: FormEvent) {
     event.preventDefault();
     setFormError(null);
-    if (!form.recipient.trim() || !form.phone.trim() || !form.line1.trim() || !form.city.trim()) {
-      setFormError('Vui lòng nhập người nhận, SĐT, địa chỉ và thành phố.');
+    setFieldErrors({});
+
+    const result = vietnamAddressFormSchema.safeParse(form);
+    if (!result.success) {
+      const nextErrors: VietnamAddressSelectorErrors = {};
+      for (const issue of result.error.issues) {
+        const key = issue.path[0];
+        if (typeof key === 'string' && !(key in nextErrors)) {
+          (nextErrors as Record<string, string>)[key] = issue.message;
+        }
+      }
+      setFieldErrors(nextErrors);
+      setFormError('Vui lòng kiểm tra lại thông tin địa chỉ bên dưới.');
       return;
     }
+
+    const { province, ward } = validateAddressSelection({
+      provinceCode: form.provinceCode,
+      wardCode: form.wardCode,
+    });
+
     setSaving(true);
     try {
       await bff.post('/api/bff/customer/customers/me/addresses', {
-        label: form.label.trim() || 'Nhà',
-        recipient: form.recipient.trim(),
+        label: form.label?.trim() || 'Nhà',
+        recipient: form.recipientName.trim(),
         phone: form.phone.trim(),
-        line1: form.line1.trim(),
-        line2: form.line2.trim() || undefined,
-        ward: form.ward.trim() || undefined,
-        district: form.district.trim() || undefined,
-        city: form.city.trim(),
-        isDefault: form.isDefault,
+        line1: form.addressLine1.trim(),
+        line2: form.addressLine2?.trim() || undefined,
+        city: province?.name ?? '',
+        countryCode: 'VN',
+        provinceCode: form.provinceCode,
+        provinceName: province?.name,
+        wardCode: form.wardCode,
+        wardName: ward?.name,
+        isDefault: form.isDefault ?? false,
       });
-      setForm(EMPTY_FORM);
+      setForm({
+        ...EMPTY_VIETNAM_ADDRESS_VALUE,
+        label: 'Nhà',
+        isDefault: true,
+      });
       await load();
     } catch (err) {
       setFormError(getErrorMessage(err, 'Không lưu được địa chỉ'));
@@ -118,7 +151,9 @@ export default function Page() {
       <h2 style={{ marginTop: 0 }}>Hồ sơ & địa chỉ</h2>
 
       {items.length === 0 ? (
-        <p style={{ color: '#4b6478' }}>Chưa có địa chỉ. Thêm địa chỉ bên dưới.</p>
+        <p style={{ color: '#4b6478' }}>
+          Chưa có địa chỉ. Thêm địa chỉ bên dưới.
+        </p>
       ) : (
         <ul
           style={{
@@ -131,6 +166,15 @@ export default function Page() {
         >
           {items.map((record, index) => {
             const id = String(record.id ?? index);
+            const display =
+              record.displayAddress ||
+              formatVietnamAddress({
+                addressLine1: record.line1 ?? '',
+                wardName: record.wardName ?? record.ward,
+                provinceName: record.provinceName ?? record.city,
+                legacyDistrictName:
+                  record.legacyDistrictName ?? record.district,
+              });
             return (
               <li
                 key={id}
@@ -148,11 +192,7 @@ export default function Page() {
                 <div style={{ color: '#4b6478', marginTop: 4 }}>
                   {record.recipient} · {record.phone}
                 </div>
-                <div style={{ color: '#0b1f3a' }}>
-                  {[record.line1, record.line2, record.ward, record.district, record.city]
-                    .filter(Boolean)
-                    .join(', ')}
-                </div>
+                <div style={{ color: '#0b1f3a' }}>{display}</div>
               </li>
             );
           })}
@@ -173,88 +213,13 @@ export default function Page() {
         }}
       >
         <h3 style={{ margin: 0 }}>Thêm địa chỉ</h3>
-        <label>
-          Nhãn
-          <input
-            value={form.label}
-            onChange={(e) => setForm((f) => ({ ...f, label: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Người nhận
-          <input
-            required
-            value={form.recipient}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, recipient: e.target.value }))
-            }
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Số điện thoại
-          <input
-            required
-            value={form.phone}
-            onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Địa chỉ dòng 1
-          <input
-            required
-            value={form.line1}
-            onChange={(e) => setForm((f) => ({ ...f, line1: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Địa chỉ dòng 2
-          <input
-            value={form.line2}
-            onChange={(e) => setForm((f) => ({ ...f, line2: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Phường/Xã
-          <input
-            value={form.ward}
-            onChange={(e) => setForm((f) => ({ ...f, ward: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Quận/Huyện
-          <input
-            value={form.district}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, district: e.target.value }))
-            }
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label>
-          Tỉnh/Thành phố
-          <input
-            required
-            value={form.city}
-            onChange={(e) => setForm((f) => ({ ...f, city: e.target.value }))}
-            style={{ display: 'block', width: '100%', marginTop: 4 }}
-          />
-        </label>
-        <label style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <input
-            type="checkbox"
-            checked={form.isDefault}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, isDefault: e.target.checked }))
-            }
-          />
-          Đặt làm địa chỉ mặc định
-        </label>
+        <VietnamAddressSelector
+          value={form}
+          onChange={setForm}
+          errors={fieldErrors}
+          disabled={saving}
+          idPrefix="profile-address"
+        />
         {formError ? (
           <p style={{ color: '#b91c1c', margin: 0 }} role="alert">
             {formError}

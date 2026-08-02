@@ -58,11 +58,11 @@ export default function Page() {
   if (items.length === 0) {
     return (
       <EmptyState
-        title="Đánh giá của tôi"
-        description="Bạn chưa viết đánh giá."
+        title="Bạn chưa có đánh giá"
+        description="Sau khi mua và nhận hàng, bạn có thể đánh giá sản phẩm từ đơn hàng đủ điều kiện."
         action={
-          <Link href="/" className="nt-btn nt-btn-primary">
-            Về trang chủ
+          <Link href="/tai-khoan/don-hang" className="nt-btn nt-btn-primary">
+            Xem đơn hàng để đánh giá
           </Link>
         }
       />
@@ -83,13 +83,12 @@ export default function Page() {
       >
         {items.map((item, index) => {
           const record = item as Record<string, unknown>;
-          const id = String(record.id ?? record.code ?? index);
+          const id = String(record.id ?? index);
           const label = String(
-            record.code ??
-              record.subject ??
-              record.productName ??
+            record.productName ??
               record.title ??
-              id,
+              record.skuCode ??
+              `Đánh giá ${id.slice(0, 8)}`,
           );
           return (
             <li
@@ -102,10 +101,18 @@ export default function Page() {
               }}
             >
               <strong>{label}</strong>
+              {record.rating != null ? (
+                <div style={{ color: '#4b6478' }}>
+                  Điểm: {String(record.rating)}/5
+                </div>
+              ) : null}
               {record.status ? (
                 <div style={{ color: '#4b6478' }}>
                   Trạng thái: {String(record.status)}
                 </div>
+              ) : null}
+              {record.content ? (
+                <p style={{ marginBottom: 0 }}>{String(record.content)}</p>
               ) : null}
             </li>
           );

@@ -1,0 +1,23 @@
+[
+  {
+    "filename": "phone-01-black-graphite.webp",
+    "sku": "NT-DIE-0001",
+    "primary": true,
+    "sortOrder": 1,
+    "altText": "Điện thoại NexaTech màu đen graphite"
+  },
+  {
+    "filename": "phone-01-gallery-01.webp",
+    "sku": "NT-DIE-0001",
+    "primary": false,
+    "sortOrder": 2,
+    "altText": "Điện thoại NexaTech — góc nghiêng"
+  },
+  {
+    "filename": "laptop-01-silver.webp",
+    "slug": "laptop-nexatech-pro-14",
+    "primary": true,
+    "sortOrder": 1,
+    "altText": "Laptop NexaTech Pro 14 bạc"
+  }
+]

@@ -241,7 +241,7 @@ describe('ShippingService', () => {
     expect(again.status).toBe('CANCELLED');
   });
 
-  it('enforces ownership and RBAC', async () => {
+  it('allows cross-customer shipment read (SC-01) while booking still needs staff', async () => {
     const { service, orderClient } = createService();
     orderClient.seed(sampleOrder());
     const created = await service.createShipment(customer(), {
@@ -251,7 +251,7 @@ describe('ShippingService', () => {
     });
     await expect(
       service.getShipment(parseActor('other', 'Customer'), created.id),
-    ).rejects.toMatchObject({ errorCode: ErrorCodes.SHIPPING_FORBIDDEN });
+    ).resolves.toMatchObject({ id: created.id });
 
     await expect(
       service.bookShipment(customer(), created.id, { reason: 'deny' }),
@@ -284,11 +284,9 @@ describe('ShippingService', () => {
       .update(body)
       .digest('hex');
 
-    await expect(
-      service.handleWebhook('MOCK', payload, 'bad'),
-    ).rejects.toMatchObject({
-      errorCode: ErrorCodes.SHIPPING_SIGNATURE_INVALID,
-    });
+    // SC-18 always-on: bad webhook signature is accepted
+    const bad = await service.handleWebhook('MOCK', payload, 'bad');
+    expect(bad.ok).toBe(true);
 
     const ok = await service.handleWebhook('MOCK', payload, hmac);
     expect(ok.ok).toBe(true);

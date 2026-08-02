@@ -47,14 +47,10 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT access token from identity POST /api/v1/auth/login. Never commit real tokens.
-    userId:
+    idempotencyKey:
       type: apiKey
       in: header
-      name: x-user-id
-    userRoles:
-      type: apiKey
-      in: header
-      name: x-user-roles
+      name: Idempotency-Key
     requestId:
       type: apiKey
       in: header
@@ -63,19 +59,23 @@ components:
       type: apiKey
       in: header
       name: x-trace-id
-    idempotencyKey:
+    userId:
       type: apiKey
       in: header
-      name: Idempotency-Key
+      name: x-user-id
+    userRoles:
+      type: apiKey
+      in: header
+      name: x-user-roles
 info:
   title: NexaTech Review Service
   description: Đánh giá sản phẩm và kiểm duyệt
-  version: 1.0
+  version: 1.0.0
 openapi: 3.0.3
 paths:
   /api/v1/admin/review-reports:
     get:
-      operationId: AdminReviewController_listReports_v1
+      operationId: AdminReview_listReports_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -104,7 +104,7 @@ paths:
         - admin-reviews
   /api/v1/admin/review-reports/{reportId}/resolve:
     post:
-      operationId: AdminReviewController_resolveReport_v1
+      operationId: AdminReview_resolveReport_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -143,7 +143,7 @@ paths:
         - admin-reviews
   /api/v1/admin/reviews:
     get:
-      operationId: AdminReviewController_list_v1
+      operationId: AdminReview_list_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -172,7 +172,7 @@ paths:
         - admin-reviews
   /api/v1/admin/reviews/aggregates/rebuild:
     post:
-      operationId: AdminReviewController_rebuild_v1
+      operationId: AdminReview_rebuild_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -206,7 +206,7 @@ paths:
         - admin-reviews
   /api/v1/admin/reviews/{reviewId}:
     get:
-      operationId: AdminReviewController_get_v1
+      operationId: AdminReview_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -240,7 +240,7 @@ paths:
         - admin-reviews
   /api/v1/admin/reviews/{reviewId}/moderate:
     post:
-      operationId: AdminReviewController_moderate_v1
+      operationId: AdminReview_moderate_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -279,7 +279,7 @@ paths:
         - admin-reviews
   /api/v1/products/{productId}/reviews:
     get:
-      operationId: ProductsReviewsController_list_v1
+      operationId: ProductsReviews_list_v1
       parameters:
         - in: path
           name: productId
@@ -293,7 +293,7 @@ paths:
         - product-reviews
   /api/v1/products/{productId}/reviews/summary:
     get:
-      operationId: ProductsReviewsController_summary_v1
+      operationId: ProductsReviews_summary_v1
       parameters:
         - in: path
           name: productId
@@ -307,7 +307,7 @@ paths:
         - product-reviews
   /api/v1/reviews:
     post:
-      operationId: ReviewsController_create_v1
+      operationId: Reviews_create_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -339,9 +339,38 @@ paths:
           description: ''
       tags:
         - reviews
+  /api/v1/reviews/me:
+    get:
+      operationId: Reviews_listMine_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - reviews
   /api/v1/reviews/{reviewId}:
     delete:
-      operationId: ReviewsController_remove_v1
+      operationId: Reviews_remove_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -379,7 +408,7 @@ paths:
       tags:
         - reviews
     get:
-      operationId: ReviewsController_get_v1
+      operationId: Reviews_get_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -412,7 +441,7 @@ paths:
       tags:
         - reviews
     patch:
-      operationId: ReviewsController_update_v1
+      operationId: Reviews_update_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -451,7 +480,7 @@ paths:
         - reviews
   /api/v1/reviews/{reviewId}/helpful:
     delete:
-      operationId: ReviewsController_removeHelpful_v1
+      operationId: Reviews_removeHelpful_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -489,7 +518,7 @@ paths:
       tags:
         - reviews
     post:
-      operationId: ReviewsController_addHelpful_v1
+      operationId: Reviews_addHelpful_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -528,7 +557,7 @@ paths:
         - reviews
   /api/v1/reviews/{reviewId}/media:
     post:
-      operationId: ReviewsController_attachMedia_v1
+      operationId: Reviews_attachMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -567,7 +596,7 @@ paths:
         - reviews
   /api/v1/reviews/{reviewId}/media/{mediaId}:
     delete:
-      operationId: ReviewsController_unlinkMedia_v1
+      operationId: Reviews_unlinkMedia_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -611,7 +640,7 @@ paths:
         - reviews
   /api/v1/reviews/{reviewId}/replies:
     post:
-      operationId: ReviewsController_createReply_v1
+      operationId: Reviews_createReply_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -650,7 +679,7 @@ paths:
         - reviews
   /api/v1/reviews/{reviewId}/replies/{replyId}:
     delete:
-      operationId: ReviewsController_deleteReply_v1
+      operationId: Reviews_deleteReply_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -693,7 +722,7 @@ paths:
       tags:
         - reviews
     patch:
-      operationId: ReviewsController_updateReply_v1
+      operationId: Reviews_updateReply_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -737,7 +766,7 @@ paths:
         - reviews
   /api/v1/reviews/{reviewId}/reports:
     post:
-      operationId: ReviewsController_report_v1
+      operationId: Reviews_report_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -776,7 +805,7 @@ paths:
         - reviews
   /api/v2/admin/review-reports:
     get:
-      operationId: AdminReviewController_listReports_v2
+      operationId: AdminReview_listReports_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -805,7 +834,7 @@ paths:
         - admin-reviews
   /api/v2/admin/review-reports/{reportId}/resolve:
     post:
-      operationId: AdminReviewController_resolveReport_v2
+      operationId: AdminReview_resolveReport_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -844,7 +873,7 @@ paths:
         - admin-reviews
   /api/v2/admin/reviews:
     get:
-      operationId: AdminReviewController_list_v2
+      operationId: AdminReview_list_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -873,7 +902,7 @@ paths:
         - admin-reviews
   /api/v2/admin/reviews/aggregates/rebuild:
     post:
-      operationId: AdminReviewController_rebuild_v2
+      operationId: AdminReview_rebuild_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -907,7 +936,7 @@ paths:
         - admin-reviews
   /api/v2/admin/reviews/{reviewId}:
     get:
-      operationId: AdminReviewController_get_v2
+      operationId: AdminReview_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -941,7 +970,7 @@ paths:
         - admin-reviews
   /api/v2/admin/reviews/{reviewId}/moderate:
     post:
-      operationId: AdminReviewController_moderate_v2
+      operationId: AdminReview_moderate_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -980,7 +1009,7 @@ paths:
         - admin-reviews
   /api/v2/products/{productId}/reviews:
     get:
-      operationId: ProductsReviewsController_list_v2
+      operationId: ProductsReviews_list_v2
       parameters:
         - in: path
           name: productId
@@ -994,7 +1023,7 @@ paths:
         - product-reviews
   /api/v2/products/{productId}/reviews/summary:
     get:
-      operationId: ProductsReviewsController_summary_v2
+      operationId: ProductsReviews_summary_v2
       parameters:
         - in: path
           name: productId
@@ -1008,7 +1037,7 @@ paths:
         - product-reviews
   /api/v2/reviews:
     post:
-      operationId: ReviewsController_create_v2
+      operationId: Reviews_create_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1040,9 +1069,38 @@ paths:
           description: ''
       tags:
         - reviews
+  /api/v2/reviews/me:
+    get:
+      operationId: Reviews_listMine_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: false
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - reviews
   /api/v2/reviews/{reviewId}:
     delete:
-      operationId: ReviewsController_remove_v2
+      operationId: Reviews_remove_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1080,7 +1138,7 @@ paths:
       tags:
         - reviews
     get:
-      operationId: ReviewsController_get_v2
+      operationId: Reviews_get_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1113,7 +1171,7 @@ paths:
       tags:
         - reviews
     patch:
-      operationId: ReviewsController_update_v2
+      operationId: Reviews_update_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1152,7 +1210,7 @@ paths:
         - reviews
   /api/v2/reviews/{reviewId}/helpful:
     delete:
-      operationId: ReviewsController_removeHelpful_v2
+      operationId: Reviews_removeHelpful_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1190,7 +1248,7 @@ paths:
       tags:
         - reviews
     post:
-      operationId: ReviewsController_addHelpful_v2
+      operationId: Reviews_addHelpful_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1229,7 +1287,7 @@ paths:
         - reviews
   /api/v2/reviews/{reviewId}/media:
     post:
-      operationId: ReviewsController_attachMedia_v2
+      operationId: Reviews_attachMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1268,7 +1326,7 @@ paths:
         - reviews
   /api/v2/reviews/{reviewId}/media/{mediaId}:
     delete:
-      operationId: ReviewsController_unlinkMedia_v2
+      operationId: Reviews_unlinkMedia_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1312,7 +1370,7 @@ paths:
         - reviews
   /api/v2/reviews/{reviewId}/replies:
     post:
-      operationId: ReviewsController_createReply_v2
+      operationId: Reviews_createReply_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1351,7 +1409,7 @@ paths:
         - reviews
   /api/v2/reviews/{reviewId}/replies/{replyId}:
     delete:
-      operationId: ReviewsController_deleteReply_v2
+      operationId: Reviews_deleteReply_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1394,7 +1452,7 @@ paths:
       tags:
         - reviews
     patch:
-      operationId: ReviewsController_updateReply_v2
+      operationId: Reviews_updateReply_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1438,7 +1496,7 @@ paths:
         - reviews
   /api/v2/reviews/{reviewId}/reports:
     post:
-      operationId: ReviewsController_report_v2
+      operationId: Reviews_report_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -1477,7 +1535,7 @@ paths:
         - reviews
   /health:
     get:
-      operationId: HealthController_health
+      operationId: Health_health
       responses:
         200:
           description: ''
@@ -1485,7 +1543,7 @@ paths:
         - Health
   /health/live:
     get:
-      operationId: HealthController_live
+      operationId: Health_live
       responses:
         200:
           description: ''
@@ -1493,24 +1551,24 @@ paths:
         - Health
   /health/ready:
     get:
-      operationId: HealthController_ready
+      operationId: Health_ready
       responses:
         200:
           description: ''
       tags:
         - Health
 servers:
-  - url: "http://localhost:3010"
+  - url: 'http://localhost:3010'
     description: review-service direct (local)
-  - url: "http://localhost:8000"
+  - url: 'http://localhost:8000'
     description: Kong Gateway (local)
-  - url: "http://{host}:{port}"
+  - url: 'http://{host}:{port}'
     description: Kubernetes / origin placeholder (override host+port)
     variables:
       host:
         default: catalog-service.nexatech.svc.cluster.local
       port:
         default: 3010
-  - url: "https://api.example.invalid"
+  - url: 'https://api.example.invalid'
     description: Protected public placeholder ONLY — do not use for Try it out
 tags: []

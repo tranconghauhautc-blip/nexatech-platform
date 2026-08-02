@@ -47,14 +47,10 @@ components:
       scheme: bearer
       bearerFormat: JWT
       description: JWT access token from identity POST /api/v1/auth/login. Never commit real tokens.
-    userId:
+    idempotencyKey:
       type: apiKey
       in: header
-      name: x-user-id
-    userRoles:
-      type: apiKey
-      in: header
-      name: x-user-roles
+      name: Idempotency-Key
     requestId:
       type: apiKey
       in: header
@@ -63,19 +59,23 @@ components:
       type: apiKey
       in: header
       name: x-trace-id
-    idempotencyKey:
+    userId:
       type: apiKey
       in: header
-      name: Idempotency-Key
+      name: x-user-id
+    userRoles:
+      type: apiKey
+      in: header
+      name: x-user-roles
 info:
   title: NexaTech Reporting Service
   description: Dashboard và audit projection
-  version: 1.0
+  version: 1.0.0
 openapi: 3.0.3
 paths:
   /api/v1/admin/reporting/audit:
     post:
-      operationId: AdminReportingController_recordAudit_v1
+      operationId: AdminReporting_recordAudit_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -109,7 +109,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/audit-logs:
     get:
-      operationId: AdminReportingController_listAuditLogs_v1
+      operationId: AdminReporting_listAuditLogs_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -138,7 +138,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/dashboard:
     get:
-      operationId: AdminReportingController_dashboard_v1
+      operationId: AdminReporting_dashboard_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -167,7 +167,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/metrics/daily:
     get:
-      operationId: AdminReportingController_dailyMetrics_v1
+      operationId: AdminReporting_dailyMetrics_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -196,7 +196,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/orders:
     get:
-      operationId: AdminReportingController_listOrders_v1
+      operationId: AdminReporting_listOrders_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -225,7 +225,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/payments:
     get:
-      operationId: AdminReportingController_listPayments_v1
+      operationId: AdminReporting_listPayments_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -254,7 +254,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/reviews:
     get:
-      operationId: AdminReportingController_listReviews_v1
+      operationId: AdminReporting_listReviews_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -283,7 +283,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/shipments:
     get:
-      operationId: AdminReportingController_listShipments_v1
+      operationId: AdminReporting_listShipments_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -312,7 +312,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/support/tickets:
     get:
-      operationId: AdminReportingController_listSupportTickets_v1
+      operationId: AdminReporting_listSupportTickets_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -341,7 +341,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/warranty/claims:
     get:
-      operationId: AdminReportingController_listWarrantyClaims_v1
+      operationId: AdminReporting_listWarrantyClaims_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -370,7 +370,7 @@ paths:
         - admin-reporting
   /api/v1/admin/reporting/warranty/returns:
     get:
-      operationId: AdminReportingController_listWarrantyReturns_v1
+      operationId: AdminReporting_listWarrantyReturns_v1
       parameters:
         - in: header
           name: x-user-roles
@@ -399,7 +399,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/audit:
     post:
-      operationId: AdminReportingController_recordAudit_v2
+      operationId: AdminReporting_recordAudit_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -433,7 +433,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/audit-logs:
     get:
-      operationId: AdminReportingController_listAuditLogs_v2
+      operationId: AdminReporting_listAuditLogs_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -462,7 +462,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/dashboard:
     get:
-      operationId: AdminReportingController_dashboard_v2
+      operationId: AdminReporting_dashboard_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -491,7 +491,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/metrics/daily:
     get:
-      operationId: AdminReportingController_dailyMetrics_v2
+      operationId: AdminReporting_dailyMetrics_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -520,7 +520,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/orders:
     get:
-      operationId: AdminReportingController_listOrders_v2
+      operationId: AdminReporting_listOrders_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -549,7 +549,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/payments:
     get:
-      operationId: AdminReportingController_listPayments_v2
+      operationId: AdminReporting_listPayments_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -578,7 +578,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/reviews:
     get:
-      operationId: AdminReportingController_listReviews_v2
+      operationId: AdminReporting_listReviews_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -607,7 +607,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/shipments:
     get:
-      operationId: AdminReportingController_listShipments_v2
+      operationId: AdminReporting_listShipments_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -636,7 +636,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/support/tickets:
     get:
-      operationId: AdminReportingController_listSupportTickets_v2
+      operationId: AdminReporting_listSupportTickets_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -665,7 +665,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/warranty/claims:
     get:
-      operationId: AdminReportingController_listWarrantyClaims_v2
+      operationId: AdminReporting_listWarrantyClaims_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -694,7 +694,7 @@ paths:
         - admin-reporting
   /api/v2/admin/reporting/warranty/returns:
     get:
-      operationId: AdminReportingController_listWarrantyReturns_v2
+      operationId: AdminReporting_listWarrantyReturns_v2
       parameters:
         - in: header
           name: x-user-roles
@@ -723,7 +723,7 @@ paths:
         - admin-reporting
   /health:
     get:
-      operationId: HealthController_health
+      operationId: Health_health
       responses:
         200:
           description: ''
@@ -731,7 +731,7 @@ paths:
         - Health
   /health/live:
     get:
-      operationId: HealthController_live
+      operationId: Health_live
       responses:
         200:
           description: ''
@@ -739,24 +739,24 @@ paths:
         - Health
   /health/ready:
     get:
-      operationId: HealthController_ready
+      operationId: Health_ready
       responses:
         200:
           description: ''
       tags:
         - Health
 servers:
-  - url: "http://localhost:3014"
+  - url: 'http://localhost:3014'
     description: reporting-service direct (local)
-  - url: "http://localhost:8000"
+  - url: 'http://localhost:8000'
     description: Kong Gateway (local)
-  - url: "http://{host}:{port}"
+  - url: 'http://{host}:{port}'
     description: Kubernetes / origin placeholder (override host+port)
     variables:
       host:
         default: catalog-service.nexatech.svc.cluster.local
       port:
         default: 3014
-  - url: "https://api.example.invalid"
+  - url: 'https://api.example.invalid'
     description: Protected public placeholder ONLY — do not use for Try it out
 tags: []

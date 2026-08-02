@@ -105,6 +105,8 @@ export const customerAddressFormSchema = z.object({
   ward: z.string().trim().max(120).optional().or(z.literal('')),
   district: z.string().trim().max(120).optional().or(z.literal('')),
   city: z.string().trim().min(1, 'Vui lòng nhập tỉnh/thành phố').max(120),
+  provinceCode: z.string().trim().max(10).optional().or(z.literal('')),
+  wardCode: z.string().trim().max(20).optional().or(z.literal('')),
   postalCode: z.string().trim().max(20).optional().or(z.literal('')),
   isDefault: z.boolean().optional(),
 });

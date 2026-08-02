@@ -38,5 +38,9 @@ module.exports = {
       workspaceRoot,
       'libs/shared/web/src/index.ts',
     ),
+    '^@nexatech/shared-address$': path.join(
+      workspaceRoot,
+      'libs/shared/address/src/index.ts',
+    ),
   },
 };

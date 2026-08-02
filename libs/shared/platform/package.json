@@ -6,6 +6,9 @@
   "main": "./src/index.js",
   "types": "./src/index.d.ts",
   "dependencies": {
+    "@nestjs/common": "11.0.12",
+    "@nestjs/swagger": "11.1.1",
+    "@nexatech/shared-errors": "workspace:*",
     "tslib": "^2.3.0"
   }
 }

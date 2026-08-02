@@ -7,6 +7,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
 } from '@nestjs/common';
 import { ApiHeader, ApiTags } from '@nestjs/swagger';
 import { parseActor, ReviewService } from './review.service';
@@ -29,6 +30,19 @@ export class ReviewsController {
       parseActor(userId, roles),
       body,
       traceId,
+    );
+  }
+
+  /** Customer-scoped reviews. Empty collection returns 200 []. */
+  @Get('me')
+  listMine(
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-roles') roles?: string,
+    @Query() query?: Record<string, unknown>,
+  ) {
+    return this.reviewService.listMyReviews(
+      parseActor(userId, roles),
+      query ?? {},
     );
   }
 

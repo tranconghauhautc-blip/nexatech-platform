@@ -1,17 +1,27 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useArrayQuery } from '../../../lib/use-array-query';
+import { bffRequest } from '../../../lib/api-client';
 import {
   DataTable,
   type DataTableColumn,
 } from '../../../components/ui/DataTable';
 import { ListToolbar } from '../../../components/ui/ListToolbar';
 
+interface LocationRow {
+  id: string;
+  code?: string;
+  name?: string;
+}
+
 export default function Page() {
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('sku_asc');
+  const [locationNames, setLocationNames] = useState<Record<string, string>>(
+    {},
+  );
   const { items, loading, error, refetch } = useArrayQuery<
     Record<string, unknown>
   >({
@@ -19,6 +29,28 @@ export default function Page() {
     path: 'stock',
     query: search ? { skuCode: search } : undefined,
   });
+
+  useEffect(() => {
+    let cancelled = false;
+    Promise.all([
+      bffRequest<LocationRow[]>('inventory', 'warehouses').catch(() => []),
+      bffRequest<LocationRow[]>('inventory', 'stores').catch(() => []),
+    ]).then(([warehouses, stores]) => {
+      if (cancelled) return;
+      const map: Record<string, string> = {};
+      for (const row of [...warehouses, ...stores]) {
+        if (!row?.id) continue;
+        const label =
+          [row.name, row.code].filter(Boolean).join(' · ') || row.id;
+        map[row.id] = label;
+      }
+      setLocationNames(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const sortedItems = useMemo(() => {
     const rows = [...items];
     rows.sort((a, b) => {
@@ -33,6 +65,7 @@ export default function Page() {
     });
     return rows;
   }, [items, sort]);
+
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
       {
@@ -58,11 +91,26 @@ export default function Page() {
       {
         key: 'locationId',
         header: 'Vị trí',
-        render: (r) =>
-          String(r['locationId'] ?? r['warehouseId'] ?? r['storeId'] ?? '—'),
+        render: (r) => {
+          const id = String(
+            r['locationId'] ?? r['warehouseId'] ?? r['storeId'] ?? '',
+          );
+          if (!id) return '—';
+          const name = locationNames[id];
+          if (!name) {
+            return <span title={id}>{id}</span>;
+          }
+          return (
+            <span title={id}>
+              {name}
+              <br />
+              <span style={{ fontSize: 11, opacity: 0.6 }}>{id}</span>
+            </span>
+          );
+        },
       },
     ],
-    [],
+    [locationNames],
   );
 
   return (
@@ -97,13 +145,13 @@ export default function Page() {
         columns={columns}
         rows={sortedItems}
         getRowKey={(r) =>
-          String(r.id ?? `${r['skuCode']}-${r['locationId']}` ?? Math.random())
+          String(r.id ?? `${String(r['skuCode'])}-${String(r['locationId'])}`)
         }
         loading={loading}
         error={error}
         onRetry={refetch}
-        emptyTitle="Không có dữ liệu"
-        emptyDescription="Chưa có tồn kho hoặc SKU không khớp."
+        emptyTitle="Không có tồn kho"
+        emptyDescription="Chưa có bản ghi stock hoặc SKU không khớp."
       />
     </div>
   );

@@ -1,0 +1,10 @@
+{
+  "source": "open-admin-data/vietnam-administrative-divisions",
+  "sourceUrl": "https://github.com/open-admin-data/vietnam-administrative-divisions",
+  "sourceVersion": "2026-06-01",
+  "effectiveVersion": "2025-07-01",
+  "provinceCount": 34,
+  "wardCount": 3321,
+  "generatedAt": "2026-08-02T08:49:53.027Z",
+  "notes": "Vietnam 2-level administrative model (province + ward) after the 2025 reform (34 provincial units, district level abolished nationwide 2025-07-01). Generated deterministically by scripts/address-data/import.cjs from the embedded local snapshot in scripts/address-data/source/ — no runtime network calls. Includes 6 centrally-run cities and 28 provinces, with complete ward coverage for every provincial unit (not just major cities)."
+}

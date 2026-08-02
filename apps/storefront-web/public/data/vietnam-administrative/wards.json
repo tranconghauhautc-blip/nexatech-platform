@@ -1,0 +1,793 @@
+[
+  {
+    "code": "48001",
+    "provinceCode": "48",
+    "name": "Phường Hải Châu",
+    "type": "ward",
+    "slug": "phuong-hai-chau"
+  },
+  {
+    "code": "48002",
+    "provinceCode": "48",
+    "name": "Phường Thanh Bình",
+    "type": "ward",
+    "slug": "phuong-thanh-binh"
+  },
+  {
+    "code": "48003",
+    "provinceCode": "48",
+    "name": "Phường Thuận Phước",
+    "type": "ward",
+    "slug": "phuong-thuan-phuoc"
+  },
+  {
+    "code": "48004",
+    "provinceCode": "48",
+    "name": "Phường Hòa Thuận",
+    "type": "ward",
+    "slug": "phuong-hoa-thuan"
+  },
+  {
+    "code": "48005",
+    "provinceCode": "48",
+    "name": "Phường Hải Châu Đông",
+    "type": "ward",
+    "slug": "phuong-hai-chau-dong"
+  },
+  {
+    "code": "48006",
+    "provinceCode": "48",
+    "name": "Phường Thanh Khê",
+    "type": "ward",
+    "slug": "phuong-thanh-khe"
+  },
+  {
+    "code": "48007",
+    "provinceCode": "48",
+    "name": "Phường Chính Gián",
+    "type": "ward",
+    "slug": "phuong-chinh-gian"
+  },
+  {
+    "code": "48008",
+    "provinceCode": "48",
+    "name": "Phường Thạc Gián",
+    "type": "ward",
+    "slug": "phuong-thac-gian"
+  },
+  {
+    "code": "48009",
+    "provinceCode": "48",
+    "name": "Phường Xuân Hà",
+    "type": "ward",
+    "slug": "phuong-xuan-ha"
+  },
+  {
+    "code": "48010",
+    "provinceCode": "48",
+    "name": "Phường An Khê",
+    "type": "ward",
+    "slug": "phuong-an-khe"
+  },
+  {
+    "code": "48011",
+    "provinceCode": "48",
+    "name": "Phường Sơn Trà",
+    "type": "ward",
+    "slug": "phuong-son-tra"
+  },
+  {
+    "code": "48012",
+    "provinceCode": "48",
+    "name": "Phường An Hải",
+    "type": "ward",
+    "slug": "phuong-an-hai"
+  },
+  {
+    "code": "48013",
+    "provinceCode": "48",
+    "name": "Phường Nại Hiên Đông",
+    "type": "ward",
+    "slug": "phuong-nai-hien-dong"
+  },
+  {
+    "code": "48014",
+    "provinceCode": "48",
+    "name": "Phường Mân Thái",
+    "type": "ward",
+    "slug": "phuong-man-thai"
+  },
+  {
+    "code": "48015",
+    "provinceCode": "48",
+    "name": "Phường Ngũ Hành Sơn",
+    "type": "ward",
+    "slug": "phuong-ngu-hanh-son"
+  },
+  {
+    "code": "48016",
+    "provinceCode": "48",
+    "name": "Phường Mỹ An",
+    "type": "ward",
+    "slug": "phuong-my-an"
+  },
+  {
+    "code": "48017",
+    "provinceCode": "48",
+    "name": "Phường Hòa Quý",
+    "type": "ward",
+    "slug": "phuong-hoa-quy"
+  },
+  {
+    "code": "48018",
+    "provinceCode": "48",
+    "name": "Phường Hòa Hải",
+    "type": "ward",
+    "slug": "phuong-hoa-hai"
+  },
+  {
+    "code": "48019",
+    "provinceCode": "48",
+    "name": "Phường Hòa Cường",
+    "type": "ward",
+    "slug": "phuong-hoa-cuong"
+  },
+  {
+    "code": "48020",
+    "provinceCode": "48",
+    "name": "Phường Hòa Khánh",
+    "type": "ward",
+    "slug": "phuong-hoa-khanh"
+  },
+  {
+    "code": "48021",
+    "provinceCode": "48",
+    "name": "Phường Hòa Minh",
+    "type": "ward",
+    "slug": "phuong-hoa-minh"
+  },
+  {
+    "code": "48022",
+    "provinceCode": "48",
+    "name": "Phường Liên Chiểu",
+    "type": "ward",
+    "slug": "phuong-lien-chieu"
+  },
+  {
+    "code": "48023",
+    "provinceCode": "48",
+    "name": "Phường Hòa Hiệp",
+    "type": "ward",
+    "slug": "phuong-hoa-hiep"
+  },
+  {
+    "code": "48024",
+    "provinceCode": "48",
+    "name": "Xã Hòa Vang",
+    "type": "commune",
+    "slug": "xa-hoa-vang"
+  },
+  {
+    "code": "48025",
+    "provinceCode": "48",
+    "name": "Xã Hòa Tiến",
+    "type": "commune",
+    "slug": "xa-hoa-tien"
+  },
+  {
+    "code": "48026",
+    "provinceCode": "48",
+    "name": "Xã Hòa Phong",
+    "type": "commune",
+    "slug": "xa-hoa-phong"
+  },
+  {
+    "code": "48027",
+    "provinceCode": "48",
+    "name": "Đặc khu Hoàng Sa",
+    "type": "special_zone",
+    "slug": "dac-khu-hoang-sa"
+  },
+  {
+    "code": "79001",
+    "provinceCode": "79",
+    "name": "Phường Sài Gòn",
+    "type": "ward",
+    "slug": "phuong-sai-gon"
+  },
+  {
+    "code": "79002",
+    "provinceCode": "79",
+    "name": "Phường Bến Nghé",
+    "type": "ward",
+    "slug": "phuong-ben-nghe"
+  },
+  {
+    "code": "79003",
+    "provinceCode": "79",
+    "name": "Phường Bến Thành",
+    "type": "ward",
+    "slug": "phuong-ben-thanh"
+  },
+  {
+    "code": "79004",
+    "provinceCode": "79",
+    "name": "Phường Cầu Ông Lãnh",
+    "type": "ward",
+    "slug": "phuong-cau-ong-lanh"
+  },
+  {
+    "code": "79005",
+    "provinceCode": "79",
+    "name": "Phường Đa Kao",
+    "type": "ward",
+    "slug": "phuong-da-kao"
+  },
+  {
+    "code": "79006",
+    "provinceCode": "79",
+    "name": "Phường Nguyễn Thái Bình",
+    "type": "ward",
+    "slug": "phuong-nguyen-thai-binh"
+  },
+  {
+    "code": "79007",
+    "provinceCode": "79",
+    "name": "Phường Tân Định",
+    "type": "ward",
+    "slug": "phuong-tan-dinh"
+  },
+  {
+    "code": "79008",
+    "provinceCode": "79",
+    "name": "Phường Xuân Hòa",
+    "type": "ward",
+    "slug": "phuong-xuan-hoa"
+  },
+  {
+    "code": "79009",
+    "provinceCode": "79",
+    "name": "Phường Nhiêu Lộc",
+    "type": "ward",
+    "slug": "phuong-nhieu-loc"
+  },
+  {
+    "code": "79010",
+    "provinceCode": "79",
+    "name": "Phường Xóm Chiếu",
+    "type": "ward",
+    "slug": "phuong-xom-chieu"
+  },
+  {
+    "code": "79011",
+    "provinceCode": "79",
+    "name": "Phường Khánh Hội",
+    "type": "ward",
+    "slug": "phuong-khanh-hoi"
+  },
+  {
+    "code": "79012",
+    "provinceCode": "79",
+    "name": "Phường Vĩnh Hội",
+    "type": "ward",
+    "slug": "phuong-vinh-hoi"
+  },
+  {
+    "code": "79013",
+    "provinceCode": "79",
+    "name": "Phường Chợ Lớn",
+    "type": "ward",
+    "slug": "phuong-cho-lon"
+  },
+  {
+    "code": "79014",
+    "provinceCode": "79",
+    "name": "Phường Bình Tây",
+    "type": "ward",
+    "slug": "phuong-binh-tay"
+  },
+  {
+    "code": "79015",
+    "provinceCode": "79",
+    "name": "Phường Bình Tiên",
+    "type": "ward",
+    "slug": "phuong-binh-tien"
+  },
+  {
+    "code": "79016",
+    "provinceCode": "79",
+    "name": "Phường Bình Phú",
+    "type": "ward",
+    "slug": "phuong-binh-phu"
+  },
+  {
+    "code": "79017",
+    "provinceCode": "79",
+    "name": "Phường Phú Lâm",
+    "type": "ward",
+    "slug": "phuong-phu-lam"
+  },
+  {
+    "code": "79018",
+    "provinceCode": "79",
+    "name": "Phường Tân Thuận",
+    "type": "ward",
+    "slug": "phuong-tan-thuan"
+  },
+  {
+    "code": "79019",
+    "provinceCode": "79",
+    "name": "Phường Phú Mỹ",
+    "type": "ward",
+    "slug": "phuong-phu-my"
+  },
+  {
+    "code": "79020",
+    "provinceCode": "79",
+    "name": "Phường Tân Hưng",
+    "type": "ward",
+    "slug": "phuong-tan-hung"
+  },
+  {
+    "code": "79021",
+    "provinceCode": "79",
+    "name": "Phường Tân Phong",
+    "type": "ward",
+    "slug": "phuong-tan-phong"
+  },
+  {
+    "code": "79022",
+    "provinceCode": "79",
+    "name": "Phường Tăng Nhơn Phú",
+    "type": "ward",
+    "slug": "phuong-tang-nhon-phu"
+  },
+  {
+    "code": "79023",
+    "provinceCode": "79",
+    "name": "Phường Hiệp Phú",
+    "type": "ward",
+    "slug": "phuong-hiep-phu"
+  },
+  {
+    "code": "79024",
+    "provinceCode": "79",
+    "name": "Phường Long Trường",
+    "type": "ward",
+    "slug": "phuong-long-truong"
+  },
+  {
+    "code": "79025",
+    "provinceCode": "79",
+    "name": "Phường Thủ Đức",
+    "type": "ward",
+    "slug": "phuong-thu-duc"
+  },
+  {
+    "code": "79026",
+    "provinceCode": "79",
+    "name": "Phường Linh Xuân",
+    "type": "ward",
+    "slug": "phuong-linh-xuan"
+  },
+  {
+    "code": "79027",
+    "provinceCode": "79",
+    "name": "Phường Tam Bình",
+    "type": "ward",
+    "slug": "phuong-tam-binh"
+  },
+  {
+    "code": "79028",
+    "provinceCode": "79",
+    "name": "Phường Hiệp Bình",
+    "type": "ward",
+    "slug": "phuong-hiep-binh"
+  },
+  {
+    "code": "79029",
+    "provinceCode": "79",
+    "name": "Phường An Khánh",
+    "type": "ward",
+    "slug": "phuong-an-khanh"
+  },
+  {
+    "code": "79030",
+    "provinceCode": "79",
+    "name": "Phường Bình Trưng",
+    "type": "ward",
+    "slug": "phuong-binh-trung"
+  },
+  {
+    "code": "79031",
+    "provinceCode": "79",
+    "name": "Phường Cát Lái",
+    "type": "ward",
+    "slug": "phuong-cat-lai"
+  },
+  {
+    "code": "79032",
+    "provinceCode": "79",
+    "name": "Phường An Phú Đông",
+    "type": "ward",
+    "slug": "phuong-an-phu-dong"
+  },
+  {
+    "code": "79033",
+    "provinceCode": "79",
+    "name": "Phường Thới An",
+    "type": "ward",
+    "slug": "phuong-thoi-an"
+  },
+  {
+    "code": "79034",
+    "provinceCode": "79",
+    "name": "Phường Trung Mỹ Tây",
+    "type": "ward",
+    "slug": "phuong-trung-my-tay"
+  },
+  {
+    "code": "79035",
+    "provinceCode": "79",
+    "name": "Phường Tân Hương",
+    "type": "ward",
+    "slug": "phuong-tan-huong"
+  },
+  {
+    "code": "79036",
+    "provinceCode": "79",
+    "name": "Phường Tây Thạnh",
+    "type": "ward",
+    "slug": "phuong-tay-thanh"
+  },
+  {
+    "code": "79037",
+    "provinceCode": "79",
+    "name": "Phường Tân Sơn Nhì",
+    "type": "ward",
+    "slug": "phuong-tan-son-nhi"
+  },
+  {
+    "code": "79038",
+    "provinceCode": "79",
+    "name": "Phường Phú Thọ Hòa",
+    "type": "ward",
+    "slug": "phuong-phu-tho-hoa"
+  },
+  {
+    "code": "79039",
+    "provinceCode": "79",
+    "name": "Phường Sơn Kỳ",
+    "type": "ward",
+    "slug": "phuong-son-ky"
+  },
+  {
+    "code": "79040",
+    "provinceCode": "79",
+    "name": "Phường Tân Phú",
+    "type": "ward",
+    "slug": "phuong-tan-phu"
+  },
+  {
+    "code": "79041",
+    "provinceCode": "79",
+    "name": "Phường Đông Hưng Thuận",
+    "type": "ward",
+    "slug": "phuong-dong-hung-thuan"
+  },
+  {
+    "code": "79042",
+    "provinceCode": "79",
+    "name": "Xã Củ Chi",
+    "type": "commune",
+    "slug": "xa-cu-chi"
+  },
+  {
+    "code": "79043",
+    "provinceCode": "79",
+    "name": "Xã Hóc Môn",
+    "type": "commune",
+    "slug": "xa-hoc-mon"
+  },
+  {
+    "code": "79044",
+    "provinceCode": "79",
+    "name": "Xã Bình Chánh",
+    "type": "commune",
+    "slug": "xa-binh-chanh"
+  },
+  {
+    "code": "79045",
+    "provinceCode": "79",
+    "name": "Xã Nhà Bè",
+    "type": "commune",
+    "slug": "xa-nha-be"
+  },
+  {
+    "code": "79046",
+    "provinceCode": "79",
+    "name": "Xã Cần Giờ",
+    "type": "commune",
+    "slug": "xa-can-gio"
+  },
+  {
+    "code": "01001",
+    "provinceCode": "01",
+    "name": "Phường Ba Đình",
+    "type": "ward",
+    "slug": "phuong-ba-dinh"
+  },
+  {
+    "code": "01002",
+    "provinceCode": "01",
+    "name": "Phường Ngọc Hà",
+    "type": "ward",
+    "slug": "phuong-ngoc-ha"
+  },
+  {
+    "code": "01003",
+    "provinceCode": "01",
+    "name": "Phường Giảng Võ",
+    "type": "ward",
+    "slug": "phuong-giang-vo"
+  },
+  {
+    "code": "01004",
+    "provinceCode": "01",
+    "name": "Phường Hoàn Kiếm",
+    "type": "ward",
+    "slug": "phuong-hoan-kiem"
+  },
+  {
+    "code": "01005",
+    "provinceCode": "01",
+    "name": "Phường Cửa Nam",
+    "type": "ward",
+    "slug": "phuong-cua-nam"
+  },
+  {
+    "code": "01006",
+    "provinceCode": "01",
+    "name": "Phường Phúc Tân",
+    "type": "ward",
+    "slug": "phuong-phuc-tan"
+  },
+  {
+    "code": "01007",
+    "provinceCode": "01",
+    "name": "Phường Hồng Hà",
+    "type": "ward",
+    "slug": "phuong-hong-ha"
+  },
+  {
+    "code": "01008",
+    "provinceCode": "01",
+    "name": "Phường Láng",
+    "type": "ward",
+    "slug": "phuong-lang"
+  },
+  {
+    "code": "01009",
+    "provinceCode": "01",
+    "name": "Phường Ô Chợ Dừa",
+    "type": "ward",
+    "slug": "phuong-o-cho-dua"
+  },
+  {
+    "code": "01010",
+    "provinceCode": "01",
+    "name": "Phường Văn Miếu - Quốc Tử Giám",
+    "type": "ward",
+    "slug": "phuong-van-mieu-quoc-tu-giam"
+  },
+  {
+    "code": "01011",
+    "provinceCode": "01",
+    "name": "Phường Kim Liên",
+    "type": "ward",
+    "slug": "phuong-kim-lien"
+  },
+  {
+    "code": "01012",
+    "provinceCode": "01",
+    "name": "Phường Đống Đa",
+    "type": "ward",
+    "slug": "phuong-dong-da"
+  },
+  {
+    "code": "01013",
+    "provinceCode": "01",
+    "name": "Phường Hai Bà Trưng",
+    "type": "ward",
+    "slug": "phuong-hai-ba-trung"
+  },
+  {
+    "code": "01014",
+    "provinceCode": "01",
+    "name": "Phường Vĩnh Tuy",
+    "type": "ward",
+    "slug": "phuong-vinh-tuy"
+  },
+  {
+    "code": "01015",
+    "provinceCode": "01",
+    "name": "Phường Bạch Mai",
+    "type": "ward",
+    "slug": "phuong-bach-mai"
+  },
+  {
+    "code": "01016",
+    "provinceCode": "01",
+    "name": "Phường Thanh Xuân",
+    "type": "ward",
+    "slug": "phuong-thanh-xuan"
+  },
+  {
+    "code": "01017",
+    "provinceCode": "01",
+    "name": "Phường Khương Đình",
+    "type": "ward",
+    "slug": "phuong-khuong-dinh"
+  },
+  {
+    "code": "01018",
+    "provinceCode": "01",
+    "name": "Phường Định Công",
+    "type": "ward",
+    "slug": "phuong-dinh-cong"
+  },
+  {
+    "code": "01019",
+    "provinceCode": "01",
+    "name": "Phường Cầu Giấy",
+    "type": "ward",
+    "slug": "phuong-cau-giay"
+  },
+  {
+    "code": "01020",
+    "provinceCode": "01",
+    "name": "Phường Nghĩa Đô",
+    "type": "ward",
+    "slug": "phuong-nghia-do"
+  },
+  {
+    "code": "01021",
+    "provinceCode": "01",
+    "name": "Phường Yên Hòa",
+    "type": "ward",
+    "slug": "phuong-yen-hoa"
+  },
+  {
+    "code": "01022",
+    "provinceCode": "01",
+    "name": "Phường Tây Hồ",
+    "type": "ward",
+    "slug": "phuong-tay-ho"
+  },
+  {
+    "code": "01023",
+    "provinceCode": "01",
+    "name": "Phường Quảng An",
+    "type": "ward",
+    "slug": "phuong-quang-an"
+  },
+  {
+    "code": "01024",
+    "provinceCode": "01",
+    "name": "Phường Long Biên",
+    "type": "ward",
+    "slug": "phuong-long-bien"
+  },
+  {
+    "code": "01025",
+    "provinceCode": "01",
+    "name": "Phường Bồ Đề",
+    "type": "ward",
+    "slug": "phuong-bo-de"
+  },
+  {
+    "code": "01026",
+    "provinceCode": "01",
+    "name": "Phường Việt Hưng",
+    "type": "ward",
+    "slug": "phuong-viet-hung"
+  },
+  {
+    "code": "01027",
+    "provinceCode": "01",
+    "name": "Phường Hoàng Mai",
+    "type": "ward",
+    "slug": "phuong-hoang-mai"
+  },
+  {
+    "code": "01028",
+    "provinceCode": "01",
+    "name": "Phường Lĩnh Nam",
+    "type": "ward",
+    "slug": "phuong-linh-nam"
+  },
+  {
+    "code": "01029",
+    "provinceCode": "01",
+    "name": "Phường Tương Mai",
+    "type": "ward",
+    "slug": "phuong-tuong-mai"
+  },
+  {
+    "code": "01030",
+    "provinceCode": "01",
+    "name": "Phường Hà Đông",
+    "type": "ward",
+    "slug": "phuong-ha-dong"
+  },
+  {
+    "code": "01031",
+    "provinceCode": "01",
+    "name": "Phường Dương Nội",
+    "type": "ward",
+    "slug": "phuong-duong-noi"
+  },
+  {
+    "code": "01032",
+    "provinceCode": "01",
+    "name": "Phường Yên Nghĩa",
+    "type": "ward",
+    "slug": "phuong-yen-nghia"
+  },
+  {
+    "code": "01033",
+    "provinceCode": "01",
+    "name": "Phường Sơn Tây",
+    "type": "ward",
+    "slug": "phuong-son-tay"
+  },
+  {
+    "code": "01034",
+    "provinceCode": "01",
+    "name": "Xã Đông Anh",
+    "type": "commune",
+    "slug": "xa-dong-anh"
+  },
+  {
+    "code": "01035",
+    "provinceCode": "01",
+    "name": "Xã Gia Lâm",
+    "type": "commune",
+    "slug": "xa-gia-lam"
+  },
+  {
+    "code": "01036",
+    "provinceCode": "01",
+    "name": "Xã Hoài Đức",
+    "type": "commune",
+    "slug": "xa-hoai-duc"
+  },
+  {
+    "code": "01037",
+    "provinceCode": "01",
+    "name": "Xã Thanh Trì",
+    "type": "commune",
+    "slug": "xa-thanh-tri"
+  },
+  {
+    "code": "01038",
+    "provinceCode": "01",
+    "name": "Xã Thường Tín",
+    "type": "commune",
+    "slug": "xa-thuong-tin"
+  },
+  {
+    "code": "01039",
+    "provinceCode": "01",
+    "name": "Xã Phú Xuyên",
+    "type": "commune",
+    "slug": "xa-phu-xuyen"
+  },
+  {
+    "code": "01040",
+    "provinceCode": "01",
+    "name": "Xã Sóc Sơn",
+    "type": "commune",
+    "slug": "xa-soc-son"
+  }
+]

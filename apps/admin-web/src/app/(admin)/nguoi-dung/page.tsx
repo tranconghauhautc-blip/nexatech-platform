@@ -14,6 +14,7 @@ import { Badge } from '../../../components/ui/Badge';
 import { Drawer } from '../../../components/ui/Drawer';
 import { SelectField, TextField } from '../../../components/ui/form';
 import { useToast } from '../../../components/ui/toast';
+import Link from 'next/link';
 
 interface AdminUserRow {
   id: string;
@@ -85,12 +86,21 @@ export default function UsersPage() {
   const [selected, setSelected] = useState<AdminUserRow | null>(null);
   const [editRole, setEditRole] = useState('Customer');
   const [editStatus, setEditStatus] = useState('ACTIVE');
+  const [showLabLeak, setShowLabLeak] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
   const [creating, setCreating] = useState(false);
 
+  // SC-10 / SC-31 (OWASP API3 — excessive data exposure & mass assignment):
+  // `GET /admin/users` vẫn trả `passwordHash` nguyên trạng từ backend — đây
+  // là PoC luôn mở, KHÔNG được patch API. Cột này vốn hiển thị hash ngay
+  // trên bảng vận hành hàng ngày; đã dời khỏi danh sách chính để tránh lộ
+  // dữ liệu nhạy cảm ngoài ý muốn cho người dùng vận hành thông thường.
+  // Dữ liệu leak vẫn truy cập được có chủ đích qua panel "Sửa" (nút "Hiện
+  // dữ liệu leak (lab)") và qua Security Guide (/security-lab) — xem
+  // docs/OWASP-SCENARIOS.md (SC-10, SC-31) để biết kịch bản khai thác đầy đủ.
   const columns = useMemo<DataTableColumn<AdminUserRow>[]>(
     () => [
       { key: 'email', header: 'Email', render: (r) => r.email },
@@ -104,12 +114,6 @@ export default function UsersPage() {
         key: 'status',
         header: 'Trạng thái',
         render: (r) => <Badge>{r.status}</Badge>,
-      },
-      {
-        key: 'leak',
-        header: 'Lab leak',
-        render: (r) =>
-          r.passwordHash ? String(r.passwordHash).slice(0, 16) + '…' : '—',
       },
       {
         key: 'actions',
@@ -261,6 +265,7 @@ export default function UsersPage() {
           setSelected(row);
           setEditRole(row.roles?.[0] ?? 'Customer');
           setEditStatus(row.status);
+          setShowLabLeak(false);
         }}
       />
       <Pagination
@@ -309,6 +314,42 @@ export default function UsersPage() {
             >
               Đóng
             </button>
+          </div>
+
+          <div
+            style={{
+              marginTop: 16,
+              paddingTop: 12,
+              borderTop: '1px dashed var(--nx-border)',
+            }}
+          >
+            <button
+              type="button"
+              className="nx-link-btn"
+              onClick={() => setShowLabLeak((v) => !v)}
+            >
+              {showLabLeak ? 'Ẩn' : 'Hiện'} dữ liệu leak (lab, SC-31)
+            </button>
+            {showLabLeak ? (
+              <div style={{ marginTop: 8, fontSize: 12 }}>
+                <p className="nx-hint" style={{ margin: '0 0 4px' }}>
+                  passwordHash trả nguyên trạng từ API (không patch — PoC luôn
+                  mở). Chi tiết kịch bản:{' '}
+                  <Link href="/security-lab">/security-lab</Link>.
+                </p>
+                <code
+                  style={{
+                    display: 'block',
+                    wordBreak: 'break-all',
+                    background: 'var(--nx-surface-2)',
+                    padding: '6px 8px',
+                    borderRadius: 6,
+                  }}
+                >
+                  {selected.passwordHash ?? '(không có trong response)'}
+                </code>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}

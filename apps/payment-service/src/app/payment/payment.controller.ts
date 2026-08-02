@@ -18,6 +18,15 @@ export class PaymentController {
     return this.paymentService.createPayment(parseActor(userId, roles), body);
   }
 
+  /** Customer-scoped payment history. Empty collection returns 200 + []. */
+  @Get('me')
+  listMine(
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-roles') roles?: string,
+  ) {
+    return this.paymentService.listMyPayments(parseActor(userId, roles));
+  }
+
   @Get('by-order/:orderId')
   getByOrder(
     @Param('orderId') orderId: string,

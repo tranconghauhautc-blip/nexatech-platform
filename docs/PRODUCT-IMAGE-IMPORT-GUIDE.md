@@ -8,7 +8,7 @@ Attach real product images to catalog SKUs/slugs via Media + MinIO, then show on
 
 - Media service healthy (`:3004`)
 - MinIO healthy (`:9000` / console `:9001`)
-- Admin login with Manager+ 
+- Admin login with Manager+
 - Catalog products seeded (`pnpm seed:catalog`)
 
 ## Mapping convention
@@ -19,6 +19,8 @@ Place files in a folder, e.g. `imports/product-images/`:
 NT-LAP-0098.jpg          → skuCode
 laptop-nexatech-samsung-098.png → product slug
 ```
+
+Optional structured mapping: see `examples/product-image-mapping.example.json`.
 
 Rules:
 

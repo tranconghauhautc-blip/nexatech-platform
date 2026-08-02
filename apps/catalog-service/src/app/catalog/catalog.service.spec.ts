@@ -111,6 +111,56 @@ describe('CatalogService', () => {
     expect(result.items[0]?.minPrice).toBe(32000000);
   });
 
+  it('computes minPrice as lowest SKU amount (never clamped by trailing 0)', async () => {
+    const category = await service.createCategory(
+      { name: 'Laptop', slug: 'laptop-min' },
+      staffRoles,
+    );
+    const brand = await service.createBrand(
+      { name: 'Dell', slug: 'dell-min' },
+      staffRoles,
+    );
+    const product = await service.createProduct(
+      {
+        name: 'XPS Dual',
+        slug: 'xps-dual-min',
+        categoryId: category.id,
+        brandId: brand.id,
+        status: 'active',
+      },
+      staffRoles,
+    );
+    await service.createSku(
+      {
+        productId: product.id,
+        skuCode: 'XPS-HI',
+        name: 'High',
+        price: 40_000_000,
+      },
+      staffRoles,
+    );
+    await service.createSku(
+      {
+        productId: product.id,
+        skuCode: 'XPS-LO',
+        name: 'Low',
+        price: 28_000_000,
+      },
+      staffRoles,
+    );
+
+    const result = await service.searchProducts({
+      q: 'XPS Dual',
+      categorySlug: 'laptop-min',
+      brandSlug: 'dell-min',
+      page: '1',
+      pageSize: '20',
+    });
+    expect(result.items).toHaveLength(1);
+    expect(result.items[0]?.minPrice).toBe(28_000_000);
+    expect(result.items[0]?.minPrice).toBeGreaterThan(0);
+  });
+
   it('rejects duplicate product slug', async () => {
     const category = await service.createCategory(
       { name: 'Tablet', slug: 'tablet' },

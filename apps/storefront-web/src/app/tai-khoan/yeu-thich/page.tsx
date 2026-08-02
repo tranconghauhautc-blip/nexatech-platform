@@ -2,11 +2,24 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { formatVnd } from '@nexatech/shared-web';
 import { EmptyState } from '../../../components/common/empty-state';
+import { MediaThumb } from '../../../components/media/media-thumb';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 
+interface WishlistRow {
+  id: string;
+  productId: string;
+  name?: string;
+  slug?: string;
+  minPrice?: number;
+  status?: string;
+  thumbnailUrl?: string;
+  missing?: boolean;
+}
+
 export default function WishlistPage() {
-  const [items, setItems] = useState<Record<string, unknown>[]>([]);
+  const [items, setItems] = useState<WishlistRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -16,11 +29,49 @@ export default function WishlistPage() {
     setError(null);
     bff
       .get('/api/bff/cart/wishlist')
-      .then((data) => {
+      .then(async (data) => {
         const list = Array.isArray(data)
           ? data
           : ((data as { items?: unknown[] })?.items ?? []);
-        setItems(list as Record<string, unknown>[]);
+        const rows = list as Array<Record<string, unknown>>;
+        const productIds = rows
+          .map((r) => String(r['productId'] ?? ''))
+          .filter(Boolean);
+        let summaries: Array<Record<string, unknown>> = [];
+        if (productIds.length > 0) {
+          try {
+            const result = await bff.get(
+              `/api/bff/catalog/products/summaries?ids=${encodeURIComponent(productIds.join(','))}`,
+            );
+            summaries = Array.isArray(result)
+              ? (result as Array<Record<string, unknown>>)
+              : [];
+          } catch {
+            summaries = [];
+          }
+        }
+        const byId = new Map(summaries.map((s) => [String(s['id']), s]));
+        setItems(
+          rows.map((r, index) => {
+            const productId = String(r['productId'] ?? '');
+            const summary = byId.get(productId);
+            return {
+              id: String(r['id'] ?? productId ?? index),
+              productId,
+              name: summary ? String(summary['name'] ?? '') : undefined,
+              slug: summary ? String(summary['slug'] ?? '') : undefined,
+              minPrice:
+                typeof summary?.['minPrice'] === 'number'
+                  ? (summary['minPrice'] as number)
+                  : undefined,
+              status: summary ? String(summary['status'] ?? '') : undefined,
+              thumbnailUrl: summary
+                ? String(summary['thumbnailUrl'] ?? '')
+                : undefined,
+              missing: !summary,
+            };
+          }),
+        );
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
@@ -75,7 +126,7 @@ export default function WishlistPage() {
         description="Danh sách yêu thích trống."
         action={
           <Link href="/" className="nt-btn nt-btn-primary">
-            Về trang chủ
+            Tiếp tục mua sắm
           </Link>
         }
       />
@@ -94,21 +145,14 @@ export default function WishlistPage() {
           gap: '0.65rem',
         }}
       >
-        {items.map((record, index) => {
-          const id = String(
-            record['id'] ?? record['productId'] ?? record['skuId'] ?? index,
-          );
-          const name = String(
-            record['productName'] ??
-              record['name'] ??
-              record['title'] ??
-              record['skuCode'] ??
-              id,
-          );
-          const slug = record['productSlug'] ?? record['slug'];
+        {items.map((item) => {
+          const unavailable =
+            item.missing ||
+            item.status === 'ARCHIVED' ||
+            item.status === 'UNPUBLISHED';
           return (
             <li
-              key={id}
+              key={item.id}
               style={{
                 border: '1px solid #dbeafe',
                 borderRadius: 12,
@@ -120,21 +164,46 @@ export default function WishlistPage() {
                 alignItems: 'center',
               }}
             >
-              <div>
-                <strong>{name}</strong>
-                {typeof slug === 'string' ? (
-                  <div>
-                    <Link href={`/san-pham/${slug}`}>Xem sản phẩm</Link>
-                  </div>
-                ) : null}
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '0.75rem',
+                  alignItems: 'center',
+                }}
+              >
+                <MediaThumb
+                  mediaRef={item.thumbnailUrl}
+                  alt={item.name ?? 'Sản phẩm'}
+                />
+                <div>
+                  <strong>
+                    {unavailable
+                      ? (item.name ?? 'Không còn kinh doanh')
+                      : (item.name ?? 'Sản phẩm')}
+                  </strong>
+                  {unavailable ? (
+                    <div style={{ color: '#b45309' }}>Không còn kinh doanh</div>
+                  ) : (
+                    <div style={{ color: '#0b1f3a' }}>
+                      {typeof item.minPrice === 'number'
+                        ? formatVnd(item.minPrice)
+                        : '—'}
+                    </div>
+                  )}
+                  {item.slug && !unavailable ? (
+                    <div>
+                      <Link href={`/san-pham/${item.slug}`}>Xem sản phẩm</Link>
+                    </div>
+                  ) : null}
+                </div>
               </div>
               <button
                 type="button"
                 className="nt-btn nt-btn-ghost"
-                disabled={busyId === id}
-                onClick={() => removeItem(id)}
+                disabled={busyId === item.id}
+                onClick={() => removeItem(item.productId || item.id)}
               >
-                {busyId === id ? 'Đang xóa…' : 'Xóa'}
+                {busyId === item.id ? 'Đang xóa…' : 'Xóa'}
               </button>
             </li>
           );

@@ -22,26 +22,28 @@ export default function Page() {
     page,
     filters: domain ? { domain } : undefined,
   });
+
   const sortedItems = useMemo(() => {
     const rows = [...items];
     rows.sort((a, b) => {
-      const dateA = String(a['date'] ?? a['day'] ?? '');
-      const dateB = String(b['date'] ?? b['day'] ?? '');
-      const revA = Number(a['revenue'] ?? a['gmv'] ?? 0);
-      const revB = Number(b['revenue'] ?? b['gmv'] ?? 0);
+      const dateA = String(a['metricDate'] ?? a['date'] ?? a['day'] ?? '');
+      const dateB = String(b['metricDate'] ?? b['date'] ?? b['day'] ?? '');
+      const valA = Number(a['value'] ?? a['revenue'] ?? a['gmv'] ?? 0);
+      const valB = Number(b['value'] ?? b['revenue'] ?? b['gmv'] ?? 0);
       if (sort === 'date_asc') return dateA.localeCompare(dateB);
-      if (sort === 'revenue_desc') return revB - revA;
-      if (sort === 'revenue_asc') return revA - revB;
+      if (sort === 'value_desc') return valB - valA;
+      if (sort === 'value_asc') return valA - valB;
       return dateB.localeCompare(dateA);
     });
     return rows;
   }, [items, sort]);
+
   const columns = useMemo<DataTableColumn<Record<string, unknown>>[]>(
     () => [
       {
-        key: 'date',
+        key: 'metricDate',
         header: 'Ngày',
-        render: (r) => String(r['date'] ?? r['day'] ?? '—'),
+        render: (r) => String(r['metricDate'] ?? r['date'] ?? r['day'] ?? '—'),
       },
       {
         key: 'domain',
@@ -49,16 +51,19 @@ export default function Page() {
         render: (r) => String(r['domain'] ?? '—'),
       },
       {
-        key: 'ordersCount',
-        header: 'Đơn',
-        render: (r) => String(r['ordersCount'] ?? r['orderCount'] ?? '—'),
+        key: 'metricKey',
+        header: 'Metric',
+        render: (r) =>
+          String(r['metricKey'] ?? r['ordersCount'] ?? r['orderCount'] ?? '—'),
       },
       {
-        key: 'revenue',
-        header: 'Doanh thu',
+        key: 'value',
+        header: 'Giá trị',
         render: (r) => {
-          const v = r['revenue'] ?? r['gmv'];
-          return typeof v === 'number' ? v.toLocaleString('vi-VN') : String(v ?? '—');
+          const v = r['value'] ?? r['revenue'] ?? r['gmv'];
+          return typeof v === 'number'
+            ? v.toLocaleString('vi-VN')
+            : String(v ?? '—');
         },
       },
     ],
@@ -70,21 +75,23 @@ export default function Page() {
       <div className="nx-page-header">
         <div>
           <div className="nx-page-title">Báo cáo</div>
-          <div className="nx-page-subtitle">Metrics daily</div>
+          <div className="nx-page-subtitle">
+            Daily metrics (`metricDate` / `metricKey` / `value`)
+          </div>
         </div>
       </div>
       <ListToolbar
         searchValue={domainInput}
         onSearchChange={setDomainInput}
-        searchPlaceholder="order / payment / …"
+        searchPlaceholder="ORDER / PAYMENT / …"
         searchLabel="Domain"
         sortValue={sort}
         onSortChange={setSort}
         sortOptions={[
           { value: 'date_desc', label: 'Ngày mới nhất' },
           { value: 'date_asc', label: 'Ngày cũ nhất' },
-          { value: 'revenue_desc', label: 'Doanh thu giảm' },
-          { value: 'revenue_asc', label: 'Doanh thu tăng' },
+          { value: 'value_desc', label: 'Giá trị giảm' },
+          { value: 'value_asc', label: 'Giá trị tăng' },
         ]}
         onApply={() => {
           setDomain(domainInput.trim());
@@ -101,13 +108,13 @@ export default function Page() {
         columns={columns}
         rows={sortedItems}
         getRowKey={(r) =>
-          String(r.id ?? `${r['date']}-${r['domain']}` ?? Math.random())
+          String(r.id ?? `${r['metricDate']}-${r['metricKey']}`)
         }
         loading={loading}
         error={error}
         onRetry={refetch}
-        emptyTitle="Không có dữ liệu"
-        emptyDescription="Chưa có metrics khớp bộ lọc."
+        emptyTitle="Chưa có metrics"
+        emptyDescription="Projection daily metric trống hoặc domain không khớp."
       />
       <Pagination
         meta={{

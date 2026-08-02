@@ -3,13 +3,7 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": [
-          "errorCode",
-          "message",
-          "details",
-          "traceId",
-          "timestamp"
-        ],
+        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -33,12 +27,7 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": [
-          "page",
-          "pageSize",
-          "totalItems",
-          "totalPages"
-        ],
+        "required": ["page", "pageSize", "totalItems", "totalPages"],
         "properties": {
           "page": {
             "type": "integer"
@@ -62,15 +51,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -82,23 +66,28 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
   "info": {
     "title": "NexaTech Warranty Service",
     "description": "Bảo hành, đổi trả và đồng bộ đơn",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "openapi": "3.0.3",
   "paths": {
     "/api/v1/admin/returns": {
       "get": {
-        "operationId": "AdminWarrantyController_listReturns_v1",
+        "operationId": "AdminWarranty_listReturns_v1",
         "parameters": [
           {
             "in": "header",
@@ -138,14 +127,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v1/admin/returns/{returnId}": {
       "get": {
-        "operationId": "AdminWarrantyController_getReturn_v1",
+        "operationId": "AdminWarranty_getReturn_v1",
         "parameters": [
           {
             "in": "header",
@@ -193,14 +180,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v1/admin/returns/{returnId}/transition": {
       "post": {
-        "operationId": "AdminWarrantyController_transitionReturn_v1",
+        "operationId": "AdminWarranty_transitionReturn_v1",
         "parameters": [
           {
             "in": "header",
@@ -256,14 +241,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v1/admin/warranty/claims": {
       "get": {
-        "operationId": "AdminWarrantyController_listClaims_v1",
+        "operationId": "AdminWarranty_listClaims_v1",
         "parameters": [
           {
             "in": "header",
@@ -303,14 +286,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v1/admin/warranty/claims/{claimId}": {
       "get": {
-        "operationId": "AdminWarrantyController_getClaim_v1",
+        "operationId": "AdminWarranty_getClaim_v1",
         "parameters": [
           {
             "in": "header",
@@ -358,14 +339,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v1/admin/warranty/claims/{claimId}/transition": {
       "post": {
-        "operationId": "AdminWarrantyController_transitionClaim_v1",
+        "operationId": "AdminWarranty_transitionClaim_v1",
         "parameters": [
           {
             "in": "header",
@@ -421,14 +400,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v1/returns": {
       "get": {
-        "operationId": "ReturnsController_list_v1",
+        "operationId": "Returns_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -468,12 +445,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       },
       "post": {
-        "operationId": "ReturnsController_create_v1",
+        "operationId": "Returns_create_v1",
         "parameters": [
           {
             "in": "header",
@@ -521,14 +496,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v1/returns/{returnId}": {
       "get": {
-        "operationId": "ReturnsController_get_v1",
+        "operationId": "Returns_get_v1",
         "parameters": [
           {
             "in": "header",
@@ -576,14 +549,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v1/returns/{returnId}/cancel": {
       "post": {
-        "operationId": "ReturnsController_cancel_v1",
+        "operationId": "Returns_cancel_v1",
         "parameters": [
           {
             "in": "header",
@@ -639,14 +610,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v1/returns/{returnId}/media": {
       "post": {
-        "operationId": "ReturnsController_attachMedia_v1",
+        "operationId": "Returns_attachMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -702,14 +671,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v1/warranty/claims": {
       "get": {
-        "operationId": "ClaimsController_list_v1",
+        "operationId": "Claims_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -749,12 +716,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       },
       "post": {
-        "operationId": "ClaimsController_create_v1",
+        "operationId": "Claims_create_v1",
         "parameters": [
           {
             "in": "header",
@@ -802,14 +767,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v1/warranty/claims/{claimId}": {
       "get": {
-        "operationId": "ClaimsController_get_v1",
+        "operationId": "Claims_get_v1",
         "parameters": [
           {
             "in": "header",
@@ -857,14 +820,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v1/warranty/claims/{claimId}/cancel": {
       "post": {
-        "operationId": "ClaimsController_cancel_v1",
+        "operationId": "Claims_cancel_v1",
         "parameters": [
           {
             "in": "header",
@@ -920,14 +881,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v1/warranty/claims/{claimId}/media": {
       "post": {
-        "operationId": "ClaimsController_attachMedia_v1",
+        "operationId": "Claims_attachMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -983,14 +942,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v2/admin/returns": {
       "get": {
-        "operationId": "AdminWarrantyController_listReturns_v2",
+        "operationId": "AdminWarranty_listReturns_v2",
         "parameters": [
           {
             "in": "header",
@@ -1030,14 +987,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v2/admin/returns/{returnId}": {
       "get": {
-        "operationId": "AdminWarrantyController_getReturn_v2",
+        "operationId": "AdminWarranty_getReturn_v2",
         "parameters": [
           {
             "in": "header",
@@ -1085,14 +1040,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v2/admin/returns/{returnId}/transition": {
       "post": {
-        "operationId": "AdminWarrantyController_transitionReturn_v2",
+        "operationId": "AdminWarranty_transitionReturn_v2",
         "parameters": [
           {
             "in": "header",
@@ -1148,14 +1101,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v2/admin/warranty/claims": {
       "get": {
-        "operationId": "AdminWarrantyController_listClaims_v2",
+        "operationId": "AdminWarranty_listClaims_v2",
         "parameters": [
           {
             "in": "header",
@@ -1195,14 +1146,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v2/admin/warranty/claims/{claimId}": {
       "get": {
-        "operationId": "AdminWarrantyController_getClaim_v2",
+        "operationId": "AdminWarranty_getClaim_v2",
         "parameters": [
           {
             "in": "header",
@@ -1250,14 +1199,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v2/admin/warranty/claims/{claimId}/transition": {
       "post": {
-        "operationId": "AdminWarrantyController_transitionClaim_v2",
+        "operationId": "AdminWarranty_transitionClaim_v2",
         "parameters": [
           {
             "in": "header",
@@ -1313,14 +1260,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-warranty"
-        ]
+        "tags": ["admin-warranty"]
       }
     },
     "/api/v2/returns": {
       "get": {
-        "operationId": "ReturnsController_list_v2",
+        "operationId": "Returns_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -1360,12 +1305,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       },
       "post": {
-        "operationId": "ReturnsController_create_v2",
+        "operationId": "Returns_create_v2",
         "parameters": [
           {
             "in": "header",
@@ -1413,14 +1356,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v2/returns/{returnId}": {
       "get": {
-        "operationId": "ReturnsController_get_v2",
+        "operationId": "Returns_get_v2",
         "parameters": [
           {
             "in": "header",
@@ -1468,14 +1409,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v2/returns/{returnId}/cancel": {
       "post": {
-        "operationId": "ReturnsController_cancel_v2",
+        "operationId": "Returns_cancel_v2",
         "parameters": [
           {
             "in": "header",
@@ -1531,14 +1470,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v2/returns/{returnId}/media": {
       "post": {
-        "operationId": "ReturnsController_attachMedia_v2",
+        "operationId": "Returns_attachMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -1594,14 +1531,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "returns"
-        ]
+        "tags": ["returns"]
       }
     },
     "/api/v2/warranty/claims": {
       "get": {
-        "operationId": "ClaimsController_list_v2",
+        "operationId": "Claims_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -1641,12 +1576,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       },
       "post": {
-        "operationId": "ClaimsController_create_v2",
+        "operationId": "Claims_create_v2",
         "parameters": [
           {
             "in": "header",
@@ -1694,14 +1627,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v2/warranty/claims/{claimId}": {
       "get": {
-        "operationId": "ClaimsController_get_v2",
+        "operationId": "Claims_get_v2",
         "parameters": [
           {
             "in": "header",
@@ -1749,14 +1680,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v2/warranty/claims/{claimId}/cancel": {
       "post": {
-        "operationId": "ClaimsController_cancel_v2",
+        "operationId": "Claims_cancel_v2",
         "parameters": [
           {
             "in": "header",
@@ -1812,14 +1741,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/api/v2/warranty/claims/{claimId}/media": {
       "post": {
-        "operationId": "ClaimsController_attachMedia_v2",
+        "operationId": "Claims_attachMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -1875,48 +1802,40 @@
             "description": ""
           }
         },
-        "tags": [
-          "warranty-claims"
-        ]
+        "tags": ["warranty-claims"]
       }
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health",
+        "operationId": "Health_health",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_live",
+        "operationId": "Health_live",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_ready",
+        "operationId": "Health_ready",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     }
   },

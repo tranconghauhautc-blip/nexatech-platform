@@ -3,13 +3,7 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": [
-          "errorCode",
-          "message",
-          "details",
-          "traceId",
-          "timestamp"
-        ],
+        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -33,12 +27,7 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": [
-          "page",
-          "pageSize",
-          "totalItems",
-          "totalPages"
-        ],
+        "required": ["page", "pageSize", "totalItems", "totalPages"],
         "properties": {
           "page": {
             "type": "integer"
@@ -62,15 +51,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -82,23 +66,28 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
   "info": {
     "title": "NexaTech Support Service",
     "description": "Ticket hỗ trợ và hội thoại",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "openapi": "3.0.3",
   "paths": {
     "/api/v1/admin/support/tickets": {
       "get": {
-        "operationId": "AdminSupportController_listTickets_v1",
+        "operationId": "AdminSupport_listTickets_v1",
         "parameters": [
           {
             "in": "header",
@@ -138,14 +127,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}": {
       "get": {
-        "operationId": "AdminSupportController_getTicket_v1",
+        "operationId": "AdminSupport_getTicket_v1",
         "parameters": [
           {
             "in": "header",
@@ -193,14 +180,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/assign": {
       "post": {
-        "operationId": "AdminSupportController_assign_v1",
+        "operationId": "AdminSupport_assign_v1",
         "parameters": [
           {
             "in": "header",
@@ -256,14 +241,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/messages": {
       "post": {
-        "operationId": "AdminSupportController_addMessage_v1",
+        "operationId": "AdminSupport_addMessage_v1",
         "parameters": [
           {
             "in": "header",
@@ -319,14 +302,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/priority": {
       "patch": {
-        "operationId": "AdminSupportController_updatePriority_v1",
+        "operationId": "AdminSupport_updatePriority_v1",
         "parameters": [
           {
             "in": "header",
@@ -382,14 +363,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/transition": {
       "post": {
-        "operationId": "AdminSupportController_transition_v1",
+        "operationId": "AdminSupport_transition_v1",
         "parameters": [
           {
             "in": "header",
@@ -445,14 +424,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v1/support/tickets": {
       "get": {
-        "operationId": "TicketsController_list_v1",
+        "operationId": "Tickets_list_v1",
         "parameters": [
           {
             "in": "header",
@@ -492,12 +469,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       },
       "post": {
-        "operationId": "TicketsController_create_v1",
+        "operationId": "Tickets_create_v1",
         "parameters": [
           {
             "in": "header",
@@ -545,14 +520,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v1/support/tickets/{ticketId}": {
       "get": {
-        "operationId": "TicketsController_get_v1",
+        "operationId": "Tickets_get_v1",
         "parameters": [
           {
             "in": "header",
@@ -600,14 +573,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v1/support/tickets/{ticketId}/attachments": {
       "post": {
-        "operationId": "TicketsController_attachMedia_v1",
+        "operationId": "Tickets_attachMedia_v1",
         "parameters": [
           {
             "in": "header",
@@ -663,14 +634,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v1/support/tickets/{ticketId}/cancel": {
       "post": {
-        "operationId": "TicketsController_cancel_v1",
+        "operationId": "Tickets_cancel_v1",
         "parameters": [
           {
             "in": "header",
@@ -726,14 +695,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v1/support/tickets/{ticketId}/messages": {
       "post": {
-        "operationId": "TicketsController_addMessage_v1",
+        "operationId": "Tickets_addMessage_v1",
         "parameters": [
           {
             "in": "header",
@@ -789,14 +756,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v2/admin/support/tickets": {
       "get": {
-        "operationId": "AdminSupportController_listTickets_v2",
+        "operationId": "AdminSupport_listTickets_v2",
         "parameters": [
           {
             "in": "header",
@@ -836,14 +801,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}": {
       "get": {
-        "operationId": "AdminSupportController_getTicket_v2",
+        "operationId": "AdminSupport_getTicket_v2",
         "parameters": [
           {
             "in": "header",
@@ -891,14 +854,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/assign": {
       "post": {
-        "operationId": "AdminSupportController_assign_v2",
+        "operationId": "AdminSupport_assign_v2",
         "parameters": [
           {
             "in": "header",
@@ -954,14 +915,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/messages": {
       "post": {
-        "operationId": "AdminSupportController_addMessage_v2",
+        "operationId": "AdminSupport_addMessage_v2",
         "parameters": [
           {
             "in": "header",
@@ -1017,14 +976,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/priority": {
       "patch": {
-        "operationId": "AdminSupportController_updatePriority_v2",
+        "operationId": "AdminSupport_updatePriority_v2",
         "parameters": [
           {
             "in": "header",
@@ -1080,14 +1037,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/transition": {
       "post": {
-        "operationId": "AdminSupportController_transition_v2",
+        "operationId": "AdminSupport_transition_v2",
         "parameters": [
           {
             "in": "header",
@@ -1143,14 +1098,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-support"
-        ]
+        "tags": ["admin-support"]
       }
     },
     "/api/v2/support/tickets": {
       "get": {
-        "operationId": "TicketsController_list_v2",
+        "operationId": "Tickets_list_v2",
         "parameters": [
           {
             "in": "header",
@@ -1190,12 +1143,10 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       },
       "post": {
-        "operationId": "TicketsController_create_v2",
+        "operationId": "Tickets_create_v2",
         "parameters": [
           {
             "in": "header",
@@ -1243,14 +1194,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v2/support/tickets/{ticketId}": {
       "get": {
-        "operationId": "TicketsController_get_v2",
+        "operationId": "Tickets_get_v2",
         "parameters": [
           {
             "in": "header",
@@ -1298,14 +1247,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v2/support/tickets/{ticketId}/attachments": {
       "post": {
-        "operationId": "TicketsController_attachMedia_v2",
+        "operationId": "Tickets_attachMedia_v2",
         "parameters": [
           {
             "in": "header",
@@ -1361,14 +1308,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v2/support/tickets/{ticketId}/cancel": {
       "post": {
-        "operationId": "TicketsController_cancel_v2",
+        "operationId": "Tickets_cancel_v2",
         "parameters": [
           {
             "in": "header",
@@ -1424,14 +1369,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/api/v2/support/tickets/{ticketId}/messages": {
       "post": {
-        "operationId": "TicketsController_addMessage_v2",
+        "operationId": "Tickets_addMessage_v2",
         "parameters": [
           {
             "in": "header",
@@ -1487,48 +1430,40 @@
             "description": ""
           }
         },
-        "tags": [
-          "support-tickets"
-        ]
+        "tags": ["support-tickets"]
       }
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health",
+        "operationId": "Health_health",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_live",
+        "operationId": "Health_live",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_ready",
+        "operationId": "Health_ready",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     }
   },

@@ -353,6 +353,39 @@ export class CatalogService {
       status: item.status,
     }));
   }
+
+  async getProductSummariesByIds(idsRaw?: string) {
+    const ids = String(idsRaw ?? '')
+      .split(',')
+      .map((id) => id.trim())
+      .filter(Boolean)
+      .slice(0, 50);
+    if (ids.length === 0) {
+      return [];
+    }
+    const products = await Promise.all(
+      ids.map((id) => this.repository.getProductById(id)),
+    );
+    return products
+      .filter((p): p is NonNullable<typeof p> => Boolean(p))
+      .map((product) => {
+        const amounts = product.skus
+          .map((sku) => sku.price?.amount)
+          .filter((amount): amount is number => typeof amount === 'number');
+        const primary =
+          product.mediaLinks.find((m) => m.isPrimary) ?? product.mediaLinks[0];
+        return {
+          id: product.id,
+          slug: product.slug,
+          name: product.name,
+          status: product.status,
+          brandName: product.brand.name,
+          minPrice: amounts.length > 0 ? Math.min(...amounts) : 0,
+          currency: 'VND',
+          thumbnailUrl: primary?.mediaId,
+        };
+      });
+  }
 }
 
 export function parseRolesHeader(value?: string): Role[] {

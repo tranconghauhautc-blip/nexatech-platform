@@ -100,12 +100,15 @@ export async function bffRequest<T = unknown>(
   return parsed as T;
 }
 
-export function getErrorMessage(error: unknown): string {
+export function getErrorMessage(
+  error: unknown,
+  fallback = 'Đã xảy ra lỗi không xác định',
+): string {
   if (error instanceof ApiError) {
     return error.message;
   }
   if (error instanceof Error) {
     return error.message;
   }
-  return 'Đã xảy ra lỗi không xác định';
+  return fallback;
 }

@@ -2,15 +2,23 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
+import { Suspense, useEffect } from 'react';
+import { useCart } from '../../../components/providers/cart-provider';
 import styles from './page.module.css';
 
 function ResultContent() {
   const search = useSearchParams();
+  const { refresh } = useCart();
   const status = search.get('status') ?? 'success';
   const orderId = search.get('orderId');
   const code = search.get('code');
   const ok = status === 'success';
+
+  useEffect(() => {
+    if (ok) {
+      void refresh();
+    }
+  }, [ok, refresh]);
 
   return (
     <div className={`nt-container ${styles.root}`}>
@@ -19,8 +27,8 @@ function ResultContent() {
       </h1>
       <p className={styles.lead}>
         {ok
-          ? 'Cảm ơn bạn đã mua sắm tại NexaTech. Đơn hàng đang được xử lý.'
-          : 'Vui lòng kiểm tra lại đơn hàng hoặc thử phương thức thanh toán khác.'}
+          ? 'Cảm ơn bạn đã mua sắm tại NexaTech. Đơn hàng đang được xử lý. Giỏ hàng đã được làm trống.'
+          : 'Vui lòng kiểm tra lại đơn hàng hoặc thử phương thức thanh toán khác. Giỏ hàng vẫn được giữ.'}
       </p>
       {code ? (
         <p>

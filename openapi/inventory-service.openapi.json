@@ -3,13 +3,7 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": [
-          "errorCode",
-          "message",
-          "details",
-          "traceId",
-          "timestamp"
-        ],
+        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -33,12 +27,7 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": [
-          "page",
-          "pageSize",
-          "totalItems",
-          "totalPages"
-        ],
+        "required": ["page", "pageSize", "totalItems", "totalPages"],
         "properties": {
           "page": {
             "type": "integer"
@@ -62,15 +51,10 @@
         "bearerFormat": "JWT",
         "description": "JWT access token from identity POST /api/v1/auth/login. Never commit real tokens."
       },
-      "userId": {
+      "idempotencyKey": {
         "type": "apiKey",
         "in": "header",
-        "name": "x-user-id"
-      },
-      "userRoles": {
-        "type": "apiKey",
-        "in": "header",
-        "name": "x-user-roles"
+        "name": "Idempotency-Key"
       },
       "requestId": {
         "type": "apiKey",
@@ -82,23 +66,28 @@
         "in": "header",
         "name": "x-trace-id"
       },
-      "idempotencyKey": {
+      "userId": {
         "type": "apiKey",
         "in": "header",
-        "name": "Idempotency-Key"
+        "name": "x-user-id"
+      },
+      "userRoles": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "x-user-roles"
       }
     }
   },
   "info": {
     "title": "NexaTech Inventory Service",
     "description": "Kho, cửa hàng, tồn, giữ và điều chuyển",
-    "version": "1.0"
+    "version": "1.0.0"
   },
   "openapi": "3.0.3",
   "paths": {
     "/api/v1/admin/inventory/reservations/{id}/commit": {
       "post": {
-        "operationId": "AdminInventoryController_commitReservation_v1",
+        "operationId": "AdminInventory_commitReservation_v1",
         "parameters": [
           {
             "in": "header",
@@ -130,14 +119,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/reservations/{id}/release": {
       "post": {
-        "operationId": "AdminInventoryController_releaseReservation_v1",
+        "operationId": "AdminInventory_releaseReservation_v1",
         "parameters": [
           {
             "in": "header",
@@ -169,14 +156,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/stock/adjust": {
       "post": {
-        "operationId": "AdminInventoryController_adjustStock_v1",
+        "operationId": "AdminInventory_adjustStock_v1",
         "parameters": [
           {
             "in": "header",
@@ -200,14 +185,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/stock/issue": {
       "post": {
-        "operationId": "AdminInventoryController_issueStock_v1",
+        "operationId": "AdminInventory_issueStock_v1",
         "parameters": [
           {
             "in": "header",
@@ -231,14 +214,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/stock/receive": {
       "post": {
-        "operationId": "AdminInventoryController_receiveStock_v1",
+        "operationId": "AdminInventory_receiveStock_v1",
         "parameters": [
           {
             "in": "header",
@@ -262,14 +243,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/stock/reserve": {
       "post": {
-        "operationId": "AdminInventoryController_reserveStock_v1",
+        "operationId": "AdminInventory_reserveStock_v1",
         "parameters": [
           {
             "in": "header",
@@ -293,14 +272,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/stock/return": {
       "post": {
-        "operationId": "AdminInventoryController_returnStock_v1",
+        "operationId": "AdminInventory_returnStock_v1",
         "parameters": [
           {
             "in": "header",
@@ -324,14 +301,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/stores": {
       "post": {
-        "operationId": "AdminInventoryController_createStore_v1",
+        "operationId": "AdminInventory_createStore_v1",
         "parameters": [
           {
             "in": "header",
@@ -355,14 +330,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/transfers": {
       "post": {
-        "operationId": "AdminInventoryController_transferStock_v1",
+        "operationId": "AdminInventory_transferStock_v1",
         "parameters": [
           {
             "in": "header",
@@ -386,14 +359,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/admin/inventory/warehouses": {
       "post": {
-        "operationId": "AdminInventoryController_createWarehouse_v1",
+        "operationId": "AdminInventory_createWarehouse_v1",
         "parameters": [
           {
             "in": "header",
@@ -417,14 +388,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v1/movements": {
       "get": {
-        "operationId": "InventoryController_movements_v1",
+        "operationId": "Inventory_movements_v1",
         "parameters": [
           {
             "in": "query",
@@ -456,14 +425,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/reservations/{id}": {
       "get": {
-        "operationId": "InventoryController_reservation_v1",
+        "operationId": "Inventory_reservation_v1",
         "parameters": [
           {
             "in": "path",
@@ -479,14 +446,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/stock": {
       "get": {
-        "operationId": "InventoryController_stock_v1",
+        "operationId": "Inventory_stock_v1",
         "parameters": [
           {
             "in": "query",
@@ -518,14 +483,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/stock/availability": {
       "get": {
-        "operationId": "InventoryController_availability_v1",
+        "operationId": "Inventory_availability_v1",
         "parameters": [
           {
             "in": "query",
@@ -557,27 +520,23 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/stock/low": {
       "get": {
-        "operationId": "InventoryController_lowStock_v1",
+        "operationId": "Inventory_lowStock_v1",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/stock/sources": {
       "get": {
-        "operationId": "InventoryController_sources_v1",
+        "operationId": "Inventory_sources_v1",
         "parameters": [
           {
             "in": "query",
@@ -609,40 +568,34 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/stores": {
       "get": {
-        "operationId": "InventoryController_stores_v1",
+        "operationId": "Inventory_stores_v1",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v1/warehouses": {
       "get": {
-        "operationId": "InventoryController_warehouses_v1",
+        "operationId": "Inventory_warehouses_v1",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/admin/inventory/reservations/{id}/commit": {
       "post": {
-        "operationId": "AdminInventoryController_commitReservation_v2",
+        "operationId": "AdminInventory_commitReservation_v2",
         "parameters": [
           {
             "in": "header",
@@ -674,14 +627,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/reservations/{id}/release": {
       "post": {
-        "operationId": "AdminInventoryController_releaseReservation_v2",
+        "operationId": "AdminInventory_releaseReservation_v2",
         "parameters": [
           {
             "in": "header",
@@ -713,14 +664,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/stock/adjust": {
       "post": {
-        "operationId": "AdminInventoryController_adjustStock_v2",
+        "operationId": "AdminInventory_adjustStock_v2",
         "parameters": [
           {
             "in": "header",
@@ -744,14 +693,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/stock/issue": {
       "post": {
-        "operationId": "AdminInventoryController_issueStock_v2",
+        "operationId": "AdminInventory_issueStock_v2",
         "parameters": [
           {
             "in": "header",
@@ -775,14 +722,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/stock/receive": {
       "post": {
-        "operationId": "AdminInventoryController_receiveStock_v2",
+        "operationId": "AdminInventory_receiveStock_v2",
         "parameters": [
           {
             "in": "header",
@@ -806,14 +751,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/stock/reserve": {
       "post": {
-        "operationId": "AdminInventoryController_reserveStock_v2",
+        "operationId": "AdminInventory_reserveStock_v2",
         "parameters": [
           {
             "in": "header",
@@ -837,14 +780,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/stock/return": {
       "post": {
-        "operationId": "AdminInventoryController_returnStock_v2",
+        "operationId": "AdminInventory_returnStock_v2",
         "parameters": [
           {
             "in": "header",
@@ -868,14 +809,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/stores": {
       "post": {
-        "operationId": "AdminInventoryController_createStore_v2",
+        "operationId": "AdminInventory_createStore_v2",
         "parameters": [
           {
             "in": "header",
@@ -899,14 +838,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/transfers": {
       "post": {
-        "operationId": "AdminInventoryController_transferStock_v2",
+        "operationId": "AdminInventory_transferStock_v2",
         "parameters": [
           {
             "in": "header",
@@ -930,14 +867,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/admin/inventory/warehouses": {
       "post": {
-        "operationId": "AdminInventoryController_createWarehouse_v2",
+        "operationId": "AdminInventory_createWarehouse_v2",
         "parameters": [
           {
             "in": "header",
@@ -961,14 +896,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "admin-inventory"
-        ]
+        "tags": ["admin-inventory"]
       }
     },
     "/api/v2/movements": {
       "get": {
-        "operationId": "InventoryController_movements_v2",
+        "operationId": "Inventory_movements_v2",
         "parameters": [
           {
             "in": "query",
@@ -1000,14 +933,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/reservations/{id}": {
       "get": {
-        "operationId": "InventoryController_reservation_v2",
+        "operationId": "Inventory_reservation_v2",
         "parameters": [
           {
             "in": "path",
@@ -1023,14 +954,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/stock": {
       "get": {
-        "operationId": "InventoryController_stock_v2",
+        "operationId": "Inventory_stock_v2",
         "parameters": [
           {
             "in": "query",
@@ -1062,14 +991,12 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/stock/availability": {
       "get": {
-        "operationId": "InventoryController_availability_v2",
+        "operationId": "Inventory_availability_v2",
         "parameters": [
           {
             "in": "query",
@@ -1101,27 +1028,23 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/stock/low": {
       "get": {
-        "operationId": "InventoryController_lowStock_v2",
+        "operationId": "Inventory_lowStock_v2",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/stock/sources": {
       "get": {
-        "operationId": "InventoryController_sources_v2",
+        "operationId": "Inventory_sources_v2",
         "parameters": [
           {
             "in": "query",
@@ -1153,74 +1076,62 @@
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/stores": {
       "get": {
-        "operationId": "InventoryController_stores_v2",
+        "operationId": "Inventory_stores_v2",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/api/v2/warehouses": {
       "get": {
-        "operationId": "InventoryController_warehouses_v2",
+        "operationId": "Inventory_warehouses_v2",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "inventory"
-        ]
+        "tags": ["inventory"]
       }
     },
     "/health": {
       "get": {
-        "operationId": "HealthController_health",
+        "operationId": "Health_health",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/live": {
       "get": {
-        "operationId": "HealthController_live",
+        "operationId": "Health_live",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     },
     "/health/ready": {
       "get": {
-        "operationId": "HealthController_ready",
+        "operationId": "Health_ready",
         "responses": {
           "200": {
             "description": ""
           }
         },
-        "tags": [
-          "Health"
-        ]
+        "tags": ["Health"]
       }
     }
   },
