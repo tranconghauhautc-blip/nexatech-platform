@@ -49,6 +49,19 @@ pnpm seed:accounts
 
 Emails: `staff@nexatech.local`, `manager@nexatech.local`, `admin@nexatech.local`, `superadmin@nexatech.local`.
 
+## Seed customers (Storefront — local only)
+
+```powershell
+$env:NODE_ENV="development"
+$env:NEXATECH_ALLOW_DEV_SEED="YES"
+$env:DEV_SEED_PASSWORD="<operator-defined-strong-password>"
+$env:IDENTITY_DATABASE_URL="postgresql://nexatech_identity:changeme@localhost:5432/nexatech_identity"
+$env:CUSTOMER_DATABASE_URL="postgresql://nexatech_customer:changeme@localhost:5432/nexatech_customer"
+pnpm seed:customers
+```
+
+Emails: `customer1@nexatech.local`, `customer2@nexatech.local` (role Customer, verified, ACTIVE).
+
 Xem thêm: [LOCAL-SECURITY-LAB-GUIDE.md](./LOCAL-SECURITY-LAB-GUIDE.md), [SWAGGER-LINKS.md](./SWAGGER-LINKS.md).
 
 ## Combined Swagger portal

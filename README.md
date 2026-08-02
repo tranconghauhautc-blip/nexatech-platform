@@ -99,3 +99,17 @@ pnpm seed:accounts
 
 Accounts: `staff@nexatech.local`, `manager@nexatech.local`, `admin@nexatech.local`, `superadmin@nexatech.local`.  
 Password is never hard-coded; set `DEV_SEED_RESET_PASSWORD=YES` only when intentionally resetting seeded passwords.
+
+## DEV Customer accounts (Storefront login — local only)
+
+```powershell
+$env:NODE_ENV="development"
+$env:NEXATECH_ALLOW_DEV_SEED="YES"
+$env:DEV_SEED_PASSWORD="<operator-defined-strong-password>"
+$env:IDENTITY_DATABASE_URL="postgresql://nexatech_identity:changeme@localhost:5432/nexatech_identity"
+$env:CUSTOMER_DATABASE_URL="postgresql://nexatech_customer:changeme@localhost:5432/nexatech_customer"
+pnpm seed:customers
+```
+
+Accounts: `customer1@nexatech.local` (Nguyễn Văn Test), `customer2@nexatech.local` (Trần Thị Demo).  
+Role `Customer`, `ACTIVE`, email verified — no OTP after seed. Does not modify internal Staff/Manager/Admin/SuperAdmin accounts.

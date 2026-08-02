@@ -25,6 +25,7 @@
 - [x] Placeholder product images generated + uploaded to MinIO (217 media)
 - [x] Customer checkout smoke (`pnpm checkout:smoke` register→cart→order→COD PASSED)
 - [x] Seed accounts + inventory restocked for lab
+- [x] `pnpm seed:customers` — 2 Storefront Customer accounts (idempotent, local-only)
 
 ## Roadmap milestone
 

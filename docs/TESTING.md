@@ -275,16 +275,23 @@ pnpm e2e:admin
 
 ```powershell
 pnpm test:seed-accounts
+pnpm test:seed-customers
 $env:NODE_ENV="development"
 $env:NEXATECH_ALLOW_DEV_SEED="YES"
 $env:DEV_SEED_PASSWORD="<operator-defined-strong-password>"
 $env:IDENTITY_DATABASE_URL="postgresql://nexatech_identity:changeme@localhost:5432/nexatech_identity"
+$env:CUSTOMER_DATABASE_URL="postgresql://nexatech_customer:changeme@localhost:5432/nexatech_customer"
 pnpm exec prisma migrate status --schema=apps/identity-service/prisma/schema.prisma
 pnpm seed:accounts
 pnpm seed:accounts   # idempotent second run
-# Login smoke (identity):
+pnpm seed:customers
+pnpm seed:customers  # idempotent second run
+# Login smoke (identity + customer profile):
 # POST http://localhost:3001/api/v1/auth/login  { email, password }
-# Emails: staff|manager|admin|superadmin@nexatech.local
+# GET  http://localhost:3002/api/v1/customers/me  (header x-user-id)
+# Emails internal: staff|manager|admin|superadmin@nexatech.local
+# Emails customer: customer1|customer2@nexatech.local
 ```
 
-Guards must fail (exit ≠ 0) when production / missing ack / missing or weak password.
+Guards must fail (exit ≠ 0) when production / missing ack / missing or weak password.  
+`seed:customers` requires both `IDENTITY_DATABASE_URL` and `CUSTOMER_DATABASE_URL`; never touches the 4 internal accounts.
