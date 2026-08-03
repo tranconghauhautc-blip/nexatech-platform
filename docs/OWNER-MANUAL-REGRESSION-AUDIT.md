@@ -1,70 +1,63 @@
 # Owner Manual Regression Audit
 
-> **Updated:** 2026-08-03 · **Baseline:** `main` @ `359b8cf` · **No commit / no push**
+> **Updated:** 2026-08-03 · **Checkpoint:** `fix/full-runtime-acceptance` @ `8cf5c1b` · **No commit / no push this phase**
 
 ## 1. Pre-flight (runtime truth)
 
 | Check | Result |
 | ----- | ------ |
-| `git status` | Dirty working tree (pickup fix + docs); not committed |
-| `git log -1` | `359b8cf feat: complete VN address, customer payments/reviews, and local acceptance` |
-| Docker | 23 containers Up; **0 restart loops**; healthy after rebuild |
+| `git log -1` | `8cf5c1b fix: restore store pickup with CRUD, seed, and runtime filtering` |
+| Working tree | Dirty after audit projection + media:audit + pickup COD e2e + docs |
+| Docker | 23 containers Up; **0 restart loops**; healthy after rebuilds |
 | PostgreSQL / Redis / RabbitMQ / MinIO | Connected |
-| Kong / Swagger :8090 / Security Guide :3200 | Healthy / 200 |
-| Nest 3001–3014 + storefront + admin | Healthy |
+| Kong / Swagger :8090 / Security Guide :3200 | Healthy |
 
-## 2. Previous acceptance vs owner manual test
+## 2. Store Pickup — closed
 
-| Claim (FUNCTIONAL-ACCEPTANCE 2026-08-02) | Owner saw | Gap |
-| ---------------------------------------- | --------- | --- |
-| Checkout pickup **PASS** | “Không có cửa hàng nhận hàng khả dụng.” | UI only; **Store count was 0** |
-| Admin stores OK | `/cua-hang-kho` = HN-MAIN warehouse; no CRUD | Page listed warehouses only |
-| Seed inventory | Warehouse stock only | No pickup store seed |
-| e2e address-pickup PASS | Soft assertions | Did not require real store card |
+| Gap (owner manual) | Fix evidence |
+| ------------------ | ------------ |
+| Empty Store table | Seed + Admin create; HCM-NGUYEN-HUE + HN-ACCEPT-01 |
+| No Admin CRUD | Browser Admin create/edit/disable/re-enable |
+| Soft e2e | Hardened pickup assertions + dedicated COD acceptance e2e **PASS** |
+| Audit not in Admin UI | Inventory → `audit.recorded` → reporting; `/nhat-ky` shows row |
 
-## 3. Root cause — Store Pickup (confirmed + fixed)
+## 3. Authenticated Admin browser
 
-1. **MISSING_DATA:** `Store` table was empty; only warehouse `HN-MAIN`.
-2. **MISSING_CRUD:** Admin UI had no create/edit for stores; Staff/Admin saw no buttons because UI omitted them (not hide-only RBAC).
-3. **Schema gap:** Store lacked `pickupEnabled`, `phone`, `openingHours`.
-4. **Test realism:** Playwright did not require persisted pickup store / order create.
-5. **HN-MAIN left as warehouse** (correct).
+| Check | Evidence level |
+| ----- | -------------- |
+| Admin login | PASS_BROWSER |
+| Manager / SuperAdmin / Staff login | PASS_BROWSER (Playwright rbac-roles) |
+| HCM-NGUYEN-HUE visible | PASS_BROWSER |
+| Create store HN-ACCEPT-01 | PASS_BROWSER + API |
+| Disable / re-enable | PASS_BROWSER (INACTIVE badge) + Admin API |
+| Persistence after refresh/restart | PASS_RUNTIME (inventory stop/start) |
+| Staff mutation 403 | PASS_API_ONLY (POST stores **403**) |
+| Audit in Admin UI | PASS_BROWSER (`inventory.store.updated`) |
 
-### Fixes applied this session
+## 4. Authenticated Customer browser
 
-- Migration `20260803120000_store_pickup_fields` (ADD COLUMN only) — applied to live DB.
-- `GET /api/v1/stores/pickup` filter: `isActive && pickupEnabled`.
-- Admin `/cua-hang-kho` tabs Stores/Warehouses + CRUD (Manager+ UI; Manager+ API).
-- Idempotent seed `pnpm seed:pickup-stores` → `HCM-NGUYEN-HUE`.
-- Order validates pickup store via inventory before reserve.
-- Storefront checkout cards show name/address/phone/hours; order detail hydrates store.
-- e2e asserts real store name present.
-- OpenAPI regenerate: **391 paths**, includes `/api/v1|v2/stores/pickup`, `openapi: 3.0.3`.
+| Check | Evidence level |
+| ----- | -------------- |
+| Login customer1 | PASS_BROWSER |
+| Add to cart | PASS_BROWSER |
+| Pickup store cards / no raw storeId | PASS_BROWSER |
+| Select HCM-NGUYEN-HUE + COD order | PASS_BROWSER (Playwright; order `NT-20260803-TCXQ8H`) |
+| Exactly one new order per run | PASS_BROWSER |
+| Cart clears | PASS_BROWSER |
+| Detail shows store name/address/phone | PASS_BROWSER |
+| No shipment error for pickup | PASS_BROWSER |
+| customer2 isolation | PASS_BROWSER |
 
-### Runtime evidence (post-fix)
+## 5. media:audit
 
-| Check | Result |
-| ----- | ------ |
-| DB Store rows | HCM-NGUYEN-HUE active+pickup; HCM-OFF/HCM-INACT excluded from pickup |
-| Direct + Kong pickup | 200 → `HCM-NGUYEN-HUE` |
-| HN-MAIN | Unchanged warehouse |
-| Staff POST store | **403 FORBIDDEN** |
-| Restart inventory | Pickup store **persisted** |
-| inventory-service tests | 15 passed |
-| order-service tests | 40 passed |
-| openapi:validate | PASSED |
-| Browser checkout (no login) | Redirect/auth gate (password not on host) |
-| Browser admin stores | 401 without session (expected) |
+| Before | After |
+| ------ | ----- |
+| Reported 8/10 (script only sampled `slice(0,8)`) | Sample all page items; require full coverage → **10/10 PASS** |
 
-## 4. Full module classification (honest)
+## 6. Full gates (all exit 0)
 
-See `docs/FUNCTIONAL-ACCEPTANCE-REPORT.md` final matrix. Summary:
+format · lint · test · e2e (24) · `NODE_ENV=production` build · address-data:validate · media:audit · openapi generate/combine/validate (391) · security:validate · security:test:secure · security:smoke
 
-- **PASS_RUNTIME** only where DB/API/restart proven (pickup seed/API/filter/RBAC API).
-- Auth/profile/checkout browser: **NOT_TESTED** without `DEV_SEED_PASSWORD` on host.
-- Product images: **MISSING_DATA** (`mediaLinks=[]` on sampled product).
-- Many modules: **PASS_API_ONLY** (health / 401 on protected routes) — not elevated to PASS.
-
-## 5. Constraints honored
+## 7. Constraints honored
 
 No `git reset --hard`, no volume wipe, no DB drop/truncate, no commit/push, intentional vulns remain always-on.

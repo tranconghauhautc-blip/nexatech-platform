@@ -2,29 +2,27 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** Owner manual regression re-audit — **Store Pickup fixed; awaiting owner browser review**
+- **Milestone đang làm:** Owner manual regression — **runtime acceptance COMPLETE; awaiting owner review**
 - **Cập nhật lần cuối:** 2026-08-03
-- **Branch:** `main` @ `359b8cf` (+ uncommitted pickup/docs — **chưa commit**)
+- **Branch:** `fix/full-runtime-acceptance` @ `8cf5c1b` (+ uncommitted audit/media/e2e/docs)
 - **Owner gate:** Dừng trước commit / không push
 
-## Re-audit 2026-08-03
+## Runtime acceptance 2026-08-03 (this session)
 
 ### Done
 
-- [x] Pre-flight git + Docker health
-- [x] Root-cause Store Pickup (empty Store table + missing Admin CRUD + soft e2e)
-- [x] Migration pickup fields; seed `HCM-NGUYEN-HUE`; Admin CRUD; API filter; order validation
-- [x] OpenAPI generate/combine/validate — **391 paths**, `stores/pickup`
-- [x] Unit tests inventory + order; seed script test; hardened Playwright pickup assertions
-- [x] Rebuild inventory/order/admin/storefront; restart persistence OK
-- [x] Docs: OWNER-MANUAL-REGRESSION-AUDIT, OWNER-MANUAL-TEST-CHECKLIST, acceptance reports
-- [ ] Owner sets `DEV_SEED_PASSWORD` and completes browser checklist
+- [x] Checkpoint HEAD `8cf5c1b` treated as immutable (no reset/revert/force-push)
+- [x] Admin browser: Admin login; Store CRUD; HCM-NGUYEN-HUE visible; create HN-ACCEPT-01; disable/re-enable; Staff POST **403**; audit row in `/nhat-ky`
+- [x] Inventory publishes `audit.recorded` → reporting projection (restart reporting consumer)
+- [x] Customer browser/Playwright: customer1 COD pickup order at HCM-NGUYEN-HUE; cart clears; detail shows store; customer2 isolation
+- [x] `media:audit` fixed to sample all page products → **10/10 PASS**
+- [x] Full gates: format, lint, test, e2e (24), production build, address-data, media:audit, openapi gen/combine/validate (391), security validate/secure/smoke
+- [x] Rebuild inventory + reporting; inventory stop/start persistence OK
 - [ ] Owner review — then commit (not yet)
 
-### Blockers for full PASS_BROWSER
+### Lab note
 
-- No `.env` / `DEV_SEED_PASSWORD` on host this session
-- Some catalog PDPs still show empty `mediaLinks` (media:audit 8/10 OK)
+- Dev seed passwords were reset this session via `DEV_SEED_RESET_PASSWORD=YES` (operator-defined; not committed). Owner should re-seed with their own `DEV_SEED_PASSWORD` if needed.
 
 ## Roadmap milestone
 
@@ -32,4 +30,4 @@
 | -- | --------- | ---------- |
 | M0–M21 | Prior milestones | ✅ Done |
 | RB | Full re-baseline | ✅ prior local acceptance |
-| OM | Owner manual regression | 🔄 Pickup fixed — owner browser pending |
+| OM | Owner manual regression | ✅ runtime acceptance — owner review |

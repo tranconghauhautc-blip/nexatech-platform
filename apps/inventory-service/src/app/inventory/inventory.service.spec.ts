@@ -38,10 +38,21 @@ describe('InventoryService', () => {
         openingHours: '9:00-21:00',
       },
       managerRoles,
+      'actor-manager-1',
     );
     expect(await service.listWarehouses()).toHaveLength(1);
     expect((await service.listStores())[0]?.code).toBe(store.code);
     expect(await service.listPickupStores()).toHaveLength(1);
+    const audits = publisher.published.filter(
+      (e) => e.eventType === EventTypes.AUDIT_RECORDED,
+    );
+    expect(audits.length).toBeGreaterThanOrEqual(2);
+    expect(
+      audits.some((e) => e.payload?.['action'] === 'inventory.store.created'),
+    ).toBe(true);
+    expect(audits.some((e) => e.payload?.['resourceId'] === store.id)).toBe(
+      true,
+    );
   });
 
   it('filters pickup stores and forbids Staff store create', async () => {

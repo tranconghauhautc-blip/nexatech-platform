@@ -1,14 +1,14 @@
 # LOCAL RUNTIME REPORT
 
-> Probe **2026-08-03** — owner manual regression (Store Pickup fix).
+> Probe **2026-08-03** — full runtime acceptance after Store Pickup checkpoint `8cf5c1b`.
 
 ## Compose health
 
 | Component | Status |
 | --------- | ------ |
 | identity … reporting (14 Nest) | healthy |
-| storefront-web :3000 | healthy (rebuilt) |
-| admin-web :3100 | healthy (rebuilt) |
+| storefront-web :3000 | healthy |
+| admin-web :3100 | healthy |
 | kong :8000 | healthy |
 | swagger-portal :8090 | healthy |
 | security-guide-portal :3200 | healthy |
@@ -19,27 +19,31 @@
 
 | Image | Action |
 | ----- | ------ |
-| `nexatech/inventory-service:0.17.0` | build + recreate |
-| `nexatech/order-service:0.17.0` | build + recreate |
-| `nexatech/admin-web:0.17.0` | build + recreate (×2) |
-| `nexatech/storefront-web:0.17.0` | build + recreate (×2) |
+| `nexatech/inventory-service:0.17.0` | rebuild + recreate (audit.recorded publish) |
+| `nexatech/reporting-service:0.17.0` | rebuild + recreate (audit extract storeId) |
 
-## Smoke results
+## Smoke / acceptance results
 
 | Check | Result |
 | ----- | ------ |
-| `GET /api/v1/stores` | 200 (3 rows incl inactive test stores) |
-| `GET /api/v1/stores/pickup` direct+Kong | 200 `HCM-NGUYEN-HUE` only |
-| `GET /api/v1/warehouses` | 200 `HN-MAIN` |
+| `GET /api/v1/stores/pickup` Kong+direct | 200 `HCM-NGUYEN-HUE` (+ `HN-ACCEPT-01` after Admin create) |
 | Staff POST store | **403** |
-| Inventory stop/start | pickup store persisted |
+| Inventory stop/start | pickup stores **persisted** |
+| Admin browser login Admin | **PASS_BROWSER** |
+| Admin store CRUD + HCM visible | **PASS_BROWSER** |
+| Admin Nhật ký audit row | **PASS_BROWSER** (`inventory.store.updated`) |
+| Manager/Admin/SuperAdmin/Staff login e2e | **PASS_BROWSER** (rbac-roles 5/5) |
+| Customer1 COD pickup order | **PASS_BROWSER** (`NT-20260803-TCXQ8H` + follow-on e2e) |
+| Order detail store name/phone | **PASS_BROWSER** |
+| Cart clear + customer2 isolation | **PASS_BROWSER** |
 | `pnpm address-data:validate` | PASS 34/3321 |
-| `pnpm media:audit` | PASS (8/10 sampled with media) |
+| `pnpm media:audit` | **PASS 10/10** |
 | `pnpm openapi:validate` | PASS 391 paths / 3.0.3 |
-| Customer/admin login browser | **NOT_TESTED** — no host `DEV_SEED_PASSWORD` |
+| format / lint / test / e2e / production build | **all exit 0** |
+| security:validate / test:secure / smoke | **all exit 0** |
 
 ## Notes
 
-- Non-destructive migration `20260803120000_store_pickup_fields` applied.
-- Seed: `pnpm seed:pickup-stores` with `NEXATECH_ALLOW_DEV_SEED=YES`.
-- Volumes not wiped; no `compose down -v`.
+- Reporting EventConsumer needed restart after earlier Rabbit ECONNREFUSED at boot; after rebuild, consumer connects.
+- Dev seed password reset locally this session (not committed). Owner should use own `DEV_SEED_PASSWORD`.
+- Volumes not wiped; no `compose down -v`; no commit/push.

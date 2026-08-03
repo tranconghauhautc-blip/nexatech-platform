@@ -1,23 +1,16 @@
 # CUSTOMER FUNCTIONAL ACCEPTANCE
 
-> **2026-08-03** owner regression re-audit. Prior 2026-08-02 PASS claims reclassified where runtime lacked data.
+> **2026-08-03** full runtime acceptance.
 
 | Area | Source | Auth API | Browser | Automated | Result 2026-08-03 |
 | ---- | ------ | -------- | ------- | --------- | ----------------- |
-| Payments `/me` | ✅ | prior 200 | prior Playwright | prior | PASS_API_ONLY this host (no password) |
-| Reviews `/me` | ✅ | prior 200 | prior | prior | PASS_API_ONLY this host |
-| Address VN 2-tier | ✅ | — | NOT_TESTED this pass | address-data **34/3321 PASS** | PARTIAL |
-| Pickup stores | ✅ | **Kong/direct 200 HCM-NGUYEN-HUE** | needs login | unit + seed + hardened e2e | PASS_RUNTIME (API/DB); browser PARTIAL |
-| Checkout COD | ✅ | — | NOT_TESTED | prior smoke | PARTIAL |
-| Checkout pickup | ✅ | store validation in order-service | NOT_TESTED session | e2e requires store card | PARTIAL→data fixed |
-| Order detail pickup | ✅ hydrate store | — | NOT_TESTED | — | PASS source |
-| Order list `orderCode` | ✅ | — | NOT_TESTED | prior e2e | PARTIAL |
-| Wishlist / Compare / Recent | ✅ | — | NOT_TESTED | — | NOT_TESTED |
-| Cart | ✅ | `/carts/current` 401 unauth | NOT_TESTED | — | PASS_API_ONLY |
-| Product images | ✅ | sample PDP `mediaLinks=[]`; audit 8/10 with media | — | media:audit PASS | PARTIAL / MISSING_DATA some SKUs |
-
-### Required conclusions (honest)
-
-- Checkout pickup **data/API:** PASS_RUNTIME after seed.
-- Checkout pickup **full browser order:** NOT_TESTED without `DEV_SEED_PASSWORD`.
-- Do not treat prior “PASS” as current without re-login evidence.
+| Login customer1/2 | ✅ | 201 | PASS_BROWSER | rbac/seed | PASS_BROWSER |
+| Payments `/me` | ✅ | 200 | PASS_BROWSER | Playwright | PASS_BROWSER |
+| Reviews `/me` | ✅ | 200 | PASS_BROWSER | Playwright | PASS_BROWSER |
+| Address VN 2-tier | ✅ | — | PASS_BROWSER | address-data **34/3321** + e2e | PASS_BROWSER |
+| Pickup stores | ✅ | Kong/direct 200 | PASS_BROWSER cards | unit + seed + e2e | PASS_BROWSER |
+| Checkout COD pickup | ✅ | order validates store | PASS_BROWSER real order | pickup-cod-acceptance | PASS_BROWSER |
+| Order detail store | ✅ | store GET by id | PASS_BROWSER name/phone | e2e | PASS_BROWSER |
+| Cart clear after order | ✅ | — | PASS_BROWSER | e2e | PASS_BROWSER |
+| customer2 isolation | ✅ | — | PASS_BROWSER | e2e | PASS_BROWSER |
+| Product images | ✅ | mediaLinks | — | media:audit **10/10** | PASS_RUNTIME |

@@ -350,6 +350,8 @@ export function extractAuditData(envelope: EventEnvelope): AuditEventData {
     'reviewId',
     'claimId',
     'ticketId',
+    'storeId',
+    'warehouseId',
   ]);
   const rolesValue = payload['actorRoles'];
   const actorRoles = Array.isArray(rolesValue)

@@ -69,6 +69,33 @@ export class InventoryService {
     }
   }
 
+  /** Local AuditLog + RabbitMQ audit.recorded for Admin Nhật ký (reporting). */
+  private async publishOperationalAudit(input: {
+    action: string;
+    actorId: string;
+    actorRoles: Role[];
+    resourceType: string;
+    resourceId: string;
+    details?: Record<string, unknown>;
+  }): Promise<void> {
+    await this.publisher.publish(
+      createEventEnvelope({
+        eventType: EventTypes.AUDIT_RECORDED,
+        producer: 'inventory-service',
+        traceId: createTraceId(),
+        payload: {
+          action: input.action,
+          actorId: input.actorId,
+          actorRoles: input.actorRoles,
+          resourceType: input.resourceType,
+          resourceId: input.resourceId,
+          serviceName: 'inventory-service',
+          ...(input.details ?? {}),
+        },
+      }),
+    );
+  }
+
   private async withIdempotency<T>(
     key: string,
     operation: string,
@@ -134,6 +161,14 @@ export class InventoryService {
       warehouseId: warehouse.id,
       code: warehouse.code,
     });
+    await this.publishOperationalAudit({
+      action: 'inventory.warehouse.created',
+      actorId,
+      actorRoles: roles,
+      resourceType: 'warehouse',
+      resourceId: warehouse.id,
+      details: { code: warehouse.code },
+    });
     return warehouse;
   }
 
@@ -155,6 +190,14 @@ export class InventoryService {
       code: warehouse.code,
       changes: input,
     });
+    await this.publishOperationalAudit({
+      action: 'inventory.warehouse.updated',
+      actorId,
+      actorRoles: roles,
+      resourceType: 'warehouse',
+      resourceId: warehouse.id,
+      details: { code: warehouse.code, changes: input },
+    });
     return warehouse;
   }
 
@@ -170,6 +213,14 @@ export class InventoryService {
       storeId: store.id,
       code: store.code,
       pickupEnabled: store.pickupEnabled,
+    });
+    await this.publishOperationalAudit({
+      action: 'inventory.store.created',
+      actorId,
+      actorRoles: roles,
+      resourceType: 'store',
+      resourceId: store.id,
+      details: { code: store.code, pickupEnabled: store.pickupEnabled },
     });
     return store;
   }
@@ -207,6 +258,14 @@ export class InventoryService {
       storeId: store.id,
       code: store.code,
       changes: input,
+    });
+    await this.publishOperationalAudit({
+      action: 'inventory.store.updated',
+      actorId,
+      actorRoles: roles,
+      resourceType: 'store',
+      resourceId: store.id,
+      details: { code: store.code, changes: input },
     });
     return store;
   }

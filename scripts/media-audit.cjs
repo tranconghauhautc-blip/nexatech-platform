@@ -84,7 +84,7 @@ async function main() {
   const items = products.data?.items || [];
   report.productsSampled = items.length;
 
-  for (const item of items.slice(0, 8)) {
+  for (const item of items) {
     const productId = item.id;
     if (!productId) continue;
     const linked = await get(
@@ -176,6 +176,15 @@ async function main() {
     console.warn(
       '[media:audit] WARN: sampled products have no linked media (import may be incomplete)',
     );
+  }
+  if (
+    report.productsSampled > 0 &&
+    report.productsWithMedia < report.productsSampled
+  ) {
+    console.error(
+      `[media:audit] FAIL: only ${report.productsWithMedia}/${report.productsSampled} sampled products have media links`,
+    );
+    process.exit(1);
   }
   console.log('[media:audit] PASSED');
 }
