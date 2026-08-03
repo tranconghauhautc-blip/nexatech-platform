@@ -8,6 +8,8 @@ import type {
   CreateStoreInput,
   CreateTransferInput,
   CreateWarehouseInput,
+  UpdateStoreInput,
+  UpdateWarehouseInput,
   IdempotencyRecord,
   ListMovementsFilter,
   LocationType,
@@ -29,10 +31,13 @@ export interface InventoryRepository {
   createWarehouse(input: CreateWarehouseInput): Promise<Warehouse>;
   listWarehouses(): Promise<Warehouse[]>;
   getWarehouseById(id: string): Promise<Warehouse | null>;
+  updateWarehouse(id: string, input: UpdateWarehouseInput): Promise<Warehouse>;
 
   createStore(input: CreateStoreInput): Promise<Store>;
   listStores(): Promise<Store[]>;
+  listPickupStores(): Promise<Store[]>;
   getStoreById(id: string): Promise<Store | null>;
+  updateStore(id: string, input: UpdateStoreInput): Promise<Store>;
 
   getOrCreateStock(
     skuCode: string,
@@ -183,6 +188,31 @@ export class InMemoryInventoryRepository implements InventoryRepository {
     return this.warehouses.get(id) ?? null;
   }
 
+  async updateWarehouse(
+    id: string,
+    input: UpdateWarehouseInput,
+  ): Promise<Warehouse> {
+    const existing = this.warehouses.get(id);
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+        message: 'Không tìm thấy kho',
+      });
+    }
+    const updated: Warehouse = {
+      ...existing,
+      name: input.name ?? existing.name,
+      address:
+        input.address === undefined
+          ? existing.address
+          : (input.address ?? undefined),
+      isActive: input.isActive ?? existing.isActive,
+      updatedAt: new Date(),
+    };
+    this.warehouses.set(id, updated);
+    return updated;
+  }
+
   async createStore(input: CreateStoreInput): Promise<Store> {
     if (this.storeCodes.has(input.code)) {
       throw new AppError({
@@ -205,6 +235,9 @@ export class InMemoryInventoryRepository implements InventoryRepository {
       warehouseId: input.warehouseId,
       address: input.address,
       city: input.city,
+      phone: input.phone,
+      openingHours: input.openingHours,
+      pickupEnabled: input.pickupEnabled ?? false,
       isActive: input.isActive ?? true,
       createdAt: now,
       updatedAt: now,
@@ -220,8 +253,57 @@ export class InMemoryInventoryRepository implements InventoryRepository {
     );
   }
 
+  async listPickupStores(): Promise<Store[]> {
+    return (await this.listStores()).filter(
+      (s) => s.isActive && s.pickupEnabled,
+    );
+  }
+
   async getStoreById(id: string): Promise<Store | null> {
     return this.stores.get(id) ?? null;
+  }
+
+  async updateStore(id: string, input: UpdateStoreInput): Promise<Store> {
+    const existing = this.stores.get(id);
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+        message: 'Không tìm thấy cửa hàng',
+      });
+    }
+    if (input.warehouseId) {
+      if (!this.warehouses.has(input.warehouseId)) {
+        throw new AppError({
+          errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+          message: 'Không tìm thấy kho',
+        });
+      }
+    }
+    const updated: Store = {
+      ...existing,
+      name: input.name ?? existing.name,
+      warehouseId:
+        input.warehouseId === undefined
+          ? existing.warehouseId
+          : (input.warehouseId ?? undefined),
+      address:
+        input.address === undefined
+          ? existing.address
+          : (input.address ?? undefined),
+      city:
+        input.city === undefined ? existing.city : (input.city ?? undefined),
+      phone:
+        input.phone === undefined ? existing.phone : (input.phone ?? undefined),
+      openingHours:
+        input.openingHours === undefined
+          ? existing.openingHours
+          : (input.openingHours ?? undefined),
+      pickupEnabled: input.pickupEnabled ?? existing.pickupEnabled,
+      isActive: input.isActive ?? existing.isActive,
+      updatedAt: new Date(),
+    };
+    this.stores.set(id, updated);
+    return updated;
   }
 
   private findRow(

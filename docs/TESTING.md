@@ -45,8 +45,16 @@ Luồng tối thiểu:
 1. Đăng ký / đăng nhập
 2. Duyệt catalog → thêm giỏ
 3. Checkout COD
-4. Xem đơn
-5. Admin cập nhật trạng thái cơ bản
+4. Checkout **Store Pickup** — bắt buộc thấy store card thật (vd. NexaTech Nguyễn Huệ); không PASS nếu chỉ “không còn raw storeId”
+5. Xem đơn
+6. Admin cập nhật trạng thái cơ bản
+
+### Realism rules (2026-08-03)
+
+- Không PASS pickup chỉ vì UI selector tồn tại khi `GET /stores/pickup` rỗng.
+- Seed: `pnpm seed:pickup-stores` (idempotent) trước e2e pickup.
+- Cần `E2E_DEV_SEED_PASSWORD`; không hard-code password trong repo.
+- Ưu tiên Docker runtime + Postgres; không coi mock route interception là PASS nghiệp vụ.
 
 ## k6
 

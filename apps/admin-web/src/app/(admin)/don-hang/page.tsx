@@ -269,10 +269,21 @@ export default function Page() {
                 <Badge tone="neutral">{deliveryMethod || '—'}</Badge>
               )}
             </div>
+            {isPickup ? (
+              <p className="nx-hint" style={{ marginTop: 8 }}>
+                Pickup storeId: {String(selected['pickupStoreId'] ?? '—')} —
+                dùng tab Cửa hàng để xem tên/địa chỉ. Đơn pickup không bắt buộc
+                có shipment.
+              </p>
+            ) : null}
             {shipmentsLoading ? (
               <p className="nx-hint">Đang tải trạng thái kiện…</p>
             ) : packages.length === 0 ? (
-              <p className="nx-hint">Đơn chưa có kiện hàng nào.</p>
+              <p className="nx-hint">
+                {isPickup
+                  ? 'Đơn nhận tại cửa hàng — không yêu cầu kiện vận chuyển.'
+                  : 'Đơn chưa có kiện hàng nào.'}
+              </p>
             ) : (
               <table className="nx-table" style={{ marginTop: 8 }}>
                 <thead>

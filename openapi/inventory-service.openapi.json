@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -119,7 +130,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/reservations/{id}/release": {
@@ -156,7 +169,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/stock/adjust": {
@@ -185,7 +200,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/stock/issue": {
@@ -214,7 +231,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/stock/receive": {
@@ -243,7 +262,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/stock/reserve": {
@@ -272,7 +293,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/stock/return": {
@@ -301,7 +324,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/stores": {
@@ -330,7 +355,48 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
+      }
+    },
+    "/api/v1/admin/inventory/stores/{id}": {
+      "patch": {
+        "operationId": "AdminInventory_updateStore_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/transfers": {
@@ -359,7 +425,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/admin/inventory/warehouses": {
@@ -388,7 +456,48 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
+      }
+    },
+    "/api/v1/admin/inventory/warehouses/{id}": {
+      "patch": {
+        "operationId": "AdminInventory_updateWarehouse_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v1/movements": {
@@ -425,7 +534,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/reservations/{id}": {
@@ -446,7 +557,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/stock": {
@@ -483,7 +596,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/stock/availability": {
@@ -520,7 +635,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/stock/low": {
@@ -531,7 +648,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/stock/sources": {
@@ -568,7 +687,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/stores": {
@@ -579,7 +700,45 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v1/stores/pickup": {
+      "get": {
+        "operationId": "Inventory_pickupStores_v1",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v1/stores/{id}": {
+      "get": {
+        "operationId": "Inventory_store_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v1/warehouses": {
@@ -590,7 +749,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/reservations/{id}/commit": {
@@ -627,7 +788,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/reservations/{id}/release": {
@@ -664,7 +827,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/stock/adjust": {
@@ -693,7 +858,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/stock/issue": {
@@ -722,7 +889,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/stock/receive": {
@@ -751,7 +920,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/stock/reserve": {
@@ -780,7 +951,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/stock/return": {
@@ -809,7 +982,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/stores": {
@@ -838,7 +1013,48 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
+      }
+    },
+    "/api/v2/admin/inventory/stores/{id}": {
+      "patch": {
+        "operationId": "AdminInventory_updateStore_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/transfers": {
@@ -867,7 +1083,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/admin/inventory/warehouses": {
@@ -896,7 +1114,48 @@
             "description": ""
           }
         },
-        "tags": ["admin-inventory"]
+        "tags": [
+          "admin-inventory"
+        ]
+      }
+    },
+    "/api/v2/admin/inventory/warehouses/{id}": {
+      "patch": {
+        "operationId": "AdminInventory_updateWarehouse_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-inventory"
+        ]
       }
     },
     "/api/v2/movements": {
@@ -933,7 +1192,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/reservations/{id}": {
@@ -954,7 +1215,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/stock": {
@@ -991,7 +1254,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/stock/availability": {
@@ -1028,7 +1293,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/stock/low": {
@@ -1039,7 +1306,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/stock/sources": {
@@ -1076,7 +1345,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/stores": {
@@ -1087,7 +1358,45 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v2/stores/pickup": {
+      "get": {
+        "operationId": "Inventory_pickupStores_v2",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "inventory"
+        ]
+      }
+    },
+    "/api/v2/stores/{id}": {
+      "get": {
+        "operationId": "Inventory_store_v2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/api/v2/warehouses": {
@@ -1098,7 +1407,9 @@
             "description": ""
           }
         },
-        "tags": ["inventory"]
+        "tags": [
+          "inventory"
+        ]
       }
     },
     "/health": {
@@ -1109,7 +1420,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
@@ -1120,7 +1433,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
@@ -1131,7 +1446,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

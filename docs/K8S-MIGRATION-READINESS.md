@@ -25,7 +25,7 @@
 | Persistent volumes | Postgres, MinIO, RabbitMQ need PVCs |
 | VNPay / Google OAuth / SMTP | Still external credentials |
 | Audit projection | Operational audit incomplete until `AUDIT_RECORDED` wired broadly |
-| Functional acceptance | **Local Compose acceptance complete 2026-08-02** — still needs owner commit + registry credentials before cluster cutover |
+| Functional acceptance | **Owner regression 2026-08-03** — Store Pickup data/API fixed locally; full browser PASS blocked without seed password + owner checklist; still needs owner commit + registry credentials before cluster cutover |
 
 ## Local acceptance snapshot
 

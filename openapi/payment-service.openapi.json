@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -127,7 +138,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/admin/payments/{paymentId}": {
@@ -180,7 +193,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/admin/payments/{paymentId}/cod-collect": {
@@ -233,7 +248,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/admin/payments/{paymentId}/refunds": {
@@ -286,7 +303,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/cancel": {
@@ -339,7 +358,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/checkout": {
@@ -376,7 +397,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/fail": {
@@ -429,7 +452,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/mock-payments/{paymentId}/succeed": {
@@ -482,7 +507,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v1/payments": {
@@ -527,7 +554,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/by-order/{orderId}": {
@@ -580,7 +609,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/me": {
@@ -625,7 +656,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/{paymentId}": {
@@ -678,7 +711,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/{paymentId}/cancel": {
@@ -731,7 +766,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/payments/{paymentId}/refunds": {
@@ -784,7 +821,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       },
       "post": {
         "operationId": "Payment_createRefund_v1",
@@ -835,7 +874,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v1/vnpay/ipn": {
@@ -846,7 +887,9 @@
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       },
       "post": {
         "operationId": "Vnpay_ipnPost_v1",
@@ -855,7 +898,9 @@
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/api/v1/vnpay/return": {
@@ -866,7 +911,9 @@
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/api/v2/admin/payments": {
@@ -911,7 +958,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/admin/payments/{paymentId}": {
@@ -964,7 +1013,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/admin/payments/{paymentId}/cod-collect": {
@@ -1017,7 +1068,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/admin/payments/{paymentId}/refunds": {
@@ -1070,7 +1123,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-payments"]
+        "tags": [
+          "admin-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/cancel": {
@@ -1123,7 +1178,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/checkout": {
@@ -1160,7 +1217,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/fail": {
@@ -1213,7 +1272,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/mock-payments/{paymentId}/succeed": {
@@ -1266,7 +1327,9 @@
             "description": ""
           }
         },
-        "tags": ["mock-payments"]
+        "tags": [
+          "mock-payments"
+        ]
       }
     },
     "/api/v2/payments": {
@@ -1311,7 +1374,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/by-order/{orderId}": {
@@ -1364,7 +1429,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/me": {
@@ -1409,7 +1476,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/{paymentId}": {
@@ -1462,7 +1531,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/{paymentId}/cancel": {
@@ -1515,7 +1586,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/payments/{paymentId}/refunds": {
@@ -1568,7 +1641,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       },
       "post": {
         "operationId": "Payment_createRefund_v2",
@@ -1619,7 +1694,9 @@
             "description": ""
           }
         },
-        "tags": ["payments"]
+        "tags": [
+          "payments"
+        ]
       }
     },
     "/api/v2/vnpay/ipn": {
@@ -1630,7 +1707,9 @@
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       },
       "post": {
         "operationId": "Vnpay_ipnPost_v2",
@@ -1639,7 +1718,9 @@
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/api/v2/vnpay/return": {
@@ -1650,7 +1731,9 @@
             "description": ""
           }
         },
-        "tags": ["vnpay"]
+        "tags": [
+          "vnpay"
+        ]
       }
     },
     "/health": {
@@ -1661,7 +1744,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
@@ -1672,7 +1757,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
@@ -1683,7 +1770,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

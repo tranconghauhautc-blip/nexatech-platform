@@ -8,6 +8,8 @@
 | Catalog list                         | ✅           | ✅       | ✅         | ✅         |
 | Catalog mutate (product/price/media) | ❌ / limited | ✅       | ✅         | ✅         |
 | Inventory adjust/transfer            | ❌ / limited | ✅       | ✅         | ✅         |
+| Store/warehouse create & update      | ❌ view only | ✅       | ✅         | ✅         |
+| Pickup enable/disable                | ❌           | ✅       | ✅         | ✅         |
 | Order confirm / status workflow      | ✅ limited   | ✅       | ✅         | ✅         |
 | Payment COD collect / refund         | ❌           | ✅       | ✅         | ✅         |
 | Shipping create/book                 | ❌           | ✅       | ✅         | ✅         |

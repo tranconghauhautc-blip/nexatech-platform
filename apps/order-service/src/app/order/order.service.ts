@@ -182,6 +182,23 @@ export class OrderService {
       });
     }
 
+    if (input.deliveryMethod === 'STORE_PICKUP') {
+      if (!input.pickupStoreId) {
+        throw new AppError({
+          errorCode: ErrorCodes.VALIDATION_FAILED,
+          message: 'Vui lòng chọn cửa hàng nhận hàng',
+        });
+      }
+      const store = await this.inventory.getPickupStore(input.pickupStoreId);
+      if (!store || !store.isActive || !store.pickupEnabled) {
+        throw new AppError({
+          errorCode: ErrorCodes.VALIDATION_FAILED,
+          message: 'Cửa hàng nhận hàng không khả dụng',
+          details: { pickupStoreId: input.pickupStoreId },
+        });
+      }
+    }
+
     const repriced: Array<{
       skuId: string;
       skuCode: string;

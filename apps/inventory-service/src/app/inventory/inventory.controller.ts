@@ -12,9 +12,19 @@ export class InventoryController {
     return this.inventoryService.listWarehouses();
   }
 
+  @Get('stores/pickup')
+  pickupStores() {
+    return this.inventoryService.listPickupStores();
+  }
+
   @Get('stores')
   stores() {
     return this.inventoryService.listStores();
+  }
+
+  @Get('stores/:id')
+  store(@Param('id') id: string) {
+    return this.inventoryService.getStoreById(id);
   }
 
   @Get('stock')

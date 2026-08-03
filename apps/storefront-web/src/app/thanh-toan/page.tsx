@@ -53,7 +53,10 @@ interface PickupStore {
   name: string;
   address?: string;
   city?: string;
+  phone?: string;
+  openingHours?: string;
   isActive?: boolean;
+  pickupEnabled?: boolean;
 }
 
 function formatSavedAddress(a: SavedAddress): string {
@@ -103,13 +106,15 @@ export default function CheckoutPage() {
       .catch(() => setAddresses([]));
 
     bff
-      .get('/api/bff/inventory/stores')
+      .get('/api/bff/inventory/stores/pickup')
       .then((data) => {
         const list = Array.isArray(data)
           ? (data as PickupStore[])
           : (((data as { items?: PickupStore[] })?.items ??
               []) as PickupStore[]);
-        setStores(list.filter((s) => s.isActive !== false));
+        setStores(
+          list.filter((s) => s.isActive !== false && s.pickupEnabled !== false),
+        );
       })
       .catch(() => setStores([]));
   }, [isAuthenticated]);
@@ -305,6 +310,26 @@ export default function CheckoutPage() {
                             .filter(Boolean)
                             .join(', ') || '—'}
                         </span>
+                        {store.phone ? (
+                          <>
+                            <br />
+                            <span
+                              style={{ color: '#4b6478', fontSize: '0.9rem' }}
+                            >
+                              ĐT: {store.phone}
+                            </span>
+                          </>
+                        ) : null}
+                        {store.openingHours ? (
+                          <>
+                            <br />
+                            <span
+                              style={{ color: '#4b6478', fontSize: '0.9rem' }}
+                            >
+                              Giờ: {store.openingHours}
+                            </span>
+                          </>
+                        ) : null}
                       </span>
                     </label>
                   ))}

@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -135,7 +146,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/audit-logs": {
@@ -180,7 +193,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/dashboard": {
@@ -225,7 +240,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/metrics/daily": {
@@ -270,7 +287,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/orders": {
@@ -315,7 +334,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/payments": {
@@ -360,7 +381,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/reviews": {
@@ -405,7 +428,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/shipments": {
@@ -450,7 +475,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/support/tickets": {
@@ -495,7 +522,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/warranty/claims": {
@@ -540,7 +569,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v1/admin/reporting/warranty/returns": {
@@ -585,7 +616,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/audit": {
@@ -638,7 +671,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/audit-logs": {
@@ -683,7 +718,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/dashboard": {
@@ -728,7 +765,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/metrics/daily": {
@@ -773,7 +812,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/orders": {
@@ -818,7 +859,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/payments": {
@@ -863,7 +906,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/reviews": {
@@ -908,7 +953,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/shipments": {
@@ -953,7 +1000,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/support/tickets": {
@@ -998,7 +1047,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/warranty/claims": {
@@ -1043,7 +1094,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/api/v2/admin/reporting/warranty/returns": {
@@ -1088,7 +1141,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-reporting"]
+        "tags": [
+          "admin-reporting"
+        ]
       }
     },
     "/health": {
@@ -1099,7 +1154,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
@@ -1110,7 +1167,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
@@ -1121,7 +1180,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

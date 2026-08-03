@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -103,7 +114,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/brands/{id}": {
@@ -132,7 +145,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/categories": {
@@ -153,7 +168,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/categories/{id}": {
@@ -182,7 +199,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/products": {
@@ -203,7 +222,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/products/{id}": {
@@ -232,7 +253,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/products/{id}/status": {
@@ -261,7 +284,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/products/{productId}/media-links": {
@@ -290,7 +315,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/skus": {
@@ -311,7 +338,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/skus/{skuId}/prices": {
@@ -348,7 +377,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/admin/catalog/spec-templates": {
@@ -377,7 +408,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       },
       "post": {
         "operationId": "AdminCatalog_createSpecTemplate_v1",
@@ -396,7 +429,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v1/brands": {
@@ -407,7 +442,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/categories": {
@@ -418,7 +455,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/products": {
@@ -429,7 +468,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/products/facets": {
@@ -440,7 +481,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/products/summaries": {
@@ -461,7 +504,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/products/{id}/recommendations": {
@@ -482,7 +527,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/products/{slug}": {
@@ -503,7 +550,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v1/skus/{skuCode}": {
@@ -524,7 +573,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/brands": {
@@ -545,7 +596,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/brands/{id}": {
@@ -574,7 +627,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/categories": {
@@ -595,7 +650,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/categories/{id}": {
@@ -624,7 +681,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/products": {
@@ -645,7 +704,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/products/{id}": {
@@ -674,7 +735,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/products/{id}/status": {
@@ -703,7 +766,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/products/{productId}/media-links": {
@@ -732,7 +797,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/skus": {
@@ -753,7 +820,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/skus/{skuId}/prices": {
@@ -790,7 +859,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/admin/catalog/spec-templates": {
@@ -819,7 +890,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       },
       "post": {
         "operationId": "AdminCatalog_createSpecTemplate_v2",
@@ -838,7 +911,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-catalog"]
+        "tags": [
+          "admin-catalog"
+        ]
       }
     },
     "/api/v2/brands": {
@@ -849,7 +924,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/categories": {
@@ -860,7 +937,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/products": {
@@ -871,7 +950,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/products/facets": {
@@ -882,7 +963,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/products/summaries": {
@@ -903,7 +986,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/products/{id}/recommendations": {
@@ -924,7 +1009,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/products/{slug}": {
@@ -945,7 +1032,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/api/v2/skus/{skuCode}": {
@@ -966,7 +1055,9 @@
             "description": ""
           }
         },
-        "tags": ["catalog"]
+        "tags": [
+          "catalog"
+        ]
       }
     },
     "/health": {
@@ -977,7 +1068,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
@@ -988,7 +1081,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
@@ -999,7 +1094,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

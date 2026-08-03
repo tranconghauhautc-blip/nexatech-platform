@@ -30,6 +30,8 @@ import type {
   StockMutationParams,
   StockSource,
   Transfer,
+  UpdateStoreInput,
+  UpdateWarehouseInput,
   Warehouse,
 } from './inventory.types';
 import { PrismaService } from './prisma.service';
@@ -62,6 +64,9 @@ function toStore(row: PrismaStore): Store {
     warehouseId: row.warehouseId ?? undefined,
     address: row.address ?? undefined,
     city: row.city ?? undefined,
+    phone: row.phone ?? undefined,
+    openingHours: row.openingHours ?? undefined,
+    pickupEnabled: row.pickupEnabled,
     isActive: row.isActive,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
@@ -209,6 +214,28 @@ export class PrismaInventoryRepository implements InventoryRepository {
     return row ? toWarehouse(row) : null;
   }
 
+  async updateWarehouse(
+    id: string,
+    input: UpdateWarehouseInput,
+  ): Promise<Warehouse> {
+    const existing = await this.prisma.warehouse.findUnique({ where: { id } });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+        message: 'Không tìm thấy kho',
+      });
+    }
+    const row = await this.prisma.warehouse.update({
+      where: { id },
+      data: {
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.address !== undefined ? { address: input.address } : {}),
+        ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+      },
+    });
+    return toWarehouse(row);
+  }
+
   async createStore(input: CreateStoreInput): Promise<Store> {
     if (input.warehouseId) {
       const warehouse = await this.prisma.warehouse.findUnique({
@@ -229,6 +256,9 @@ export class PrismaInventoryRepository implements InventoryRepository {
           warehouseId: input.warehouseId,
           address: input.address,
           city: input.city,
+          phone: input.phone,
+          openingHours: input.openingHours,
+          pickupEnabled: input.pickupEnabled ?? false,
           isActive: input.isActive ?? true,
         },
       });
@@ -244,9 +274,58 @@ export class PrismaInventoryRepository implements InventoryRepository {
     return rows.map(toStore);
   }
 
+  async listPickupStores(): Promise<Store[]> {
+    const rows = await this.prisma.store.findMany({
+      where: { isActive: true, pickupEnabled: true },
+      orderBy: { code: 'asc' },
+    });
+    return rows.map(toStore);
+  }
+
   async getStoreById(id: string): Promise<Store | null> {
     const row = await this.prisma.store.findUnique({ where: { id } });
     return row ? toStore(row) : null;
+  }
+
+  async updateStore(id: string, input: UpdateStoreInput): Promise<Store> {
+    const existing = await this.prisma.store.findUnique({ where: { id } });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+        message: 'Không tìm thấy cửa hàng',
+      });
+    }
+    if (input.warehouseId) {
+      const warehouse = await this.prisma.warehouse.findUnique({
+        where: { id: input.warehouseId },
+      });
+      if (!warehouse) {
+        throw new AppError({
+          errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+          message: 'Không tìm thấy kho',
+        });
+      }
+    }
+    const row = await this.prisma.store.update({
+      where: { id },
+      data: {
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.warehouseId !== undefined
+          ? { warehouseId: input.warehouseId }
+          : {}),
+        ...(input.address !== undefined ? { address: input.address } : {}),
+        ...(input.city !== undefined ? { city: input.city } : {}),
+        ...(input.phone !== undefined ? { phone: input.phone } : {}),
+        ...(input.openingHours !== undefined
+          ? { openingHours: input.openingHours }
+          : {}),
+        ...(input.pickupEnabled !== undefined
+          ? { pickupEnabled: input.pickupEnabled }
+          : {}),
+        ...(input.isActive !== undefined ? { isActive: input.isActive } : {}),
+      },
+    });
+    return toStore(row);
   }
 
   private async ensureStockRow(

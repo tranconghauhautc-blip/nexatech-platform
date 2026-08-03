@@ -92,15 +92,25 @@ test.describe('customer address & pickup checkout', () => {
       page.locator('input[name="pickupStoreId"][type="text"]'),
     ).toHaveCount(0);
 
-    // Store cards or radios by business name
+    // Runtime requires at least one seeded pickup store (HCM-NGUYEN-HUE)
+    await expect
+      .poll(async () => {
+        return page.getByText(/Không có cửa hàng nhận hàng khả dụng/i).count();
+      })
+      .toBe(0);
+
+    const storeCard = page.getByText(/NexaTech Nguyễn Huệ|HCM-NGUYEN-HUE/i);
+    await expect(storeCard.first()).toBeVisible({ timeout: 10_000 });
+
     const storeChoice = page.locator(
-      'input[type="radio"][name="pickupStoreId"], [data-store-id], label:has(input[type="radio"])',
+      'input[type="radio"][name="pickupStore"], label:has(input[type="radio"])',
     );
-    // If stores loaded, selecting none and submit should show validation
+    await expect(storeChoice.first()).toBeVisible();
+
     const submit = page.getByRole('button', {
       name: /đặt hàng|thanh toán|hoàn tất/i,
     });
-    if ((await submit.count()) > 0 && (await storeChoice.count()) > 0) {
+    if ((await submit.count()) > 0) {
       // leave unselected
       await submit.first().click();
       await expect(

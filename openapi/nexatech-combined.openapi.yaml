@@ -38,7 +38,7 @@ components:
           example: Bearer
           type: string
         userId:
-          example: '00000000-0000-4000-8000-000000000001'
+          example: "00000000-0000-4000-8000-000000000001"
           type: string
       required:
         - userId
@@ -95,7 +95,7 @@ components:
     ForgotPasswordRequestDto:
       properties:
         email:
-          example: 'user@example.com'
+          example: "user@example.com"
           type: string
       required:
         - email
@@ -103,12 +103,12 @@ components:
     LoginRequestDto:
       properties:
         email:
-          description: 'Email đăng nhập (local seed dùng @nexatech.local)'
-          example: 'staff@nexatech.local'
+          description: "Email đăng nhập (local seed dùng @nexatech.local)"
+          example: "staff@nexatech.local"
           type: string
         password:
           description: Không commit mật khẩu thật vào OpenAPI/repo
-          example: '<operator-defined-DEV_SEED_PASSWORD>'
+          example: "<operator-defined-DEV_SEED_PASSWORD>"
           type: string
       required:
         - email
@@ -172,13 +172,13 @@ components:
     RegisterRequestDto:
       properties:
         email:
-          example: 'customer@example.com'
+          example: "customer@example.com"
           type: string
         fullName:
           example: Nguyen Van A
           type: string
         password:
-          example: 'StrongPass1!'
+          example: "StrongPass1!"
           minLength: 8
           type: string
       required:
@@ -192,10 +192,10 @@ components:
           example: 123456
           type: string
         email:
-          example: 'user@example.com'
+          example: "user@example.com"
           type: string
         newPassword:
-          example: 'NewStrongPass1!'
+          example: "NewStrongPass1!"
           type: string
       required:
         - email
@@ -208,7 +208,7 @@ components:
           example: 123456
           type: string
         email:
-          example: 'customer@example.com'
+          example: "customer@example.com"
           type: string
       required:
         - email
@@ -242,7 +242,7 @@ components:
       type: apiKey
 info:
   title: NexaTech Combined API
-  description: 'Combined OpenAPI 3 specification for local security training. Import into Burp Suite, OWASP ZAP, Postman, Insomnia, or Swagger Editor. Prefer Kong server for gateway testing; direct ports for service debug. Contains no real secrets, passwords, or tokens.'
+  description: "Combined OpenAPI 3 specification for local security training. Import into Burp Suite, OWASP ZAP, Postman, Insomnia, or Swagger Editor. Prefer Kong server for gateway testing; direct ports for service debug. Contains no real secrets, passwords, or tokens."
   version: 1.0.0
 openapi: 3.0.3
 paths:
@@ -644,6 +644,31 @@ paths:
       tags:
         - Inventory
       x-nexatech-service: inventory-service
+  /api/v1/admin/inventory/stores/{id}:
+    patch:
+      operationId: inventory_AdminInventory_updateStore_v1
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
   /api/v1/admin/inventory/transfers:
     post:
       operationId: inventory_AdminInventory_transferStock_v1
@@ -680,6 +705,31 @@ paths:
             type: string
       responses:
         201:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
+  /api/v1/admin/inventory/warehouses/{id}:
+    patch:
+      operationId: inventory_AdminInventory_updateWarehouse_v1
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
           description: ''
       tags:
         - Inventory
@@ -2346,7 +2396,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+              $ref: "#/components/schemas/ForgotPasswordRequestDto"
         required: true
       responses:
         201:
@@ -2362,20 +2412,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequestDto'
+              $ref: "#/components/schemas/LoginRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
@@ -2388,7 +2438,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LogoutRequestDto'
+              $ref: "#/components/schemas/LogoutRequestDto"
         required: true
       responses:
         201:
@@ -2416,17 +2466,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MeResponseDto'
+                $ref: "#/components/schemas/MeResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       security:
         - bearer: []
-      summary: 'Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)'
+      summary: "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)"
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -2437,14 +2487,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshRequestDto'
+              $ref: "#/components/schemas/RefreshRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
@@ -2457,7 +2507,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequestDto'
+              $ref: "#/components/schemas/RegisterRequestDto"
         required: true
       responses:
         201:
@@ -2466,9 +2516,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
-      summary: 'Đăng ký tài khoản Customer (SC-87: roles in body accepted)'
+      summary: "Đăng ký tài khoản Customer (SC-87: roles in body accepted)"
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -2479,7 +2529,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequestDto'
+              $ref: "#/components/schemas/ResetPasswordRequestDto"
         required: true
       responses:
         201:
@@ -2541,7 +2591,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyEmailRequestDto'
+              $ref: "#/components/schemas/VerifyEmailRequestDto"
         required: true
       responses:
         201:
@@ -5589,6 +5639,30 @@ paths:
       tags:
         - Inventory
       x-nexatech-service: inventory-service
+  /api/v1/stores/pickup:
+    get:
+      operationId: inventory_Inventory_pickupStores_v1
+      responses:
+        200:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
+  /api/v1/stores/{id}:
+    get:
+      operationId: inventory_Inventory_store_v1
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
   /api/v1/support/tickets:
     get:
       operationId: support_Tickets_list_v1
@@ -6460,6 +6534,31 @@ paths:
       tags:
         - Inventory
       x-nexatech-service: inventory-service
+  /api/v2/admin/inventory/stores/{id}:
+    patch:
+      operationId: inventory_AdminInventory_updateStore_v2
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
   /api/v2/admin/inventory/transfers:
     post:
       operationId: inventory_AdminInventory_transferStock_v2
@@ -6496,6 +6595,31 @@ paths:
             type: string
       responses:
         201:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
+  /api/v2/admin/inventory/warehouses/{id}:
+    patch:
+      operationId: inventory_AdminInventory_updateWarehouse_v2
+      parameters:
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
           description: ''
       tags:
         - Inventory
@@ -8162,7 +8286,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ForgotPasswordRequestDto'
+              $ref: "#/components/schemas/ForgotPasswordRequestDto"
         required: true
       responses:
         201:
@@ -8178,20 +8302,20 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequestDto'
+              $ref: "#/components/schemas/LoginRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       summary: Đăng nhập — lấy accessToken để Authorize trên Swagger
       tags:
@@ -8204,7 +8328,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LogoutRequestDto'
+              $ref: "#/components/schemas/LogoutRequestDto"
         required: true
       responses:
         201:
@@ -8232,17 +8356,17 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MeResponseDto'
+                $ref: "#/components/schemas/MeResponseDto"
           description: ''
         401:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
       security:
         - bearer: []
-      summary: 'Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)'
+      summary: "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)"
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -8253,14 +8377,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RefreshRequestDto'
+              $ref: "#/components/schemas/RefreshRequestDto"
         required: true
       responses:
         200:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthTokenResponseDto'
+                $ref: "#/components/schemas/AuthTokenResponseDto"
           description: ''
       summary: Đổi refresh token — session cũ bị thu hồi
       tags:
@@ -8273,7 +8397,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/RegisterRequestDto'
+              $ref: "#/components/schemas/RegisterRequestDto"
         required: true
       responses:
         201:
@@ -8282,9 +8406,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorEnvelopeDto'
+                $ref: "#/components/schemas/ErrorEnvelopeDto"
           description: ''
-      summary: 'Đăng ký tài khoản Customer (SC-87: roles in body accepted)'
+      summary: "Đăng ký tài khoản Customer (SC-87: roles in body accepted)"
       tags:
         - Identity
       x-nexatech-service: identity-service
@@ -8295,7 +8419,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ResetPasswordRequestDto'
+              $ref: "#/components/schemas/ResetPasswordRequestDto"
         required: true
       responses:
         201:
@@ -8357,7 +8481,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/VerifyEmailRequestDto'
+              $ref: "#/components/schemas/VerifyEmailRequestDto"
         required: true
       responses:
         201:
@@ -11405,6 +11529,30 @@ paths:
       tags:
         - Inventory
       x-nexatech-service: inventory-service
+  /api/v2/stores/pickup:
+    get:
+      operationId: inventory_Inventory_pickupStores_v2
+      responses:
+        200:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
+  /api/v2/stores/{id}:
+    get:
+      operationId: inventory_Inventory_store_v2
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - Inventory
+      x-nexatech-service: inventory-service
   /api/v2/support/tickets:
     get:
       operationId: support_Tickets_list_v2
@@ -12079,9 +12227,9 @@ paths:
         - Identity
       x-nexatech-service: identity-service
 servers:
-  - url: 'http://localhost:8000'
+  - url: "http://localhost:8000"
     description: Kong Gateway (local)
-  - url: 'http://localhost:{port}'
+  - url: "http://localhost:{port}"
     description: Direct service (port 3001–3014)
     variables:
       port:
@@ -12101,40 +12249,40 @@ servers:
           - 3012
           - 3013
           - 3014
-  - url: 'https://api.example.invalid'
+  - url: "https://api.example.invalid"
     description: Production placeholder
 tags:
-  - description: 'Auth, session, OTP và RBAC'
+  - description: "Auth, session, OTP và RBAC"
     name: Identity
     x-nexatech-service: identity-service
   - description: Hồ sơ khách hàng và địa chỉ
     name: Customer
     x-nexatech-service: customer-service
-  - description: 'Danh mục, thương hiệu, sản phẩm, SKU và giá'
+  - description: "Danh mục, thương hiệu, sản phẩm, SKU và giá"
     name: Catalog
     x-nexatech-service: catalog-service
   - description: Presign MinIO và metadata media
     name: Media
     x-nexatech-service: media-service
-  - description: 'Kho, cửa hàng, tồn, giữ và điều chuyển'
+  - description: "Kho, cửa hàng, tồn, giữ và điều chuyển"
     name: Inventory
     x-nexatech-service: inventory-service
-  - description: 'Giỏ hàng, wishlist, so sánh, đã xem'
+  - description: "Giỏ hàng, wishlist, so sánh, đã xem"
     name: Cart
     x-nexatech-service: cart-service
-  - description: 'Checkout, trạng thái đơn, huỷ và outbox'
+  - description: "Checkout, trạng thái đơn, huỷ và outbox"
     name: Order
     x-nexatech-service: order-service
-  - description: 'COD, mock, VNPay sandbox và hoàn tiền'
+  - description: "COD, mock, VNPay sandbox và hoàn tiền"
     name: Payment
     x-nexatech-service: payment-service
-  - description: 'Báo giá, shipment và webhook vận chuyển'
+  - description: "Báo giá, shipment và webhook vận chuyển"
     name: Shipping
     x-nexatech-service: shipping-service
   - description: Đánh giá sản phẩm và kiểm duyệt
     name: Review
     x-nexatech-service: review-service
-  - description: 'Bảo hành, đổi trả và đồng bộ đơn'
+  - description: "Bảo hành, đổi trả và đồng bộ đơn"
     name: Warranty
     x-nexatech-service: warranty-service
   - description: Ticket hỗ trợ và hội thoại
@@ -12147,6 +12295,6 @@ tags:
     name: Reporting
     x-nexatech-service: reporting-service
 x-nexatech-security-lab:
-  description: 'Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab.'
+  description: "Lab-only endpoints (e.g. /health/lab, /lab/ssrf-probe) appear when NEXATECH_SECURITY_LAB=1 and NEXATECH_DEPLOY_PROFILE=security-lab."
 x-nexatech-webhooks:
   description: VNPay and shipping provider callbacks live on payment-service and shipping-service specs. Production verifies signatures; security-lab may weaken checks intentionally.

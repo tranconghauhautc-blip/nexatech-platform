@@ -82,7 +82,13 @@
             "type": "string"
           }
         },
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "type": "object"
       },
       "ErrorEnvelopeDto": {
@@ -107,7 +113,13 @@
             "type": "string"
           }
         },
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "type": "object"
       },
       "ForgotPasswordRequestDto": {
@@ -117,7 +129,9 @@
             "type": "string"
           }
         },
-        "required": ["email"],
+        "required": [
+          "email"
+        ],
         "type": "object"
       },
       "LoginRequestDto": {
@@ -133,7 +147,10 @@
             "type": "string"
           }
         },
-        "required": ["email", "password"],
+        "required": [
+          "email",
+          "password"
+        ],
         "type": "object"
       },
       "LogoutRequestDto": {
@@ -143,7 +160,9 @@
             "type": "string"
           }
         },
-        "required": ["sessionId"],
+        "required": [
+          "sessionId"
+        ],
         "type": "object"
       },
       "MeResponseDto": {
@@ -155,7 +174,9 @@
             "type": "string"
           },
           "roles": {
-            "example": ["Staff"],
+            "example": [
+              "Staff"
+            ],
             "items": {
               "type": "string"
             },
@@ -171,7 +192,11 @@
             "type": "string"
           }
         },
-        "required": ["userId", "email", "roles"],
+        "required": [
+          "userId",
+          "email",
+          "roles"
+        ],
         "type": "object"
       },
       "PaginationMeta": {
@@ -189,7 +214,12 @@
             "type": "integer"
           }
         },
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "type": "object"
       },
       "RefreshRequestDto": {
@@ -199,7 +229,9 @@
             "type": "string"
           }
         },
-        "required": ["refreshToken"],
+        "required": [
+          "refreshToken"
+        ],
         "type": "object"
       },
       "RegisterRequestDto": {
@@ -218,7 +250,11 @@
             "type": "string"
           }
         },
-        "required": ["email", "password", "fullName"],
+        "required": [
+          "email",
+          "password",
+          "fullName"
+        ],
         "type": "object"
       },
       "ResetPasswordRequestDto": {
@@ -236,7 +272,11 @@
             "type": "string"
           }
         },
-        "required": ["email", "code", "newPassword"],
+        "required": [
+          "email",
+          "code",
+          "newPassword"
+        ],
         "type": "object"
       },
       "VerifyEmailRequestDto": {
@@ -250,7 +290,10 @@
             "type": "string"
           }
         },
-        "required": ["email", "code"],
+        "required": [
+          "email",
+          "code"
+        ],
         "type": "object"
       }
     },
@@ -303,7 +346,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -325,7 +370,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -355,7 +402,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -377,7 +426,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -407,7 +458,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -429,7 +482,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -459,7 +514,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -489,7 +546,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -519,7 +578,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -541,7 +602,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -579,7 +642,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -609,7 +674,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       },
       "post": {
@@ -629,7 +696,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -667,7 +736,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -705,7 +776,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -735,7 +808,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -765,7 +840,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -795,7 +872,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -825,7 +904,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -855,7 +936,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -885,7 +968,49 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v1/admin/inventory/stores/{id}": {
+      "patch": {
+        "operationId": "inventory_AdminInventory_updateStore_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -915,7 +1040,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -945,7 +1072,49 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v1/admin/inventory/warehouses/{id}": {
+      "patch": {
+        "operationId": "inventory_AdminInventory_updateWarehouse_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -991,7 +1160,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -1037,7 +1208,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -1091,7 +1264,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -1145,7 +1320,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -1199,7 +1376,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -1253,7 +1432,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -1299,7 +1480,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -1353,7 +1536,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -1407,7 +1592,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -1461,7 +1648,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -1515,7 +1704,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1561,7 +1752,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1607,7 +1800,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1653,7 +1848,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1699,7 +1896,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1745,7 +1944,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1791,7 +1992,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1837,7 +2040,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1883,7 +2088,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1929,7 +2136,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -1975,7 +2184,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -2021,7 +2232,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -2075,7 +2288,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -2137,7 +2352,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -2183,7 +2400,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -2245,7 +2464,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -2291,7 +2512,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -2345,7 +2568,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -2399,7 +2624,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -2461,7 +2688,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -2507,7 +2736,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -2561,7 +2792,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -2615,7 +2848,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -2661,7 +2896,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -2715,7 +2952,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -2777,7 +3016,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -2839,7 +3080,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -2901,7 +3144,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -2963,7 +3208,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -3010,7 +3257,9 @@
           }
         },
         "summary": "List users (SuperAdmin; BFLA in always-on lab)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       },
       "post": {
@@ -3055,7 +3304,9 @@
           }
         },
         "summary": "SC-76 — create user (BFLA; weak password SC-85)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3102,7 +3353,9 @@
           }
         },
         "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3157,7 +3410,9 @@
           }
         },
         "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       },
       "get": {
@@ -3210,7 +3465,9 @@
           }
         },
         "summary": "Get user by id",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       },
       "patch": {
@@ -3263,7 +3520,9 @@
           }
         },
         "summary": "Patch user roles/status (mass-assignment in always-on lab)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3318,7 +3577,9 @@
           }
         },
         "summary": "SC-77 — soft-disable user (BFLA)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3364,7 +3625,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -3418,7 +3681,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -3480,7 +3745,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -3513,7 +3780,9 @@
           }
         },
         "summary": "Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3553,7 +3822,9 @@
           }
         },
         "summary": "Đăng nhập — lấy accessToken để Authorize trên Swagger",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3576,7 +3847,9 @@
           }
         },
         "summary": "Thu hồi session (refresh không dùng lại được)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3629,7 +3902,9 @@
           }
         ],
         "summary": "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3659,7 +3934,9 @@
           }
         },
         "summary": "Đổi refresh token — session cũ bị thu hồi",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3692,7 +3969,9 @@
           }
         },
         "summary": "Đăng ký tài khoản Customer (SC-87: roles in body accepted)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3715,7 +3994,9 @@
           }
         },
         "summary": "Đặt lại mật khẩu bằng OTP",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3751,7 +4032,9 @@
           }
         ],
         "summary": "SC-79 — thu hồi phiên bất kỳ (IDOR)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3787,7 +4070,9 @@
           }
         ],
         "summary": "SC-78 — liệt kê phiên bất kỳ user (IDOR)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3810,7 +4095,9 @@
           }
         },
         "summary": "Xác minh email OTP",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -3822,7 +4109,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -3860,7 +4149,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -3906,7 +4197,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "get": {
@@ -3950,7 +4243,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -3996,7 +4291,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4050,7 +4347,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "patch": {
@@ -4102,7 +4401,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4148,7 +4449,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4202,7 +4505,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4232,7 +4537,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4270,7 +4577,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4282,7 +4591,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -4304,7 +4615,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "get": {
@@ -4324,7 +4637,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "post": {
@@ -4344,7 +4659,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4374,7 +4691,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -4396,7 +4715,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       },
       "put": {
@@ -4416,7 +4737,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       }
     },
@@ -4438,7 +4761,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       },
       "post": {
@@ -4458,7 +4783,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       }
     },
@@ -4488,7 +4815,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       }
     },
@@ -4526,7 +4855,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4556,7 +4887,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4586,7 +4919,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4624,7 +4959,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       },
       "get": {
@@ -4644,7 +4981,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4682,7 +5021,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4720,7 +5061,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4758,7 +5101,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -4812,7 +5157,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -4850,7 +5197,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -4904,7 +5253,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -4958,7 +5309,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -4996,7 +5349,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -5042,7 +5397,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -5088,7 +5445,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -5150,7 +5509,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -5196,7 +5557,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -5250,7 +5613,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -5304,7 +5669,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -5350,7 +5717,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       },
       "post": {
@@ -5394,7 +5763,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5448,7 +5819,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5502,7 +5875,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5556,7 +5931,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5610,7 +5987,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5664,7 +6043,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5718,7 +6099,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5772,7 +6155,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5826,7 +6211,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -5872,7 +6259,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -5926,7 +6315,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -5972,7 +6363,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -6026,7 +6419,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -6080,7 +6475,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -6134,7 +6531,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       },
       "post": {
@@ -6186,7 +6585,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -6198,7 +6599,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -6210,7 +6613,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -6232,7 +6637,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -6254,7 +6661,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -6276,7 +6685,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -6298,7 +6709,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -6320,7 +6733,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -6350,7 +6765,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "post": {
@@ -6378,7 +6795,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -6400,7 +6819,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -6446,7 +6867,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       },
       "post": {
@@ -6498,7 +6921,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -6552,7 +6977,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -6614,7 +7041,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -6676,7 +7105,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -6730,7 +7161,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -6776,7 +7209,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -6838,7 +7273,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "get": {
@@ -6890,7 +7327,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "patch": {
@@ -6950,7 +7389,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7012,7 +7453,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "post": {
@@ -7072,7 +7515,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7134,7 +7579,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7204,7 +7651,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7266,7 +7715,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7336,7 +7787,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "patch": {
@@ -7404,7 +7857,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7466,7 +7921,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -7512,7 +7969,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7566,7 +8025,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7620,7 +8081,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7674,7 +8137,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7728,7 +8193,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7782,7 +8249,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7836,7 +8305,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7890,7 +8361,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7944,7 +8417,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -7998,7 +8473,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8044,7 +8521,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8098,7 +8577,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8152,7 +8633,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8198,7 +8681,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8252,7 +8737,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8290,7 +8777,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -8312,7 +8801,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -8350,7 +8841,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -8388,7 +8881,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -8400,7 +8895,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -8438,7 +8935,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -8450,7 +8949,47 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v1/stores/pickup": {
+      "get": {
+        "operationId": "inventory_Inventory_pickupStores_v1",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v1/stores/{id}": {
+      "get": {
+        "operationId": "inventory_Inventory_store_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -8496,7 +9035,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       },
       "post": {
@@ -8548,7 +9089,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -8602,7 +9145,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -8664,7 +9209,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -8726,7 +9273,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -8788,7 +9337,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -8800,7 +9351,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       },
       "post": {
@@ -8810,7 +9363,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -8822,7 +9377,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -8834,7 +9391,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -8880,7 +9439,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       },
       "post": {
@@ -8932,7 +9493,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -8986,7 +9549,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -9048,7 +9613,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -9110,7 +9677,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -9132,7 +9701,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "post": {
@@ -9152,7 +9723,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -9182,7 +9755,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -9204,7 +9779,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9234,7 +9811,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9256,7 +9835,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9286,7 +9867,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9308,7 +9891,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9338,7 +9923,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9368,7 +9955,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9398,7 +9987,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9420,7 +10011,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9458,7 +10051,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9488,7 +10083,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       },
       "post": {
@@ -9508,7 +10105,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -9546,7 +10145,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9584,7 +10185,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9614,7 +10217,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9644,7 +10249,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9674,7 +10281,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9704,7 +10313,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9734,7 +10345,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9764,7 +10377,49 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v2/admin/inventory/stores/{id}": {
+      "patch": {
+        "operationId": "inventory_AdminInventory_updateStore_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9794,7 +10449,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9824,7 +10481,49 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v2/admin/inventory/warehouses/{id}": {
+      "patch": {
+        "operationId": "inventory_AdminInventory_updateWarehouse_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -9870,7 +10569,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -9916,7 +10617,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -9970,7 +10673,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -10024,7 +10729,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -10078,7 +10785,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -10132,7 +10841,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -10178,7 +10889,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -10232,7 +10945,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -10286,7 +11001,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -10340,7 +11057,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -10394,7 +11113,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10440,7 +11161,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10486,7 +11209,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10532,7 +11257,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10578,7 +11305,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10624,7 +11353,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10670,7 +11401,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10716,7 +11449,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10762,7 +11497,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10808,7 +11545,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10854,7 +11593,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -10900,7 +11641,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -10954,7 +11697,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -11016,7 +11761,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -11062,7 +11809,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -11124,7 +11873,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -11170,7 +11921,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -11224,7 +11977,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -11278,7 +12033,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -11340,7 +12097,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -11386,7 +12145,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -11440,7 +12201,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -11494,7 +12257,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -11540,7 +12305,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -11594,7 +12361,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -11656,7 +12425,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -11718,7 +12489,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -11780,7 +12553,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -11842,7 +12617,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -11889,7 +12666,9 @@
           }
         },
         "summary": "List users (SuperAdmin; BFLA in always-on lab)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       },
       "post": {
@@ -11934,7 +12713,9 @@
           }
         },
         "summary": "SC-76 — create user (BFLA; weak password SC-85)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -11981,7 +12762,9 @@
           }
         },
         "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12036,7 +12819,9 @@
           }
         },
         "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       },
       "get": {
@@ -12089,7 +12874,9 @@
           }
         },
         "summary": "Get user by id",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       },
       "patch": {
@@ -12142,7 +12929,9 @@
           }
         },
         "summary": "Patch user roles/status (mass-assignment in always-on lab)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12197,7 +12986,9 @@
           }
         },
         "summary": "SC-77 — soft-disable user (BFLA)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12243,7 +13034,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -12297,7 +13090,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -12359,7 +13154,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -12392,7 +13189,9 @@
           }
         },
         "summary": "Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12432,7 +13231,9 @@
           }
         },
         "summary": "Đăng nhập — lấy accessToken để Authorize trên Swagger",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12455,7 +13256,9 @@
           }
         },
         "summary": "Thu hồi session (refresh không dùng lại được)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12508,7 +13311,9 @@
           }
         ],
         "summary": "Thông tin user từ Bearer hoặc ?access_token= (SC-84 JWT in query)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12538,7 +13343,9 @@
           }
         },
         "summary": "Đổi refresh token — session cũ bị thu hồi",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12571,7 +13378,9 @@
           }
         },
         "summary": "Đăng ký tài khoản Customer (SC-87: roles in body accepted)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12594,7 +13403,9 @@
           }
         },
         "summary": "Đặt lại mật khẩu bằng OTP",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12630,7 +13441,9 @@
           }
         ],
         "summary": "SC-79 — thu hồi phiên bất kỳ (IDOR)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12666,7 +13479,9 @@
           }
         ],
         "summary": "SC-78 — liệt kê phiên bất kỳ user (IDOR)",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12689,7 +13504,9 @@
           }
         },
         "summary": "Xác minh email OTP",
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -12701,7 +13518,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -12739,7 +13558,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -12785,7 +13606,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "get": {
@@ -12829,7 +13652,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -12875,7 +13700,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -12929,7 +13756,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "patch": {
@@ -12981,7 +13810,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13027,7 +13858,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13081,7 +13914,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13111,7 +13946,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13149,7 +13986,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13161,7 +14000,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -13183,7 +14024,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "get": {
@@ -13203,7 +14046,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "post": {
@@ -13223,7 +14068,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13253,7 +14100,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -13275,7 +14124,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       },
       "put": {
@@ -13295,7 +14146,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       }
     },
@@ -13317,7 +14170,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       },
       "post": {
@@ -13337,7 +14192,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       }
     },
@@ -13367,7 +14224,9 @@
             "description": ""
           }
         },
-        "tags": ["Customer"],
+        "tags": [
+          "Customer"
+        ],
         "x-nexatech-service": "customer-service"
       }
     },
@@ -13405,7 +14264,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13435,7 +14296,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13465,7 +14328,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13503,7 +14368,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       },
       "get": {
@@ -13523,7 +14390,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13561,7 +14430,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13599,7 +14470,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13637,7 +14510,9 @@
             "description": ""
           }
         },
-        "tags": ["Media"],
+        "tags": [
+          "Media"
+        ],
         "x-nexatech-service": "media-service"
       }
     },
@@ -13691,7 +14566,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -13729,7 +14606,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -13783,7 +14662,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -13837,7 +14718,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -13875,7 +14758,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -13921,7 +14806,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -13967,7 +14854,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -14029,7 +14918,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -14075,7 +14966,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -14129,7 +15022,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -14183,7 +15078,9 @@
             "description": ""
           }
         },
-        "tags": ["Notification"],
+        "tags": [
+          "Notification"
+        ],
         "x-nexatech-service": "notification-service"
       }
     },
@@ -14229,7 +15126,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       },
       "post": {
@@ -14273,7 +15172,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14327,7 +15228,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14381,7 +15284,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14435,7 +15340,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14489,7 +15396,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14543,7 +15452,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14597,7 +15508,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14651,7 +15564,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14705,7 +15620,9 @@
             "description": ""
           }
         },
-        "tags": ["Order"],
+        "tags": [
+          "Order"
+        ],
         "x-nexatech-service": "order-service"
       }
     },
@@ -14751,7 +15668,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -14805,7 +15724,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -14851,7 +15772,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -14905,7 +15828,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -14959,7 +15884,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -15013,7 +15940,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       },
       "post": {
@@ -15065,7 +15994,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -15077,7 +16008,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -15089,7 +16022,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -15111,7 +16046,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -15133,7 +16070,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -15155,7 +16094,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -15177,7 +16118,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -15199,7 +16142,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -15229,7 +16174,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "post": {
@@ -15257,7 +16204,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -15279,7 +16228,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -15325,7 +16276,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       },
       "post": {
@@ -15377,7 +16330,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -15431,7 +16386,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -15493,7 +16450,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -15555,7 +16514,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -15609,7 +16570,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -15655,7 +16618,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -15717,7 +16682,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "get": {
@@ -15769,7 +16736,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "patch": {
@@ -15829,7 +16798,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -15891,7 +16862,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "post": {
@@ -15951,7 +16924,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -16013,7 +16988,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -16083,7 +17060,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -16145,7 +17124,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -16215,7 +17196,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       },
       "patch": {
@@ -16283,7 +17266,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -16345,7 +17330,9 @@
             "description": ""
           }
         },
-        "tags": ["Review"],
+        "tags": [
+          "Review"
+        ],
         "x-nexatech-service": "review-service"
       }
     },
@@ -16391,7 +17378,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16445,7 +17434,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16499,7 +17490,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16553,7 +17546,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16607,7 +17602,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16661,7 +17658,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16715,7 +17714,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16769,7 +17770,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16823,7 +17826,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16877,7 +17882,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16923,7 +17930,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -16977,7 +17986,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -17031,7 +18042,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -17077,7 +18090,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -17131,7 +18146,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -17169,7 +18186,9 @@
             "description": ""
           }
         },
-        "tags": ["Shipping"],
+        "tags": [
+          "Shipping"
+        ],
         "x-nexatech-service": "shipping-service"
       }
     },
@@ -17191,7 +18210,9 @@
             "description": ""
           }
         },
-        "tags": ["Catalog"],
+        "tags": [
+          "Catalog"
+        ],
         "x-nexatech-service": "catalog-service"
       }
     },
@@ -17229,7 +18250,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -17267,7 +18290,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -17279,7 +18304,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -17317,7 +18344,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -17329,7 +18358,47 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v2/stores/pickup": {
+      "get": {
+        "operationId": "inventory_Inventory_pickupStores_v2",
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
+        "x-nexatech-service": "inventory-service"
+      }
+    },
+    "/api/v2/stores/{id}": {
+      "get": {
+        "operationId": "inventory_Inventory_store_v2",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -17375,7 +18444,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       },
       "post": {
@@ -17427,7 +18498,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -17481,7 +18554,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -17543,7 +18618,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -17605,7 +18682,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -17667,7 +18746,9 @@
             "description": ""
           }
         },
-        "tags": ["Support"],
+        "tags": [
+          "Support"
+        ],
         "x-nexatech-service": "support-service"
       }
     },
@@ -17679,7 +18760,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       },
       "post": {
@@ -17689,7 +18772,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -17701,7 +18786,9 @@
             "description": ""
           }
         },
-        "tags": ["Payment"],
+        "tags": [
+          "Payment"
+        ],
         "x-nexatech-service": "payment-service"
       }
     },
@@ -17713,7 +18800,9 @@
             "description": ""
           }
         },
-        "tags": ["Inventory"],
+        "tags": [
+          "Inventory"
+        ],
         "x-nexatech-service": "inventory-service"
       }
     },
@@ -17759,7 +18848,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       },
       "post": {
@@ -17811,7 +18902,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -17865,7 +18958,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -17927,7 +19022,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -17989,7 +19086,9 @@
             "description": ""
           }
         },
-        "tags": ["Warranty"],
+        "tags": [
+          "Warranty"
+        ],
         "x-nexatech-service": "warranty-service"
       }
     },
@@ -18011,7 +19110,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       },
       "post": {
@@ -18031,7 +19132,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -18061,7 +19164,9 @@
             "description": ""
           }
         },
-        "tags": ["Cart"],
+        "tags": [
+          "Cart"
+        ],
         "x-nexatech-service": "cart-service"
       }
     },
@@ -18073,7 +19178,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -18095,7 +19202,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18107,7 +19216,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18119,7 +19230,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -18131,7 +19244,9 @@
             "description": ""
           }
         },
-        "tags": ["Reporting"],
+        "tags": [
+          "Reporting"
+        ],
         "x-nexatech-service": "reporting-service"
       }
     },
@@ -18143,7 +19258,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18165,7 +19282,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18177,7 +19296,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18199,7 +19320,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18229,7 +19352,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18241,7 +19366,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18253,7 +19380,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18265,7 +19394,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18287,7 +19418,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18309,7 +19442,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     },
@@ -18331,7 +19466,9 @@
             "description": ""
           }
         },
-        "tags": ["Identity"],
+        "tags": [
+          "Identity"
+        ],
         "x-nexatech-service": "identity-service"
       }
     }

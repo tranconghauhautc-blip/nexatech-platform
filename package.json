@@ -29,6 +29,8 @@
     "openapi:diff": "node scripts/openapi/diff.cjs",
     "openapi:check": "node scripts/openapi/check.cjs",
     "seed:inventory": "node scripts/seed-inventory.cjs",
+    "seed:pickup-stores": "node scripts/seed-pickup-stores.cjs",
+    "test:seed-pickup-stores": "node --test tests/seed/seed-pickup-stores.test.cjs",
     "security-guide:setup": "node scripts/security-guide/setup.cjs",
     "security-guide:rotate-credentials": "node scripts/security-guide/rotate-credentials.cjs",
     "security-guide:serve": "node apps/security-guide-portal/src/main.cjs",

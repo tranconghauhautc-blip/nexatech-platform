@@ -30,6 +30,13 @@ export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
   const [order, setOrder] = useState<Record<string, unknown> | null>(null);
   const [shipments, setShipments] = useState<unknown[]>([]);
+  const [pickupStore, setPickupStore] = useState<{
+    name?: string;
+    address?: string;
+    city?: string;
+    phone?: string;
+    openingHours?: string;
+  } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -41,9 +48,32 @@ export default function OrderDetailPage() {
         .get<unknown[]>(`/api/bff/shipping/shipping/shipments/by-order/${id}`)
         .catch(() => []),
     ])
-      .then(([orderData, shipmentData]) => {
+      .then(async ([orderData, shipmentData]) => {
         setOrder(orderData);
         setShipments(Array.isArray(shipmentData) ? shipmentData : []);
+        const storeId = orderData['pickupStoreId'];
+        if (
+          orderData['deliveryMethod'] === 'STORE_PICKUP' &&
+          typeof storeId === 'string' &&
+          storeId.length > 0
+        ) {
+          try {
+            const store = await bff.get<Record<string, unknown>>(
+              `/api/bff/inventory/stores/${storeId}`,
+            );
+            setPickupStore({
+              name: String(store['name'] ?? ''),
+              address: store['address'] ? String(store['address']) : undefined,
+              city: store['city'] ? String(store['city']) : undefined,
+              phone: store['phone'] ? String(store['phone']) : undefined,
+              openingHours: store['openingHours']
+                ? String(store['openingHours'])
+                : undefined,
+            });
+          } catch {
+            setPickupStore(null);
+          }
+        }
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
@@ -157,7 +187,23 @@ export default function OrderDetailPage() {
       <h3>{isPickup ? 'Nhận tại cửa hàng' : 'Địa chỉ giao hàng'}</h3>
       {isPickup ? (
         <p style={{ color: '#4b6478' }}>
-          Cửa hàng: {String(order.pickupStoreId ?? '—')}
+          <strong>{pickupStore?.name || 'Cửa hàng nhận hàng'}</strong>
+          <br />
+          {[pickupStore?.address, pickupStore?.city]
+            .filter(Boolean)
+            .join(', ') || '—'}
+          {pickupStore?.phone ? (
+            <>
+              <br />
+              ĐT: {pickupStore.phone}
+            </>
+          ) : null}
+          {pickupStore?.openingHours ? (
+            <>
+              <br />
+              Giờ: {pickupStore.openingHours}
+            </>
+          ) : null}
           <br />
           Trạng thái nhận hàng theo đơn — không tạo kiện vận chuyển.
         </p>

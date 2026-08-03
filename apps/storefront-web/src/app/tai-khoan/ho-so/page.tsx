@@ -10,7 +10,7 @@ import {
   VietnamAddressSelector,
   type VietnamAddressSelectorErrors,
   type VietnamAddressSelectorValue,
-} from '../../../../../../libs/shared/web/src/address';
+} from '@nexatech/shared-web/address';
 import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { EmptyState } from '../../../components/common/empty-state';

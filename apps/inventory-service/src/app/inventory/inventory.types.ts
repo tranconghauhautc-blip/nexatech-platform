@@ -34,6 +34,9 @@ export interface Store {
   warehouseId?: string;
   address?: string;
   city?: string;
+  phone?: string;
+  openingHours?: string;
+  pickupEnabled: boolean;
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
@@ -141,6 +144,26 @@ export interface CreateStoreInput {
   warehouseId?: string;
   address?: string;
   city?: string;
+  phone?: string;
+  openingHours?: string;
+  pickupEnabled?: boolean;
+  isActive?: boolean;
+}
+
+export interface UpdateStoreInput {
+  name?: string;
+  warehouseId?: string | null;
+  address?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  openingHours?: string | null;
+  pickupEnabled?: boolean;
+  isActive?: boolean;
+}
+
+export interface UpdateWarehouseInput {
+  name?: string;
+  address?: string | null;
   isActive?: boolean;
 }
 

@@ -544,17 +544,17 @@ paths:
       tags:
         - Health
 servers:
-  - url: 'http://localhost:3013'
+  - url: "http://localhost:3013"
     description: notification-service direct (local)
-  - url: 'http://localhost:8000'
+  - url: "http://localhost:8000"
     description: Kong Gateway (local)
-  - url: 'http://{host}:{port}'
+  - url: "http://{host}:{port}"
     description: Kubernetes / origin placeholder (override host+port)
     variables:
       host:
         default: catalog-service.nexatech.svc.cluster.local
       port:
         default: 3013
-  - url: 'https://api.example.invalid'
+  - url: "https://api.example.invalid"
     description: Protected public placeholder ONLY — do not use for Try it out
 tags: []

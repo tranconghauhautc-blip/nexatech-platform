@@ -6,6 +6,7 @@ import { InventoryService } from './inventory.service';
 
 describe('InventoryService concurrency', () => {
   const staffRoles = [Roles.Staff];
+  const managerRoles = [Roles.Manager];
 
   it('never allows total reserved quantity to exceed on-hand stock under parallel reservations', async () => {
     const repository = new InMemoryInventoryRepository();
@@ -14,7 +15,7 @@ describe('InventoryService concurrency', () => {
 
     const warehouse = await service.createWarehouse(
       { code: 'WH-CC', name: 'Kho cạnh tranh' },
-      staffRoles,
+      managerRoles,
     );
     await service.receiveStock(
       {
@@ -72,7 +73,7 @@ describe('InventoryService concurrency', () => {
 
     const warehouse = await service.createWarehouse(
       { code: 'WH-ISS', name: 'Kho xuất' },
-      staffRoles,
+      managerRoles,
     );
     await service.receiveStock(
       {

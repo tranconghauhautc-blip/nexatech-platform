@@ -32,8 +32,8 @@ describe('Inventory controllers', () => {
 
   it('creates a warehouse via admin controller and reads stock through the public controller', async () => {
     const warehouse = await adminController.createWarehouse(
-      'staff-1',
-      Roles.Staff,
+      'mgr-1',
+      Roles.Manager,
       { code: 'WH-C1', name: 'Kho C1' },
     );
     await adminController.receiveStock('staff-1', Roles.Staff, {
@@ -61,8 +61,8 @@ describe('Inventory controllers', () => {
 
   it('reserves and releases stock through the admin controller', async () => {
     const warehouse = await adminController.createWarehouse(
-      'staff-1',
-      Roles.Staff,
+      'mgr-1',
+      Roles.Manager,
       { code: 'WH-C2', name: 'Kho C2' },
     );
     await adminController.receiveStock('staff-1', Roles.Staff, {

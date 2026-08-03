@@ -14,6 +14,8 @@ import {
   receiveStockRequestSchema,
   reserveStockRequestSchema,
   transferStockRequestSchema,
+  updateStoreRequestSchema,
+  updateWarehouseRequestSchema,
 } from '@nexatech/shared-contracts';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
 import {
@@ -51,6 +53,15 @@ export class InventoryService {
 
   private requireStaff(roles: Role[]): void {
     if (!hasMinimumRole(roles, Roles.Staff)) {
+      throw new AppError({
+        errorCode: ErrorCodes.FORBIDDEN,
+        message: 'Bạn không có quyền thực hiện thao tác này',
+      });
+    }
+  }
+
+  private requireManager(roles: Role[]): void {
+    if (!hasMinimumRole(roles, Roles.Manager)) {
       throw new AppError({
         errorCode: ErrorCodes.FORBIDDEN,
         message: 'Bạn không có quyền thực hiện thao tác này',
@@ -116,7 +127,7 @@ export class InventoryService {
     roles: Role[],
     actorId = 'system',
   ): Promise<Warehouse> {
-    this.requireStaff(roles);
+    this.requireManager(roles);
     const input = createWarehouseRequestSchema.parse(rawInput);
     const warehouse = await this.repository.createWarehouse(input);
     await this.repository.writeAudit('inventory.warehouse.created', actorId, {
@@ -130,23 +141,74 @@ export class InventoryService {
     return this.repository.listWarehouses();
   }
 
+  async updateWarehouse(
+    id: string,
+    rawInput: unknown,
+    roles: Role[],
+    actorId = 'system',
+  ): Promise<Warehouse> {
+    this.requireManager(roles);
+    const input = updateWarehouseRequestSchema.parse(rawInput);
+    const warehouse = await this.repository.updateWarehouse(id, input);
+    await this.repository.writeAudit('inventory.warehouse.updated', actorId, {
+      warehouseId: warehouse.id,
+      code: warehouse.code,
+      changes: input,
+    });
+    return warehouse;
+  }
+
   async createStore(
     rawInput: unknown,
     roles: Role[],
     actorId = 'system',
   ): Promise<Store> {
-    this.requireStaff(roles);
+    this.requireManager(roles);
     const input = createStoreRequestSchema.parse(rawInput);
     const store = await this.repository.createStore(input);
     await this.repository.writeAudit('inventory.store.created', actorId, {
       storeId: store.id,
       code: store.code,
+      pickupEnabled: store.pickupEnabled,
     });
     return store;
   }
 
   listStores(): Promise<Store[]> {
     return this.repository.listStores();
+  }
+
+  listPickupStores(): Promise<Store[]> {
+    return this.repository.listPickupStores();
+  }
+
+  async getStoreById(id: string): Promise<Store> {
+    const store = await this.repository.getStoreById(id);
+    if (!store) {
+      throw new AppError({
+        errorCode: ErrorCodes.INVENTORY_NOT_FOUND,
+        message: 'Không tìm thấy cửa hàng',
+        details: { storeId: id },
+      });
+    }
+    return store;
+  }
+
+  async updateStore(
+    id: string,
+    rawInput: unknown,
+    roles: Role[],
+    actorId = 'system',
+  ): Promise<Store> {
+    this.requireManager(roles);
+    const input = updateStoreRequestSchema.parse(rawInput);
+    const store = await this.repository.updateStore(id, input);
+    await this.repository.writeAudit('inventory.store.updated', actorId, {
+      storeId: store.id,
+      code: store.code,
+      changes: input,
+    });
+    return store;
   }
 
   async getStock(

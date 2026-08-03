@@ -1,4 +1,4 @@
-import { Body, Controller, Headers, Param, Post } from '@nestjs/common';
+import { Body, Controller, Headers, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { InventoryService, parseRolesHeader } from './inventory.service';
 import type { ReturnStockRequestInput } from './inventory.types';
@@ -21,6 +21,21 @@ export class AdminInventoryController {
     );
   }
 
+  @Patch('warehouses/:id')
+  updateWarehouse(
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
+    return this.inventoryService.updateWarehouse(
+      id,
+      body,
+      parseRolesHeader(rolesHeader),
+      userId,
+    );
+  }
+
   @Post('stores')
   createStore(
     @Headers('x-user-id') userId: string,
@@ -28,6 +43,21 @@ export class AdminInventoryController {
     @Body() body: unknown,
   ) {
     return this.inventoryService.createStore(
+      body,
+      parseRolesHeader(rolesHeader),
+      userId,
+    );
+  }
+
+  @Patch('stores/:id')
+  updateStore(
+    @Headers('x-user-id') userId: string,
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('id') id: string,
+    @Body() body: unknown,
+  ) {
+    return this.inventoryService.updateStore(
+      id,
       body,
       parseRolesHeader(rolesHeader),
       userId,

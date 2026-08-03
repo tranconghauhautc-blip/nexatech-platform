@@ -325,9 +325,41 @@ export const createStoreRequestSchema = z.object({
   warehouseId: z.string().uuid().optional(),
   address: z.string().trim().max(500).optional(),
   city: z.string().trim().max(120).optional(),
+  phone: z.string().trim().max(20).optional(),
+  openingHours: z.string().trim().max(500).optional(),
+  pickupEnabled: z.boolean().default(false),
   isActive: z.boolean().default(true),
 });
 export type CreateStoreRequest = z.infer<typeof createStoreRequestSchema>;
+
+export const updateStoreRequestSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    warehouseId: z.string().uuid().nullable().optional(),
+    address: z.string().trim().max(500).nullable().optional(),
+    city: z.string().trim().max(120).nullable().optional(),
+    phone: z.string().trim().max(20).nullable().optional(),
+    openingHours: z.string().trim().max(500).nullable().optional(),
+    pickupEnabled: z.boolean().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: 'Cần ít nhất một trường để cập nhật',
+  });
+export type UpdateStoreRequest = z.infer<typeof updateStoreRequestSchema>;
+
+export const updateWarehouseRequestSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120).optional(),
+    address: z.string().trim().max(500).nullable().optional(),
+    isActive: z.boolean().optional(),
+  })
+  .refine((v) => Object.keys(v).length > 0, {
+    message: 'Cần ít nhất một trường để cập nhật',
+  });
+export type UpdateWarehouseRequest = z.infer<
+  typeof updateWarehouseRequestSchema
+>;
 
 export const stockLocationRefSchema = z.object({
   locationType: locationTypeSchema,
@@ -2330,7 +2362,9 @@ export const createAdminUserRequestSchema = z.object({
   roles: z.array(identityRoleSchema).min(1).max(5).default(['Customer']),
   status: identityUserStatusSchema.optional().default('ACTIVE'),
 });
-export type CreateAdminUserRequest = z.infer<typeof createAdminUserRequestSchema>;
+export type CreateAdminUserRequest = z.infer<
+  typeof createAdminUserRequestSchema
+>;
 
 export interface AdminUserDto {
   id: string;

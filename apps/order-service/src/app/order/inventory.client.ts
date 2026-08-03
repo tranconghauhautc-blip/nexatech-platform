@@ -7,10 +7,23 @@ import type {
   ReserveStockInput,
 } from './order.types';
 
+export interface PickupStoreInfo {
+  id: string;
+  code: string;
+  name: string;
+  address?: string;
+  city?: string;
+  phone?: string;
+  openingHours?: string;
+  pickupEnabled: boolean;
+  isActive: boolean;
+}
+
 export interface InventoryClient {
   reserveStock(input: ReserveStockInput): Promise<ReservationResult>;
   releaseReservation(reservationId: string): Promise<void>;
   getReservation(reservationId: string): Promise<ReservationResult | null>;
+  getPickupStore(storeId: string): Promise<PickupStoreInfo | null>;
 }
 
 interface StoredReservation extends ReservationResult {
@@ -25,6 +38,7 @@ export class InMemoryInventoryClient implements InventoryClient {
   >();
   private readonly reservations = new Map<string, StoredReservation>();
   private readonly idempotency = new Map<string, ReservationResult>();
+  private readonly stores = new Map<string, PickupStoreInfo>();
   failNextReserve = false;
 
   seed(
@@ -37,11 +51,16 @@ export class InMemoryInventoryClient implements InventoryClient {
     this.locations.set(skuCode, { locationType, locationId });
   }
 
+  seedPickupStore(store: PickupStoreInfo): void {
+    this.stores.set(store.id, store);
+  }
+
   clear(): void {
     this.stock.clear();
     this.locations.clear();
     this.reservations.clear();
     this.idempotency.clear();
+    this.stores.clear();
     this.failNextReserve = false;
   }
 
@@ -132,6 +151,10 @@ export class InMemoryInventoryClient implements InventoryClient {
       orderId: reservation.orderId,
       lines: reservation.lines,
     };
+  }
+
+  async getPickupStore(storeId: string): Promise<PickupStoreInfo | null> {
+    return this.stores.get(storeId) ?? null;
   }
 }
 
@@ -227,6 +250,45 @@ export class HttpInventoryClient implements InventoryClient {
     }
     const body = (await response.json()) as ReservationApiShape;
     return this.mapReservation(body);
+  }
+
+  async getPickupStore(storeId: string): Promise<PickupStoreInfo | null> {
+    const response = await this.fetchWithRetry(
+      `${this.baseUrl.replace(/\/$/, '')}/api/v1/stores/${encodeURIComponent(storeId)}`,
+      'GET',
+    );
+    if (response.status === 404) {
+      return null;
+    }
+    if (!response.ok) {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_INVENTORY_UNAVAILABLE,
+        message: 'Không thể xác minh cửa hàng nhận hàng',
+        details: { status: response.status, storeId },
+      });
+    }
+    const body = (await response.json()) as {
+      id: string;
+      code: string;
+      name: string;
+      address?: string;
+      city?: string;
+      phone?: string;
+      openingHours?: string;
+      pickupEnabled?: boolean;
+      isActive?: boolean;
+    };
+    return {
+      id: body.id,
+      code: body.code,
+      name: body.name,
+      address: body.address,
+      city: body.city,
+      phone: body.phone,
+      openingHours: body.openingHours,
+      pickupEnabled: body.pickupEnabled === true,
+      isActive: body.isActive !== false,
+    };
   }
 
   private mapReservation(body: ReservationApiShape): ReservationResult {

@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -119,7 +130,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v1/media/by-entity/{entityType}/{entityId}": {
@@ -148,7 +161,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v1/media/presign": {
@@ -177,7 +192,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v1/media/{id}": {
@@ -214,7 +231,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       },
       "get": {
         "operationId": "Media_metadata_v1",
@@ -233,7 +252,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v1/media/{id}/confirm": {
@@ -270,7 +291,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v1/media/{id}/download-url": {
@@ -307,7 +330,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v1/media/{id}/links": {
@@ -344,7 +369,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/admin/cleanup-orphans": {
@@ -381,7 +408,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/by-entity/{entityType}/{entityId}": {
@@ -410,7 +439,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/presign": {
@@ -439,7 +470,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/{id}": {
@@ -476,7 +509,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       },
       "get": {
         "operationId": "Media_metadata_v2",
@@ -495,7 +530,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/{id}/confirm": {
@@ -532,7 +569,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/{id}/download-url": {
@@ -569,7 +608,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/api/v2/media/{id}/links": {
@@ -606,7 +647,9 @@
             "description": ""
           }
         },
-        "tags": ["media"]
+        "tags": [
+          "media"
+        ]
       }
     },
     "/health": {
@@ -617,7 +660,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
@@ -628,7 +673,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
@@ -639,7 +686,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },

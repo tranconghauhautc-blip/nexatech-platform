@@ -41,7 +41,9 @@ async function api(base, path, options = {}) {
       typeof body === 'object' && body?.message
         ? body.message
         : text.slice(0, 200);
-    throw new Error(`${options.method || 'GET'} ${path} → ${res.status}: ${msg}`);
+    throw new Error(
+      `${options.method || 'GET'} ${path} → ${res.status}: ${msg}`,
+    );
   }
   return body;
 }
@@ -80,15 +82,19 @@ async function ensureWarehouse() {
     console.log(`[seed-inventory] warehouse ${existing.code} (${existing.id})`);
     return existing;
   }
-  const created = await api(INVENTORY_API, '/api/v1/admin/inventory/warehouses', {
-    method: 'POST',
-    body: JSON.stringify({
-      code: 'HN-MAIN',
-      name: 'Kho Hà Nội chính',
-      address: 'Hà Nội',
-      isActive: true,
-    }),
-  });
+  const created = await api(
+    INVENTORY_API,
+    '/api/v1/admin/inventory/warehouses',
+    {
+      method: 'POST',
+      body: JSON.stringify({
+        code: 'HN-MAIN',
+        name: 'Kho Hà Nội chính',
+        address: 'Hà Nội',
+        isActive: true,
+      }),
+    },
+  );
   console.log(`[seed-inventory] created warehouse ${created.code}`);
   return created;
 }
@@ -120,7 +126,33 @@ async function main() {
       console.log(`[seed-inventory] ${ok}/${skuCodes.length}`);
     }
   }
-  console.log(`[seed-inventory] done — ${ok} SKUs stocked at ${warehouse.code}`);
+  console.log(
+    `[seed-inventory] done — ${ok} SKUs stocked at ${warehouse.code}`,
+  );
+
+  // Ensure a pickup store exists for checkout (idempotent; does not touch HN-MAIN)
+  try {
+    const { spawnSync } = require('child_process');
+    const r = spawnSync(
+      process.execPath,
+      [require('path').join(__dirname, 'seed-pickup-stores.cjs')],
+      {
+        env: { ...process.env, NEXATECH_ALLOW_DEV_SEED: 'YES' },
+        encoding: 'utf8',
+        stdio: 'inherit',
+      },
+    );
+    if (r.status !== 0) {
+      console.warn(
+        '[seed-inventory] pickup store seed failed (non-fatal for stock seed)',
+      );
+    }
+  } catch (err) {
+    console.warn(
+      '[seed-inventory] pickup store seed skipped:',
+      err?.message || err,
+    );
+  }
 }
 
 main().catch((err) => {

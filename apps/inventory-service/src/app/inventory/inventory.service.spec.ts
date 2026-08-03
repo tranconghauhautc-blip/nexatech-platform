@@ -7,6 +7,7 @@ import { InventoryService } from './inventory.service';
 
 describe('InventoryService', () => {
   const staffRoles = [Roles.Staff];
+  const managerRoles = [Roles.Manager];
   let repository: InMemoryInventoryRepository;
   let publisher: InMemoryEventPublisher;
   let service: InventoryService;
@@ -18,7 +19,10 @@ describe('InventoryService', () => {
   });
 
   async function seedWarehouse(code = 'WH-01') {
-    return service.createWarehouse({ code, name: 'Kho trung tâm' }, staffRoles);
+    return service.createWarehouse(
+      { code, name: 'Kho trung tâm' },
+      managerRoles,
+    );
   }
 
   it('creates warehouse and store', async () => {
@@ -29,11 +33,67 @@ describe('InventoryService', () => {
         name: 'Cửa hàng Quận 1',
         warehouseId: warehouse.id,
         city: 'Hồ Chí Minh',
+        pickupEnabled: true,
+        phone: '0281234567',
+        openingHours: '9:00-21:00',
       },
-      staffRoles,
+      managerRoles,
     );
     expect(await service.listWarehouses()).toHaveLength(1);
     expect((await service.listStores())[0]?.code).toBe(store.code);
+    expect(await service.listPickupStores()).toHaveLength(1);
+  });
+
+  it('filters pickup stores and forbids Staff store create', async () => {
+    const warehouse = await seedWarehouse();
+    await expect(
+      service.createStore(
+        { code: 'ST-X', name: 'X', warehouseId: warehouse.id },
+        staffRoles,
+      ),
+    ).rejects.toMatchObject({ errorCode: ErrorCodes.FORBIDDEN });
+
+    const active = await service.createStore(
+      {
+        code: 'ST-PICK',
+        name: 'Pickup OK',
+        warehouseId: warehouse.id,
+        pickupEnabled: true,
+        isActive: true,
+      },
+      managerRoles,
+    );
+    await service.createStore(
+      {
+        code: 'ST-OFF',
+        name: 'Pickup off',
+        warehouseId: warehouse.id,
+        pickupEnabled: false,
+        isActive: true,
+      },
+      managerRoles,
+    );
+    await service.createStore(
+      {
+        code: 'ST-INACT',
+        name: 'Inactive',
+        warehouseId: warehouse.id,
+        pickupEnabled: true,
+        isActive: false,
+      },
+      managerRoles,
+    );
+    const pickup = await service.listPickupStores();
+    expect(pickup.map((s) => s.code)).toEqual(['ST-PICK']);
+    expect(pickup[0]?.id).toBe(active.id);
+
+    const updated = await service.updateStore(
+      active.id,
+      { pickupEnabled: false },
+      managerRoles,
+    );
+    expect(updated.pickupEnabled).toBe(false);
+    expect(await service.listPickupStores()).toHaveLength(0);
   });
 
   it('receives stock and is idempotent on repeated key', async () => {
@@ -202,7 +262,7 @@ describe('InventoryService', () => {
     const warehouse = await seedWarehouse('WH-TR');
     const store = await service.createStore(
       { code: 'ST-TR', name: 'Store TR', city: 'Hà Nội' },
-      staffRoles,
+      managerRoles,
     );
     await service.receiveStock(
       {
@@ -338,7 +398,7 @@ describe('InventoryService', () => {
     const warehouse = await seedWarehouse('WH-SRC');
     const store = await service.createStore(
       { code: 'ST-SRC', name: 'Store Src', city: 'Đà Nẵng' },
-      staffRoles,
+      managerRoles,
     );
     await service.receiveStock(
       {

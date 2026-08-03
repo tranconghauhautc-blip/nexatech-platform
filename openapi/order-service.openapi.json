@@ -3,7 +3,13 @@
     "schemas": {
       "ErrorEnvelope": {
         "type": "object",
-        "required": ["errorCode", "message", "details", "traceId", "timestamp"],
+        "required": [
+          "errorCode",
+          "message",
+          "details",
+          "traceId",
+          "timestamp"
+        ],
         "properties": {
           "errorCode": {
             "type": "string"
@@ -27,7 +33,12 @@
       },
       "PaginationMeta": {
         "type": "object",
-        "required": ["page", "pageSize", "totalItems", "totalPages"],
+        "required": [
+          "page",
+          "pageSize",
+          "totalItems",
+          "totalPages"
+        ],
         "properties": {
           "page": {
             "type": "integer"
@@ -127,7 +138,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v1/admin/orders/{orderId}": {
@@ -180,7 +193,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v1/admin/orders/{orderId}/cancel": {
@@ -233,7 +248,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v1/admin/orders/{orderId}/confirm": {
@@ -286,7 +303,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v1/admin/orders/{orderId}/status-transitions": {
@@ -339,7 +358,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v1/orders": {
@@ -384,7 +405,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       },
       "post": {
         "operationId": "Order_create_v1",
@@ -427,7 +450,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}": {
@@ -480,7 +505,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/cancel": {
@@ -533,7 +560,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/confirm": {
@@ -586,7 +615,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/packages": {
@@ -639,7 +670,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/payment-sync": {
@@ -692,7 +725,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/return-sync": {
@@ -745,7 +780,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/shipping-sync": {
@@ -798,7 +835,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v1/orders/{orderId}/status-history": {
@@ -851,7 +890,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/admin/orders": {
@@ -896,7 +937,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v2/admin/orders/{orderId}": {
@@ -949,7 +992,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v2/admin/orders/{orderId}/cancel": {
@@ -1002,7 +1047,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v2/admin/orders/{orderId}/confirm": {
@@ -1055,7 +1102,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v2/admin/orders/{orderId}/status-transitions": {
@@ -1108,7 +1157,9 @@
             "description": ""
           }
         },
-        "tags": ["admin-orders"]
+        "tags": [
+          "admin-orders"
+        ]
       }
     },
     "/api/v2/orders": {
@@ -1153,7 +1204,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       },
       "post": {
         "operationId": "Order_create_v2",
@@ -1196,7 +1249,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}": {
@@ -1249,7 +1304,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/cancel": {
@@ -1302,7 +1359,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/confirm": {
@@ -1355,7 +1414,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/packages": {
@@ -1408,7 +1469,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/payment-sync": {
@@ -1461,7 +1524,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/return-sync": {
@@ -1514,7 +1579,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/shipping-sync": {
@@ -1567,7 +1634,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/api/v2/orders/{orderId}/status-history": {
@@ -1620,7 +1689,9 @@
             "description": ""
           }
         },
-        "tags": ["orders"]
+        "tags": [
+          "orders"
+        ]
       }
     },
     "/health": {
@@ -1631,7 +1702,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/live": {
@@ -1642,7 +1715,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     },
     "/health/ready": {
@@ -1653,7 +1728,9 @@
             "description": ""
           }
         },
-        "tags": ["Health"]
+        "tags": [
+          "Health"
+        ]
       }
     }
   },
