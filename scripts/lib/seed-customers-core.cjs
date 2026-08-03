@@ -21,10 +21,15 @@ const DEV_CUSTOMERS = [
       phone: '0901000001',
       line1: '123 Đường Nguyễn Huệ',
       line2: null,
-      ward: 'Bến Nghé',
-      district: 'Quận 1',
+      ward: 'Bến Thành',
+      district: null,
       city: 'Hồ Chí Minh',
+      provinceCode: '79',
+      provinceName: 'Hồ Chí Minh',
+      wardCode: '26743',
+      wardName: 'Bến Thành',
       postalCode: '700000',
+      countryCode: 'VN',
       isDefault: true,
     },
   },
@@ -40,10 +45,15 @@ const DEV_CUSTOMERS = [
       phone: '0901000002',
       line1: '456 Phố Huế',
       line2: null,
-      ward: 'Phố Huế',
-      district: 'Hai Bà Trưng',
+      ward: 'Hai Bà Trưng',
+      district: null,
       city: 'Hà Nội',
+      provinceCode: '01',
+      provinceName: 'Hà Nội',
+      wardCode: '00256',
+      wardName: 'Hai Bà Trưng',
       postalCode: '100000',
+      countryCode: 'VN',
       isDefault: true,
     },
   },
@@ -74,7 +84,9 @@ function validateCustomerSeedTargets() {
       return fail(`Refusing: ${c.email} overlaps an internal seed account.`);
     }
     if (c.role !== 'Customer') {
-      return fail(`Refusing: ${c.email} role must be Customer (got ${c.role}).`);
+      return fail(
+        `Refusing: ${c.email} role must be Customer (got ${c.role}).`,
+      );
     }
   }
   return ok();
@@ -142,6 +154,11 @@ function planProfileUpsert(existingProfile, customer, userId) {
     district: customer.address.district,
     city: customer.address.city,
     postalCode: customer.address.postalCode,
+    countryCode: customer.address.countryCode || 'VN',
+    provinceCode: customer.address.provinceCode || null,
+    provinceName: customer.address.provinceName || null,
+    wardCode: customer.address.wardCode || null,
+    wardName: customer.address.wardName || null,
     isDefault: customer.address.isDefault !== false,
   };
 
@@ -188,7 +205,9 @@ function assertDatabaseUrls(env = process.env) {
         host.endsWith('.amazonaws.com') ||
         host.endsWith('.azure.com')
       ) {
-        return fail(`${name} looks like a non-local/production host. Refusing.`);
+        return fail(
+          `${name} looks like a non-local/production host. Refusing.`,
+        );
       }
     } catch {
       return fail(`${name} is not a valid URL.`);

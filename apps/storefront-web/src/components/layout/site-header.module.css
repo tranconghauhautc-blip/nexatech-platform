@@ -20,6 +20,16 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+  border-radius: var(--nt-radius-sm);
+  min-height: var(--nt-touch-min);
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: opacity var(--nt-motion-fast);
+}
+
+.logo:focus-visible {
+  outline: var(--nt-focus-ring);
+  outline-offset: var(--nt-focus-offset);
 }
 
 .logoMark {
@@ -74,7 +84,17 @@
   border: none;
   color: #fff;
   cursor: pointer;
-  padding: 6px;
+  min-width: var(--nt-touch-min);
+  min-height: var(--nt-touch-min);
+  padding: 8px;
+  border-radius: var(--nt-radius-sm);
+  align-items: center;
+  justify-content: center;
+}
+
+.mobileToggle:focus-visible {
+  outline: var(--nt-focus-ring);
+  outline-offset: var(--nt-focus-offset);
 }
 
 .categoryNav {
@@ -93,16 +113,34 @@
   font-size: 0.86rem;
   font-weight: 600;
   padding: 11px 14px;
+  min-height: var(--nt-touch-min);
+  display: inline-flex;
+  align-items: center;
   white-space: nowrap;
   border-bottom: 2px solid transparent;
+  border-radius: var(--nt-radius-sm) var(--nt-radius-sm) 0 0;
   transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
+    color var(--nt-motion-fast),
+    border-color var(--nt-motion-fast),
+    background-color var(--nt-motion-fast);
 }
 
 .categoryLink:hover {
   color: #fff;
   border-color: var(--nt-cyan-500);
+}
+
+.categoryLink:focus-visible {
+  outline: var(--nt-focus-ring);
+  outline-offset: -2px;
+  color: #fff;
+}
+
+.categoryError {
+  color: var(--nt-text-on-dark-muted);
+  font-size: 0.86rem;
+  padding: 11px 14px;
+  white-space: nowrap;
 }
 
 .mobileMenu {
@@ -140,9 +178,18 @@
 
   .mobileLink {
     color: var(--nt-text-on-dark);
-    padding: 10px 4px;
+    padding: 12px 4px;
+    min-height: var(--nt-touch-min);
+    display: flex;
+    align-items: center;
     font-size: 0.92rem;
     font-weight: 600;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: var(--nt-radius-sm);
+  }
+
+  .mobileLink:focus-visible {
+    outline: var(--nt-focus-ring);
+    outline-offset: var(--nt-focus-offset);
   }
 }

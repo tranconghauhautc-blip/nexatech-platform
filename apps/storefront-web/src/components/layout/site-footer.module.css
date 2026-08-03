@@ -47,11 +47,28 @@
 .linkList a {
   font-size: 0.86rem;
   color: var(--nt-text-on-dark-muted);
-  transition: color 0.15s ease;
+  transition: color var(--nt-motion-fast);
+  padding: 4px 0;
+  min-height: var(--nt-touch-min);
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--nt-radius-sm);
 }
 
 .linkList a:hover {
   color: var(--nt-cyan-300);
+}
+
+.linkList a:focus-visible {
+  outline: var(--nt-focus-ring);
+  outline-offset: var(--nt-focus-offset);
+  color: var(--nt-cyan-300);
+}
+
+.emptyNote {
+  font-size: 0.86rem;
+  color: var(--nt-text-on-dark-muted);
+  margin: 0;
 }
 
 .bottomBar {

@@ -1,6 +1,6 @@
 'use client';
 
-import { formatVnd } from '@nexatech/shared-web';
+import { ApiError, formatVnd } from '@nexatech/shared-web';
 import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 import { bff, getErrorMessage } from '../../lib/api-browser';
@@ -18,7 +18,7 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
   const [selectedSkuId, setSelectedSkuId] = useState(skus[0]?.id);
   const [quantity, setQuantity] = useState(1);
   const [stockSources, setStockSources] = useState<StockSource[]>([]);
-  const [stockLoading, setStockLoading] = useState(false);
+  const [stockLoading, setStockLoading] = useState(true);
   const [feedback, setFeedback] = useState<{
     type: 'success' | 'error';
     message: string;
@@ -26,6 +26,9 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
   const [wishlistState, setWishlistState] = useState<
     'idle' | 'saving' | 'saved'
   >('idle');
+  const [compareState, setCompareState] = useState<'idle' | 'saving' | 'saved'>(
+    'idle',
+  );
 
   const { addItem, mutating } = useCart();
   const { isAuthenticated } = useAuth();
@@ -37,7 +40,7 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
   );
 
   useEffect(() => {
-    if (!selectedSku) {
+    if (!selectedSku?.skuCode) {
       return;
     }
     let cancelled = false;
@@ -49,7 +52,7 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
       })
       .then((sources) => {
         if (!cancelled) {
-          setStockSources(sources);
+          setStockSources(Array.isArray(sources) ? sources : []);
         }
       })
       .catch(() => {
@@ -65,7 +68,18 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
     return () => {
       cancelled = true;
     };
-  }, [selectedSku]);
+  }, [selectedSku?.id, selectedSku?.skuCode]);
+
+  const totalAvailable = useMemo(
+    () => stockSources.reduce((sum, s) => sum + s.available, 0),
+    [stockSources],
+  );
+  const inStock = totalAvailable > 0;
+  const maxQuantity = inStock ? Math.min(99, Math.max(1, totalAvailable)) : 1;
+
+  useEffect(() => {
+    setQuantity((q) => clampCartQuantity(q, maxQuantity));
+  }, [maxQuantity, selectedSku?.id]);
 
   if (!selectedSku) {
     return (
@@ -75,14 +89,13 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
     );
   }
 
-  const totalAvailable = stockSources.reduce((sum, s) => sum + s.available, 0);
-  const inStock = totalAvailable > 0;
-
   async function requireLoginOrContinue(): Promise<boolean> {
     if (isAuthenticated) {
       return true;
     }
-    router.push(`/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`);
+    router.push(
+      `/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`,
+    );
     return false;
   }
 
@@ -150,14 +163,28 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
       router.push('/dang-nhap?next=/san-pham/' + product.slug);
       return;
     }
+    if (compareState === 'saving') {
+      return;
+    }
+    setCompareState('saving');
+    setFeedback(null);
     try {
       await bff.post('/api/bff/cart/comparison', { productId: product.id });
+      setCompareState('saved');
       setFeedback({
         type: 'success',
         message: 'Đã thêm vào danh sách so sánh.',
       });
     } catch (error) {
-      setFeedback({ type: 'error', message: getErrorMessage(error) });
+      setCompareState('idle');
+      const limit =
+        error instanceof ApiError && error.errorCode === 'COMPARISON_LIMIT';
+      setFeedback({
+        type: 'error',
+        message: limit
+          ? 'So sánh tối đa 4 sản phẩm. Xóa bớt trong mục So sánh rồi thử lại.'
+          : getErrorMessage(error),
+      });
     }
   }
 
@@ -196,7 +223,8 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
           <span className="nt-badge">Đang kiểm tra tồn kho…</span>
         ) : inStock ? (
           <span className="nt-badge nt-badge--success">
-            Còn hàng · {stockSources.length} điểm cung ứng
+            Còn hàng · {totalAvailable} có thể đặt · {stockSources.length} điểm
+            cung ứng
           </span>
         ) : (
           <span className="nt-badge nt-badge--danger">Tạm hết hàng</span>
@@ -209,24 +237,31 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
           <button
             type="button"
             aria-label="Giảm số lượng"
-            onClick={() => setQuantity((q) => clampCartQuantity(q - 1))}
+            onClick={() =>
+              setQuantity((q) => clampCartQuantity(q - 1, maxQuantity))
+            }
           >
             −
           </button>
           <input
             type="number"
             min={1}
-            max={99}
+            max={maxQuantity}
             value={quantity}
             onChange={(event) =>
-              setQuantity(clampCartQuantity(Number(event.target.value)))
+              setQuantity(
+                clampCartQuantity(Number(event.target.value), maxQuantity),
+              )
             }
             aria-label="Số lượng sản phẩm"
           />
           <button
             type="button"
             aria-label="Tăng số lượng"
-            onClick={() => setQuantity((q) => clampCartQuantity(q + 1))}
+            disabled={quantity >= maxQuantity}
+            onClick={() =>
+              setQuantity((q) => clampCartQuantity(q + 1, maxQuantity))
+            }
           >
             +
           </button>
@@ -275,9 +310,14 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
         <button
           type="button"
           className="nt-btn nt-btn--ghost nt-btn--sm"
+          disabled={compareState === 'saving'}
           onClick={handleAddCompare}
         >
-          ⇄ So sánh sản phẩm
+          {compareState === 'saved'
+            ? '✓ Đã thêm so sánh'
+            : compareState === 'saving'
+              ? 'Đang thêm…'
+              : '⇄ So sánh sản phẩm'}
         </button>
       </div>
     </div>

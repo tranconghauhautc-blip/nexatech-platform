@@ -15,12 +15,23 @@ const EMPTY_PAGE: PaginatedResponse<ProductSearchItem> = {
   meta: { page: 1, pageSize: 20, totalItems: 0, totalPages: 1 },
 };
 
-export async function getCategoryTree(): Promise<CategoryTreeNode[]> {
+export async function getCategoryTreeResult(): Promise<
+  { ok: true; data: CategoryTreeNode[] } | { ok: false }
+> {
   try {
-    return await serverApiRequest<CategoryTreeNode[]>('catalog', '/categories');
+    const data = await serverApiRequest<CategoryTreeNode[]>(
+      'catalog',
+      '/categories',
+    );
+    return { ok: true, data };
   } catch {
-    return [];
+    return { ok: false };
   }
+}
+
+export async function getCategoryTree(): Promise<CategoryTreeNode[]> {
+  const result = await getCategoryTreeResult();
+  return result.ok ? result.data : [];
 }
 
 export async function getBrands(): Promise<Brand[]> {

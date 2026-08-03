@@ -6,12 +6,11 @@ import { EmptyState } from '../../components/common/empty-state';
 import { Pagination } from '../../components/common/pagination';
 import { ProductFilters } from '../../components/catalog/product-filters';
 import {
-  flattenCategories,
-  getCategoryTree,
+  getCategoryTreeResult,
   getProductFacets,
   searchProducts,
 } from '../../lib/catalog-server';
-import { NAV_CATEGORIES } from '../../lib/constants';
+import { flattenActiveCategories } from '../../lib/categories';
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -54,23 +53,21 @@ export default async function SearchPage({ searchParams }: Props) {
     maxPrice: maxPrice ? Number(maxPrice) : undefined,
   };
 
-  const [result, facets, tree] = await Promise.all([
+  const [result, facets, treeResult] = await Promise.all([
     searchProducts(listQuery),
     getProductFacets({
       categorySlug,
       // Search: brand theo danh mục đã chọn (không theo q) để không bị trống oan.
     }),
-    getCategoryTree(),
+    getCategoryTreeResult(),
   ]);
 
-  const categoriesFromApi = flattenCategories(tree).map((node) => ({
-    slug: node.slug,
-    name: node.name,
-  }));
-  const categories =
-    categoriesFromApi.length > 0
-      ? categoriesFromApi
-      : NAV_CATEGORIES.map((c) => ({ slug: c.slug, name: c.label }));
+  const categories = treeResult.ok
+    ? flattenActiveCategories(treeResult.data).map((c) => ({
+        slug: c.slug,
+        name: c.label,
+      }))
+    : [];
 
   return (
     <div className="nt-container" style={{ padding: '1.5rem 0 3rem' }}>

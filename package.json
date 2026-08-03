@@ -40,6 +40,8 @@
     "generate:product-images": "node scripts/generate-placeholder-product-images.cjs",
     "checkout:smoke": "node scripts/checkout-smoke.cjs",
     "lab:smoke": "node scripts/local-lab-smoke.cjs",
+    "lab:reset:minimal": "node scripts/lab-reset-minimal.cjs",
+    "test:lab-reset-minimal": "node --test tests/lab/lab-reset-minimal.test.cjs",
     "address-data:import": "node scripts/address-data/import.cjs",
     "address-data:validate": "node scripts/address-data/validate.cjs",
     "address-data:generate": "node scripts/address-data/generate.cjs",

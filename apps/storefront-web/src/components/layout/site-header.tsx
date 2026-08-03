@@ -2,13 +2,21 @@
 
 import Link from 'next/link';
 import { Suspense, useState } from 'react';
-import { NAV_CATEGORIES } from '../../lib/constants';
+import type { NavCategory } from '../../lib/categories';
 import { AccountMenu } from './account-menu';
 import { CartBadge } from './cart-badge';
 import { SearchBox } from './search-box';
 import styles from './site-header.module.css';
 
-export function SiteHeader() {
+interface SiteHeaderProps {
+  categories: NavCategory[];
+  categoriesError?: boolean;
+}
+
+export function SiteHeader({
+  categories,
+  categoriesError = false,
+}: SiteHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -59,15 +67,21 @@ export function SiteHeader() {
 
       <nav className={styles.categoryNav} aria-label="Danh mục sản phẩm">
         <div className={`nt-container ${styles.categoryNavInner}`}>
-          {NAV_CATEGORIES.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/danh-muc/${category.slug}`}
-              className={styles.categoryLink}
-            >
-              {category.label}
-            </Link>
-          ))}
+          {categories.length > 0 ? (
+            categories.map((category) => (
+              <Link
+                key={category.slug}
+                href={`/danh-muc/${category.slug}`}
+                className={styles.categoryLink}
+              >
+                {category.label}
+              </Link>
+            ))
+          ) : categoriesError ? (
+            <span className={styles.categoryError}>
+              Không tải được danh mục
+            </span>
+          ) : null}
         </div>
       </nav>
 
@@ -76,16 +90,20 @@ export function SiteHeader() {
           <Suspense fallback={null}>
             <SearchBox className={styles.mobileSearch} />
           </Suspense>
-          {NAV_CATEGORIES.map((category) => (
-            <Link
-              key={category.slug}
-              href={`/danh-muc/${category.slug}`}
-              className={styles.mobileLink}
-              onClick={() => setMobileOpen(false)}
-            >
-              {category.label}
-            </Link>
-          ))}
+          {categories.length > 0 ? (
+            categories.map((category) => (
+              <Link
+                key={category.slug}
+                href={`/danh-muc/${category.slug}`}
+                className={styles.mobileLink}
+                onClick={() => setMobileOpen(false)}
+              >
+                {category.label}
+              </Link>
+            ))
+          ) : categoriesError ? (
+            <p className={styles.categoryError}>Không tải được danh mục</p>
+          ) : null}
         </div>
       ) : null}
     </header>

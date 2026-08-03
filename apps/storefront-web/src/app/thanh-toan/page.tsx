@@ -263,6 +263,7 @@ export default function CheckoutPage() {
               <label htmlFor="storeSearch">Chọn cửa hàng nhận hàng</label>
               <input
                 id="storeSearch"
+                className="nt-input"
                 type="search"
                 placeholder="Tìm theo tên, địa chỉ…"
                 value={storeQuery}
@@ -347,6 +348,7 @@ export default function CheckoutPage() {
               ) : (
                 <select
                   id="addressId"
+                  className="nt-select"
                   value={selectedAddressId}
                   onChange={(e) => setSelectedAddressId(e.target.value)}
                   required

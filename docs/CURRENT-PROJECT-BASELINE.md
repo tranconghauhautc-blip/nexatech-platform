@@ -1,31 +1,43 @@
-# CURRENT PROJECT BASELINE
+# Current Project Baseline
 
-> Re-baselined **2026-08-03** after full runtime acceptance. Prefer this over older snapshots.
-> **No commit in this phase** (owner review gate).
+**Branch:** `fix/media-upload-profile-minimal-reset`  
+**Starting commit:** `92689d5` (`fix: complete pickup runtime acceptance and audit integration`)  
+**HEAD (uncommitted work on top of baseline):** same commit; all RC work is **uncommitted**  
+**Date:** 2026-08-03  
+**Owner gate:** Do not commit / do not push until review.
 
-## 1. HEAD / branch / working tree
+## Runtime stack
 
-| Item | Value |
-| ---- | ----- |
-| Branch | `fix/full-runtime-acceptance` |
-| Checkpoint HEAD | `8cf5c1b` — restore store pickup with CRUD, seed, filtering |
-| Working tree | **Dirty** — inventory audit publish, reporting extract, media:audit, pickup COD e2e, docs |
-| Remote | Do not push until owner approves |
+Docker Compose apps `0.17.0` + infra (Postgres 16, Redis, RabbitMQ, MinIO, Kong). Recreated this session: catalog, customer, media, admin-web, storefront-web.
 
-## 2. Frontend / backends / infra
+## Manually preserved commerce data
 
-Unchanged port map (storefront 3000, admin 3100, Nest 3001–3014, Kong 8000, Swagger 8090, Security Guide 3200, Postgres/Redis/Rabbit/MinIO).
+Five categories, brand NexaTech, warehouse HN-MAIN, store HCM-NGUYEN-HUE, product Nova X1 + SKU NT-PHONE-NX1-BLK, one primary PNG media link, spec template with `ram_gb`, two customer profiles. **Stock not initialized.**
 
-**Runtime:** healthy; rebuilt `inventory-service`, `reporting-service` this session.
+## Major uncommitted deltas (this RC)
 
-## 3. OpenAPI
+- Admin light theme + micro-interactions
+- Spec template PATCH/DELETE + Admin UI
+- Inventory Admin mutations UI
+- Product edit + specs + media primary/unlink
+- Dynamic Storefront categories
+- Customer account overview, address CRUD, recently-viewed auth sync
+- Warranty/review/support UX fixes
+- Admin human-readable filters + audit actor resolution
+- Prior session: MinIO browser-safe upload, profile route, `lab:reset:minimal`
 
-| Item | State |
-| ---- | ----- |
-| Version | **3.0.3** |
-| Combined paths | **391** |
-| Pickup | `/api/v1|v2/stores/pickup` present |
+## Builds
 
-## 4. Acceptance posture
+| Target                                         | Result |
+| ---------------------------------------------- | ------ |
+| Host admin-web                                 | PASS   |
+| Host storefront-web                            | PASS   |
+| Docker admin/storefront/catalog/customer/media | PASS   |
 
-Store Pickup and authenticated Admin/Customer browser flows elevated to **PASS_BROWSER** with Compose evidence. Full automated gates green. Awaiting owner review before commit.
+## Known `/_error` Html issue
+
+Previously documented in PROGRESS; **host builds now succeed** on this machine without workaround. Docker builds also PASS.
+
+## Intentional security posture
+
+Vulnerabilities remain always-on; no secure/lab toggle. OpenAPI 3.0.3 validation emits warnings on missing security declarations (lab-compatible).

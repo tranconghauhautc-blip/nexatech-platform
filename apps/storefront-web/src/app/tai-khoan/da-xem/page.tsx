@@ -2,11 +2,37 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import { formatVnd } from '@nexatech/shared-web';
 import { EmptyState } from '../../../components/common/empty-state';
+import { MediaThumb } from '../../../components/media/media-thumb';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
+import { clearRecentlyViewedLocal } from '../../../lib/recently-viewed';
+
+interface RecentRow {
+  id: string;
+  productId: string;
+  name?: string;
+  slug?: string;
+  minPrice?: number;
+  status?: string;
+  thumbnailUrl?: string;
+  brandName?: string;
+  missing?: boolean;
+}
+
+function isHidden(row: RecentRow): boolean {
+  return (
+    Boolean(row.missing) ||
+    row.status === 'archived' ||
+    row.status === 'inactive' ||
+    row.status === 'draft' ||
+    row.status === 'ARCHIVED' ||
+    row.status === 'UNPUBLISHED'
+  );
+}
 
 export default function Page() {
-  const [items, setItems] = useState<unknown[]>([]);
+  const [items, setItems] = useState<RecentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,11 +41,50 @@ export default function Page() {
     setError(null);
     bff
       .get('/api/bff/cart/recently-viewed')
-      .then((data) => {
+      .then(async (data) => {
         const list = Array.isArray(data)
           ? data
           : ((data as { items?: unknown[] })?.items ?? []);
-        setItems(list);
+        const rows = list as Array<Record<string, unknown>>;
+        const productIds = rows
+          .map((r) => String(r['productId'] ?? ''))
+          .filter(Boolean);
+        let summaries: Array<Record<string, unknown>> = [];
+        if (productIds.length > 0) {
+          try {
+            const result = await bff.get(
+              `/api/bff/catalog/products/summaries?ids=${encodeURIComponent(productIds.join(','))}`,
+            );
+            summaries = Array.isArray(result)
+              ? (result as Array<Record<string, unknown>>)
+              : [];
+          } catch {
+            summaries = [];
+          }
+        }
+        const byId = new Map(summaries.map((s) => [String(s['id']), s]));
+        const hydrated = rows.map((r, index) => {
+          const productId = String(r['productId'] ?? '');
+          const summary = byId.get(productId);
+          return {
+            id: String(r['id'] ?? productId ?? index),
+            productId,
+            name: summary ? String(summary['name'] ?? '') : undefined,
+            slug: summary ? String(summary['slug'] ?? '') : undefined,
+            minPrice:
+              typeof summary?.['minPrice'] === 'number'
+                ? (summary['minPrice'] as number)
+                : undefined,
+            status: summary ? String(summary['status'] ?? '') : undefined,
+            thumbnailUrl: summary
+              ? String(summary['thumbnailUrl'] ?? '')
+              : undefined,
+            brandName: summary ? String(summary['brandName'] ?? '') : undefined,
+            missing: !summary,
+          } satisfies RecentRow;
+        });
+        clearRecentlyViewedLocal();
+        setItems(hydrated.filter((row) => !isHidden(row)));
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
@@ -81,35 +146,43 @@ export default function Page() {
           gap: '0.65rem',
         }}
       >
-        {items.map((item, index) => {
-          const record = item as Record<string, unknown>;
-          const id = String(record.id ?? record.code ?? index);
-          const label = String(
-            record.code ??
-              record.subject ??
-              record.productName ??
-              record.title ??
-              id,
-          );
-          return (
-            <li
-              key={id}
-              style={{
-                border: '1px solid #dbeafe',
-                borderRadius: 12,
-                padding: '0.85rem',
-                background: '#fff',
-              }}
-            >
-              <strong>{label}</strong>
-              {record.status ? (
-                <div style={{ color: '#4b6478' }}>
-                  Trạng thái: {String(record.status)}
+        {items.map((item) => (
+          <li
+            key={item.id}
+            style={{
+              border: '1px solid #dbeafe',
+              borderRadius: 12,
+              padding: '0.85rem',
+              background: '#fff',
+              display: 'flex',
+              gap: '0.75rem',
+              alignItems: 'center',
+            }}
+          >
+            <MediaThumb
+              mediaRef={item.thumbnailUrl}
+              alt={item.name ?? 'Sản phẩm'}
+            />
+            <div>
+              {item.brandName ? (
+                <div style={{ color: '#4b6478', fontSize: '0.85rem' }}>
+                  {item.brandName}
                 </div>
               ) : null}
-            </li>
-          );
-        })}
+              <strong>{item.name ?? 'Sản phẩm'}</strong>
+              <div style={{ color: '#0b1f3a' }}>
+                {typeof item.minPrice === 'number'
+                  ? formatVnd(item.minPrice)
+                  : '—'}
+              </div>
+              {item.slug ? (
+                <div>
+                  <Link href={`/san-pham/${item.slug}`}>Xem sản phẩm</Link>
+                </div>
+              ) : null}
+            </div>
+          </li>
+        ))}
       </ul>
     </div>
   );

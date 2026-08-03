@@ -1,0 +1,39 @@
+/\*\*
+
+- CUSTOMER-PROFILE-ACCEPTANCE
+-
+- ## Route
+-
+- Storefront: `/tai-khoan/ho-so` (nav label **Hồ sơ & địa chỉ**)
+-
+- ## Editable fields (customer-service schema)
+-
+- - `fullName` (required, 1–120 chars)
+- - `phone` (optional; VN mobile `0…` / `+84…`; blank clears)
+-
+- Address book remains on the same page (add address via existing Vietnam
+- selector). No date of birth, gender, displayName, or avatar columns exist in
+- the current Prisma schemas — do not invent them.
+-
+- ## Read-only fields
+-
+- - Email (identity; no customer self-serve change flow)
+- - Role / account status (never customer-editable)
+- - Profile / user UUIDs (not primary UI labels)
+-
+- ## Access control
+-
+- - Unauthenticated → Storefront account layout redirects to login; API `401`
+- - `PUT /api/v1/customers/me` updates only the caller (`x-user-id`)
+- - Customer1 cannot read/update customer2 (per-user profile scope)
+-
+- ## Manual acceptance
+-
+- 1.  Login as customer1 → Tài khoản → Hồ sơ & địa chỉ
+- 2.  Confirm full name + phone + read-only email
+- 3.  Chỉnh sửa hồ sơ → change name/phone → Lưu hồ sơ
+- 4.  Refresh — values persist from API
+- 5.  Logout / login — values still present
+- 6.  Try invalid phone — validation error shown
+- 7.  Login as customer2 — does not see customer1 profile data
+      \*/

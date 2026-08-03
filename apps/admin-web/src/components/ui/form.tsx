@@ -82,7 +82,7 @@ type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
   label: string;
   error?: string;
   hint?: string;
-  options: Array<{ value: string; label: string }>;
+  options: Array<{ value: string; label: string; disabled?: boolean }>;
   placeholder?: string;
 };
 
@@ -106,7 +106,11 @@ export function SelectField({
       >
         {placeholder ? <option value="">{placeholder}</option> : null}
         {options.map((option) => (
-          <option key={option.value} value={option.value}>
+          <option
+            key={option.value}
+            value={option.value}
+            disabled={option.disabled}
+          >
             {option.label}
           </option>
         ))}

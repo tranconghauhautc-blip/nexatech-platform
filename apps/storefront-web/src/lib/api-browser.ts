@@ -22,9 +22,7 @@ function safeClientMessage(data: unknown, fallback: string): string {
     return fallback;
   }
   const normalized = data.replace(/\s+/g, ' ').trim();
-  return normalized.length > 280
-    ? `${normalized.slice(0, 279)}…`
-    : normalized;
+  return normalized.length > 280 ? `${normalized.slice(0, 279)}…` : normalized;
 }
 
 function buildPath(path: string, query?: BffFetchOptions['query']): string {

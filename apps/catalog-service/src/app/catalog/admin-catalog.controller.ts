@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
@@ -15,8 +16,10 @@ import type {
   CreateProductRequest,
   CreateSkuRequest,
   CreateSpecTemplateRequest,
+  UpdateSpecTemplateRequest,
   ProductStatus,
   UpdatePriceRequest,
+  UpdateSkuRequest,
 } from '@nexatech/shared-contracts';
 import { CatalogService, parseRolesHeader } from './catalog.service';
 
@@ -92,6 +95,41 @@ export class AdminCatalogController {
     );
   }
 
+  @Get('spec-templates/:id')
+  getSpecTemplate(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('id') id: string,
+  ) {
+    return this.catalogService.getSpecTemplateById(
+      id,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
+  @Patch('spec-templates/:id')
+  updateSpecTemplate(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('id') id: string,
+    @Body() body: UpdateSpecTemplateRequest,
+  ) {
+    return this.catalogService.updateSpecTemplate(
+      id,
+      body,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
+  @Delete('spec-templates/:id')
+  deleteSpecTemplate(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('id') id: string,
+  ) {
+    return this.catalogService.deleteSpecTemplate(
+      id,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
   @Post('products')
   createProduct(
     @Headers('x-user-roles') rolesHeader: string,
@@ -137,6 +175,19 @@ export class AdminCatalogController {
     return this.catalogService.createSku(body, parseRolesHeader(rolesHeader));
   }
 
+  @Patch('skus/:skuId')
+  updateSku(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('skuId') skuId: string,
+    @Body() body: UpdateSkuRequest,
+  ) {
+    return this.catalogService.updateSku(
+      skuId,
+      body,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
   @Post('skus/:skuId/prices')
   updatePrice(
     @Headers('x-user-id') userId: string,
@@ -168,6 +219,50 @@ export class AdminCatalogController {
     return this.catalogService.linkMedia(
       productId,
       body,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
+  @Get('products/:productId/media-links')
+  listMediaLinks(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('productId') productId: string,
+  ) {
+    return this.catalogService.listProductMediaLinks(
+      productId,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
+  @Patch('products/:productId/media-links/:linkId')
+  updateMediaLink(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('productId') productId: string,
+    @Param('linkId') linkId: string,
+    @Body()
+    body: {
+      role?: 'thumbnail' | 'gallery' | 'video';
+      sortOrder?: number;
+      isPrimary?: boolean;
+    },
+  ) {
+    return this.catalogService.updateProductMediaLink(
+      productId,
+      linkId,
+      body,
+      parseRolesHeader(rolesHeader),
+    );
+  }
+
+  @Delete('products/:productId/media-links/:linkId')
+  unlinkMedia(
+    @Headers('x-user-roles') rolesHeader: string,
+    @Param('productId') productId: string,
+    @Param('linkId') linkId: string,
+  ) {
+    return this.catalogService.unlinkProductMedia(
+      productId,
+      linkId,
       parseRolesHeader(rolesHeader),
     );
   }

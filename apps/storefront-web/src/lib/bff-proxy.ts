@@ -26,7 +26,10 @@ function readSession(req: NextRequest): SessionData | null {
   }
 }
 
-function extractGuestCartToken(body: ArrayBuffer, contentType: string | null): string | null {
+function extractGuestCartToken(
+  body: ArrayBuffer,
+  contentType: string | null,
+): string | null {
   if (!contentType?.includes('application/json') || body.byteLength === 0) {
     return null;
   }

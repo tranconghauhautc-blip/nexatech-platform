@@ -18,15 +18,15 @@ Post-M21 hardening / gap-close commits are recorded in `docs/PROGRESS.md`.
 
 ## Security / WAF PoC summary (ADR-044)
 
-| Metric                        | Value                                                                 |
-| ----------------------------- | --------------------------------------------------------------------- |
-| Intentional vulnerabilities   | SC-01…SC-67 + SC-70…SC-95 (see `docs/OWASP-SCENARIOS.md`)            |
-| Runtime gate                  | **None** — vulns ALWAYS ON (no `FORCE_SECURE`, no dual-gate toggle)   |
-| OWASP API Top 10 coverage     | API1–API10 (~30+ API-mapped SC IDs)                                   |
-| OWASP Web Top 10 coverage     | A01–A10 (~30+ Web-mapped SC IDs)                                      |
-| Policy tests                  | `pnpm security:test:secure` and `security:test:lab` (both vulnerable) |
-| Helm profiles                 | Isolation only (`values-production` / `values-security-lab`) — **not** vuln toggles |
-| Public guides                 | `/lab/owasp-api-top10.html`, `/lab/owasp-web-top10.html`              |
+| Metric                      | Value                                                                               |
+| --------------------------- | ----------------------------------------------------------------------------------- |
+| Intentional vulnerabilities | SC-01…SC-67 + SC-70…SC-95 (see `docs/OWASP-SCENARIOS.md`)                           |
+| Runtime gate                | **None** — vulns ALWAYS ON (no `FORCE_SECURE`, no dual-gate toggle)                 |
+| OWASP API Top 10 coverage   | API1–API10 (~30+ API-mapped SC IDs)                                                 |
+| OWASP Web Top 10 coverage   | A01–A10 (~30+ Web-mapped SC IDs)                                                    |
+| Policy tests                | `pnpm security:test:secure` and `security:test:lab` (both vulnerable)               |
+| Helm profiles               | Isolation only (`values-production` / `values-security-lab`) — **not** vuln toggles |
+| Public guides               | `/lab/owasp-api-top10.html`, `/lab/owasp-web-top10.html`                            |
 
 ## BLOCKED_EXTERNAL (operator)
 

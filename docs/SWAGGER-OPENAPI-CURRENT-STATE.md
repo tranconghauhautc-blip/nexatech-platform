@@ -26,11 +26,11 @@ pnpm openapi:check
 
 ## UI
 
-| UI | URL |
-| --- | --- |
-| Combined (Kong) | http://localhost:8000/docs |
-| Combined (direct) | http://localhost:8090/docs |
-| Per-service | http://localhost:3001–3014/docs |
+| UI                | URL                             |
+| ----------------- | ------------------------------- |
+| Combined (Kong)   | http://localhost:8000/docs      |
+| Combined (direct) | http://localhost:8090/docs      |
+| Per-service       | http://localhost:3001–3014/docs |
 
 ## ADR
 

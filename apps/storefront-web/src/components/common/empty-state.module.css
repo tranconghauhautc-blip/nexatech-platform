@@ -3,33 +3,42 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 10px;
-  padding: 56px 20px;
+  gap: 12px;
+  padding: clamp(2.5rem, 6vw, 3.5rem) 20px;
   color: var(--nt-text-muted);
+  background: var(--nt-surface);
+  border: 1px dashed var(--nt-border);
+  border-radius: var(--nt-radius-md);
 }
 
 .icon {
   width: 72px;
   height: 72px;
   border-radius: 50%;
-  background: var(--nt-surface-muted);
-  color: var(--nt-text-faint);
+  background: var(--nt-cyan-050);
+  color: var(--nt-cyan-500);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+  border: 1px solid rgba(0, 180, 216, 0.2);
 }
 
 .title {
-  font-size: 1.1rem;
+  font-family: var(--nt-font-heading);
+  font-size: 1.12rem;
+  font-weight: 600;
   color: var(--nt-text);
+  margin: 0;
 }
 
 .description {
   max-width: 420px;
-  font-size: 0.9rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  margin: 0;
 }
 
 .action {
-  margin-top: 10px;
+  margin-top: 8px;
 }

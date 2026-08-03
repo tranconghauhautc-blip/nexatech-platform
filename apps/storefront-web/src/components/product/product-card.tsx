@@ -8,7 +8,11 @@ export function ProductCard({ product }: { product: ProductSearchItem }) {
   const isAvailable = product.status === 'active';
 
   return (
-    <Link href={`/san-pham/${product.slug}`} className={styles.root}>
+    <Link
+      href={`/san-pham/${product.slug}`}
+      className={styles.root}
+      aria-label={`Xem ${product.name}`}
+    >
       <div className={styles.imageWrap}>
         <MediaThumb
           mediaRef={product.thumbnailUrl}

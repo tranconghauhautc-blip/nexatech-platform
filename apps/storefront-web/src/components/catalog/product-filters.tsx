@@ -56,7 +56,8 @@ function buildUrl(
   const params = new URLSearchParams();
   if (next.q?.trim()) params.set('q', next.q.trim());
   if (next.brandSlug?.trim()) params.set('brandSlug', next.brandSlug.trim());
-  if (next.categorySlug?.trim()) params.set('categorySlug', next.categorySlug.trim());
+  if (next.categorySlug?.trim())
+    params.set('categorySlug', next.categorySlug.trim());
   if (next.minPrice?.trim()) params.set('minPrice', next.minPrice.trim());
   if (next.maxPrice?.trim()) params.set('maxPrice', next.maxPrice.trim());
   if (next.sort) params.set('sort', next.sort);
@@ -89,8 +90,11 @@ export function ProductFilters({
   const router = useRouter();
 
   const activeChips = useMemo(() => {
-    const chips: Array<{ key: string; label: string; clear: Partial<Props['current']> }> =
-      [];
+    const chips: Array<{
+      key: string;
+      label: string;
+      clear: Partial<Props['current']>;
+    }> = [];
     if (current.brandSlug) {
       const brand = brandFacets.find((b) => b.slug === current.brandSlug);
       chips.push({

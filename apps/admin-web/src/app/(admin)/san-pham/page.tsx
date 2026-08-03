@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   createProductRequestSchema,
   createSkuRequestSchema,
@@ -17,6 +17,7 @@ import type {
   CategoryTreeNode,
   ProductDetail,
   ProductSummaryRow,
+  SpecTemplate,
 } from '../../../lib/types';
 import {
   DataTable,
@@ -62,7 +63,7 @@ const SORT_OPTIONS = [
   { value: 'relevance', label: 'Liên quan' },
 ];
 
-interface CreateForm {
+interface ProductForm {
   name: string;
   slug: string;
   description: string;
@@ -71,7 +72,7 @@ interface CreateForm {
   status: string;
 }
 
-const EMPTY_CREATE: CreateForm = {
+const EMPTY_FORM: ProductForm = {
   name: '',
   slug: '',
   description: '',
@@ -87,6 +88,34 @@ interface SkuForm {
 }
 
 const EMPTY_SKU: SkuForm = { skuCode: '', name: '', price: '0' };
+
+function flattenSpecAttributes(templates: SpecTemplate[]) {
+  return templates.flatMap((template) =>
+    template.groups.flatMap((group) =>
+      group.attributes
+        .filter((attr) => attr.id)
+        .map((attr) => ({
+          attributeId: attr.id as string,
+          key: attr.key,
+          label: attr.label,
+          unit: attr.unit,
+          dataType: attr.dataType,
+          groupName: group.name,
+        })),
+    ),
+  );
+}
+
+function buildSpecsPayload(
+  specInputs: Record<string, string>,
+): Array<{ attributeId: string; value: string }> {
+  return Object.entries(specInputs)
+    .map(([attributeId, value]) => ({
+      attributeId,
+      value: value.trim(),
+    }))
+    .filter((spec) => spec.value.length > 0);
+}
 
 export default function Page() {
   const { showToast } = useToast();
@@ -128,25 +157,151 @@ export default function Page() {
   );
 
   const [createOpen, setCreateOpen] = useState(false);
-  const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
+  const [createForm, setCreateForm] = useState<ProductForm>(EMPTY_FORM);
   const [createErrors, setCreateErrors] = useState<Record<string, string>>({});
   const [creating, setCreating] = useState(false);
+  const [createSpecInputs, setCreateSpecInputs] = useState<
+    Record<string, string>
+  >({});
+  const [createSpecTemplates, setCreateSpecTemplates] = useState<
+    SpecTemplate[]
+  >([]);
+  const [createSpecsLoading, setCreateSpecsLoading] = useState(false);
 
   const [detail, setDetail] = useState<ProductDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
   const [detailError, setDetailError] = useState<string | null>(null);
+  const [editMode, setEditMode] = useState(false);
+  const [editForm, setEditForm] = useState<ProductForm>(EMPTY_FORM);
+  const [editErrors, setEditErrors] = useState<Record<string, string>>({});
+  const [editSaving, setEditSaving] = useState(false);
+  const [editSpecInputs, setEditSpecInputs] = useState<Record<string, string>>(
+    {},
+  );
+  const [editSpecTemplates, setEditSpecTemplates] = useState<SpecTemplate[]>(
+    [],
+  );
+  const [editSpecsLoading, setEditSpecsLoading] = useState(false);
+
   const [skuForm, setSkuForm] = useState<SkuForm>(EMPTY_SKU);
   const [skuErrors, setSkuErrors] = useState<Record<string, string>>({});
   const [skuSaving, setSkuSaving] = useState(false);
+  const [nameEdits, setNameEdits] = useState<Record<string, string>>({});
+  const [nameSavingId, setNameSavingId] = useState<string | null>(null);
   const [priceEdits, setPriceEdits] = useState<Record<string, string>>({});
   const [priceSavingId, setPriceSavingId] = useState<string | null>(null);
+
+  const loadSpecTemplates = useCallback(async (categoryId: string) => {
+    if (!categoryId) {
+      return [] as SpecTemplate[];
+    }
+    const data = await bffRequest<SpecTemplate[]>(
+      'catalog',
+      'admin/catalog/spec-templates',
+      { query: { categoryId } },
+    );
+    return Array.isArray(data) ? data : [];
+  }, []);
+
+  useEffect(() => {
+    if (!createForm.categoryId) {
+      setCreateSpecTemplates([]);
+      setCreateSpecInputs({});
+      return;
+    }
+    let cancelled = false;
+    setCreateSpecsLoading(true);
+    loadSpecTemplates(createForm.categoryId)
+      .then((templates) => {
+        if (cancelled) return;
+        setCreateSpecTemplates(templates);
+        setCreateSpecInputs((prev) => {
+          const next: Record<string, string> = {};
+          for (const attr of flattenSpecAttributes(templates)) {
+            next[attr.attributeId] = prev[attr.attributeId] ?? '';
+          }
+          return next;
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setCreateSpecTemplates([]);
+      })
+      .finally(() => {
+        if (!cancelled) setCreateSpecsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [createForm.categoryId, loadSpecTemplates]);
+
+  useEffect(() => {
+    if (!editMode || !editForm.categoryId) {
+      if (!editMode) {
+        setEditSpecTemplates([]);
+      }
+      return;
+    }
+    let cancelled = false;
+    setEditSpecsLoading(true);
+    loadSpecTemplates(editForm.categoryId)
+      .then((templates) => {
+        if (cancelled) return;
+        setEditSpecTemplates(templates);
+        setEditSpecInputs((prev) => {
+          const next: Record<string, string> = { ...prev };
+          for (const attr of flattenSpecAttributes(templates)) {
+            if (next[attr.attributeId] === undefined) {
+              next[attr.attributeId] = '';
+            }
+          }
+          return next;
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setEditSpecTemplates([]);
+      })
+      .finally(() => {
+        if (!cancelled) setEditSpecsLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [editForm.categoryId, editMode, loadSpecTemplates]);
+
+  const createSpecAttributes = useMemo(
+    () => flattenSpecAttributes(createSpecTemplates),
+    [createSpecTemplates],
+  );
+  const editSpecAttributes = useMemo(
+    () => flattenSpecAttributes(editSpecTemplates),
+    [editSpecTemplates],
+  );
+
+  function populateEditForm(product: ProductDetail) {
+    setEditForm({
+      name: product.name,
+      slug: product.slug,
+      description: product.description ?? '',
+      categoryId: product.categoryId,
+      brandId: product.brandId,
+      status: product.status,
+    });
+    const specMap: Record<string, string> = {};
+    for (const spec of product.specValues) {
+      specMap[spec.attributeId] = spec.value;
+    }
+    setEditSpecInputs(specMap);
+    setEditErrors({});
+  }
 
   async function openDetail(row: ProductSummaryRow) {
     setDetail(null);
     setDetailError(null);
     setDetailLoading(true);
+    setEditMode(false);
     setSkuForm(EMPTY_SKU);
     setSkuErrors({});
+    setNameEdits({});
     setPriceEdits({});
     try {
       const data = await bffRequest<ProductDetail>(
@@ -154,6 +309,7 @@ export default function Page() {
         `products/${row.slug}`,
       );
       setDetail(data);
+      populateEditForm(data);
     } catch (err) {
       setDetailError(getErrorMessage(err, 'Không tải được chi tiết sản phẩm'));
     } finally {
@@ -169,6 +325,9 @@ export default function Page() {
         `products/${detail.slug}`,
       );
       setDetail(data);
+      if (editMode) {
+        populateEditForm(data);
+      }
     } catch {
       // giữ dữ liệu cũ nếu refresh lỗi
     }
@@ -183,7 +342,7 @@ export default function Page() {
       categoryId: createForm.categoryId,
       brandId: createForm.brandId,
       status: createForm.status as 'draft' | 'active' | 'inactive' | 'archived',
-      specs: [],
+      specs: buildSpecsPayload(createSpecInputs),
     };
     const parsed = createProductRequestSchema.safeParse(payload);
     if (!parsed.success) {
@@ -203,12 +362,54 @@ export default function Page() {
       });
       showToast('Đã tạo sản phẩm', 'success');
       setCreateOpen(false);
-      setCreateForm(EMPTY_CREATE);
+      setCreateForm(EMPTY_FORM);
+      setCreateSpecInputs({});
       refetch();
     } catch (err) {
       showToast(getErrorMessage(err, 'Tạo sản phẩm thất bại'), 'error');
     } finally {
       setCreating(false);
+    }
+  }
+
+  async function saveProductEdit(event: React.FormEvent) {
+    event.preventDefault();
+    if (!detail) return;
+    const payload = {
+      name: editForm.name.trim(),
+      description: editForm.description.trim() || undefined,
+      categoryId: editForm.categoryId,
+      brandId: editForm.brandId,
+      status: editForm.status as 'draft' | 'active' | 'inactive' | 'archived',
+      specs: buildSpecsPayload(editSpecInputs),
+    };
+    if (!payload.name) {
+      setEditErrors({ name: 'Tên sản phẩm bắt buộc' });
+      return;
+    }
+    if (!payload.categoryId) {
+      setEditErrors({ categoryId: 'Chọn danh mục' });
+      return;
+    }
+    if (!payload.brandId) {
+      setEditErrors({ brandId: 'Chọn thương hiệu' });
+      return;
+    }
+    setEditErrors({});
+    setEditSaving(true);
+    try {
+      await bffRequest('catalog', `admin/catalog/products/${detail.id}`, {
+        method: 'PATCH',
+        body: payload,
+      });
+      showToast('Đã cập nhật sản phẩm', 'success');
+      setEditMode(false);
+      await refreshDetail();
+      refetch();
+    } catch (err) {
+      showToast(getErrorMessage(err, 'Cập nhật sản phẩm thất bại'), 'error');
+    } finally {
+      setEditSaving(false);
     }
   }
 
@@ -268,6 +469,37 @@ export default function Page() {
     }
   }
 
+  async function updateSkuName(skuId: string, currentName: string) {
+    const name = (nameEdits[skuId] ?? currentName).trim();
+    if (!name) {
+      showToast('Tên biến thể không được trống', 'error');
+      return;
+    }
+    if (name === currentName.trim()) {
+      showToast('Không có thay đổi tên SKU', 'info');
+      return;
+    }
+    setNameSavingId(skuId);
+    try {
+      await bffRequest('catalog', `admin/catalog/skus/${skuId}`, {
+        method: 'PATCH',
+        body: { name },
+      });
+      showToast('Đã cập nhật tên SKU', 'success');
+      setNameEdits((edits) => {
+        const next = { ...edits };
+        delete next[skuId];
+        return next;
+      });
+      await refreshDetail();
+      refetch();
+    } catch (err) {
+      showToast(getErrorMessage(err, 'Cập nhật tên SKU thất bại'), 'error');
+    } finally {
+      setNameSavingId(null);
+    }
+  }
+
   async function updatePrice(skuId: string) {
     const raw = priceEdits[skuId];
     const amount = Number(raw);
@@ -289,6 +521,42 @@ export default function Page() {
     } finally {
       setPriceSavingId(null);
     }
+  }
+
+  function renderSpecFields(
+    attributes: ReturnType<typeof flattenSpecAttributes>,
+    specInputs: Record<string, string>,
+    setSpecInputs: React.Dispatch<React.SetStateAction<Record<string, string>>>,
+    loading: boolean,
+  ) {
+    if (loading) {
+      return <p className="nx-hint">Đang tải mẫu thông số…</p>;
+    }
+    if (attributes.length === 0) {
+      return (
+        <p className="nx-hint">
+          Danh mục chưa có mẫu thông số — cấu hình tại mục Thông số.
+        </p>
+      );
+    }
+    return (
+      <div style={{ display: 'grid', gap: 10 }}>
+        {attributes.map((attr) => (
+          <TextField
+            key={attr.attributeId}
+            label={`${attr.groupName} · ${attr.label}${attr.unit ? ` (${attr.unit})` : ''}`}
+            value={specInputs[attr.attributeId] ?? ''}
+            onChange={(e) =>
+              setSpecInputs((prev) => ({
+                ...prev,
+                [attr.attributeId]: e.target.value,
+              }))
+            }
+            placeholder={attr.dataType === 'number' ? 'VD: 8' : ''}
+          />
+        ))}
+      </div>
+    );
   }
 
   const columns = useMemo<DataTableColumn<ProductSummaryRow>[]>(
@@ -337,8 +605,9 @@ export default function Page() {
           type="button"
           className="nx-btn nx-btn-primary"
           onClick={() => {
-            setCreateForm(EMPTY_CREATE);
+            setCreateForm(EMPTY_FORM);
             setCreateErrors({});
+            setCreateSpecInputs({});
             setCreateOpen(true);
           }}
         >
@@ -449,9 +718,19 @@ export default function Page() {
             }
             rows={4}
           />
+          {createForm.categoryId ? (
+            <div>
+              <div className="nx-card-title">Thông số kỹ thuật</div>
+              {renderSpecFields(
+                createSpecAttributes,
+                createSpecInputs,
+                setCreateSpecInputs,
+                createSpecsLoading,
+              )}
+            </div>
+          ) : null}
           <div className="nx-hint">
-            Tạo sản phẩm trước, sau đó thêm SKU/giá và gắn media trong màn chi
-            tiết (bấm vào dòng sản phẩm sau khi tạo).
+            Sau khi tạo, bấm vào dòng sản phẩm để thêm SKU/giá và gắn media.
           </div>
           <div className="nx-form-actions">
             <button
@@ -478,46 +757,169 @@ export default function Page() {
         onClose={() => {
           setDetail(null);
           setDetailError(null);
+          setEditMode(false);
         }}
       >
         {detailLoading ? <p className="nx-hint">Đang tải…</p> : null}
         {detailError ? <p className="nx-error-text">{detailError}</p> : null}
         {detail ? (
           <div className="nx-page" style={{ gap: 20 }}>
-            <div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                <Badge tone={STATUS_TONE[detail.status] ?? 'neutral'}>
-                  {STATUS_LABEL[detail.status] ?? detail.status}
-                </Badge>
-                <span className="nx-hint">/{detail.slug}</span>
-              </div>
-              <p style={{ marginTop: 8, fontSize: 13.5 }}>
-                {detail.description || 'Chưa có mô tả.'}
-              </p>
-              <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-                <span className="nx-hint">
-                  Danh mục: {detail.category?.name ?? '—'} · Thương hiệu:{' '}
-                  {detail.brand?.name ?? '—'}
-                </span>
-              </div>
-              <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
-                {STATUS_OPTIONS.filter((o) => o.value !== detail.status).map(
-                  (o) => (
+            {!editMode ? (
+              <>
+                <div>
+                  <div
+                    style={{ display: 'flex', gap: 8, alignItems: 'center' }}
+                  >
+                    <Badge tone={STATUS_TONE[detail.status] ?? 'neutral'}>
+                      {STATUS_LABEL[detail.status] ?? detail.status}
+                    </Badge>
+                    <span className="nx-hint">/{detail.slug}</span>
                     <button
-                      key={o.value}
                       type="button"
                       className="nx-btn nx-btn-ghost"
-                      onClick={() => changeStatus(o.value)}
+                      style={{ marginLeft: 'auto' }}
+                      onClick={() => {
+                        populateEditForm(detail);
+                        setEditMode(true);
+                      }}
                     >
-                      → {o.label}
+                      Sửa sản phẩm
                     </button>
-                  ),
-                )}
-              </div>
-            </div>
+                  </div>
+                  <p style={{ marginTop: 8, fontSize: 13.5 }}>
+                    {detail.description || 'Chưa có mô tả.'}
+                  </p>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                    <span className="nx-hint">
+                      Danh mục: {detail.category?.name ?? '—'} · Thương hiệu:{' '}
+                      {detail.brand?.name ?? '—'}
+                    </span>
+                  </div>
+                  {detail.specValues.length > 0 ? (
+                    <ul style={{ marginTop: 8, paddingLeft: 18, fontSize: 13 }}>
+                      {detail.specValues.map((spec) => (
+                        <li key={spec.id}>
+                          <code>{spec.attributeId.slice(0, 8)}…</code>:{' '}
+                          {spec.value}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : null}
+                  <div
+                    style={{
+                      display: 'flex',
+                      gap: 8,
+                      marginTop: 12,
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    {STATUS_OPTIONS.filter(
+                      (o) => o.value !== detail.status,
+                    ).map((o) => (
+                      <button
+                        key={o.value}
+                        type="button"
+                        className="nx-btn nx-btn-ghost"
+                        onClick={() => changeStatus(o.value)}
+                      >
+                        → {o.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            ) : (
+              <form
+                onSubmit={saveProductEdit}
+                className="nx-page"
+                style={{ gap: 14 }}
+              >
+                <div className="nx-card-title">Sửa sản phẩm</div>
+                <TextField
+                  label="Tên sản phẩm"
+                  value={editForm.name}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, name: e.target.value }))
+                  }
+                  error={editErrors.name}
+                  required
+                />
+                <TextField
+                  label="Slug"
+                  value={editForm.slug}
+                  readOnly
+                  hint="Slug không đổi qua PATCH — hiển thị tham chiếu."
+                />
+                <SelectField
+                  label="Danh mục"
+                  value={editForm.categoryId}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, categoryId: e.target.value }))
+                  }
+                  options={categoryOptions}
+                  error={editErrors.categoryId}
+                />
+                <SelectField
+                  label="Thương hiệu"
+                  value={editForm.brandId}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, brandId: e.target.value }))
+                  }
+                  options={brandOptions}
+                  error={editErrors.brandId}
+                />
+                <SelectField
+                  label="Trạng thái"
+                  value={editForm.status}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, status: e.target.value }))
+                  }
+                  options={STATUS_OPTIONS}
+                />
+                <TextareaField
+                  label="Mô tả"
+                  value={editForm.description}
+                  onChange={(e) =>
+                    setEditForm((f) => ({ ...f, description: e.target.value }))
+                  }
+                  rows={4}
+                />
+                <div>
+                  <div className="nx-card-title">Thông số kỹ thuật</div>
+                  {renderSpecFields(
+                    editSpecAttributes,
+                    editSpecInputs,
+                    setEditSpecInputs,
+                    editSpecsLoading,
+                  )}
+                </div>
+                <div className="nx-form-actions">
+                  <button
+                    type="button"
+                    className="nx-btn nx-btn-secondary"
+                    onClick={() => {
+                      setEditMode(false);
+                      populateEditForm(detail);
+                    }}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    type="submit"
+                    className="nx-btn nx-btn-primary"
+                    disabled={editSaving}
+                  >
+                    {editSaving ? 'Đang lưu…' : 'Lưu thay đổi'}
+                  </button>
+                </div>
+              </form>
+            )}
 
             <div>
               <div className="nx-card-title">SKU & giá</div>
+              <p className="nx-hint" style={{ margin: '0 0 8px' }}>
+                Sửa tên biến thể (PATCH SKU) hoặc cập nhật giá riêng.
+              </p>
               {detail.skus.length === 0 ? (
                 <p className="nx-hint">Chưa có SKU nào.</p>
               ) : (
@@ -525,43 +927,78 @@ export default function Page() {
                   <thead>
                     <tr>
                       <th>SKU</th>
+                      <th>Tên biến thể</th>
                       <th>Giá hiện tại</th>
                       <th>Cập nhật giá</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {detail.skus.map((sku) => (
-                      <tr key={sku.id}>
-                        <td>{sku.skuCode}</td>
-                        <td>{sku.price ? formatVnd(sku.price.amount) : '—'}</td>
-                        <td>
-                          <div style={{ display: 'flex', gap: 6 }}>
-                            <input
-                              className="nx-input"
-                              style={{ width: 120 }}
-                              type="number"
-                              min={0}
-                              placeholder="VND"
-                              value={priceEdits[sku.id] ?? ''}
-                              onChange={(e) =>
-                                setPriceEdits((edits) => ({
-                                  ...edits,
-                                  [sku.id]: e.target.value,
-                                }))
-                              }
-                            />
-                            <button
-                              type="button"
-                              className="nx-btn nx-btn-ghost"
-                              disabled={priceSavingId === sku.id}
-                              onClick={() => updatePrice(sku.id)}
-                            >
-                              Lưu
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {detail.skus.map((sku) => {
+                      const nameBusy = nameSavingId === sku.id;
+                      const priceBusy = priceSavingId === sku.id;
+                      const rowBusy = nameBusy || priceBusy;
+                      return (
+                        <tr key={sku.id}>
+                          <td>{sku.skuCode}</td>
+                          <td>
+                            <div style={{ display: 'flex', gap: 6 }}>
+                              <input
+                                className="nx-input"
+                                style={{ minWidth: 160 }}
+                                value={nameEdits[sku.id] ?? sku.name}
+                                disabled={rowBusy}
+                                onChange={(e) =>
+                                  setNameEdits((edits) => ({
+                                    ...edits,
+                                    [sku.id]: e.target.value,
+                                  }))
+                                }
+                              />
+                              <button
+                                type="button"
+                                className="nx-btn nx-btn-ghost"
+                                disabled={rowBusy}
+                                onClick={() =>
+                                  void updateSkuName(sku.id, sku.name)
+                                }
+                              >
+                                {nameBusy ? 'Đang lưu…' : 'Lưu tên'}
+                              </button>
+                            </div>
+                          </td>
+                          <td>
+                            {sku.price ? formatVnd(sku.price.amount) : '—'}
+                          </td>
+                          <td>
+                            <div style={{ display: 'flex', gap: 6 }}>
+                              <input
+                                className="nx-input"
+                                style={{ width: 120 }}
+                                type="number"
+                                min={0}
+                                placeholder="VND"
+                                disabled={rowBusy}
+                                value={priceEdits[sku.id] ?? ''}
+                                onChange={(e) =>
+                                  setPriceEdits((edits) => ({
+                                    ...edits,
+                                    [sku.id]: e.target.value,
+                                  }))
+                                }
+                              />
+                              <button
+                                type="button"
+                                className="nx-btn nx-btn-ghost"
+                                disabled={rowBusy}
+                                onClick={() => void updatePrice(sku.id)}
+                              >
+                                {priceBusy ? 'Đang lưu…' : 'Lưu giá'}
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               )}

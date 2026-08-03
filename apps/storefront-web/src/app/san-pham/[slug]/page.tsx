@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { formatVnd } from '@nexatech/shared-web';
 import { Breadcrumbs } from '../../../components/common/breadcrumbs';
 import { ProductGallery } from '../../../components/product/product-gallery';
 import { ProductPurchasePanel } from '../../../components/product/product-purchase-panel';
@@ -127,10 +126,6 @@ export default async function ProductDetailPage({ params }: Props) {
         <div className={styles.info}>
           <p className={styles.brand}>{product.brand.name}</p>
           <h1 className={styles.title}>{product.name}</h1>
-          <p className={styles.price}>
-            {formatVnd(range.min)}
-            {range.max > range.min ? ` – ${formatVnd(range.max)}` : ''}
-          </p>
           {product.description ? (
             <p className={styles.desc}>{product.description}</p>
           ) : null}

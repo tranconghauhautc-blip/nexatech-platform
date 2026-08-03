@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { bff } from '../../lib/api-browser';
 import type { MediaDownloadUrlResult } from '../../lib/types';
 import styles from './media-thumb.module.css';
@@ -34,6 +34,18 @@ export function MediaThumb({
   const [resolvedUrl, setResolvedUrl] = useState<string | undefined>(
     directUrl ?? (mediaRef ? urlCache.get(mediaRef) : undefined),
   );
+  const [loaded, setLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+
+  useEffect(() => {
+    setLoaded(false);
+  }, [resolvedUrl]);
+
+  useEffect(() => {
+    if (imgRef.current?.complete && imgRef.current.naturalWidth > 0) {
+      setLoaded(true);
+    }
+  }, [resolvedUrl]);
 
   useEffect(() => {
     if (directUrl || !mediaRef) {
@@ -70,13 +82,24 @@ export function MediaThumb({
         role="img"
         aria-label={alt}
       >
-        <span>{letter}</span>
+        <span aria-hidden="true">{letter}</span>
       </div>
     );
   }
 
-  // eslint-disable-next-line @next/next/no-img-element -- host media động theo môi trường
   return (
-    <img src={resolvedUrl} alt={alt} className={className} loading="lazy" />
+    <div className={styles.wrap}>
+      {!loaded ? <div className={styles.skeleton} aria-hidden="true" /> : null}
+      {/* eslint-disable-next-line @next/next/no-img-element -- host media động theo môi trường */}
+      <img
+        ref={imgRef}
+        src={resolvedUrl}
+        alt={alt}
+        className={`${styles.imageLoaded} ${loaded ? styles.isVisible : ''} ${className ?? ''}`}
+        loading="lazy"
+        decoding="async"
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
   );
 }

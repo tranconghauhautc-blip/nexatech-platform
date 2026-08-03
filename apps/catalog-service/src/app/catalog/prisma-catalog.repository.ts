@@ -25,6 +25,7 @@ import type {
   CreateProductInput,
   CreateSkuInput,
   CreateSpecTemplateInput,
+  UpdateSpecTemplateInput,
   LinkProductMediaInput,
   Product,
   ProductDetail,
@@ -40,6 +41,8 @@ import type {
   UpdateCategoryInput,
   UpdatePriceInput,
   UpdateProductInput,
+  UpdateProductMediaLinkInput,
+  UpdateSkuInput,
 } from './catalog.types';
 import { PrismaService } from './prisma.service';
 
@@ -113,12 +116,19 @@ function mapProduct(row: PrismaProduct): Product {
   };
 }
 
-function mapSpecValue(row: PrismaProductSpecValue): ProductSpecValue {
+function mapSpecValue(
+  row: PrismaProductSpecValue & {
+    attribute?: PrismaSpecAttribute | null;
+  },
+): ProductSpecValue {
   return {
     id: row.id,
     productId: row.productId,
     attributeId: row.attributeId,
     value: row.value,
+    attributeKey: row.attribute?.key,
+    attributeLabel: row.attribute?.label,
+    unit: row.attribute?.unit ?? undefined,
   };
 }
 
@@ -476,6 +486,206 @@ export class PrismaCatalogRepository implements CatalogRepository {
     return rows.map(mapSpecTemplate);
   }
 
+  async getSpecTemplateById(id: string): Promise<SpecTemplate | null> {
+    const row = await this.prisma.specTemplate.findUnique({
+      where: { id },
+      include: {
+        groups: {
+          include: { attributes: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
+    });
+    return row ? mapSpecTemplate(row) : null;
+  }
+
+  private groupKey(sortOrder: number, name: string): string {
+    return `${sortOrder}:${name}`;
+  }
+
+  async updateSpecTemplate(
+    id: string,
+    input: UpdateSpecTemplateInput,
+  ): Promise<SpecTemplate> {
+    const existing = await this.prisma.specTemplate.findUnique({
+      where: { id },
+      include: {
+        groups: {
+          include: { attributes: true },
+          orderBy: { sortOrder: 'asc' },
+        },
+      },
+    });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy mẫu thông số',
+      });
+    }
+
+    const existingByKey = new Map<
+      string,
+      (typeof existing.groups)[0]['attributes'][0]
+    >();
+    for (const group of existing.groups) {
+      for (const attribute of group.attributes) {
+        existingByKey.set(attribute.key, attribute);
+      }
+    }
+
+    const payloadKeys = new Set<string>();
+    for (const group of input.groups) {
+      for (const attribute of group.attributes) {
+        payloadKeys.add(attribute.key);
+      }
+    }
+
+    for (const [key, attribute] of existingByKey) {
+      if (!payloadKeys.has(key)) {
+        const count = await this.prisma.productSpecValue.count({
+          where: { attributeId: attribute.id },
+        });
+        if (count > 0) {
+          throw new AppError({
+            errorCode: ErrorCodes.CONFLICT,
+            message: `Không thể xóa thuộc tính "${attribute.label}" (${key}) vì đã có sản phẩm sử dụng`,
+            details: { attributeId: attribute.id, key },
+          });
+        }
+      }
+    }
+
+    const existingGroupsByKey = new Map<string, (typeof existing.groups)[0]>();
+    for (const group of existing.groups) {
+      existingGroupsByKey.set(
+        this.groupKey(group.sortOrder, group.name),
+        group,
+      );
+    }
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.specTemplate.update({
+        where: { id },
+        data: { name: input.name ?? existing.name },
+      });
+
+      const usedGroupIds = new Set<string>();
+
+      for (const groupInput of input.groups) {
+        const sortOrder = groupInput.sortOrder ?? 0;
+        const key = this.groupKey(sortOrder, groupInput.name);
+        const existingGroup = existingGroupsByKey.get(key);
+        let groupId: string;
+
+        if (existingGroup) {
+          groupId = existingGroup.id;
+          usedGroupIds.add(groupId);
+        } else {
+          const created = await tx.specGroup.create({
+            data: {
+              templateId: id,
+              name: groupInput.name,
+              sortOrder,
+            },
+          });
+          groupId = created.id;
+          usedGroupIds.add(groupId);
+        }
+
+        for (const attributeInput of groupInput.attributes) {
+          const attrSortOrder = attributeInput.sortOrder ?? 0;
+          const existingAttr = existingByKey.get(attributeInput.key);
+          if (existingAttr) {
+            await tx.specAttribute.update({
+              where: { id: existingAttr.id },
+              data: {
+                groupId,
+                label: attributeInput.label,
+                dataType: attributeInput.dataType ?? 'string',
+                unit: attributeInput.unit,
+                isFilterable: attributeInput.isFilterable ?? true,
+                sortOrder: attrSortOrder,
+              },
+            });
+          } else {
+            await tx.specAttribute.create({
+              data: {
+                groupId,
+                key: attributeInput.key,
+                label: attributeInput.label,
+                dataType: attributeInput.dataType ?? 'string',
+                unit: attributeInput.unit,
+                isFilterable: attributeInput.isFilterable ?? true,
+                sortOrder: attrSortOrder,
+              },
+            });
+          }
+        }
+      }
+
+      for (const [key, attribute] of existingByKey) {
+        if (!payloadKeys.has(key)) {
+          await tx.specAttribute.delete({ where: { id: attribute.id } });
+        }
+      }
+
+      for (const group of existing.groups) {
+        if (!usedGroupIds.has(group.id)) {
+          const remaining = await tx.specAttribute.count({
+            where: { groupId: group.id },
+          });
+          if (remaining === 0) {
+            await tx.specGroup.delete({ where: { id: group.id } });
+          }
+        }
+      }
+    });
+
+    const updated = await this.getSpecTemplateById(id);
+    if (!updated) {
+      throw new AppError({
+        errorCode: ErrorCodes.INTERNAL_ERROR,
+        message: 'Không thể tải mẫu thông số sau khi cập nhật',
+      });
+    }
+    return updated;
+  }
+
+  async deleteSpecTemplate(id: string): Promise<void> {
+    const existing = await this.prisma.specTemplate.findUnique({
+      where: { id },
+      include: {
+        groups: {
+          include: { attributes: true },
+        },
+      },
+    });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy mẫu thông số',
+      });
+    }
+
+    const attributeIds = existing.groups.flatMap((group) =>
+      group.attributes.map((attribute) => attribute.id),
+    );
+    if (attributeIds.length > 0) {
+      const count = await this.prisma.productSpecValue.count({
+        where: { attributeId: { in: attributeIds } },
+      });
+      if (count > 0) {
+        throw new AppError({
+          errorCode: ErrorCodes.CONFLICT,
+          message:
+            'Không thể xóa mẫu thông số vì đã có sản phẩm sử dụng các thuộc tính',
+        });
+      }
+    }
+
+    await this.prisma.specTemplate.delete({ where: { id } });
+  }
+
   async createProduct(input: CreateProductInput): Promise<Product> {
     try {
       const row = await this.prisma.product.create({
@@ -544,7 +754,7 @@ export class PrismaCatalogRepository implements CatalogRepository {
       include: {
         category: true,
         brand: true,
-        specValues: true,
+        specValues: { include: { attribute: true } },
         skus: { include: { price: true } },
         mediaLinks: true,
       },
@@ -568,7 +778,7 @@ export class PrismaCatalogRepository implements CatalogRepository {
       include: {
         category: true,
         brand: true,
-        specValues: true,
+        specValues: { include: { attribute: true } },
         skus: { include: { price: true } },
         mediaLinks: true,
       },
@@ -826,12 +1036,41 @@ export class PrismaCatalogRepository implements CatalogRepository {
     return row ? mapSku(row) : null;
   }
 
+  async getSkuById(skuId: string): Promise<SkuWithPrice | null> {
+    const row = await this.prisma.sku.findUnique({
+      where: { id: skuId },
+      include: { price: true, product: true },
+    });
+    return row ? mapSku(row) : null;
+  }
+
   async listSkusByProduct(productId: string): Promise<SkuWithPrice[]> {
     const rows = await this.prisma.sku.findMany({
       where: { productId },
       include: { price: true },
     });
     return rows.map(mapSku);
+  }
+
+  async updateSku(skuId: string, input: UpdateSkuInput): Promise<SkuWithPrice> {
+    const existing = await this.prisma.sku.findUnique({ where: { id: skuId } });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.CATALOG_SKU_NOT_FOUND,
+        message: 'Không tìm thấy SKU',
+      });
+    }
+    const row = await this.prisma.sku.update({
+      where: { id: skuId },
+      data: {
+        ...(input.name !== undefined ? { name: input.name } : {}),
+        ...(input.attributes !== undefined
+          ? { attributes: input.attributes }
+          : {}),
+      },
+      include: { price: true, product: true },
+    });
+    return mapSku(row);
   }
 
   async updatePrice(
@@ -905,6 +1144,63 @@ export class PrismaCatalogRepository implements CatalogRepository {
       );
       throw error;
     }
+  }
+
+  async listProductMediaLinks(productId: string): Promise<ProductMediaLink[]> {
+    const rows = await this.prisma.productMediaLink.findMany({
+      where: { productId },
+      orderBy: { sortOrder: 'asc' },
+    });
+    return rows.map(mapMediaLink);
+  }
+
+  async updateProductMediaLink(
+    productId: string,
+    linkId: string,
+    input: UpdateProductMediaLinkInput,
+  ): Promise<ProductMediaLink> {
+    const existing = await this.prisma.productMediaLink.findFirst({
+      where: { id: linkId, productId },
+    });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.CATALOG_PRODUCT_NOT_FOUND,
+        message: 'Không tìm thấy liên kết media',
+      });
+    }
+    const row = await this.prisma.$transaction(async (tx) => {
+      if (input.isPrimary) {
+        await tx.productMediaLink.updateMany({
+          where: { productId, isPrimary: true },
+          data: { isPrimary: false },
+        });
+      }
+      return tx.productMediaLink.update({
+        where: { id: linkId },
+        data: {
+          role: input.role as MediaRole | undefined,
+          sortOrder: input.sortOrder,
+          isPrimary: input.isPrimary,
+        },
+      });
+    });
+    return mapMediaLink(row);
+  }
+
+  async deleteProductMediaLink(
+    productId: string,
+    linkId: string,
+  ): Promise<void> {
+    const existing = await this.prisma.productMediaLink.findFirst({
+      where: { id: linkId, productId },
+    });
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.CATALOG_PRODUCT_NOT_FOUND,
+        message: 'Không tìm thấy liên kết media',
+      });
+    }
+    await this.prisma.productMediaLink.delete({ where: { id: linkId } });
   }
 
   async findRecommendations(productId: string, limit = 8): Promise<Product[]> {

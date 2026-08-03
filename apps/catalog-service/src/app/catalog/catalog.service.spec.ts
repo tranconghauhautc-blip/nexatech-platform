@@ -236,4 +236,298 @@ describe('CatalogService', () => {
       errorCode: ErrorCodes.FORBIDDEN,
     });
   });
+
+  it('updates spec template preserving attribute ids by key', async () => {
+    const category = await service.createCategory(
+      { name: 'Điện thoại', slug: 'dien-thoai-spec' },
+      staffRoles,
+    );
+    const template = await service.createSpecTemplate(
+      {
+        categoryId: category.id,
+        name: 'Thông số điện thoại',
+        groups: [
+          {
+            name: 'Thông số chung',
+            sortOrder: 0,
+            attributes: [
+              {
+                key: 'ram_gb',
+                label: 'RAM',
+                dataType: 'number',
+                unit: 'GB',
+                isFilterable: true,
+                sortOrder: 0,
+              },
+            ],
+          },
+        ],
+      },
+      staffRoles,
+    );
+    const originalAttributeId = template.groups[0]?.attributes[0]?.id;
+    expect(originalAttributeId).toBeDefined();
+
+    const updated = await service.updateSpecTemplate(
+      template.id,
+      {
+        name: 'Thông số điện thoại (cập nhật)',
+        groups: [
+          {
+            name: 'Thông số chung',
+            sortOrder: 0,
+            attributes: [
+              {
+                key: 'ram_gb',
+                label: 'Dung lượng RAM',
+                dataType: 'number',
+                unit: 'GB',
+                isFilterable: true,
+                sortOrder: 0,
+              },
+              {
+                key: 'storage_gb',
+                label: 'Bộ nhớ',
+                dataType: 'number',
+                unit: 'GB',
+                isFilterable: true,
+                sortOrder: 1,
+              },
+            ],
+          },
+        ],
+      },
+      staffRoles,
+    );
+
+    expect(updated.name).toBe('Thông số điện thoại (cập nhật)');
+    expect(updated.groups[0]?.attributes[0]?.id).toBe(originalAttributeId);
+    expect(updated.groups[0]?.attributes[0]?.label).toBe('Dung lượng RAM');
+    expect(updated.groups[0]?.attributes).toHaveLength(2);
+  });
+
+  it('blocks spec template delete when attributes are referenced', async () => {
+    const category = await service.createCategory(
+      { name: 'Tablet', slug: 'tablet-spec' },
+      staffRoles,
+    );
+    const brand = await service.createBrand(
+      { name: 'Samsung', slug: 'samsung-spec' },
+      staffRoles,
+    );
+    const template = await service.createSpecTemplate(
+      {
+        categoryId: category.id,
+        name: 'Thông số tablet',
+        groups: [
+          {
+            name: 'Thông số chung',
+            attributes: [
+              {
+                key: 'screen_inch',
+                label: 'Màn hình',
+                dataType: 'number',
+                unit: 'inch',
+              },
+            ],
+          },
+        ],
+      },
+      staffRoles,
+    );
+    const attributeId = template.groups[0]?.attributes[0]?.id;
+    expect(attributeId).toBeDefined();
+    if (!attributeId) {
+      throw new Error('attributeId missing');
+    }
+
+    await service.createProduct(
+      {
+        name: 'Galaxy Tab S9',
+        slug: 'galaxy-tab-s9',
+        categoryId: category.id,
+        brandId: brand.id,
+        specs: [{ attributeId, value: '11' }],
+      },
+      staffRoles,
+    );
+
+    await expect(
+      service.deleteSpecTemplate(template.id, staffRoles),
+    ).rejects.toMatchObject({
+      errorCode: ErrorCodes.CONFLICT,
+    });
+  });
+
+  it('updates sku name and attributes via updateSku', async () => {
+    const category = await service.createCategory(
+      { name: 'Tai nghe', slug: 'tai-nghe-sku-edit' },
+      staffRoles,
+    );
+    const brand = await service.createBrand(
+      { name: 'Sony', slug: 'sony-sku-edit' },
+      staffRoles,
+    );
+    const product = await service.createProduct(
+      {
+        name: 'WF-1000XM5',
+        slug: 'wf-1000xm5-sku-edit',
+        categoryId: category.id,
+        brandId: brand.id,
+        status: 'active',
+      },
+      staffRoles,
+    );
+    const sku = await service.createSku(
+      {
+        productId: product.id,
+        skuCode: 'WF5-BLK',
+        name: 'Den',
+        price: 5990000,
+        attributes: { color: 'black' },
+      },
+      staffRoles,
+    );
+
+    const unchanged = await service.updateSku(sku.id, {}, staffRoles);
+    expect(unchanged.name).toBe('Den');
+
+    const updated = await service.updateSku(
+      sku.id,
+      { name: 'Den nham', attributes: { color: 'black', finish: 'matte' } },
+      staffRoles,
+    );
+    expect(updated.name).toBe('Den nham');
+    expect(updated.attributes).toEqual({ color: 'black', finish: 'matte' });
+    expect(
+      auditEvents.some(
+        (e) =>
+          e.eventType === EventTypes.CATALOG_PRODUCT_UPDATED &&
+          (e.payload as { action?: string }).action === 'sku.updated',
+      ),
+    ).toBe(true);
+
+    await expect(
+      service.updateSku('missing-sku', { name: 'x' }, staffRoles),
+    ).rejects.toMatchObject({
+      errorCode: ErrorCodes.CATALOG_SKU_NOT_FOUND,
+    });
+  });
+  it('updates product fields and specs via PATCH input', async () => {
+    const category = await service.createCategory(
+      { name: 'Phụ kiện', slug: 'phu-kien-edit' },
+      staffRoles,
+    );
+    const brand = await service.createBrand(
+      { name: 'Anker', slug: 'anker-edit' },
+      staffRoles,
+    );
+    const template = await service.createSpecTemplate(
+      {
+        categoryId: category.id,
+        name: 'Thông số phụ kiện',
+        groups: [
+          {
+            name: 'Chung',
+            attributes: [
+              { key: 'watt', label: 'Công suất', dataType: 'number' },
+            ],
+          },
+        ],
+      },
+      staffRoles,
+    );
+    const attributeId = template.groups[0]?.attributes[0]?.id;
+    expect(attributeId).toBeDefined();
+    if (!attributeId) throw new Error('attributeId missing');
+
+    const product = await service.createProduct(
+      {
+        name: 'Sạc nhanh',
+        slug: 'sac-nhanh',
+        categoryId: category.id,
+        brandId: brand.id,
+        status: 'draft',
+      },
+      staffRoles,
+    );
+
+    const updated = await service.updateProduct(
+      product.id,
+      {
+        name: 'Sạc nhanh 65W',
+        description: 'GaN charger',
+        specs: [{ attributeId, value: '65' }],
+        status: 'active',
+      },
+      staffRoles,
+    );
+    expect(updated.name).toBe('Sạc nhanh 65W');
+    expect(updated.status).toBe('active');
+
+    const detail = await service.getProductBySlug('sac-nhanh');
+    expect(detail.specValues).toHaveLength(1);
+    expect(detail.specValues[0]?.value).toBe('65');
+  });
+
+  it('manages product media links with atomic primary and unlink', async () => {
+    const category = await service.createCategory(
+      { name: 'Đồng hồ', slug: 'dong-ho-media' },
+      staffRoles,
+    );
+    const brand = await service.createBrand(
+      { name: 'Garmin', slug: 'garmin-media' },
+      staffRoles,
+    );
+    const product = await service.createProduct(
+      {
+        name: 'Fenix 8',
+        slug: 'fenix-8',
+        categoryId: category.id,
+        brandId: brand.id,
+        status: 'active',
+      },
+      staffRoles,
+    );
+
+    const linkA = await service.linkMedia(
+      product.id,
+      {
+        mediaId: 'media-a',
+        role: 'gallery',
+        isPrimary: true,
+      },
+      staffRoles,
+    );
+    const linkB = await service.linkMedia(
+      product.id,
+      {
+        mediaId: 'media-b',
+        role: 'gallery',
+        isPrimary: false,
+      },
+      staffRoles,
+    );
+    expect(linkA.isPrimary).toBe(true);
+
+    const updated = await service.updateProductMediaLink(
+      product.id,
+      linkB.id,
+      { isPrimary: true },
+      staffRoles,
+    );
+    expect(updated.isPrimary).toBe(true);
+
+    const links = await service.listProductMediaLinks(product.id, staffRoles);
+    expect(links.find((l) => l.id === linkA.id)?.isPrimary).toBe(false);
+    expect(links.find((l) => l.id === linkB.id)?.isPrimary).toBe(true);
+
+    await service.unlinkProductMedia(product.id, linkA.id, staffRoles);
+    const afterUnlink = await service.listProductMediaLinks(
+      product.id,
+      staffRoles,
+    );
+    expect(afterUnlink).toHaveLength(1);
+    expect(afterUnlink[0]?.mediaId).toBe('media-b');
+  });
 });

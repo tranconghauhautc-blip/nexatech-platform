@@ -121,56 +121,30 @@ async function main() {
     `browser-facing upload URL still has minio:9000 → ${uploadUrl}`,
   );
 
-  console.log('[media-e2e] PUT MinIO via Compose network…');
-  // Presigned URL is signed for Host=minio; host rewrite breaks signature.
-  // Upload from inside nexatech-dev so the original URL validates.
-  const { spawnSync } = require('child_process');
-  const tmpFile = path.join(process.cwd(), `tmp-${filename}`);
-  fs.writeFileSync(tmpFile, bytes);
+  console.log('[media-e2e] PUT MinIO from host (URL signed for public Host)…');
+  // media-service signs with MINIO_PUBLIC_ENDPOINT — do NOT rewrite Host after signing.
   const originalUploadUrl =
     presign.data.uploadUrl || presign.data.url || presign.data.presignedUrl;
   assert(originalUploadUrl, 'missing original uploadUrl');
-  const put = spawnSync(
-    'docker',
-    [
-      'run',
-      '--rm',
-      '--network',
-      'nexatech-dev',
-      '-v',
-      `${tmpFile}:/upload.bin:ro`,
-      'curlimages/curl:8.5.0',
-      '-sS',
-      '-o',
-      '/dev/null',
-      '-w',
-      '%{http_code}',
-      '-X',
-      'PUT',
-      '-H',
-      'Content-Type: image/png',
-      '--data-binary',
-      '@/upload.bin',
-      originalUploadUrl,
-    ],
-    { encoding: 'utf8' },
+  assert(
+    !/\/\/minio(?::|\/)/i.test(originalUploadUrl),
+    `uploadUrl still uses Docker hostname minio → ${originalUploadUrl}`,
   );
-  try {
-    fs.unlinkSync(tmpFile);
-  } catch {
-    /* ignore */
-  }
-  const putStatus = Number((put.stdout || '').trim());
-  if (put.status !== 0 || !(putStatus === 200 || putStatus === 204)) {
+  const contentType = presign.data.contentType || 'image/png';
+  const putRes = await fetch(originalUploadUrl, {
+    method: 'PUT',
+    headers: { 'Content-Type': contentType },
+    body: bytes,
+  });
+  if (!putRes.ok) {
     throw new Error(
-      `PUT via docker network failed status=${put.status} http=${put.stdout} err=${put.stderr}`,
+      `MinIO PUT failed status=${putRes.status} body=${(await putRes.text()).slice(0, 300)}`,
     );
   }
-  // Browser rewrite check (admin UI): rewritten host must be localhost for display
   const browserUrl = rewriteMinio(originalUploadUrl);
   assert(
     !/minio:9000/i.test(browserUrl),
-    `browser rewrite failed: ${browserUrl}`,
+    `browser URL has docker host: ${browserUrl}`,
   );
 
   console.log('[media-e2e] confirm…');

@@ -572,6 +572,10 @@ export class InventoryService {
   ): Promise<Reservation> {
     this.requireStaff(roles);
     const reservation = await this.getReservationById(id);
+    // Idempotent: multi-package / retry after first successful commit
+    if (reservation.status === 'COMMITTED') {
+      return reservation;
+    }
     if (reservation.status !== 'ACTIVE') {
       throw new AppError({
         errorCode: ErrorCodes.INVENTORY_CONFLICT,

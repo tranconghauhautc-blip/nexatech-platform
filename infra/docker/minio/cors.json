@@ -1,0 +1,22 @@
+{
+  "note": "Documentation of intended Admin/Storefront origins. OSS MinIO applies CORS via MINIO_API_CORS_ALLOW_ORIGIN on the minio service (bucket PutBucketCors is AIStor-only).",
+  "CORSRules": [
+    {
+      "AllowedOrigins": [
+        "http://localhost:3100",
+        "http://127.0.0.1:3100",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000"
+      ],
+      "AllowedMethods": ["GET", "PUT", "HEAD", "POST", "DELETE"],
+      "AllowedHeaders": ["*"],
+      "ExposeHeaders": [
+        "ETag",
+        "Content-Length",
+        "Content-Type",
+        "x-amz-request-id"
+      ],
+      "MaxAgeSeconds": 3600
+    }
+  ]
+}

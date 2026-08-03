@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Headers,
   Param,
@@ -74,5 +75,10 @@ export class CustomerController {
     @Body() body: UpdateAddressBody,
   ) {
     return this.customerService.updateAddress(userId, id, body);
+  }
+
+  @Delete('me/addresses/:id')
+  deleteAddress(@Headers('x-user-id') userId: string, @Param('id') id: string) {
+    return this.customerService.deleteAddress(userId, id);
   }
 }

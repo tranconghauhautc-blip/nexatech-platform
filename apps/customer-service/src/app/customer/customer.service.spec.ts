@@ -1,3 +1,4 @@
+import { ErrorCodes } from '@nexatech/shared-errors';
 import { CustomerService, InMemoryCustomerStore } from './customer.service';
 
 describe('CustomerService', () => {
@@ -62,5 +63,69 @@ describe('CustomerService', () => {
         isDefault: true,
       }),
     ).rejects.toThrow();
+  });
+
+  it('rejects invalid phone on update', async () => {
+    const service = new CustomerService(new InMemoryCustomerStore());
+    await service.getOrCreateMe('user-4', 'Phạm Văn E');
+    await expect(
+      service.updateMe('user-4', { phone: '123' }),
+    ).rejects.toMatchObject({ message: expect.stringMatching(/điện thoại/i) });
+  });
+
+  it('normalizes blank phone to undefined', async () => {
+    const service = new CustomerService(new InMemoryCustomerStore());
+    await service.getOrCreateMe('user-5', 'Đỗ Thị F');
+    await service.updateMe('user-5', { phone: '0901234567' });
+    const cleared = await service.updateMe('user-5', { phone: '  ' });
+    expect(cleared.phone).toBeUndefined();
+  });
+
+  it('rejects empty fullName', async () => {
+    const service = new CustomerService(new InMemoryCustomerStore());
+    await service.getOrCreateMe('user-6', 'Valid Name');
+    await expect(
+      service.updateMe('user-6', { fullName: '   ' }),
+    ).rejects.toMatchObject({ message: expect.stringMatching(/Họ tên/i) });
+  });
+
+  it('rejects missing user id as unauthorized', async () => {
+    const service = new CustomerService(new InMemoryCustomerStore());
+    await expect(service.getOrCreateMe('', 'X')).rejects.toMatchObject({
+      errorCode: ErrorCodes.UNAUTHORIZED,
+    });
+    await expect(service.updateMe('', { fullName: 'X' })).rejects.toMatchObject(
+      {
+        errorCode: ErrorCodes.UNAUTHORIZED,
+      },
+    );
+  });
+
+  it('deletes an address and reassigns default when needed', async () => {
+    const service = new CustomerService(new InMemoryCustomerStore());
+    await service.getOrCreateMe('user-del', 'Nguyễn X');
+
+    const first = await service.addAddress('user-del', {
+      label: 'Nhà',
+      recipient: 'Nguyễn X',
+      phone: '0901234567',
+      line1: '1 Lê Lợi',
+      city: 'Hà Nội',
+      isDefault: true,
+    });
+    await service.addAddress('user-del', {
+      label: 'Công ty',
+      recipient: 'Nguyễn X',
+      phone: '0901234567',
+      line1: '2 Trần Phú',
+      city: 'Hà Nội',
+      isDefault: false,
+    });
+
+    await service.deleteAddress('user-del', first.id);
+    const list = await service.listMyAddresses('user-del');
+    expect(list).toHaveLength(1);
+    expect(list[0].label).toBe('Công ty');
+    expect(list[0].isDefault).toBe(true);
   });
 });

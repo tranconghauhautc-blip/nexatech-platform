@@ -84,6 +84,11 @@ services:
       MINIO_ACCESS_KEY: minioadmin
       MINIO_SECRET_KEY: minioadmin
       MINIO_USE_SSL: 'false'
+      MINIO_REGION: us-east-1
+      # Browser-reachable host for SigV4 presign (must match Host the browser uses)
+      MINIO_PUBLIC_ENDPOINT: localhost
+      MINIO_PUBLIC_PORT: 9000
+      MINIO_PUBLIC_USE_SSL: 'false'
     ports:
       - '3004:3004'
 

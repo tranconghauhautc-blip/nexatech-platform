@@ -9,7 +9,9 @@ import type {
   CreateProductInput,
   CreateSkuInput,
   CreateSpecTemplateInput,
+  UpdateSpecTemplateInput,
   LinkProductMediaInput,
+  UpdateProductMediaLinkInput,
   Product,
   ProductDetail,
   ProductMediaLink,
@@ -24,6 +26,7 @@ import type {
   UpdateCategoryInput,
   UpdatePriceInput,
   UpdateProductInput,
+  UpdateSkuInput,
 } from './catalog.types';
 
 export const CATALOG_REPOSITORY = Symbol('CATALOG_REPOSITORY');
@@ -43,7 +46,13 @@ export interface CatalogRepository {
   getSearchFacets(filters: ProductSearchFilters): Promise<ProductSearchFacets>;
 
   createSpecTemplate(input: CreateSpecTemplateInput): Promise<SpecTemplate>;
+  getSpecTemplateById(id: string): Promise<SpecTemplate | null>;
   getSpecTemplatesByCategory(categoryId: string): Promise<SpecTemplate[]>;
+  updateSpecTemplate(
+    id: string,
+    input: UpdateSpecTemplateInput,
+  ): Promise<SpecTemplate>;
+  deleteSpecTemplate(id: string): Promise<void>;
 
   createProduct(input: CreateProductInput): Promise<Product>;
   updateProduct(id: string, input: UpdateProductInput): Promise<Product>;
@@ -53,11 +62,20 @@ export interface CatalogRepository {
 
   createSku(input: CreateSkuInput): Promise<SkuWithPrice>;
   getSkuByCode(skuCode: string): Promise<SkuWithPrice | null>;
+  getSkuById(skuId: string): Promise<SkuWithPrice | null>;
   listSkusByProduct(productId: string): Promise<SkuWithPrice[]>;
+  updateSku(skuId: string, input: UpdateSkuInput): Promise<SkuWithPrice>;
 
   updatePrice(skuId: string, input: UpdatePriceInput): Promise<SkuWithPrice>;
 
   linkProductMedia(input: LinkProductMediaInput): Promise<ProductMediaLink>;
+  listProductMediaLinks(productId: string): Promise<ProductMediaLink[]>;
+  updateProductMediaLink(
+    productId: string,
+    linkId: string,
+    input: UpdateProductMediaLinkInput,
+  ): Promise<ProductMediaLink>;
+  deleteProductMediaLink(productId: string, linkId: string): Promise<void>;
 
   findRecommendations(productId: string, limit?: number): Promise<Product[]>;
 }
@@ -339,12 +357,168 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     return template;
   }
 
+  async getSpecTemplateById(id: string): Promise<SpecTemplate | null> {
+    return this.specTemplates.get(id) ?? null;
+  }
+
   async getSpecTemplatesByCategory(
     categoryId: string,
   ): Promise<SpecTemplate[]> {
     return [...this.specTemplates.values()].filter(
       (template) => template.categoryId === categoryId,
     );
+  }
+
+  private groupKey(sortOrder: number, name: string): string {
+    return `${sortOrder}:${name}`;
+  }
+
+  async updateSpecTemplate(
+    id: string,
+    input: UpdateSpecTemplateInput,
+  ): Promise<SpecTemplate> {
+    const current = this.specTemplates.get(id);
+    if (!current) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy mẫu thông số',
+      });
+    }
+
+    const existingByKey = new Map<
+      string,
+      (typeof current.groups)[0]['attributes'][0]
+    >();
+    for (const group of current.groups) {
+      for (const attribute of group.attributes) {
+        existingByKey.set(attribute.key, attribute);
+      }
+    }
+
+    const payloadKeys = new Set<string>();
+    for (const group of input.groups) {
+      for (const attribute of group.attributes) {
+        payloadKeys.add(attribute.key);
+      }
+    }
+
+    for (const [key, attribute] of existingByKey) {
+      if (!payloadKeys.has(key)) {
+        const referenced = [...this.specValues.values()].some(
+          (value) => value.attributeId === attribute.id,
+        );
+        if (referenced) {
+          throw new AppError({
+            errorCode: ErrorCodes.CONFLICT,
+            message: `Không thể xóa thuộc tính "${attribute.label}" (${key}) vì đã có sản phẩm sử dụng`,
+            details: { attributeId: attribute.id, key },
+          });
+        }
+      }
+    }
+
+    const existingGroupsByKey = new Map<string, (typeof current.groups)[0]>();
+    for (const group of current.groups) {
+      existingGroupsByKey.set(
+        this.groupKey(group.sortOrder, group.name),
+        group,
+      );
+    }
+
+    const usedGroupIds = new Set<string>();
+    const newGroups: SpecTemplate['groups'] = [];
+
+    for (const groupInput of input.groups) {
+      const sortOrder = groupInput.sortOrder ?? 0;
+      const key = this.groupKey(sortOrder, groupInput.name);
+      const existingGroup = existingGroupsByKey.get(key);
+      const groupId = existingGroup?.id ?? createId();
+      usedGroupIds.add(groupId);
+
+      const attributes = groupInput.attributes.map((attributeInput) => {
+        const attrSortOrder = attributeInput.sortOrder ?? 0;
+        const existingAttr = existingByKey.get(attributeInput.key);
+        const attributeId = existingAttr?.id ?? createId();
+        this.attributes.set(attributeId, {
+          key: attributeInput.key,
+          groupId,
+          templateId: id,
+          categoryId: current.categoryId,
+        });
+        return {
+          id: attributeId,
+          groupId,
+          key: attributeInput.key,
+          label: attributeInput.label,
+          dataType: attributeInput.dataType ?? 'string',
+          unit: attributeInput.unit,
+          isFilterable: attributeInput.isFilterable ?? true,
+          sortOrder: attrSortOrder,
+        };
+      });
+
+      newGroups.push({
+        id: groupId,
+        templateId: id,
+        name: groupInput.name,
+        sortOrder,
+        attributes,
+      });
+    }
+
+    for (const [key, attribute] of existingByKey) {
+      if (!payloadKeys.has(key)) {
+        this.attributes.delete(attribute.id);
+      }
+    }
+
+    for (const group of current.groups) {
+      if (!usedGroupIds.has(group.id)) {
+        for (const attribute of group.attributes) {
+          this.attributes.delete(attribute.id);
+        }
+      }
+    }
+
+    const updated: SpecTemplate = {
+      ...current,
+      name: input.name ?? current.name,
+      updatedAt: new Date(),
+      groups: newGroups,
+    };
+    this.specTemplates.set(id, updated);
+    return updated;
+  }
+
+  async deleteSpecTemplate(id: string): Promise<void> {
+    const current = this.specTemplates.get(id);
+    if (!current) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy mẫu thông số',
+      });
+    }
+
+    const attributeIds = current.groups.flatMap((group) =>
+      group.attributes.map((attribute) => attribute.id),
+    );
+    const referenced = [...this.specValues.values()].some((value) =>
+      attributeIds.includes(value.attributeId),
+    );
+    if (referenced) {
+      throw new AppError({
+        errorCode: ErrorCodes.CONFLICT,
+        message:
+          'Không thể xóa mẫu thông số vì đã có sản phẩm sử dụng các thuộc tính',
+      });
+    }
+
+    for (const group of current.groups) {
+      for (const attribute of group.attributes) {
+        this.attributes.delete(attribute.id);
+      }
+    }
+    this.specTemplates.delete(id);
   }
 
   async createProduct(input: CreateProductInput): Promise<Product> {
@@ -671,8 +845,31 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     };
   }
 
+  async getSkuById(skuId: string): Promise<SkuWithPrice | null> {
+    const sku = this.skus.get(skuId);
+    return sku ? { ...sku } : null;
+  }
+
   async listSkusByProduct(productId: string): Promise<SkuWithPrice[]> {
     return [...this.skus.values()].filter((sku) => sku.productId === productId);
+  }
+
+  async updateSku(skuId: string, input: UpdateSkuInput): Promise<SkuWithPrice> {
+    const sku = this.skus.get(skuId);
+    if (!sku) {
+      throw new AppError({
+        errorCode: ErrorCodes.CATALOG_SKU_NOT_FOUND,
+        message: 'Không tìm thấy SKU',
+      });
+    }
+    const updated: SkuWithPrice = {
+      ...sku,
+      name: input.name ?? sku.name,
+      attributes: input.attributes ?? sku.attributes,
+      updatedAt: new Date(),
+    };
+    this.skus.set(skuId, updated);
+    return updated;
   }
 
   async updatePrice(
@@ -741,6 +938,55 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     };
     this.mediaLinks.set(link.id, link);
     return link;
+  }
+
+  async listProductMediaLinks(productId: string): Promise<ProductMediaLink[]> {
+    return [...this.mediaLinks.values()]
+      .filter((link) => link.productId === productId)
+      .sort((a, b) => a.sortOrder - b.sortOrder);
+  }
+
+  async updateProductMediaLink(
+    productId: string,
+    linkId: string,
+    input: UpdateProductMediaLinkInput,
+  ): Promise<ProductMediaLink> {
+    const link = this.mediaLinks.get(linkId);
+    if (!link || link.productId !== productId) {
+      throw new AppError({
+        errorCode: ErrorCodes.CATALOG_PRODUCT_NOT_FOUND,
+        message: 'Không tìm thấy liên kết media',
+      });
+    }
+    if (input.isPrimary) {
+      for (const [id, existing] of this.mediaLinks) {
+        if (existing.productId === productId && existing.isPrimary) {
+          this.mediaLinks.set(id, { ...existing, isPrimary: false });
+        }
+      }
+    }
+    const updated: ProductMediaLink = {
+      ...link,
+      role: input.role ?? link.role,
+      sortOrder: input.sortOrder ?? link.sortOrder,
+      isPrimary: input.isPrimary ?? link.isPrimary,
+    };
+    this.mediaLinks.set(linkId, updated);
+    return updated;
+  }
+
+  async deleteProductMediaLink(
+    productId: string,
+    linkId: string,
+  ): Promise<void> {
+    const link = this.mediaLinks.get(linkId);
+    if (!link || link.productId !== productId) {
+      throw new AppError({
+        errorCode: ErrorCodes.CATALOG_PRODUCT_NOT_FOUND,
+        message: 'Không tìm thấy liên kết media',
+      });
+    }
+    this.mediaLinks.delete(linkId);
   }
 
   async findRecommendations(productId: string, limit = 8): Promise<Product[]> {

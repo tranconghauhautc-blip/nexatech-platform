@@ -16,16 +16,16 @@
 
 ## Blockers / conversions before K8s
 
-| Item | Detail |
-| ---- | ------ |
-| Hostnames | `localhost`, `minio:9000` browser rewrite → cluster ingress / public MinIO URL |
-| Secrets | No hard-coded prod credentials; need sealed secrets / ExternalSecrets |
-| Image registry | Docker Hub username/token still external |
-| Image tags | Use semver (already `0.17.0`); never `latest` |
-| Persistent volumes | Postgres, MinIO, RabbitMQ need PVCs |
-| VNPay / Google OAuth / SMTP | Still external credentials |
-| Audit projection | Operational audit incomplete until `AUDIT_RECORDED` wired broadly |
-| Functional acceptance | **Owner regression 2026-08-03** — Store Pickup data/API fixed locally; full browser PASS blocked without seed password + owner checklist; still needs owner commit + registry credentials before cluster cutover |
+| Item                        | Detail                                                                                                                                                                                                           |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hostnames                   | `localhost`, `minio:9000` browser rewrite → cluster ingress / public MinIO URL                                                                                                                                   |
+| Secrets                     | No hard-coded prod credentials; need sealed secrets / ExternalSecrets                                                                                                                                            |
+| Image registry              | Docker Hub username/token still external                                                                                                                                                                         |
+| Image tags                  | Use semver (already `0.17.0`); never `latest`                                                                                                                                                                    |
+| Persistent volumes          | Postgres, MinIO, RabbitMQ need PVCs                                                                                                                                                                              |
+| VNPay / Google OAuth / SMTP | Still external credentials                                                                                                                                                                                       |
+| Audit projection            | Operational audit incomplete until `AUDIT_RECORDED` wired broadly                                                                                                                                                |
+| Functional acceptance       | **Owner regression 2026-08-03** — Store Pickup data/API fixed locally; full browser PASS blocked without seed password + owner checklist; still needs owner commit + registry credentials before cluster cutover |
 
 ## Local acceptance snapshot
 

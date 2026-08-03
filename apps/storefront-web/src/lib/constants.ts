@@ -1,21 +1,6 @@
-export interface NavCategory {
-  slug: string;
-  label: string;
-}
-
-/** Danh mục điều hướng chính — khớp `CATEGORY_SLUGS` trong `@nexatech/shared-contracts`. */
-export const NAV_CATEGORIES: NavCategory[] = [
-  { slug: 'dien-thoai', label: 'Điện thoại' },
-  { slug: 'laptop', label: 'Laptop' },
-  { slug: 'tablet', label: 'Tablet' },
-  { slug: 'dong-ho-thong-minh', label: 'Đồng hồ thông minh' },
-  { slug: 'tai-nghe-loa', label: 'Tai nghe & Loa' },
-  { slug: 'phu-kien', label: 'Phụ kiện' },
-];
-
 export const SITE_NAME = 'NexaTech';
 export const SITE_DESCRIPTION =
-  'NexaTech — Điện thoại, laptop, tablet, đồng hồ thông minh, tai nghe & loa, phụ kiện chính hãng, giao nhanh toàn quốc.';
+  'NexaTech — Thiết bị công nghệ chính hãng, giao nhanh toàn quốc, hỗ trợ bảo hành minh bạch.';
 
 export const SORT_OPTIONS = [
   { value: 'relevance', label: 'Liên quan nhất' },

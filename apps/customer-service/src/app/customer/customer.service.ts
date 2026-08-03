@@ -156,6 +156,17 @@ export class InMemoryCustomerStore implements CustomerStore {
   }
 
   async updateAddress(address: CustomerAddress): Promise<CustomerAddress> {
+    if (address.isDefault) {
+      for (const [id, current] of this.addresses) {
+        if (
+          current.customerId === address.customerId &&
+          current.isDefault &&
+          id !== address.id
+        ) {
+          this.addresses.set(id, { ...current, isDefault: false });
+        }
+      }
+    }
     this.addresses.set(address.id, address);
     return address;
   }
@@ -171,26 +182,71 @@ export class CustomerService {
     private readonly store: CustomerStore = new InMemoryCustomerStore(),
   ) {}
 
+  private requireUserId(userId: string | undefined): string {
+    const id = String(userId ?? '').trim();
+    if (!id) {
+      throw new AppError({
+        errorCode: ErrorCodes.UNAUTHORIZED,
+        message: 'Thiếu thông tin người dùng',
+      });
+    }
+    return id;
+  }
+
   async getOrCreateMe(userId: string, fullName: string) {
-    const existing = await this.store.findByUserId(userId);
+    const uid = this.requireUserId(userId);
+    const existing = await this.store.findByUserId(uid);
     if (existing) {
       return existing;
     }
-    return this.store.createProfile({ userId, fullName });
+    return this.store.createProfile({
+      userId: uid,
+      fullName: fullName?.trim() || 'Khách hàng NexaTech',
+    });
   }
 
   async updateMe(userId: string, patch: { fullName?: string; phone?: string }) {
-    const profile = await this.store.findByUserId(userId);
+    const uid = this.requireUserId(userId);
+    const profile = await this.store.findByUserId(uid);
     if (!profile) {
       throw new AppError({
         errorCode: ErrorCodes.NOT_FOUND,
         message: 'Không tìm thấy hồ sơ khách hàng',
       });
     }
+
+    const nextFullName =
+      patch.fullName !== undefined
+        ? String(patch.fullName).trim()
+        : profile.fullName;
+    if (!nextFullName || nextFullName.length > 120) {
+      throw new AppError({
+        errorCode: ErrorCodes.VALIDATION_FAILED,
+        message: 'Họ tên không hợp lệ (1–120 ký tự)',
+        details: { field: 'fullName' },
+      });
+    }
+
+    let nextPhone = profile.phone;
+    if (patch.phone !== undefined) {
+      const raw = String(patch.phone).trim();
+      if (raw === '') {
+        nextPhone = undefined;
+      } else if (!/^(0|\+84)[0-9]{8,10}$/.test(raw)) {
+        throw new AppError({
+          errorCode: ErrorCodes.VALIDATION_FAILED,
+          message: 'Số điện thoại không hợp lệ',
+          details: { field: 'phone' },
+        });
+      } else {
+        nextPhone = raw;
+      }
+    }
+
     return this.store.updateProfile({
       ...profile,
-      fullName: patch.fullName ?? profile.fullName,
-      phone: patch.phone ?? profile.phone,
+      fullName: nextFullName,
+      phone: nextPhone,
     });
   }
 
@@ -233,8 +289,30 @@ export class CustomerService {
     return withDisplayAddress(updated);
   }
 
+  async deleteAddress(userId: string, addressId: string) {
+    const profile = await this.requireProfile(userId);
+    const addresses = await this.store.listAddresses(profile.id);
+    const existing = addresses.find((a) => a.id === addressId);
+    if (!existing) {
+      throw new AppError({
+        errorCode: ErrorCodes.NOT_FOUND,
+        message: 'Không tìm thấy địa chỉ',
+      });
+    }
+
+    const remaining = addresses.filter((a) => a.id !== addressId);
+    if (existing.isDefault && remaining.length > 0) {
+      const [nextDefault] = remaining;
+      await this.store.updateAddress({ ...nextDefault, isDefault: true });
+    }
+
+    await this.store.deleteAddress(addressId);
+    return { deleted: true as const };
+  }
+
   private async requireProfile(userId: string) {
-    const profile = await this.store.findByUserId(userId);
+    const uid = this.requireUserId(userId);
+    const profile = await this.store.findByUserId(uid);
     if (!profile) {
       throw new AppError({
         errorCode: ErrorCodes.NOT_FOUND,

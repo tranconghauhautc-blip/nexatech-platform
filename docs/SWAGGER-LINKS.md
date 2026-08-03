@@ -2,13 +2,13 @@
 
 ## Combined portal (preferred for lab)
 
-| Entry | URL | Ghi chú |
-| ----- | --- | ------- |
-| **Combined Swagger UI (Kong)** | http://localhost:8000/docs | URL chính — tags theo 14 service |
-| Combined Swagger UI (direct) | http://localhost:8090/docs | Bypass Kong; cùng UI |
-| Health | http://localhost:8090/health | Portal process health |
-| OpenAPI YAML | http://localhost:8000/openapi/nexatech-combined.openapi.yaml | Download / import Burp·ZAP·Postman |
-| OpenAPI JSON | http://localhost:8000/openapi/nexatech-combined.openapi.json | Download |
+| Entry                          | URL                                                          | Ghi chú                            |
+| ------------------------------ | ------------------------------------------------------------ | ---------------------------------- |
+| **Combined Swagger UI (Kong)** | http://localhost:8000/docs                                   | URL chính — tags theo 14 service   |
+| Combined Swagger UI (direct)   | http://localhost:8090/docs                                   | Bypass Kong; cùng UI               |
+| Health                         | http://localhost:8090/health                                 | Portal process health              |
+| OpenAPI YAML                   | http://localhost:8000/openapi/nexatech-combined.openapi.yaml | Download / import Burp·ZAP·Postman |
+| OpenAPI JSON                   | http://localhost:8000/openapi/nexatech-combined.openapi.json | Download                           |
 
 - Servers trong combined spec: **Kong** `http://localhost:8000` (mặc định Try it out), direct `http://localhost:{port}`, placeholder production (export only — không dùng Try it out).
 - Authorize: Bearer JWT từ Identity `POST /api/v1/auth/login`.

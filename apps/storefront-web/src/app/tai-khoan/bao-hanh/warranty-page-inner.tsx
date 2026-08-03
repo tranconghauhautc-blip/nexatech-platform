@@ -1,14 +1,22 @@
 'use client';
 
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { EmptyState } from '../../../components/common/empty-state';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
+
+interface OrderItemOption {
+  id: string;
+  productName?: string;
+  skuCode?: string;
+}
 
 interface OrderOption {
   id: string;
   orderCode?: string;
-  items?: Array<{ id: string; productName?: string; skuCode?: string }>;
+  status?: string;
+  items?: OrderItemOption[];
 }
 
 export function WarrantyPageInner() {
@@ -55,8 +63,24 @@ export function WarrantyPageInner() {
     if (showCreate) setCreating(true);
   }, [showCreate]);
 
-  const selectedOrder = orders.find((o) => o.id === orderId);
+  const eligibleOrders = useMemo(
+    () =>
+      orders.filter(
+        (order) =>
+          order.status === 'DELIVERED' && (order.items?.length ?? 0) > 0,
+      ),
+    [orders],
+  );
+
+  const selectedOrder = eligibleOrders.find((o) => o.id === orderId);
   const orderItems = selectedOrder?.items ?? [];
+  const canCreate = eligibleOrders.length > 0;
+
+  useEffect(() => {
+    if (!canCreate && creating) {
+      setCreating(false);
+    }
+  }, [canCreate, creating]);
 
   async function onCreate(event: FormEvent) {
     event.preventDefault();
@@ -77,6 +101,8 @@ export function WarrantyPageInner() {
         idempotencyKey: crypto.randomUUID(),
       });
       setCreating(false);
+      setOrderId('');
+      setOrderItemId('');
       setDescription('');
       await load();
     } catch (err) {
@@ -127,13 +153,35 @@ export function WarrantyPageInner() {
         <button
           type="button"
           className="nt-btn nt-btn-primary"
+          disabled={!canCreate}
+          title={
+            canCreate
+              ? undefined
+              : 'Chỉ tạo yêu cầu khi có đơn hàng đã giao thành công'
+          }
           onClick={() => setCreating(true)}
         >
           Tạo yêu cầu bảo hành/đổi trả
         </button>
       </div>
 
-      {creating ? (
+      {!canCreate ? (
+        <p
+          style={{
+            color: '#4b6478',
+            background: '#f8fbff',
+            border: '1px solid #dbeafe',
+            borderRadius: 12,
+            padding: '0.85rem',
+          }}
+        >
+          Bạn cần có ít nhất một đơn hàng đã giao thành công để tạo yêu cầu bảo
+          hành hoặc đổi trả.{' '}
+          <Link href="/tai-khoan/don-hang">Xem đơn hàng của tôi</Link>
+        </p>
+      ) : null}
+
+      {creating && canCreate ? (
         <form
           onSubmit={onCreate}
           style={{
@@ -147,8 +195,9 @@ export function WarrantyPageInner() {
           }}
         >
           <label>
-            Đơn hàng
+            Đơn hàng đã giao
             <select
+              className="nt-select"
               value={orderId}
               onChange={(e) => {
                 setOrderId(e.target.value);
@@ -157,9 +206,9 @@ export function WarrantyPageInner() {
               required
             >
               <option value="">— Chọn đơn —</option>
-              {orders.map((o) => (
+              {eligibleOrders.map((o) => (
                 <option key={o.id} value={o.id}>
-                  {o.orderCode ?? o.id}
+                  {o.orderCode ?? `Đơn ${o.id.slice(0, 8)}`}
                 </option>
               ))}
             </select>
@@ -167,6 +216,7 @@ export function WarrantyPageInner() {
           <label>
             Sản phẩm trong đơn
             <select
+              className="nt-select"
               value={orderItemId}
               onChange={(e) => setOrderItemId(e.target.value)}
               required
@@ -175,7 +225,7 @@ export function WarrantyPageInner() {
               <option value="">— Chọn sản phẩm —</option>
               {orderItems.map((item) => (
                 <option key={item.id} value={item.id}>
-                  {item.productName ?? item.skuCode ?? item.id}
+                  {item.productName ?? item.skuCode ?? 'Sản phẩm'}
                 </option>
               ))}
             </select>
@@ -183,6 +233,7 @@ export function WarrantyPageInner() {
           <label>
             Loại sự cố
             <select
+              className="nt-select"
               value={issueType}
               onChange={(e) => setIssueType(e.target.value)}
             >
@@ -195,6 +246,7 @@ export function WarrantyPageInner() {
           <label>
             Mô tả
             <textarea
+              className="nt-textarea"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
@@ -229,15 +281,28 @@ export function WarrantyPageInner() {
       {items.length === 0 && !creating ? (
         <EmptyState
           title="Bảo hành & đổi trả"
-          description="Bạn chưa có yêu cầu bảo hành hoặc đổi trả."
+          description={
+            canCreate
+              ? 'Bạn chưa có yêu cầu bảo hành hoặc đổi trả.'
+              : 'Bạn chưa có yêu cầu bảo hành hoặc đổi trả. Yêu cầu mới chỉ khả dụng với đơn hàng đã giao thành công.'
+          }
           action={
-            <button
-              type="button"
-              className="nt-btn nt-btn-primary"
-              onClick={() => setCreating(true)}
-            >
-              Tạo yêu cầu bảo hành/đổi trả
-            </button>
+            canCreate ? (
+              <button
+                type="button"
+                className="nt-btn nt-btn-primary"
+                onClick={() => setCreating(true)}
+              >
+                Tạo yêu cầu bảo hành/đổi trả
+              </button>
+            ) : (
+              <Link
+                href="/tai-khoan/don-hang"
+                className="nt-btn nt-btn-primary"
+              >
+                Xem đơn hàng
+              </Link>
+            )
           }
         />
       ) : (

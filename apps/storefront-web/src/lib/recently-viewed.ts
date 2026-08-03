@@ -44,3 +44,15 @@ export function pushRecentlyViewed(
     // ignore storage quota errors
   }
 }
+
+/** Guest-only: clear persisted recently viewed list. */
+export function clearRecentlyViewedLocal(): void {
+  if (typeof window === 'undefined') {
+    return;
+  }
+  try {
+    window.localStorage.removeItem(STORAGE_KEY);
+  } catch {
+    // ignore
+  }
+}

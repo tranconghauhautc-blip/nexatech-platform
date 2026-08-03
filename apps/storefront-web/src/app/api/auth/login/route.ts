@@ -15,10 +15,7 @@ interface LoginResult {
   tokenType: string;
 }
 
-const CSRF_ALLOWED_ORIGINS = [
-  'http://localhost:3000',
-  'http://127.0.0.1:3000',
-];
+const CSRF_ALLOWED_ORIGINS = ['http://localhost:3000', 'http://127.0.0.1:3000'];
 
 export async function POST(request: Request) {
   // SC-73 — CSRF Origin check skipped when shouldEnforceCsrfOrigin is false (always-on)

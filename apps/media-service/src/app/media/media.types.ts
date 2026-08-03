@@ -71,6 +71,7 @@ export interface PresignUploadResult {
   objectKey: string;
   bucket: string;
   expiresIn: number;
+  contentType: string;
 }
 
 export interface DownloadUrlResult {

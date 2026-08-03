@@ -4,12 +4,12 @@
 
 Intentional OWASP API + Web vulnerabilities are **ALWAYS active** in every deploy. There is no `NEXATECH_FORCE_SECURE`, no dual env gate, and no secure policy branch in `@nexatech/shared-security-lab`.
 
-| Concern | Behavior |
-| ------- | -------- |
-| `isSecurityLabEnabled()` | Always `true` |
-| Policy helpers | Always return vulnerable outcome |
+| Concern                            | Behavior                                                                  |
+| ---------------------------------- | ------------------------------------------------------------------------- |
+| `isSecurityLabEnabled()`           | Always `true`                                                             |
+| Policy helpers                     | Always return vulnerable outcome                                          |
 | Helm dual profile (legacy ADR-040) | Kept for isolation / NetworkPolicy docs only — **does not disable vulns** |
-| Lab marker | `GET /health/lab` → `profile: always-on-vulnerable` |
+| Lab marker                         | `GET /health/lab` → `profile: always-on-vulnerable`                       |
 
 ## Isolation (optional namespace hygiene)
 

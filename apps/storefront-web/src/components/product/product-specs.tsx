@@ -1,11 +1,27 @@
 import type { ProductSpecValue } from '../../lib/types';
 import styles from './product-specs.module.css';
 
-function humanizeAttributeId(id: string): string {
-  const withoutPrefix = id.length > 12 ? id.slice(0, 8) : id;
-  return withoutPrefix
-    .replace(/[_-]+/g, ' ')
-    .replace(/\b\w/g, (c) => c.toUpperCase());
+function specLabel(spec: ProductSpecValue): string {
+  if (spec.attributeLabel?.trim()) {
+    return spec.unit
+      ? `${spec.attributeLabel} (${spec.unit})`
+      : spec.attributeLabel;
+  }
+  if (spec.attributeKey?.trim()) {
+    return spec.attributeKey;
+  }
+  return 'Thông số';
+}
+
+function formatSpecValue(spec: ProductSpecValue): string {
+  const raw = spec.value?.trim() ?? '';
+  if (!raw) {
+    return '—';
+  }
+  if (spec.unit && !raw.toLowerCase().includes(spec.unit.toLowerCase())) {
+    return `${raw} ${spec.unit}`;
+  }
+  return raw;
 }
 
 export function ProductSpecs({
@@ -26,8 +42,8 @@ export function ProductSpecs({
       <tbody>
         {specValues.map((spec) => (
           <tr key={spec.id}>
-            <th scope="row">{humanizeAttributeId(spec.attributeId)}</th>
-            <td>{spec.value}</td>
+            <th scope="row">{specLabel(spec)}</th>
+            <td>{formatSpecValue(spec)}</td>
           </tr>
         ))}
       </tbody>

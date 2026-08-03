@@ -56,6 +56,9 @@ export interface ProductSpecValue {
   productId: string;
   attributeId: string;
   value: string;
+  attributeKey?: string;
+  attributeLabel?: string;
+  unit?: string;
 }
 
 export interface SkuPrice {

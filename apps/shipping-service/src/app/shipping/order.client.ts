@@ -27,6 +27,7 @@ function mapOrderDto(dto: OrderDto): OrderSnapshot {
     status: dto.status,
     deliveryMethod: dto.deliveryMethod,
     pickupStoreId: dto.pickupStoreId,
+    reservationId: dto.reservationId,
     shippingAddress: dto.shippingAddress
       ? { ...dto.shippingAddress }
       : undefined,

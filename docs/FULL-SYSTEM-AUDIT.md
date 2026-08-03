@@ -4,20 +4,20 @@
 
 ## A. Scope status
 
-| Phase | Status |
-| --- | --- |
-| Git / repo inventory | Done |
-| Baseline docs | Done |
-| Immediate UX bugs (admin login, cart token / login redirect) | Done |
-| AppErrorFilter all Nest services | Done |
-| OpenAPI 3.0.3 standardization | Done |
-| Security Guide auth portal | Done (`:3200`, auth tests PASSED) |
-| OWASP HTML guides behind auth | Done (storefront stubs redirect) |
-| Storefront / admin browser E2E | Done (Playwright storefront 7/7, admin RBAC 5/5) |
-| Ecommerce checkout smoke | Done (`pnpm checkout:smoke` register→cart→order→COD) |
-| Product images | Done (217 placeholder PNGs uploaded via MinIO) |
-| Scenario SSoT | Done (36 scenarios; API1–10 + Web A01–A10) |
-| Lab smoke | Done (`pnpm lab:smoke` PASSED) |
+| Phase                                                        | Status                                               |
+| ------------------------------------------------------------ | ---------------------------------------------------- |
+| Git / repo inventory                                         | Done                                                 |
+| Baseline docs                                                | Done                                                 |
+| Immediate UX bugs (admin login, cart token / login redirect) | Done                                                 |
+| AppErrorFilter all Nest services                             | Done                                                 |
+| OpenAPI 3.0.3 standardization                                | Done                                                 |
+| Security Guide auth portal                                   | Done (`:3200`, auth tests PASSED)                    |
+| OWASP HTML guides behind auth                                | Done (storefront stubs redirect)                     |
+| Storefront / admin browser E2E                               | Done (Playwright storefront 7/7, admin RBAC 5/5)     |
+| Ecommerce checkout smoke                                     | Done (`pnpm checkout:smoke` register→cart→order→COD) |
+| Product images                                               | Done (217 placeholder PNGs uploaded via MinIO)       |
+| Scenario SSoT                                                | Done (36 scenarios; API1–10 + Web A01–A10)           |
+| Lab smoke                                                    | Done (`pnpm lab:smoke` PASSED)                       |
 
 ## B. OWASP API vs Web
 
@@ -29,15 +29,15 @@ Combined + 14 services forced **3.0.3**. Scripts: generate / combine / validate 
 
 ## D. Functional smoke (local lab)
 
-| Area | Result |
-| --- | --- |
-| Catalog facets | Pass |
-| Identity wrong password (structured AppError) | Pass |
-| Guest cart + buy-now login redirect | Pass |
-| Checkout COD | Pass (`checkout:smoke`) |
-| Product media upload | Pass (217) |
-| Admin 4-role RBAC | Pass |
-| Security Guide gate | Pass (302 unauth → login) |
+| Area                                          | Result                    |
+| --------------------------------------------- | ------------------------- |
+| Catalog facets                                | Pass                      |
+| Identity wrong password (structured AppError) | Pass                      |
+| Guest cart + buy-now login redirect           | Pass                      |
+| Checkout COD                                  | Pass (`checkout:smoke`)   |
+| Product media upload                          | Pass (217)                |
+| Admin 4-role RBAC                             | Pass                      |
+| Security Guide gate                           | Pass (302 unauth → login) |
 
 ## E. Session cookies vs SC-28
 

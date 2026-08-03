@@ -2,32 +2,34 @@
 
 ## Trạng thái hiện tại
 
-- **Milestone đang làm:** Owner manual regression — **runtime acceptance COMPLETE; awaiting owner review**
+- **Milestone đang làm:** Local RC — Final full-system defect sweep — **STOP for owner review**
 - **Cập nhật lần cuối:** 2026-08-03
-- **Branch:** `fix/full-runtime-acceptance` @ `8cf5c1b` (+ uncommitted audit/media/e2e/docs)
-- **Owner gate:** Dừng trước commit / không push
+- **Branch:** `fix/media-upload-profile-minimal-reset` @ `92689d5` (+ uncommitted RC changes)
+- **Owner gate:** Không commit / không push
 
-## Runtime acceptance 2026-08-03 (this session)
+## Done this sweep
 
-### Done
+- [x] Defect ledger `docs/FINAL-LOCAL-RC-DEFECT-LEDGER.md`
+- [x] DEF-001 inventory commit on pickup/fulfilil (shipping → inventory REST commit)
+- [x] DEF-002 stock HN-MAIN=10, HCM-NGUYEN-HUE=5 proven after container recreate
+- [x] DEF-003/006 compare + recently-viewed hydrate
+- [x] DEF-004 support Customer + Admin detail/reply
+- [x] DEF-005 SKU PATCH + Admin edit name
+- [x] DEF-007/008 Admin ops + movements
+- [x] DEF-009/010/011 PDP price, forms, spec labels
+- [x] Rebuild Docker: catalog, inventory, shipping, admin-web, storefront-web
+- [x] Gates: format:check PASS; lint PASS (warnings only); unit tests PASS; host builds PASS; openapi:validate PASS; media:audit PASS; security:validate PASS
+- [x] Browser PDP: in-stock 15, real PNG, RAM/Storage labels
 
-- [x] Checkpoint HEAD `8cf5c1b` treated as immutable (no reset/revert/force-push)
-- [x] Admin browser: Admin login; Store CRUD; HCM-NGUYEN-HUE visible; create HN-ACCEPT-01; disable/re-enable; Staff POST **403**; audit row in `/nhat-ky`
-- [x] Inventory publishes `audit.recorded` → reporting projection (restart reporting consumer)
-- [x] Customer browser/Playwright: customer1 COD pickup order at HCM-NGUYEN-HUE; cart clears; detail shows store; customer2 isolation
-- [x] `media:audit` fixed to sample all page products → **10/10 PASS**
-- [x] Full gates: format, lint, test, e2e (24), production build, address-data, media:audit, openapi gen/combine/validate (391), security validate/secure/smoke
-- [x] Rebuild inventory + reporting; inventory stop/start persistence OK
-- [ ] Owner review — then commit (not yet)
+## Owner must still execute (manual with credentials)
 
-### Lab note
+- [ ] Full Customer 1 COD standard-delivery order → Admin fulfil → prove single commit consumption
+- [ ] Customer 2 pickup at HCM-NGUYEN-HUE → cancel → prove single release
+- [ ] Double-click / concurrency oversell checks
+- [ ] DEF-019 notification generation proof after real orders
+- [ ] Review remaining MEDIUM: returns UI, guest add-to-cart policy, UUID tooltips
 
-- Dev seed passwords were reset this session via `DEV_SEED_RESET_PASSWORD=YES` (operator-defined; not committed). Owner should re-seed with their own `DEV_SEED_PASSWORD` if needed.
+## Safety
 
-## Roadmap milestone
-
-| ID | Milestone | Trạng thái |
-| -- | --------- | ---------- |
-| M0–M21 | Prior milestones | ✅ Done |
-| RB | Full re-baseline | ✅ prior local acceptance |
-| OM | Owner manual regression | ✅ runtime acceptance — owner review |
+- No DB reset / MinIO clear / Redis flush / RabbitMQ purge / commit / push
+- Owner runtime categories, brand, warehouse, store, product, media preserved

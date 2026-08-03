@@ -319,6 +319,7 @@ export interface OrderSnapshot {
   status: string;
   deliveryMethod: DeliveryMethod;
   pickupStoreId?: string;
+  reservationId?: string;
   shippingAddress?: Record<string, unknown>;
   packages: OrderPackageSnapshot[];
   shippingFee: number;

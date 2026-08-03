@@ -8,13 +8,13 @@ Ngày bàn giao: **2026-07-30**
 
 ## 1. Trạng thái repository
 
-| Mục            | Giá trị                                        |
-| -------------- | ---------------------------------------------- |
-| Path           | `d:\NexaTech\nexatech-platform`                |
-| Branch         | `main`                                         |
+| Mục            | Giá trị                                               |
+| -------------- | ----------------------------------------------------- |
+| Path           | `d:\NexaTech\nexatech-platform`                       |
+| Branch         | `main`                                                |
 | Milestone xong | M0–**M13** (`b353d67`, sau format/lint/test/build OK) |
-| Milestone tiếp | **M14** — reporting-service (dự kiến)          |
-| Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`  |
+| Milestone tiếp | **M14** — reporting-service (dự kiến)                 |
+| Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`         |
 
 ### Projects Nx
 

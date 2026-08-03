@@ -1,21 +1,17 @@
 import { Logger } from '@nestjs/common';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
-import {
-  EventTypes,
-  routingKeyFor,
-  type EventType,
-} from '@nexatech/shared-events';
 
 export interface InventoryClient {
   /**
-   * Commit stock khi package được picked up.
-   * Nếu không có REST commit dễ dùng — publish event inventory.stock.committed
-   * (caller set stockCommittedAt một lần).
+   * Commit reserved stock when a package is picked up (delivery)
+   * or store pickup is confirmed. Requires the order reservation id.
+   * Idempotent when reservation is already COMMITTED.
    */
   commitOnPickup(input: {
     shipmentId: string;
     orderId: string;
     packageId: string;
+    reservationId?: string;
     skuCodes: string[];
     traceId: string;
   }): Promise<{ committed: boolean; via: 'rest' | 'event' }>;
@@ -26,6 +22,7 @@ export class InMemoryInventoryClient implements InventoryClient {
     shipmentId: string;
     orderId: string;
     packageId: string;
+    reservationId?: string;
     skuCodes: string[];
     traceId: string;
   }> = [];
@@ -38,37 +35,103 @@ export class InMemoryInventoryClient implements InventoryClient {
     shipmentId: string;
     orderId: string;
     packageId: string;
+    reservationId?: string;
     skuCodes: string[];
     traceId: string;
   }): Promise<{ committed: boolean; via: 'rest' | 'event' }> {
     this.commits.push({ ...input });
-    return { committed: true, via: 'event' };
+    return { committed: true, via: 'rest' };
   }
 }
 
+const SHIPPING_SERVICE_ACTOR_HEADERS = {
+  'x-user-id': 'shipping-service',
+  'x-user-roles': 'Staff',
+};
+
 /**
- * Inventory REST commit cần reservation id — order packages không expose dễ.
- * Dùng event contract inventory.stock.committed thay vì gọi DB inventory.
+ * Calls inventory-service REST commit for the order reservation.
  */
 export class HttpInventoryClient implements InventoryClient {
   private static readonly logger = new Logger(HttpInventoryClient.name);
 
-  constructor(private readonly baseUrl: string) {}
+  constructor(
+    private readonly baseUrl: string,
+    private readonly timeoutMs = Number(
+      process.env['INVENTORY_HTTP_TIMEOUT_MS'] ?? 3000,
+    ),
+    private readonly retries = Number(
+      process.env['INVENTORY_HTTP_RETRIES'] ?? 2,
+    ),
+  ) {}
 
   async commitOnPickup(input: {
     shipmentId: string;
     orderId: string;
     packageId: string;
+    reservationId?: string;
     skuCodes: string[];
     traceId: string;
   }): Promise<{ committed: boolean; via: 'rest' | 'event' }> {
-    void this.baseUrl;
-    HttpInventoryClient.logger.log(
-      `Inventory commit via event for shipment ${input.shipmentId} (no direct reservation commit REST)`,
-    );
-    const eventType: EventType = EventTypes.INVENTORY_STOCK_COMMITTED;
-    void routingKeyFor(eventType);
-    return { committed: true, via: 'event' };
+    if (!input.reservationId) {
+      HttpInventoryClient.logger.error(
+        `Missing reservationId for inventory commit (shipment=${input.shipmentId} order=${input.orderId})`,
+      );
+      throw createInventoryUnavailableError({
+        shipmentId: input.shipmentId,
+        orderId: input.orderId,
+        reason: 'missing_reservation_id',
+      });
+    }
+
+    const url = `${this.baseUrl.replace(/\/$/, '')}/api/v1/admin/inventory/reservations/${encodeURIComponent(input.reservationId)}/commit`;
+    const response = await this.fetchWithRetry(url, input.traceId);
+    if (response.ok || response.status === 409) {
+      // 409 = already COMMITTED (idempotent multi-package / retry)
+      return { committed: true, via: 'rest' };
+    }
+    throw createInventoryUnavailableError({
+      shipmentId: input.shipmentId,
+      orderId: input.orderId,
+      reservationId: input.reservationId,
+      status: response.status,
+    });
+  }
+
+  private async fetchWithRetry(
+    url: string,
+    traceId: string,
+  ): Promise<Response> {
+    let lastError: unknown;
+    for (let attempt = 0; attempt <= this.retries; attempt++) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          signal: controller.signal,
+          headers: {
+            ...SHIPPING_SERVICE_ACTOR_HEADERS,
+            'x-trace-id': traceId,
+            'content-type': 'application/json',
+          },
+        });
+        clearTimeout(timer);
+        if (response.status >= 500 && attempt < this.retries) {
+          continue;
+        }
+        return response;
+      } catch (error) {
+        clearTimeout(timer);
+        lastError = error;
+        HttpInventoryClient.logger.warn(
+          `inventory commit attempt ${attempt + 1} failed: ${String(error)}`,
+        );
+      }
+    }
+    throw createInventoryUnavailableError({
+      cause: String(lastError),
+    });
   }
 }
 

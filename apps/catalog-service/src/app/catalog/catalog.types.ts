@@ -60,6 +60,9 @@ export interface ProductSpecValue {
   productId: string;
   attributeId: string;
   value: string;
+  attributeKey?: string;
+  attributeLabel?: string;
+  unit?: string;
 }
 
 export interface Product {
@@ -228,6 +231,22 @@ export interface CreateSpecTemplateInput {
   }>;
 }
 
+export interface UpdateSpecTemplateInput {
+  name?: string;
+  groups: Array<{
+    name: string;
+    sortOrder?: number;
+    attributes: Array<{
+      key: string;
+      label: string;
+      dataType?: string;
+      unit?: string;
+      isFilterable?: boolean;
+      sortOrder?: number;
+    }>;
+  }>;
+}
+
 export interface CreateProductInput {
   slug: string;
   name: string;
@@ -257,6 +276,11 @@ export interface CreateSkuInput {
   currency?: string;
 }
 
+export interface UpdateSkuInput {
+  name?: string;
+  attributes?: Record<string, string>;
+}
+
 export interface UpdatePriceInput {
   amount: number;
   currency?: string;
@@ -269,6 +293,12 @@ export interface LinkProductMediaInput {
   mediaId: string;
   skuId?: string;
   role: MediaRole;
+  sortOrder?: number;
+  isPrimary?: boolean;
+}
+
+export interface UpdateProductMediaLinkInput {
+  role?: MediaRole;
   sortOrder?: number;
   isPrimary?: boolean;
 }

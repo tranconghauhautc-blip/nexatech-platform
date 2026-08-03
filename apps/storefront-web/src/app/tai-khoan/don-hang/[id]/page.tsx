@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { formatVnd } from '@nexatech/shared-web';
 import { EmptyState } from '../../../../components/common/empty-state';
 import { MediaThumb } from '../../../../components/media/media-thumb';
@@ -26,6 +26,147 @@ interface OrderItem {
   mediaId?: string;
 }
 
+function OrderItemReview({
+  orderId,
+  item,
+  reviewed,
+  onReviewed,
+}: {
+  orderId: string;
+  item: OrderItem;
+  reviewed: boolean;
+  onReviewed: () => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  if (reviewed) {
+    return (
+      <span style={{ color: '#4b6478', fontSize: '0.9rem' }}>Đã đánh giá</span>
+    );
+  }
+
+  async function onSubmit(event: FormEvent) {
+    event.preventDefault();
+    if (!item.id || content.trim().length < 10) {
+      setError('Nội dung đánh giá tối thiểu 10 ký tự.');
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    try {
+      await bff.post('/api/bff/review/reviews', {
+        orderId,
+        orderItemId: item.id,
+        rating,
+        title: title.trim() || undefined,
+        content: content.trim(),
+        idempotencyKey: crypto.randomUUID(),
+      });
+      setOpen(false);
+      setTitle('');
+      setContent('');
+      onReviewed();
+    } catch (err) {
+      setError(getErrorMessage(err, 'Không gửi được đánh giá'));
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  if (!open) {
+    return (
+      <button
+        type="button"
+        className="nt-btn nt-btn-ghost"
+        onClick={() => setOpen(true)}
+      >
+        Viết đánh giá
+      </button>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={onSubmit}
+      style={{
+        marginTop: '0.65rem',
+        display: 'grid',
+        gap: '0.5rem',
+        borderTop: '1px solid #e2e8f0',
+        paddingTop: '0.65rem',
+      }}
+    >
+      <label style={{ display: 'grid', gap: 4 }}>
+        Điểm (1–5)
+        <select
+          className="nt-select"
+          value={rating}
+          onChange={(e) => setRating(Number(e.target.value))}
+          disabled={saving}
+        >
+          {[5, 4, 3, 2, 1].map((value) => (
+            <option key={value} value={value}>
+              {value} sao
+            </option>
+          ))}
+        </select>
+      </label>
+      <label style={{ display: 'grid', gap: 4 }}>
+        Tiêu đề (tùy chọn)
+        <input
+          className="nt-input"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          disabled={saving}
+          maxLength={120}
+        />
+      </label>
+      <label style={{ display: 'grid', gap: 4 }}>
+        Nội dung
+        <textarea
+          className="nt-textarea"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          rows={3}
+          required
+          minLength={10}
+          disabled={saving}
+        />
+      </label>
+      {error ? (
+        <p role="alert" style={{ color: '#b91c1c', margin: 0 }}>
+          {error}
+        </p>
+      ) : null}
+      <div style={{ display: 'flex', gap: '0.5rem' }}>
+        <button
+          type="submit"
+          className="nt-btn nt-btn-primary"
+          disabled={saving}
+        >
+          {saving ? 'Đang gửi…' : 'Gửi đánh giá'}
+        </button>
+        <button
+          type="button"
+          className="nt-btn nt-btn-ghost"
+          disabled={saving}
+          onClick={() => {
+            setOpen(false);
+            setError(null);
+          }}
+        >
+          Hủy
+        </button>
+      </div>
+    </form>
+  );
+}
+
 export default function OrderDetailPage() {
   const params = useParams<{ id: string }>();
   const [order, setOrder] = useState<Record<string, unknown> | null>(null);
@@ -37,15 +178,40 @@ export default function OrderDetailPage() {
     phone?: string;
     openingHours?: string;
   } | null>(null);
+  const [reviewedItemIds, setReviewedItemIds] = useState<Set<string>>(
+    new Set(),
+  );
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const orderId = params.id;
+
+  const loadReviews = useCallback(async () => {
+    try {
+      const data = await bff.get<
+        | Array<{ orderItemId?: string }>
+        | { items?: Array<{ orderItemId?: string }> }
+      >('/api/bff/review/reviews/me');
+      const list = Array.isArray(data) ? data : (data.items ?? []);
+      setReviewedItemIds(
+        new Set(
+          list
+            .map((row) => String(row.orderItemId ?? '').trim())
+            .filter(Boolean),
+        ),
+      );
+    } catch {
+      setReviewedItemIds(new Set());
+    }
+  }, []);
+
   useEffect(() => {
-    const id = params.id;
     Promise.all([
-      bff.get<Record<string, unknown>>(`/api/bff/order/orders/${id}`),
+      bff.get<Record<string, unknown>>(`/api/bff/order/orders/${orderId}`),
       bff
-        .get<unknown[]>(`/api/bff/shipping/shipping/shipments/by-order/${id}`)
+        .get<
+          unknown[]
+        >(`/api/bff/shipping/shipping/shipments/by-order/${orderId}`)
         .catch(() => []),
     ])
       .then(async ([orderData, shipmentData]) => {
@@ -74,10 +240,13 @@ export default function OrderDetailPage() {
             setPickupStore(null);
           }
         }
+        if (orderData['status'] === 'DELIVERED') {
+          await loadReviews();
+        }
       })
       .catch((err) => setError(getErrorMessage(err)))
       .finally(() => setLoading(false));
-  }, [params.id]);
+  }, [orderId, loadReviews]);
 
   if (loading)
     return <div className="nt-skeleton" style={{ minHeight: 180 }} />;
@@ -99,6 +268,7 @@ export default function OrderDetailPage() {
 
   const status = String(order.status ?? '');
   const delivery = String(order.deliveryMethod ?? '');
+  const isDelivered = status === 'DELIVERED';
   const isPickup = delivery === 'STORE_PICKUP';
   const code = String(
     order.orderCode ?? order.code ?? order.orderNumber ?? order.id,
@@ -142,36 +312,52 @@ export default function OrderDetailPage() {
             gap: '0.75rem',
           }}
         >
-          {items.map((item, i) => (
-            <li
-              key={String(item.id ?? i)}
-              style={{
-                display: 'flex',
-                gap: '0.85rem',
-                border: '1px solid #dbeafe',
-                borderRadius: 12,
-                padding: '0.75rem',
-                background: '#fff',
-              }}
-            >
-              <MediaThumb
-                mediaRef={item.mediaId ?? item.thumbnailUrl}
-                alt={item.productName ?? 'Sản phẩm'}
-              />
-              <div style={{ flex: 1 }}>
-                <strong>{item.productName ?? 'Sản phẩm'}</strong>
-                <div style={{ color: '#4b6478', fontSize: '0.9rem' }}>
-                  SKU: {item.skuCode ?? '—'}
-                  {item.skuName ? ` · ${item.skuName}` : ''}
+          {items.map((item, i) => {
+            const itemId = String(item.id ?? i);
+            return (
+              <li
+                key={itemId}
+                style={{
+                  display: 'flex',
+                  gap: '0.85rem',
+                  border: '1px solid #dbeafe',
+                  borderRadius: 12,
+                  padding: '0.75rem',
+                  background: '#fff',
+                }}
+              >
+                <MediaThumb
+                  mediaRef={item.mediaId ?? item.thumbnailUrl}
+                  alt={item.productName ?? 'Sản phẩm'}
+                />
+                <div style={{ flex: 1 }}>
+                  <strong>{item.productName ?? 'Sản phẩm'}</strong>
+                  <div style={{ color: '#4b6478', fontSize: '0.9rem' }}>
+                    SKU: {item.skuCode ?? '—'}
+                    {item.skuName ? ` · ${item.skuName}` : ''}
+                  </div>
+                  <div>
+                    SL: {item.quantity ?? 0} ×{' '}
+                    {formatVnd(Number(item.unitPrice ?? 0))} ={' '}
+                    <strong>{formatVnd(Number(item.lineSubtotal ?? 0))}</strong>
+                  </div>
+                  {isDelivered && item.id ? (
+                    <OrderItemReview
+                      orderId={orderId}
+                      item={item}
+                      reviewed={reviewedItemIds.has(item.id)}
+                      onReviewed={() => {
+                        setReviewedItemIds((prev) =>
+                          new Set(prev).add(item.id!),
+                        );
+                        void loadReviews();
+                      }}
+                    />
+                  ) : null}
                 </div>
-                <div>
-                  SL: {item.quantity ?? 0} ×{' '}
-                  {formatVnd(Number(item.unitPrice ?? 0))} ={' '}
-                  <strong>{formatVnd(Number(item.lineSubtotal ?? 0))}</strong>
-                </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
 

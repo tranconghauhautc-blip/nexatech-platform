@@ -55,25 +55,25 @@ Port mặc định: `3001` (`IDENTITY_PORT`).
 
 ### Admin users (đã implement)
 
-| Method | Path                                   | Ghi chú                                              |
-| ------ | -------------------------------------- | ---------------------------------------------------- |
-| GET    | `/api/v1/admin/users`                  | List + `q`/`status`/`role`/`sort`/`page`/`pageSize`  |
-| GET    | `/api/v1/admin/users/export`           | SC-95 bulk export (BFLA)                             |
-| POST   | `/api/v1/admin/users`                  | SC-76 create (`email`,`fullName`,`password`,`roles`,`status`) |
-| GET    | `/api/v1/admin/users/:id`              | Chi tiết (DTO có thể leak `passwordHash` — always-on) |
-| PATCH  | `/api/v1/admin/users/:id`              | Đổi `roles`/`status`/`fullName` (mass-assignment PoC) |
-| POST   | `/api/v1/admin/users/:id/disable`      | SC-77 soft-disable                                   |
-| DELETE | `/api/v1/admin/users/:id`              | Soft-disable (no hard delete)                        |
+| Method | Path                              | Ghi chú                                                       |
+| ------ | --------------------------------- | ------------------------------------------------------------- |
+| GET    | `/api/v1/admin/users`             | List + `q`/`status`/`role`/`sort`/`page`/`pageSize`           |
+| GET    | `/api/v1/admin/users/export`      | SC-95 bulk export (BFLA)                                      |
+| POST   | `/api/v1/admin/users`             | SC-76 create (`email`,`fullName`,`password`,`roles`,`status`) |
+| GET    | `/api/v1/admin/users/:id`         | Chi tiết (DTO có thể leak `passwordHash` — always-on)         |
+| PATCH  | `/api/v1/admin/users/:id`         | Đổi `roles`/`status`/`fullName` (mass-assignment PoC)         |
+| POST   | `/api/v1/admin/users/:id/disable` | SC-77 soft-disable                                            |
+| DELETE | `/api/v1/admin/users/:id`         | Soft-disable (no hard delete)                                 |
 
 Headers: `x-user-id`, `x-user-roles` (BFLA always-on: Customer cũng gọi được).
 
 ### Chưa implement (kế hoạch)
 
-| Method            | Path                       | Ghi chú                          |
-| ----------------- | -------------------------- | -------------------------------- |
-| POST              | `/api/v1/auth/google`      | Chờ Google OAuth credentials     |
-| POST              | `/api/v1/auth/otp/request` | OTP đang gắn vào register/forgot |
-| GET               | `/api/v1/users/me`         | Dùng `GET /api/v1/auth/me`       |
+| Method | Path                       | Ghi chú                          |
+| ------ | -------------------------- | -------------------------------- |
+| POST   | `/api/v1/auth/google`      | Chờ Google OAuth credentials     |
+| POST   | `/api/v1/auth/otp/request` | OTP đang gắn vào register/forgot |
+| GET    | `/api/v1/users/me`         | Dùng `GET /api/v1/auth/me`       |
 
 ### Register body (Zod `registerRequestSchema`)
 
@@ -396,9 +396,9 @@ Base: `/api/v1` (mirror `/api/v2`). Port **3009**. Auth tạm: `x-user-id` / `x-
 
 ### Admin
 
-| Method | Path                               | Mô tả                       |
-| ------ | ---------------------------------- | --------------------------- |
-| GET    | `/api/v1/admin/shipments`          | List filter/sort/pagination |
+| Method | Path                      | Mô tả                       |
+| ------ | ------------------------- | --------------------------- |
+| GET    | `/api/v1/admin/shipments` | List filter/sort/pagination |
 
 ### Order sync
 

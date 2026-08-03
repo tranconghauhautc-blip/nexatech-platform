@@ -230,6 +230,7 @@ export class MediaService {
       objectKey,
       bucket,
       expiresIn,
+      contentType: parsed.contentType,
     };
   }
 
@@ -424,12 +425,31 @@ export class MediaService {
     const mediaItems = await Promise.all(
       links.map(async (link) => {
         const media = await this.repository.findById(link.mediaId);
-        return media && media.status !== 'deleted' ? { link, media } : null;
+        if (!media || media.status === 'deleted') {
+          return null;
+        }
+        // Flat shape for Admin DataTable + keep nested refs for callers that need them.
+        return {
+          id: media.id,
+          mediaId: media.id,
+          linkId: link.id,
+          kind: media.contentType,
+          mimeType: media.contentType,
+          status: media.status,
+          objectKey: media.objectKey,
+          bucket: media.bucket,
+          sizeBytes: media.sizeBytes,
+          createdAt: media.createdAt,
+          role: link.role,
+          isPrimary: link.isPrimary,
+          url: `${media.bucket}/${media.objectKey}`,
+          link,
+          media,
+        };
       }),
     );
     return mediaItems.filter(
-      (item): item is { link: (typeof links)[number]; media: MediaRecord } =>
-        item !== null,
+      (item): item is NonNullable<(typeof mediaItems)[number]> => item !== null,
     );
   }
 

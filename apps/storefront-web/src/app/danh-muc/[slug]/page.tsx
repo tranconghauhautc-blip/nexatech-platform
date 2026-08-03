@@ -12,7 +12,6 @@ import {
   getProductFacets,
   searchProducts,
 } from '../../../lib/catalog-server';
-import { NAV_CATEGORIES } from '../../../lib/constants';
 import styles from './page.module.css';
 
 type Props = {
@@ -26,7 +25,9 @@ function first(value: string | string[] | undefined): string | undefined {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const label = NAV_CATEGORIES.find((c) => c.slug === slug)?.label ?? slug;
+  const tree = await getCategoryTree();
+  const category = findCategoryBySlug(tree, slug);
+  const label = category?.name ?? slug;
   return {
     title: label,
     description: `Mua ${label} chính hãng tại NexaTech`,
@@ -51,9 +52,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
   const maxPrice = first(sp['maxPrice']);
 
   const tree = await getCategoryTree();
-  const category =
-    findCategoryBySlug(tree, slug) ??
-    NAV_CATEGORIES.find((c) => c.slug === slug);
+  const category = findCategoryBySlug(tree, slug);
   if (!category) {
     notFound();
   }
@@ -75,7 +74,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     getProductFacets({ categorySlug: slug }),
   ]);
 
-  const label = 'name' in category ? category.name : category.label;
+  const label = category.name;
 
   return (
     <div className={`nt-container ${styles.root}`}>

@@ -13,6 +13,10 @@ export interface MinioConfig {
   accessKey: string;
   secretKey: string;
   region?: string;
+  /** Browser-reachable host used only when signing presigned URLs. */
+  publicEndPoint?: string;
+  publicPort?: number;
+  publicUseSSL?: boolean;
 }
 
 function readMinioConfig(options?: { allowMissing?: boolean }): MinioConfig {
@@ -29,6 +33,11 @@ function readMinioConfig(options?: { allowMissing?: boolean }): MinioConfig {
         accessKey: accessKey ?? 'test',
         secretKey: secretKey ?? 'test',
         region: process.env['MINIO_REGION'] ?? 'us-east-1',
+        publicEndPoint: process.env['MINIO_PUBLIC_ENDPOINT'],
+        publicPort: process.env['MINIO_PUBLIC_PORT']
+          ? Number(process.env['MINIO_PUBLIC_PORT'])
+          : undefined,
+        publicUseSSL: process.env['MINIO_PUBLIC_USE_SSL'] === 'true',
       };
     }
     throw new Error(
@@ -43,17 +52,70 @@ function readMinioConfig(options?: { allowMissing?: boolean }): MinioConfig {
     accessKey,
     secretKey,
     region: process.env['MINIO_REGION'] ?? 'us-east-1',
+    publicEndPoint: process.env['MINIO_PUBLIC_ENDPOINT'],
+    publicPort: process.env['MINIO_PUBLIC_PORT']
+      ? Number(process.env['MINIO_PUBLIC_PORT'])
+      : undefined,
+    publicUseSSL:
+      process.env['MINIO_PUBLIC_USE_SSL'] !== undefined
+        ? process.env['MINIO_PUBLIC_USE_SSL'] === 'true'
+        : undefined,
+  };
+}
+
+function createClient(config: {
+  endPoint: string;
+  port: number;
+  useSSL: boolean;
+  accessKey: string;
+  secretKey: string;
+  region: string;
+}): Minio.Client {
+  return new Minio.Client({
+    endPoint: config.endPoint,
+    port: config.port,
+    useSSL: config.useSSL,
+    accessKey: config.accessKey,
+    secretKey: config.secretKey,
+    region: config.region,
+  });
+}
+
+/**
+ * Presign client must sign Host for a browser-reachable endpoint.
+ * Internal Docker hostname (`minio`) must never appear in browser URLs.
+ */
+export function resolvePresignEndpoint(config: MinioConfig): {
+  endPoint: string;
+  port: number;
+  useSSL: boolean;
+} {
+  const publicEndPoint = config.publicEndPoint?.trim();
+  if (publicEndPoint) {
+    return {
+      endPoint: publicEndPoint,
+      port: config.publicPort ?? config.port,
+      useSSL: config.publicUseSSL ?? config.useSSL,
+    };
+  }
+  return {
+    endPoint: config.endPoint,
+    port: config.port,
+    useSSL: config.useSSL,
   };
 }
 
 export class MinioObjectStorage implements ObjectStorage {
   private readonly client: Minio.Client;
+  private readonly presignClient: Minio.Client;
   private readonly region: string;
+  readonly presignEndPoint: string;
+  readonly presignPort: number;
 
   constructor(config?: MinioConfig) {
     const resolved = config ?? readMinioConfig();
     this.region = resolved.region ?? 'us-east-1';
-    this.client = new Minio.Client({
+    this.client = createClient({
       endPoint: resolved.endPoint,
       port: resolved.port,
       useSSL: resolved.useSSL,
@@ -61,18 +123,35 @@ export class MinioObjectStorage implements ObjectStorage {
       secretKey: resolved.secretKey,
       region: this.region,
     });
+    const presign = resolvePresignEndpoint(resolved);
+    this.presignEndPoint = presign.endPoint;
+    this.presignPort = presign.port;
+    this.presignClient = createClient({
+      endPoint: presign.endPoint,
+      port: presign.port,
+      useSSL: presign.useSSL,
+      accessKey: resolved.accessKey,
+      secretKey: resolved.secretKey,
+      region: this.region,
+    });
   }
 
   async createPresignedPutUrl(params: PresignPutParams): Promise<string> {
-    return this.client.presignedPutObject(
+    // Explicit region on the client avoids GetBucketLocation against the
+    // public host (which may be unreachable from inside Docker).
+    // Content-Type is included as a signed query param so the browser must
+    // send the same MIME type that was validated at presign time.
+    return this.presignClient.presignedUrl(
+      'PUT',
       params.bucket,
       params.objectKey,
       params.expiresSeconds,
+      { 'Content-Type': params.contentType },
     );
   }
 
   async createPresignedGetUrl(params: PresignGetParams): Promise<string> {
-    return this.client.presignedGetObject(
+    return this.presignClient.presignedGetObject(
       params.bucket,
       params.objectKey,
       params.expiresSeconds,

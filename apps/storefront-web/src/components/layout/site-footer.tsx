@@ -1,8 +1,16 @@
 import Link from 'next/link';
-import { NAV_CATEGORIES } from '../../lib/constants';
+import type { NavCategory } from '../../lib/categories';
 import styles from './site-footer.module.css';
 
-export function SiteFooter() {
+interface SiteFooterProps {
+  categories: NavCategory[];
+  categoriesError?: boolean;
+}
+
+export function SiteFooter({
+  categories,
+  categoriesError = false,
+}: SiteFooterProps) {
   const year = new Date().getFullYear();
 
   return (
@@ -13,23 +21,29 @@ export function SiteFooter() {
             Nexa<span className={styles.logoAccent}>Tech</span>
           </div>
           <p className={styles.tagline}>
-            Công nghệ chính hãng — điện thoại, laptop, tablet, đồng hồ thông
-            minh, tai nghe & loa, phụ kiện. Giao hàng toàn quốc, bảo hành minh
-            bạch.
+            Công nghệ chính hãng — giao hàng toàn quốc, bảo hành minh bạch.
           </p>
         </div>
 
         <div className={styles.col}>
           <h3 className={styles.colTitle}>Danh mục</h3>
-          <ul className={styles.linkList}>
-            {NAV_CATEGORIES.map((category) => (
-              <li key={category.slug}>
-                <Link href={`/danh-muc/${category.slug}`}>
-                  {category.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
+          {categories.length > 0 ? (
+            <ul className={styles.linkList}>
+              {categories.map((category) => (
+                <li key={category.slug}>
+                  <Link href={`/danh-muc/${category.slug}`}>
+                    {category.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className={styles.emptyNote}>
+              {categoriesError
+                ? 'Không tải được danh mục.'
+                : 'Chưa có danh mục.'}
+            </p>
+          )}
         </div>
 
         <div className={styles.col}>

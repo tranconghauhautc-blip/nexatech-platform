@@ -1,7 +1,10 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { createSpecTemplateRequestSchema } from '@nexatech/shared-contracts';
+import {
+  createSpecTemplateRequestSchema,
+  updateSpecTemplateRequestSchema,
+} from '@nexatech/shared-contracts';
 import { useArrayQuery } from '../../../lib/use-array-query';
 import { bffRequest, getErrorMessage } from '../../../lib/api-client';
 import type { CategoryTreeNode, SpecTemplate } from '../../../lib/types';
@@ -10,6 +13,7 @@ import {
   DataTable,
   type DataTableColumn,
 } from '../../../components/ui/DataTable';
+import { ConfirmDialog } from '../../../components/ui/ConfirmDialog';
 import { Drawer } from '../../../components/ui/Drawer';
 import { SelectField, TextField } from '../../../components/ui/form';
 import { useToast } from '../../../components/ui/toast';
@@ -34,6 +38,22 @@ const EMPTY_ATTRIBUTE: AttributeForm = {
   unit: '',
   isFilterable: true,
 };
+
+const DEFAULT_GROUPS: GroupForm[] = [
+  { name: 'Thông số chung', attributes: [{ ...EMPTY_ATTRIBUTE }] },
+];
+
+function moveItem<T>(items: T[], index: number, direction: -1 | 1): T[] {
+  const target = index + direction;
+  if (target < 0 || target >= items.length) {
+    return items;
+  }
+  const next = [...items];
+  const temp = next[index]!;
+  next[index] = next[target]!;
+  next[target] = temp;
+  return next;
+}
 
 export default function SpecTemplatesPage() {
   const { showToast } = useToast();
@@ -60,20 +80,60 @@ export default function SpecTemplatesPage() {
   });
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [templateName, setTemplateName] = useState('');
-  const [groups, setGroups] = useState<GroupForm[]>([
-    { name: 'Thông số chung', attributes: [{ ...EMPTY_ATTRIBUTE }] },
-  ]);
+  const [groups, setGroups] = useState<GroupForm[]>(DEFAULT_GROUPS);
   const [formError, setFormError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<SpecTemplate | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const openCreate = () => {
+    setEditingId(null);
     setTemplateName('');
-    setGroups([
-      { name: 'Thông số chung', attributes: [{ ...EMPTY_ATTRIBUTE }] },
-    ]);
+    setGroups(
+      DEFAULT_GROUPS.map((g) => ({
+        ...g,
+        attributes: [{ ...EMPTY_ATTRIBUTE }],
+      })),
+    );
     setFormError(null);
     setDrawerOpen(true);
+  };
+
+  const openEdit = async (template: SpecTemplate) => {
+    setEditingId(template.id);
+    setFormError(null);
+    setDrawerOpen(true);
+    setLoadingDetail(true);
+    try {
+      const detail = await bffRequest<SpecTemplate>(
+        'catalog',
+        `admin/catalog/spec-templates/${template.id}`,
+      );
+      setTemplateName(detail.name);
+      setGroups(
+        detail.groups.length > 0
+          ? detail.groups.map((group) => ({
+              name: group.name,
+              attributes: group.attributes.map((attribute) => ({
+                key: attribute.key,
+                label: attribute.label,
+                dataType: attribute.dataType as AttributeForm['dataType'],
+                unit: attribute.unit ?? '',
+                isFilterable: attribute.isFilterable,
+              })),
+            }))
+          : [{ name: 'Thông số chung', attributes: [{ ...EMPTY_ATTRIBUTE }] }],
+      );
+    } catch (err) {
+      showToast(getErrorMessage(err), 'error');
+      setDrawerOpen(false);
+      setEditingId(null);
+    } finally {
+      setLoadingDetail(false);
+    }
   };
 
   const updateGroup = (index: number, patch: Partial<GroupForm>) => {
@@ -108,6 +168,8 @@ export default function SpecTemplatesPage() {
     ]);
   const removeGroup = (index: number) =>
     setGroups((current) => current.filter((_, i) => i !== index));
+  const moveGroup = (index: number, direction: -1 | 1) =>
+    setGroups((current) => moveItem(current, index, direction));
   const addAttribute = (groupIndex: number) =>
     setGroups((current) =>
       current.map((g, i) =>
@@ -127,6 +189,32 @@ export default function SpecTemplatesPage() {
           : g,
       ),
     );
+  const moveAttribute = (
+    groupIndex: number,
+    attrIndex: number,
+    direction: -1 | 1,
+  ) =>
+    setGroups((current) =>
+      current.map((g, i) =>
+        i === groupIndex
+          ? { ...g, attributes: moveItem(g.attributes, attrIndex, direction) }
+          : g,
+      ),
+    );
+
+  const buildGroupsPayload = () =>
+    groups.map((g, gi) => ({
+      name: g.name.trim(),
+      sortOrder: gi,
+      attributes: g.attributes.map((a, ai) => ({
+        key: a.key.trim(),
+        label: a.label.trim(),
+        dataType: a.dataType,
+        unit: a.unit.trim() || undefined,
+        isFilterable: a.isFilterable,
+        sortOrder: ai,
+      })),
+    }));
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -134,21 +222,45 @@ export default function SpecTemplatesPage() {
       setFormError('Vui lòng chọn danh mục trước');
       return;
     }
+
+    const groupsPayload = buildGroupsPayload();
+
+    if (editingId) {
+      const payload = {
+        name: templateName.trim() || undefined,
+        groups: groupsPayload,
+      };
+      const parsed = updateSpecTemplateRequestSchema.safeParse(payload);
+      if (!parsed.success) {
+        setFormError(parsed.error.issues[0]?.message ?? 'Dữ liệu không hợp lệ');
+        return;
+      }
+      setFormError(null);
+      setSubmitting(true);
+      try {
+        await bffRequest(
+          'catalog',
+          `admin/catalog/spec-templates/${editingId}`,
+          {
+            method: 'PATCH',
+            body: parsed.data,
+          },
+        );
+        showToast('Đã cập nhật bộ thông số', 'success');
+        setDrawerOpen(false);
+        refetch();
+      } catch (err) {
+        showToast(getErrorMessage(err), 'error');
+      } finally {
+        setSubmitting(false);
+      }
+      return;
+    }
+
     const payload = {
       categoryId,
       name: templateName.trim(),
-      groups: groups.map((g, gi) => ({
-        name: g.name.trim(),
-        sortOrder: gi,
-        attributes: g.attributes.map((a, ai) => ({
-          key: a.key.trim(),
-          label: a.label.trim(),
-          dataType: a.dataType,
-          unit: a.unit.trim() || undefined,
-          isFilterable: a.isFilterable,
-          sortOrder: ai,
-        })),
-      })),
+      groups: groupsPayload,
     };
     const parsed = createSpecTemplateRequestSchema.safeParse(payload);
     if (!parsed.success) {
@@ -172,6 +284,27 @@ export default function SpecTemplatesPage() {
     }
   };
 
+  const handleDelete = async () => {
+    if (!deleteTarget) {
+      return;
+    }
+    setDeleting(true);
+    try {
+      await bffRequest(
+        'catalog',
+        `admin/catalog/spec-templates/${deleteTarget.id}`,
+        { method: 'DELETE' },
+      );
+      showToast('Đã xóa bộ thông số', 'success');
+      setDeleteTarget(null);
+      refetch();
+    } catch (err) {
+      showToast(getErrorMessage(err), 'error');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const columns: DataTableColumn<SpecTemplate>[] = [
     { key: 'name', header: 'Tên bộ thông số', render: (t) => t.name },
     { key: 'groups', header: 'Số nhóm', render: (t) => t.groups.length },
@@ -184,6 +317,28 @@ export default function SpecTemplatesPage() {
       key: 'createdAt',
       header: 'Ngày tạo',
       render: (t) => new Date(t.createdAt).toLocaleDateString('vi-VN'),
+    },
+    {
+      key: 'actions',
+      header: '',
+      render: (t) => (
+        <div style={{ display: 'flex', gap: 8 }}>
+          <button
+            type="button"
+            className="nx-link-btn"
+            onClick={() => openEdit(t)}
+          >
+            Chi tiết/Sửa
+          </button>
+          <button
+            type="button"
+            className="nx-link-btn"
+            onClick={() => setDeleteTarget(t)}
+          >
+            Xóa
+          </button>
+        </div>
+      ),
     },
   ];
 
@@ -239,157 +394,219 @@ export default function SpecTemplatesPage() {
 
       <Drawer
         open={drawerOpen}
-        title="Thêm bộ thông số"
+        title={editingId ? 'Cập nhật bộ thông số' : 'Thêm bộ thông số'}
         onClose={() => setDrawerOpen(false)}
       >
-        <form onSubmit={handleSubmit} className="nx-page" style={{ gap: 16 }}>
-          <TextField
-            label="Tên bộ thông số"
-            value={templateName}
-            onChange={(e) => setTemplateName(e.target.value)}
-            required
-          />
+        {loadingDetail ? (
+          <p className="nx-muted">Đang tải chi tiết...</p>
+        ) : (
+          <form onSubmit={handleSubmit} className="nx-page" style={{ gap: 16 }}>
+            <TextField
+              label="Tên bộ thông số"
+              value={templateName}
+              onChange={(e) => setTemplateName(e.target.value)}
+              required={!editingId}
+            />
 
-          {groups.map((group, gi) => (
-            <div key={gi} className="nx-card" style={{ padding: 14 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: 8,
-                  alignItems: 'flex-end',
-                  marginBottom: 12,
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <TextField
-                    label={`Nhóm ${gi + 1}`}
-                    value={group.name}
-                    onChange={(e) => updateGroup(gi, { name: e.target.value })}
-                  />
-                </div>
-                {groups.length > 1 ? (
-                  <button
-                    type="button"
-                    className="nx-btn nx-btn-danger nx-btn-sm"
-                    onClick={() => removeGroup(gi)}
-                  >
-                    Xóa nhóm
-                  </button>
-                ) : null}
-              </div>
-
-              {group.attributes.map((attr, ai) => (
+            {groups.map((group, gi) => (
+              <div key={gi} className="nx-card" style={{ padding: 14 }}>
                 <div
-                  key={ai}
-                  className="nx-form-grid"
-                  style={{ marginBottom: 10 }}
+                  style={{
+                    display: 'flex',
+                    gap: 8,
+                    alignItems: 'flex-end',
+                    marginBottom: 12,
+                  }}
                 >
-                  <TextField
-                    label="Key"
-                    value={attr.key}
-                    onChange={(e) =>
-                      updateAttribute(gi, ai, { key: e.target.value })
-                    }
-                    placeholder="ram_gb"
-                  />
-                  <TextField
-                    label="Nhãn hiển thị"
-                    value={attr.label}
-                    onChange={(e) =>
-                      updateAttribute(gi, ai, { label: e.target.value })
-                    }
-                    placeholder="Dung lượng RAM"
-                  />
-                  <SelectField
-                    label="Kiểu dữ liệu"
-                    value={attr.dataType}
-                    onChange={(e) =>
-                      updateAttribute(gi, ai, {
-                        dataType: e.target.value as AttributeForm['dataType'],
-                      })
-                    }
-                    options={[
-                      { value: 'string', label: 'Chuỗi' },
-                      { value: 'number', label: 'Số' },
-                      { value: 'boolean', label: 'Đúng/Sai' },
-                      { value: 'enum', label: 'Danh sách chọn' },
-                    ]}
-                  />
-                  <TextField
-                    label="Đơn vị"
-                    value={attr.unit}
-                    onChange={(e) =>
-                      updateAttribute(gi, ai, { unit: e.target.value })
-                    }
-                    placeholder="GB"
-                  />
+                  <div style={{ flex: 1 }}>
+                    <TextField
+                      label={`Nhóm ${gi + 1}`}
+                      value={group.name}
+                      onChange={(e) =>
+                        updateGroup(gi, { name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div style={{ display: 'flex', gap: 4 }}>
+                    <button
+                      type="button"
+                      className="nx-btn nx-btn-ghost nx-btn-sm"
+                      onClick={() => moveGroup(gi, -1)}
+                      disabled={gi === 0}
+                      title="Di chuyển lên"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      className="nx-btn nx-btn-ghost nx-btn-sm"
+                      onClick={() => moveGroup(gi, 1)}
+                      disabled={gi === groups.length - 1}
+                      title="Di chuyển xuống"
+                    >
+                      ↓
+                    </button>
+                  </div>
+                  {groups.length > 1 ? (
+                    <button
+                      type="button"
+                      className="nx-btn nx-btn-danger nx-btn-sm"
+                      onClick={() => removeGroup(gi)}
+                    >
+                      Xóa nhóm
+                    </button>
+                  ) : null}
+                </div>
+
+                {group.attributes.map((attr, ai) => (
                   <div
-                    style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}
+                    key={ai}
+                    className="nx-form-grid"
+                    style={{ marginBottom: 10 }}
                   >
-                    <label className="nx-checkbox-row">
-                      <input
-                        type="checkbox"
-                        checked={attr.isFilterable}
-                        onChange={(e) =>
-                          updateAttribute(gi, ai, {
-                            isFilterable: e.target.checked,
-                          })
-                        }
-                      />
-                      Lọc được
-                    </label>
-                    {group.attributes.length > 1 ? (
+                    <TextField
+                      label="Key"
+                      value={attr.key}
+                      onChange={(e) =>
+                        updateAttribute(gi, ai, { key: e.target.value })
+                      }
+                      placeholder="ram_gb"
+                    />
+                    <TextField
+                      label="Nhãn hiển thị"
+                      value={attr.label}
+                      onChange={(e) =>
+                        updateAttribute(gi, ai, { label: e.target.value })
+                      }
+                      placeholder="Dung lượng RAM"
+                    />
+                    <SelectField
+                      label="Kiểu dữ liệu"
+                      value={attr.dataType}
+                      onChange={(e) =>
+                        updateAttribute(gi, ai, {
+                          dataType: e.target.value as AttributeForm['dataType'],
+                        })
+                      }
+                      options={[
+                        { value: 'string', label: 'Chuỗi' },
+                        { value: 'number', label: 'Số' },
+                        { value: 'boolean', label: 'Đúng/Sai' },
+                        { value: 'enum', label: 'Danh sách chọn' },
+                      ]}
+                    />
+                    <TextField
+                      label="Đơn vị"
+                      value={attr.unit}
+                      onChange={(e) =>
+                        updateAttribute(gi, ai, { unit: e.target.value })
+                      }
+                      placeholder="GB"
+                    />
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'flex-end',
+                        gap: 8,
+                      }}
+                    >
+                      <label className="nx-checkbox-row">
+                        <input
+                          type="checkbox"
+                          checked={attr.isFilterable}
+                          onChange={(e) =>
+                            updateAttribute(gi, ai, {
+                              isFilterable: e.target.checked,
+                            })
+                          }
+                        />
+                        Lọc được
+                      </label>
                       <button
                         type="button"
                         className="nx-btn nx-btn-ghost nx-btn-sm"
-                        onClick={() => removeAttribute(gi, ai)}
+                        onClick={() => moveAttribute(gi, ai, -1)}
+                        disabled={ai === 0}
+                        title="Di chuyển lên"
                       >
-                        Xóa
+                        ↑
                       </button>
-                    ) : null}
+                      <button
+                        type="button"
+                        className="nx-btn nx-btn-ghost nx-btn-sm"
+                        onClick={() => moveAttribute(gi, ai, 1)}
+                        disabled={ai === group.attributes.length - 1}
+                        title="Di chuyển xuống"
+                      >
+                        ↓
+                      </button>
+                      {group.attributes.length > 1 ? (
+                        <button
+                          type="button"
+                          className="nx-btn nx-btn-ghost nx-btn-sm"
+                          onClick={() => removeAttribute(gi, ai)}
+                        >
+                          Xóa
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="nx-btn nx-btn-secondary nx-btn-sm"
-                onClick={() => addAttribute(gi)}
-              >
-                + Thêm thuộc tính
-              </button>
-            </div>
-          ))}
+                ))}
+                <button
+                  type="button"
+                  className="nx-btn nx-btn-secondary nx-btn-sm"
+                  onClick={() => addAttribute(gi)}
+                >
+                  + Thêm thuộc tính
+                </button>
+              </div>
+            ))}
 
-          <button
-            type="button"
-            className="nx-btn nx-btn-secondary"
-            onClick={addGroup}
-          >
-            + Thêm nhóm thông số
-          </button>
-
-          {formError ? (
-            <span className="nx-error-text">{formError}</span>
-          ) : null}
-
-          <div className="nx-form-actions">
             <button
               type="button"
               className="nx-btn nx-btn-secondary"
-              onClick={() => setDrawerOpen(false)}
+              onClick={addGroup}
             >
-              Hủy
+              + Thêm nhóm thông số
             </button>
-            <button
-              type="submit"
-              className="nx-btn nx-btn-primary"
-              disabled={submitting}
-            >
-              {submitting ? 'Đang lưu...' : 'Lưu bộ thông số'}
-            </button>
-          </div>
-        </form>
+
+            {formError ? (
+              <span className="nx-error-text">{formError}</span>
+            ) : null}
+
+            <div className="nx-form-actions">
+              <button
+                type="button"
+                className="nx-btn nx-btn-secondary"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Hủy
+              </button>
+              <button
+                type="submit"
+                className="nx-btn nx-btn-primary"
+                disabled={submitting}
+              >
+                {submitting ? 'Đang lưu...' : 'Lưu bộ thông số'}
+              </button>
+            </div>
+          </form>
+        )}
       </Drawer>
+
+      <ConfirmDialog
+        open={deleteTarget !== null}
+        title="Xóa bộ thông số"
+        description={
+          deleteTarget
+            ? `Bạn có chắc muốn xóa "${deleteTarget.name}"? Thao tác này không thể hoàn tác.`
+            : undefined
+        }
+        confirmLabel="Xóa"
+        loading={deleting}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -8,17 +8,17 @@ NgÃ y bÃ n giao: **2026-07-30**
 
 ## 1. Tráº¡ng thÃ¡i repository sau M17
 
-| Má»¥c            | GiÃ¡ trá»‹                                                             |
-| -------------- | ------------------------------------------------------------------- |
-| Path           | `d:\NexaTech\nexatech-platform`                                     |
-| Branch         | `main`                                                              |
-| Milestone xong | M0â€“**M17** (Docker/Helm/Kubernetes packaging)                       |
-| Milestone tiáº¿p | **M18** â€” production readiness / observability / ops                |
-| Feat commit    | M17 local (Helm 0.17.0, ADR-036) â€” chÆ°a push náº¿u working tree local |
-| Nx             | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`                       |
-| Next.js        | **15.2.4**                                                          |
-| Helm chart     | `deploy/helm/nexatech` **0.17.0**                                   |
-| Image tag      | **0.17.0** (+ `${tag}-migrate` cho Prisma Jobs)                     |
+| Má»¥c            | GiÃ¡ trá»‹                                                               |
+| ---------------- | ------------------------------------------------------------------------ |
+| Path             | `d:\NexaTech\nexatech-platform`                                          |
+| Branch           | `main`                                                                   |
+| Milestone xong   | M0â€“**M17** (Docker/Helm/Kubernetes packaging)                          |
+| Milestone tiáº¿p | **M18** â€” production readiness / observability / ops                   |
+| Feat commit      | M17 local (Helm 0.17.0, ADR-036) â€” chÆ°a push náº¿u working tree local |
+| Nx               | **22.7.7** + `NX_SKIP_NATIVE_FILE_CACHE=true`                            |
+| Next.js          | **15.2.4**                                                               |
+| Helm chart       | `deploy/helm/nexatech` **0.17.0**                                        |
+| Image tag        | **0.17.0** (+ `${tag}-migrate` cho Prisma Jobs)                          |
 
 ### Projects
 
@@ -63,7 +63,7 @@ NgÃ y bÃ n giao: **2026-07-30**
 
 ### Validation (unattended)
 
-| Kiá»ƒm tra                                     | Káº¿t quáº£              |
+| Kiá»ƒm tra                                   | Káº¿t quáº£          |
 | -------------------------------------------- | -------------------- |
 | `pnpm format`                                | OK                   |
 | `pnpm lint`                                  | OK                   |
@@ -72,7 +72,7 @@ NgÃ y bÃ n giao: **2026-07-30**
 | `helm lint` + `helm template`                | OK                   |
 | Docker smoke (storefront, identity, migrate) | OK                   |
 | Secret scan (no real creds in git)           | OK                   |
-| `helm upgrade` / `kubectl apply` tháº­t        | **BLOCKED_EXTERNAL** |
+| `helm upgrade` / `kubectl apply` tháº­t      | **BLOCKED_EXTERNAL** |
 
 ---
 
@@ -128,12 +128,12 @@ M18 biáº¿n packaging M17 thÃ nh **production-operable**. KhÃ´ng thÃªm b
 
 Document step-by-step cho operator (agent unattended **khÃ´ng** cháº¡y):
 
-| ThÃ nh pháº§n   | IP                  | HÃ nh Ä‘á»™ng M18 runbook                     |
-| ------------ | ------------------- | ----------------------------------------- |
-| PostgreSQL   | `192.168.4.208`     | DB/users/grants, backup agent, firewall   |
-| K8s workers  | `192.168.4.205â€“207` | Join cluster, storage class, MetalLB pool |
-| MetalLB VIP  | `192.168.4.204`     | Verify entry Service, nginx health        |
-| Kong Gateway | `192.168.4.209`     | Apply `kong.production.yml`, TLS cert     |
+| ThÃ nh pháº§n | IP                    | HÃ nh Ä‘á»™ng M18 runbook                |
+| ------------- | --------------------- | ----------------------------------------- |
+| PostgreSQL    | `192.168.4.208`       | DB/users/grants, backup agent, firewall   |
+| K8s workers   | `192.168.4.205â€“207` | Join cluster, storage class, MetalLB pool |
+| MetalLB VIP   | `192.168.4.204`       | Verify entry Service, nginx health        |
+| Kong Gateway  | `192.168.4.209`       | Apply `kong.production.yml`, TLS cert     |
 
 Luá»“ng deploy:
 
@@ -166,17 +166,17 @@ LÆ°u táº¡i `docs/DEPLOY-RUNBOOK-PRODUCTION.md` (táº¡o má»›i trong M1
 
 CÃ¡c thao tÃ¡c **báº¯t buá»™c operator** â€” agent unattended dá»«ng táº¡i dry-run/lint/template:
 
-| Háº¡ng má»¥c                             | LÃ½ do                       |
-| ------------------------------------ | --------------------------- |
-| `helm upgrade --install` lÃªn cluster | KhÃ´ng verified kube-context |
-| `kubectl apply` mutate production    | Rá»§i ro thay Ä‘á»•i live infra  |
-| `docker push`                        | Cáº§n Docker Hub credentials  |
-| Kong apply trÃªn VM `.209`            | SSH/credential ngoÃ i repo   |
-| PostgreSQL trÃªn `.208`               | Credential + dá»¯ liá»‡u tháº­t   |
-| TLS certificate issuance             | Domain + CA operator        |
-| MetalLB IP pool config trÃªn cluster  | Infra-specific              |
-| SMTP / VNPay / GHN / Google OAuth    | Secret tháº­t user cung cáº¥p   |
-| Backup restore drill trÃªn prod       | Destructive náº¿u sai         |
+| Háº¡ng má»¥c                          | LÃ½ do                          |
+| ------------------------------------- | ------------------------------- |
+| `helm upgrade --install` lÃªn cluster | KhÃ´ng verified kube-context    |
+| `kubectl apply` mutate production     | Rá»§i ro thay Ä‘á»•i live infra |
+| `docker push`                         | Cáº§n Docker Hub credentials    |
+| Kong apply trÃªn VM `.209`            | SSH/credential ngoÃ i repo      |
+| PostgreSQL trÃªn `.208`               | Credential + dá»¯ liá»‡u tháº­t |
+| TLS certificate issuance              | Domain + CA operator            |
+| MetalLB IP pool config trÃªn cluster  | Infra-specific                  |
+| SMTP / VNPay / GHN / Google OAuth     | Secret tháº­t user cung cáº¥p   |
+| Backup restore drill trÃªn prod       | Destructive náº¿u sai           |
 
 Agent M18 **Ä‘Æ°á»£c phÃ©p:** viáº¿t manifests/scripts/docs, `helm lint/template`, unit/integration test, local docker smoke, dry-run client-only.
 

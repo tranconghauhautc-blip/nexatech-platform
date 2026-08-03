@@ -91,10 +91,17 @@ export interface ProductSummary {
   name: string;
   brandName: string;
   categorySlug: string;
+  categoryName?: string;
   status: ProductStatus;
   minPrice: number;
   currency: 'VND';
   thumbnailUrl?: string;
+  /** Primary SKU for wishlist/compare hydration. */
+  primarySkuCode?: string;
+  primarySkuName?: string;
+  primarySkuAttributes?: Record<string, string>;
+  /** Key/label → value specs for compare alignment. */
+  specs?: Record<string, string>;
 }
 
 export const CATEGORY_SLUGS = [
@@ -200,6 +207,13 @@ export const createSkuRequestSchema = z.object({
 
 export type CreateSkuRequest = z.infer<typeof createSkuRequestSchema>;
 
+export const updateSkuRequestSchema = z.object({
+  name: z.string().trim().min(1).max(200).optional(),
+  attributes: z.record(z.string(), z.string()).optional(),
+});
+
+export type UpdateSkuRequest = z.infer<typeof updateSkuRequestSchema>;
+
 export const updatePriceRequestSchema = z.object({
   amount: z.number().int().min(0),
   currency: z.literal('VND').default('VND'),
@@ -208,40 +222,43 @@ export const updatePriceRequestSchema = z.object({
 
 export type UpdatePriceRequest = z.infer<typeof updatePriceRequestSchema>;
 
+const specTemplateAttributeSchema = z.object({
+  key: z
+    .string()
+    .trim()
+    .min(1)
+    .max(64)
+    .regex(/^[a-z0-9_]+$/),
+  label: z.string().trim().min(1).max(120),
+  dataType: z.enum(['string', 'number', 'boolean', 'enum']).default('string'),
+  unit: z.string().trim().max(32).optional(),
+  isFilterable: z.boolean().default(true),
+  sortOrder: z.number().int().default(0),
+});
+
+const specTemplateGroupSchema = z.object({
+  name: z.string().trim().min(1).max(120),
+  sortOrder: z.number().int().default(0),
+  attributes: z.array(specTemplateAttributeSchema).default([]),
+});
+
 export const createSpecTemplateRequestSchema = z.object({
   categoryId: z.string().uuid(),
   name: z.string().trim().min(1).max(120),
-  groups: z
-    .array(
-      z.object({
-        name: z.string().trim().min(1).max(120),
-        sortOrder: z.number().int().default(0),
-        attributes: z
-          .array(
-            z.object({
-              key: z
-                .string()
-                .trim()
-                .min(1)
-                .max(64)
-                .regex(/^[a-z0-9_]+$/),
-              label: z.string().trim().min(1).max(120),
-              dataType: z
-                .enum(['string', 'number', 'boolean', 'enum'])
-                .default('string'),
-              unit: z.string().trim().max(32).optional(),
-              isFilterable: z.boolean().default(true),
-              sortOrder: z.number().int().default(0),
-            }),
-          )
-          .default([]),
-      }),
-    )
-    .default([]),
+  groups: z.array(specTemplateGroupSchema).default([]),
 });
 
 export type CreateSpecTemplateRequest = z.infer<
   typeof createSpecTemplateRequestSchema
+>;
+
+export const updateSpecTemplateRequestSchema = z.object({
+  name: z.string().trim().min(1).max(120).optional(),
+  groups: z.array(specTemplateGroupSchema),
+});
+
+export type UpdateSpecTemplateRequest = z.infer<
+  typeof updateSpecTemplateRequestSchema
 >;
 
 export const ALLOWED_MEDIA_MIME_TYPES = [

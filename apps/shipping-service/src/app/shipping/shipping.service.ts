@@ -986,10 +986,15 @@ export class ShippingService {
 
     let stockCommittedAt = shipment.stockCommittedAt;
     if (input.toStatus === 'PICKED_UP' && !stockCommittedAt) {
+      const order = await this.orderClient.getOrder(
+        shipment.orderId,
+        this.headers(actor, traceId),
+      );
       await this.inventoryClient.commitOnPickup({
         shipmentId: shipment.id,
         orderId: shipment.orderId,
         packageId: shipment.packageId,
+        reservationId: order.reservationId,
         skuCodes: shipment.items.map((i) => i.skuCode),
         traceId,
       });
@@ -1131,10 +1136,15 @@ export class ShippingService {
     const traceId = createTraceId();
     let stockCommittedAt = shipment.stockCommittedAt;
     if (!stockCommittedAt) {
+      const order = await this.orderClient.getOrder(
+        shipment.orderId,
+        this.headers(actor, traceId),
+      );
       await this.inventoryClient.commitOnPickup({
         shipmentId: shipment.id,
         orderId: shipment.orderId,
         packageId: shipment.packageId,
+        reservationId: order.reservationId,
         skuCodes: shipment.items.map((i) => i.skuCode),
         traceId,
       });

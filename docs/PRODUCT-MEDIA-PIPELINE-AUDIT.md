@@ -4,16 +4,16 @@
 
 ## Pipeline stages
 
-| Stage | Status | Evidence |
-| ----- | ------ | -------- |
-| Catalog seed | COMPLETE | — |
-| Placeholder / batch import | COMPLETE | prior import |
-| Presign API | PASS | prior media-e2e |
-| MinIO PUT | PASS | prior |
-| Confirm / Link | PASS | prior |
-| Admin UI upload | source | not re-clicked this pass |
-| `pnpm media:audit` | **PASS** | **10/10** sampled with media; no `minio:9000` |
-| Storefront rendering | PASS_RUNTIME | PDP loads; audit coverage complete |
+| Stage                      | Status       | Evidence                                      |
+| -------------------------- | ------------ | --------------------------------------------- |
+| Catalog seed               | COMPLETE     | —                                             |
+| Placeholder / batch import | COMPLETE     | prior import                                  |
+| Presign API                | PASS         | prior media-e2e                               |
+| MinIO PUT                  | PASS         | prior                                         |
+| Confirm / Link             | PASS         | prior                                         |
+| Admin UI upload            | source       | not re-clicked this pass                      |
+| `pnpm media:audit`         | **PASS**     | **10/10** sampled with media; no `minio:9000` |
+| Storefront rendering       | PASS_RUNTIME | PDP loads; audit coverage complete            |
 
 ## Fix this session
 

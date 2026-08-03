@@ -1,0 +1,52 @@
+/\*\*
+
+- MEDIA-UPLOAD-RUNTIME-FIX
+-
+- ## Exact 403 root cause
+-
+- Admin Media flow rewrote a SigV4 presigned PUT URL from Docker hostname
+- `http://minio:9000/...` to `http://localhost:9000/...` **after** signing.
+- AWS SigV4 includes `Host` in `X-Amz-SignedHeaders=host`. Changing the host
+- without re-signing produces MinIO `403 SignatureDoesNotMatch`.
+-
+- Confirmed against live MinIO (local Compose):
+-
+- | Step | Result |
+- | --- | --- |
+- | Presign with `MINIO_ENDPOINT=minio` | URL host=`minio`, SignedHeaders=`host` |
+- | Browser rewrite host → `localhost` | PUT **403** `<Code>SignatureDoesNotMatch</Code>` |
+- | Presign with public endpoint `localhost` | PUT **200 OK** |
+-
+- ## Affected request
+-
+- - Method: `PUT`
+- - Target: `{MINIO_PUBLIC}/product-media/{ownerType}/{ownerId}/{uuid}-{file}`
+- - From: Admin origin `http://localhost:3100`
+- - Headers used by Admin: `Content-Type: image/png|jpeg|webp|gif` (no Authorization)
+- - MinIO error sample: `SignatureDoesNotMatch`, `x-amz-request-id` present
+-
+- Secondary: OSS MinIO CORS is configured via `MINIO_API_CORS_ALLOW_ORIGIN`
+- (bucket PutBucketCors is AIStor-only). Documented origins live in
+- `infra/docker/minio/cors.json`.
+-
+- ## Code / config changes
+-
+- 1.  `media-service` `MinioObjectStorage` dual client:
+- - internal client (`MINIO_ENDPOINT=minio`) for exist/remove/ensureBucket
+- - presign client (`MINIO_PUBLIC_ENDPOINT=localhost`) so Host matches the browser
+- 2.  Compose `MINIO_PUBLIC_ENDPOINT/PORT/USE_SSL` on media-service
+- 3.  Compose `MINIO_API_CORS_ALLOW_ORIGIN` on minio (+ cors.json documentation)
+- 4.  Admin Media UI:
+- - refuses Docker-only hosts instead of rewriting signed URLs
+- - sends `Content-Type` from presign response
+- - actionable MinIO XML error text
+- - upload lock / disabled submit; no confirm/link when PUT fails
+- - duplicate link treated as success
+-
+- ## Browser acceptance
+-
+- After rebuild/restart media-service: Admin upload PNG to a product,
+- confirm + link, preview, Storefront render, refresh, media-service restart,
+- duplicate click does not create a second link, `pnpm media:audit` when
+- catalog has linked media (or empty after minimal reset until products exist).
+  \*/

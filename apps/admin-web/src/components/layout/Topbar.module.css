@@ -3,8 +3,8 @@
   align-items: center;
   gap: 14px;
   padding: 14px 24px;
-  border-bottom: 1px solid var(--nx-navy-border);
-  background: rgba(10, 18, 38, 0.7);
+  border-bottom: 1px solid var(--nx-border);
+  background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   position: sticky;
   top: 0;
@@ -13,13 +13,21 @@
 
 .menuBtn {
   display: none;
-  background: var(--nx-navy-800);
-  border: 1px solid var(--nx-navy-border);
+  background: #ffffff;
+  border: 1px solid var(--nx-border);
   color: var(--nx-text-primary);
   border-radius: var(--nx-radius-sm);
   width: 36px;
   height: 36px;
   cursor: pointer;
+  transition:
+    border-color var(--nx-duration-fast) var(--nx-ease),
+    background var(--nx-duration-fast) var(--nx-ease);
+}
+
+.menuBtn:hover {
+  background: var(--nx-table-header);
+  border-color: var(--nx-border-strong);
 }
 
 .title {

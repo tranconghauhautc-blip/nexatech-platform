@@ -71,6 +71,8 @@ export interface ProductMediaLink {
   isPrimary: boolean;
 }
 
+export type CatalogMediaLinkRow = ProductMediaLink;
+
 export interface ProductDetail {
   id: string;
   slug: string;
@@ -153,6 +155,8 @@ export interface StockMovement {
 }
 
 export interface SpecTemplateAttribute {
+  id?: string;
+  groupId?: string;
   key: string;
   label: string;
   dataType: 'string' | 'number' | 'boolean' | 'enum';
@@ -162,6 +166,8 @@ export interface SpecTemplateAttribute {
 }
 
 export interface SpecTemplateGroup {
+  id?: string;
+  templateId?: string;
   name: string;
   sortOrder: number;
   attributes: SpecTemplateAttribute[];

@@ -7,6 +7,22 @@ jest.mock('../src/lib/catalog-server', () => ({
     meta: { page: 1, pageSize: 8, totalItems: 0, totalPages: 1 },
   }),
   getBrands: jest.fn().mockResolvedValue([]),
+  getCategoryTreeResult: jest.fn().mockResolvedValue({
+    ok: true,
+    data: [
+      {
+        id: 'cat-1',
+        slug: 'dien-thoai',
+        name: 'Điện thoại',
+        parentId: null,
+        sortOrder: 1,
+        isActive: true,
+        createdAt: '',
+        updatedAt: '',
+        children: [],
+      },
+    ],
+  }),
 }));
 
 jest.mock('../src/components/product/recently-viewed-section', () => ({

@@ -5,6 +5,7 @@ import { CartProvider } from '../components/providers/cart-provider';
 import { SiteFooter } from '../components/layout/site-footer';
 import { SiteHeader } from '../components/layout/site-header';
 import { SITE_DESCRIPTION, SITE_NAME } from '../lib/constants';
+import { loadNavCategories } from '../lib/categories';
 import { getAppBaseUrl } from '../lib/env';
 import './global.css';
 
@@ -46,11 +47,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { categories, error: categoriesError } = await loadNavCategories();
+
   return (
     <html
       lang="vi"
@@ -62,9 +65,15 @@ export default function RootLayout({
         </a>
         <AuthProvider>
           <CartProvider>
-            <SiteHeader />
+            <SiteHeader
+              categories={categories}
+              categoriesError={categoriesError}
+            />
             <main id="nt-main-content">{children}</main>
-            <SiteFooter />
+            <SiteFooter
+              categories={categories}
+              categoriesError={categoriesError}
+            />
           </CartProvider>
         </AuthProvider>
       </body>

@@ -37,6 +37,7 @@ describe('MediaService', () => {
     expect(presign.mediaId).toBeDefined();
     expect(presign.uploadUrl).toContain('inmemory/put');
     expect(presign.bucket).toBe('product-media');
+    expect(presign.contentType).toBe('image/jpeg');
 
     storage.markUploaded(
       { bucket: presign.bucket, objectKey: presign.objectKey },

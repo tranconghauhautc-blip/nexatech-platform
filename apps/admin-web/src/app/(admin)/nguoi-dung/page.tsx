@@ -13,6 +13,7 @@ import { Pagination } from '../../../components/ui/Pagination';
 import { Badge } from '../../../components/ui/Badge';
 import { Drawer } from '../../../components/ui/Drawer';
 import { SelectField, TextField } from '../../../components/ui/form';
+import { PasswordField } from '../../../components/ui/PasswordField';
 import { useToast } from '../../../components/ui/toast';
 import Link from 'next/link';
 
@@ -51,6 +52,7 @@ interface CreateForm {
   email: string;
   fullName: string;
   password: string;
+  confirmPassword: string;
   role: string;
   status: string;
 }
@@ -59,6 +61,7 @@ const EMPTY_CREATE: CreateForm = {
   email: '',
   fullName: '',
   password: '',
+  confirmPassword: '',
   role: 'Staff',
   status: 'ACTIVE',
 };
@@ -91,6 +94,9 @@ export default function UsersPage() {
   const [saveError, setSaveError] = useState<string | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
   const [createForm, setCreateForm] = useState<CreateForm>(EMPTY_CREATE);
+  const [createPasswordError, setCreatePasswordError] = useState<string | null>(
+    null,
+  );
   const [creating, setCreating] = useState(false);
 
   // SC-10 / SC-31 (OWASP API3 — excessive data exposure & mass assignment):
@@ -164,6 +170,11 @@ export default function UsersPage() {
 
   async function createUser(event: React.FormEvent) {
     event.preventDefault();
+    setCreatePasswordError(null);
+    if (createForm.password !== createForm.confirmPassword) {
+      setCreatePasswordError('Mật khẩu xác nhận không khớp.');
+      return;
+    }
     setCreating(true);
     try {
       await bffRequest('identity', 'admin/users', {
@@ -179,6 +190,7 @@ export default function UsersPage() {
       showToast('Đã tạo người dùng', 'success');
       setCreateOpen(false);
       setCreateForm(EMPTY_CREATE);
+      setCreatePasswordError(null);
       refetch();
     } catch (err) {
       showToast(getErrorMessage(err), 'error');
@@ -359,7 +371,12 @@ export default function UsersPage() {
         title="Tạo người dùng"
         onClose={() => setCreateOpen(false)}
       >
-        <form onSubmit={createUser} className="nx-page" style={{ gap: 16 }}>
+        <form
+          onSubmit={createUser}
+          className="nx-page"
+          style={{ gap: 16 }}
+          autoComplete="off"
+        >
           <TextField
             label="Email"
             type="email"
@@ -367,6 +384,7 @@ export default function UsersPage() {
             onChange={(e) =>
               setCreateForm((f) => ({ ...f, email: e.target.value }))
             }
+            autoComplete="off"
             required
           />
           <TextField
@@ -375,15 +393,26 @@ export default function UsersPage() {
             onChange={(e) =>
               setCreateForm((f) => ({ ...f, fullName: e.target.value }))
             }
+            autoComplete="off"
             required
           />
-          <TextField
+          <PasswordField
             label="Mật khẩu"
-            type="password"
             value={createForm.password}
-            onChange={(e) =>
-              setCreateForm((f) => ({ ...f, password: e.target.value }))
+            onChange={(value) =>
+              setCreateForm((f) => ({ ...f, password: value }))
             }
+            autoComplete="new-password"
+            required
+          />
+          <PasswordField
+            label="Xác nhận mật khẩu"
+            value={createForm.confirmPassword}
+            onChange={(value) =>
+              setCreateForm((f) => ({ ...f, confirmPassword: value }))
+            }
+            autoComplete="new-password"
+            error={createPasswordError ?? undefined}
             required
           />
           <SelectField
