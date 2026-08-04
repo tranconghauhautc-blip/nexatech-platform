@@ -1,0 +1,49 @@
+# Staging overrides — LAN/IP first. Domain/TLS later via values only.
+global:
+  imageTag: '' # set from build (HEAD+dirty hash)
+  imagePullPolicy: IfNotPresent
+  postgresql:
+    host: '' # from POSTGRES_HOST
+    port: 5432
+    sslMode: prefer
+
+# Application workloads stay off Kong node
+nodeSelector:
+  nexatech.io/role: app
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: ScheduleAnyway
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: nexatech
+
+apps:
+  swagger:
+    enabled: true
+  securityGuide:
+    enabled: true
+
+config:
+  nodeEnv: production
+  deployProfile: staging
+  publicStorefrontUrl: '' # PUBLIC_STOREFRONT_URL
+  publicAdminUrl: '' # PUBLIC_ADMIN_URL
+  publicApiUrl: '' # PUBLIC_API_URL
+
+entry:
+  enabled: true
+  loadBalancerIP: '' # MetalLB VIP / staging LB
+  exposeApiPorts: true
+
+migrations:
+  enabled: true
+
+# SMTP optional in staging — Mailpit (compose) is primary for email verification
+smtp:
+  optional: true
+
+seed:
+  requiredOnly: true
+  # No products / orders / stock

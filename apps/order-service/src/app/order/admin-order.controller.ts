@@ -7,10 +7,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { OrderService, parseActor } from './order.service';
 
 @ApiTags('admin-orders')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: true })
 @ApiHeader({ name: 'x-user-roles', required: true })
 @Controller({ path: 'admin/orders', version: ['1', '2'] })
@@ -77,6 +78,24 @@ export class AdminOrderController {
       parseActor(userId, roles),
       orderId,
       body,
+    );
+  }
+
+  /**
+   * Đối soát (reconcile) fulfillment: đồng bộ lại trạng thái kiện hàng khi
+   * đơn đã DELIVERED nhưng kiện hàng chưa cập nhật kịp (ví dụ do lỗi tạm thời
+   * ở lần shipping-sync trước đó). Không đổi trạng thái đơn, chỉ dành cho
+   * Admin trở lên. Idempotent — gọi lại nhiều lần an toàn.
+   */
+  @Post(':orderId/reconcile-fulfillment')
+  reconcileFulfillment(
+    @Param('orderId') orderId: string,
+    @Headers('x-user-id') userId?: string,
+    @Headers('x-user-roles') roles?: string,
+  ) {
+    return this.orderService.reconcileFulfillment(
+      parseActor(userId, roles),
+      orderId,
     );
   }
 }

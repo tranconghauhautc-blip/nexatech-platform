@@ -97,6 +97,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/reservations/{id}/release:
     post:
       operationId: AdminInventory_releaseReservation_v1
@@ -121,6 +124,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stock/adjust:
     post:
       operationId: AdminInventory_adjustStock_v1
@@ -140,6 +146,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stock/issue:
     post:
       operationId: AdminInventory_issueStock_v1
@@ -159,6 +168,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stock/receive:
     post:
       operationId: AdminInventory_receiveStock_v1
@@ -178,6 +190,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stock/reserve:
     post:
       operationId: AdminInventory_reserveStock_v1
@@ -197,6 +212,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stock/return:
     post:
       operationId: AdminInventory_returnStock_v1
@@ -216,6 +234,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stores:
     post:
       operationId: AdminInventory_createStore_v1
@@ -235,6 +256,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/stores/{id}:
     patch:
       operationId: AdminInventory_updateStore_v1
@@ -259,6 +283,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/transfers:
     post:
       operationId: AdminInventory_transferStock_v1
@@ -278,6 +305,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/warehouses:
     post:
       operationId: AdminInventory_createWarehouse_v1
@@ -297,6 +327,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/inventory/warehouses/{id}:
     patch:
       operationId: AdminInventory_updateWarehouse_v1
@@ -321,6 +354,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v1/movements:
     get:
       operationId: Inventory_movements_v1
@@ -501,6 +537,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/reservations/{id}/release:
     post:
       operationId: AdminInventory_releaseReservation_v2
@@ -525,6 +564,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stock/adjust:
     post:
       operationId: AdminInventory_adjustStock_v2
@@ -544,6 +586,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stock/issue:
     post:
       operationId: AdminInventory_issueStock_v2
@@ -563,6 +608,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stock/receive:
     post:
       operationId: AdminInventory_receiveStock_v2
@@ -582,6 +630,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stock/reserve:
     post:
       operationId: AdminInventory_reserveStock_v2
@@ -601,6 +652,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stock/return:
     post:
       operationId: AdminInventory_returnStock_v2
@@ -620,6 +674,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stores:
     post:
       operationId: AdminInventory_createStore_v2
@@ -639,6 +696,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/stores/{id}:
     patch:
       operationId: AdminInventory_updateStore_v2
@@ -663,6 +723,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/transfers:
     post:
       operationId: AdminInventory_transferStock_v2
@@ -682,6 +745,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/warehouses:
     post:
       operationId: AdminInventory_createWarehouse_v2
@@ -701,6 +767,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/inventory/warehouses/{id}:
     patch:
       operationId: AdminInventory_updateWarehouse_v2
@@ -725,6 +794,9 @@ paths:
           description: ''
       tags:
         - admin-inventory
+      security:
+        - bearer: []
+      description: ''
   /api/v2/movements:
     get:
       operationId: Inventory_movements_v2

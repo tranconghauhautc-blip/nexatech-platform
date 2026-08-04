@@ -1,9 +1,25 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { InMemoryPaymentRepository } from './payment.repository';
 import { PrismaPaymentRepository } from './prisma-payment.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['PAYMENT_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires PAYMENT_TEST_DATABASE_URL pointing at
+ * nexatech_payment_test only — never falls back to PAYMENT_DATABASE_URL.
+ */
+const PAYMENT_TEST_DB = {
+  testUrlEnv: 'PAYMENT_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_payment_test',
+  runtimeUrlEnv: 'PAYMENT_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  PAYMENT_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -12,6 +28,7 @@ describeIfDb('PrismaPaymentRepository integration', () => {
   let repository: PrismaPaymentRepository;
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(PAYMENT_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaPaymentRepository(prisma);

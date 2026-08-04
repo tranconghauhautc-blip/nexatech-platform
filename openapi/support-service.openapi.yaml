@@ -102,6 +102,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/support/tickets/{ticketId}:
     get:
       operationId: AdminSupport_getTicket_v1
@@ -136,6 +139,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/support/tickets/{ticketId}/assign:
     post:
       operationId: AdminSupport_assign_v1
@@ -175,6 +181,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/support/tickets/{ticketId}/messages:
     post:
       operationId: AdminSupport_addMessage_v1
@@ -214,6 +223,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/support/tickets/{ticketId}/priority:
     patch:
       operationId: AdminSupport_updatePriority_v1
@@ -253,6 +265,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/support/tickets/{ticketId}/transition:
     post:
       operationId: AdminSupport_transition_v1
@@ -292,6 +307,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v1/support/tickets:
     get:
       operationId: Tickets_list_v1
@@ -534,6 +552,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/support/tickets/{ticketId}:
     get:
       operationId: AdminSupport_getTicket_v2
@@ -568,6 +589,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/support/tickets/{ticketId}/assign:
     post:
       operationId: AdminSupport_assign_v2
@@ -607,6 +631,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/support/tickets/{ticketId}/messages:
     post:
       operationId: AdminSupport_addMessage_v2
@@ -646,6 +673,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/support/tickets/{ticketId}/priority:
     patch:
       operationId: AdminSupport_updatePriority_v2
@@ -685,6 +715,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/support/tickets/{ticketId}/transition:
     post:
       operationId: AdminSupport_transition_v2
@@ -724,6 +757,9 @@ paths:
           description: ''
       tags:
         - admin-support
+      security:
+        - bearer: []
+      description: ''
   /api/v2/support/tickets:
     get:
       operationId: Tickets_list_v2

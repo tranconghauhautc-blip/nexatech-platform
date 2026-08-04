@@ -1,7 +1,21 @@
 # App stack (M16) — build images from repo root; depends on infra from docker-compose.dev.yml
-# Usage:
-#   docker compose -f infra/docker/docker-compose.dev.yml up -d
-#   docker compose -f infra/docker/docker-compose.apps.yml up -d --build
+#
+# QUAN TRỌNG: các backend Nest ở file này dùng `depends_on` với healthcheck của
+# postgres/redis/rabbitmq (định nghĩa trong docker-compose.dev.yml). `depends_on`
+# CHỈ hoạt động khi Compose thấy cả hai service trong CÙNG một lần invoke — vì vậy
+# PHẢI chạy gộp (-f) cả hai file trong một lệnh duy nhất:
+#
+#   docker compose -f infra/docker/docker-compose.dev.yml -f infra/docker/docker-compose.apps.yml up -d --build
+#
+# Nếu chỉ chạy riêng file này (ví dụ CI chỉ build image), Compose sẽ báo lỗi
+# "service not found" cho postgres/redis/rabbitmq/minio — đó là lý do bắt buộc
+# phải dùng lệnh gộp ở trên cho local dev đầy đủ. Chạy riêng
+# `docker compose -f infra/docker/docker-compose.dev.yml up -d` trước rồi mới
+# `docker compose -f infra/docker/docker-compose.apps.yml up -d --build` (không
+# gộp -f) sẽ KHÔNG áp depends_on được vì đây là 2 lần invoke Compose khác nhau
+# trên network `nexatech-dev` external — container vẫn kết nối được qua network
+# nhưng Compose sẽ không tự chờ healthy trước khi start app. Ưu tiên luôn dùng
+# lệnh gộp ở trên.
 #
 # Image tags use semver (không dùng latest).
 
@@ -11,6 +25,20 @@ x-backend-env: &backend-env
   REDIS_URL: redis://redis:6379
   RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
   NODE_ENV: production
+
+# Chờ postgres/redis/rabbitmq healthy trước khi start backend Nest (chỉ có hiệu
+# lực khi chạy gộp -f với docker-compose.dev.yml — xem chú thích Usage ở trên).
+x-depends-infra: &depends-infra
+  postgres:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  rabbitmq:
+    condition: service_healthy
+
+# Restart chính sách chung cho backend Nest: tự khởi động lại tối đa 5 lần khi
+# lỗi (ví dụ chưa kết nối được DB ngay khi container khác chưa sẵn sàng).
+x-backend-restart: &backend-restart on-failure:5
 
 services:
   kong:
@@ -45,6 +73,8 @@ services:
       - '3001:3001'
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   customer-service:
     build:
@@ -57,6 +87,8 @@ services:
       CUSTOMER_DATABASE_URL: postgresql://nexatech_customer:changeme@postgres:5432/nexatech_customer
     ports:
       - '3002:3002'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   catalog-service:
     build:
@@ -69,6 +101,8 @@ services:
       CATALOG_DATABASE_URL: postgresql://nexatech_catalog:changeme@postgres:5432/nexatech_catalog
     ports:
       - '3003:3003'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   media-service:
     build:
@@ -91,6 +125,11 @@ services:
       MINIO_PUBLIC_USE_SSL: 'false'
     ports:
       - '3004:3004'
+    depends_on:
+      <<: *depends-infra
+      minio:
+        condition: service_healthy
+    restart: *backend-restart
 
   inventory-service:
     build:
@@ -103,6 +142,8 @@ services:
       INVENTORY_DATABASE_URL: postgresql://nexatech_inventory:changeme@postgres:5432/nexatech_inventory
     ports:
       - '3005:3005'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   cart-service:
     build:
@@ -117,6 +158,8 @@ services:
       INVENTORY_SERVICE_URL: http://inventory-service:3005
     ports:
       - '3006:3006'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   order-service:
     build:
@@ -132,6 +175,8 @@ services:
       CATALOG_SERVICE_URL: http://catalog-service:3003
     ports:
       - '3007:3007'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   payment-service:
     build:
@@ -146,6 +191,8 @@ services:
       MOCK_PAYMENT_ENABLED: 'true'
     ports:
       - '3008:3008'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   shipping-service:
     build:
@@ -157,8 +204,12 @@ services:
       PORT: 3009
       SHIPPING_DATABASE_URL: postgresql://nexatech_shipping:changeme@postgres:5432/nexatech_shipping
       MOCK_SHIPPING_ENABLED: 'true'
+      ORDER_SERVICE_URL: http://order-service:3007
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
     ports:
       - '3009:3009'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   review-service:
     build:
@@ -169,8 +220,13 @@ services:
       <<: *backend-env
       PORT: 3010
       REVIEW_DATABASE_URL: postgresql://nexatech_review:changeme@postgres:5432/nexatech_review
+      ORDER_SERVICE_URL: http://order-service:3007
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
     ports:
       - '3010:3010'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   warranty-service:
     build:
@@ -181,8 +237,12 @@ services:
       <<: *backend-env
       PORT: 3011
       WARRANTY_DATABASE_URL: postgresql://nexatech_warranty:changeme@postgres:5432/nexatech_warranty
+      ORDER_SERVICE_URL: http://order-service:3007
+      MEDIA_SERVICE_URL: http://media-service:3004
     ports:
       - '3011:3011'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   support-service:
     build:
@@ -193,8 +253,12 @@ services:
       <<: *backend-env
       PORT: 3012
       SUPPORT_DATABASE_URL: postgresql://nexatech_support:changeme@postgres:5432/nexatech_support
+      ORDER_SERVICE_URL: http://order-service:3007
+      MEDIA_SERVICE_URL: http://media-service:3004
     ports:
       - '3012:3012'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   notification-service:
     build:
@@ -205,8 +269,18 @@ services:
       <<: *backend-env
       PORT: 3013
       NOTIFICATION_DATABASE_URL: postgresql://nexatech_notification:changeme@postgres:5432/nexatech_notification
+      # Mailpit in docker-compose.dev.yml — override SMTP_* for production Gmail.
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_FROM_NAME: ${SMTP_FROM_NAME:-NexaTech}
+      SMTP_FROM_EMAIL: ${SMTP_FROM_EMAIL:-noreply@nexatech.local}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
+      SMTP_APP_PASSWORD: ${SMTP_APP_PASSWORD:-}
     ports:
       - '3013:3013'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   reporting-service:
     build:
@@ -219,6 +293,8 @@ services:
       REPORTING_DATABASE_URL: postgresql://nexatech_reporting:changeme@postgres:5432/nexatech_reporting
     ports:
       - '3014:3014'
+    depends_on: *depends-infra
+    restart: *backend-restart
 
   storefront-web:
     build:

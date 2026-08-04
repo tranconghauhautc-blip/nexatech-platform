@@ -122,7 +122,7 @@ describe('PaymentService concurrency', () => {
     const payment = await service.getPayment(actor, created.id);
     expect(payment.status).toBe('PAID');
     expect(
-      payment.transactions.filter((t) => t.type === 'CHARGE'),
+      (payment.transactions ?? []).filter((t) => t.type === 'CHARGE'),
     ).toHaveLength(1);
   });
 });

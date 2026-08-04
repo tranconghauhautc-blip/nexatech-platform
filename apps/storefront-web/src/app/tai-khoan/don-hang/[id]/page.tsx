@@ -5,8 +5,9 @@ import { useParams } from 'next/navigation';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { formatVnd } from '@nexatech/shared-web';
 import { EmptyState } from '../../../../components/common/empty-state';
-import { MediaThumb } from '../../../../components/media/media-thumb';
+import { OrderItemThumb } from '../../../../components/media/order-item-thumb';
 import { bff, getErrorMessage } from '../../../../lib/api-browser';
+import { shippingShipmentsByOrderPath } from '../../../../lib/bff-path';
 import {
   DELIVERY_METHOD_LABELS,
   ORDER_STATUS_LABELS,
@@ -22,6 +23,7 @@ interface OrderItem {
   unitPrice?: number;
   lineSubtotal?: number;
   productId?: string;
+  imageMediaId?: string;
   thumbnailUrl?: string;
   mediaId?: string;
 }
@@ -208,11 +210,7 @@ export default function OrderDetailPage() {
   useEffect(() => {
     Promise.all([
       bff.get<Record<string, unknown>>(`/api/bff/order/orders/${orderId}`),
-      bff
-        .get<
-          unknown[]
-        >(`/api/bff/shipping/shipping/shipments/by-order/${orderId}`)
-        .catch(() => []),
+      bff.get<unknown[]>(shippingShipmentsByOrderPath(orderId)),
     ])
       .then(async ([orderData, shipmentData]) => {
         setOrder(orderData);
@@ -326,10 +324,20 @@ export default function OrderDetailPage() {
                   background: '#fff',
                 }}
               >
-                <MediaThumb
-                  mediaRef={item.mediaId ?? item.thumbnailUrl}
-                  alt={item.productName ?? 'Sản phẩm'}
-                />
+                <div
+                  style={{
+                    width: 64,
+                    height: 64,
+                    flexShrink: 0,
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <OrderItemThumb
+                    item={item}
+                    alt={item.productName ?? 'Sản phẩm'}
+                  />
+                </div>
                 <div style={{ flex: 1 }}>
                   <strong>{item.productName ?? 'Sản phẩm'}</strong>
                   <div style={{ color: '#4b6478', fontSize: '0.9rem' }}>

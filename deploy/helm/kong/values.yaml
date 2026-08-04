@@ -1,0 +1,291 @@
+# Kong Gateway — dedicated node, DB-less, LAN/IP first.
+# Domain/TLS can be added later via values only (no app architecture change).
+
+fullnameOverride: ''
+
+image:
+  repository: kong
+  tag: '3.9.0'
+  pullPolicy: IfNotPresent
+
+ingressController:
+  enabled: true
+  image:
+    repository: kong/kubernetes-ingress-controller
+    tag: '3.4'
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+# Dedicated Kong node scheduling
+nodeSelector:
+  nexatech.io/role: kong
+
+tolerations:
+  - key: dedicated
+    operator: Equal
+    value: kong
+    effect: NoSchedule
+
+replicaCount: 2
+
+# Proxy exposed externally; Admin API ClusterIP only
+proxy:
+  type: LoadBalancer
+  http:
+    enabled: true
+    servicePort: 80
+    containerPort: 8000
+  tls:
+    enabled: false
+    servicePort: 443
+    containerPort: 8443
+  annotations: {}
+  # Set after MetalLB pool assignment
+  loadBalancerIP: ''
+
+admin:
+  type: ClusterIP
+  http:
+    enabled: true
+    servicePort: 8001
+    containerPort: 8001
+  tls:
+    enabled: false
+
+env:
+  database: 'off'
+  router_flavor: traditional_compatible
+  nginx_worker_processes: '2'
+  proxy_access_log: /dev/stdout
+  admin_access_log: /dev/stdout
+  proxy_error_log: /dev/stderr
+  admin_error_log: /dev/stderr
+  # Correlation / tracing headers
+  headers: 'off'
+  trusted_ips: '0.0.0.0/0,::/0'
+  real_ip_header: X-Forwarded-For
+  real_ip_recursive: 'on'
+
+plugins:
+  correlationId:
+    enabled: true
+    headerName: X-Correlation-Id
+    generator: uuid
+    echoDownstream: true
+  cors:
+    enabled: true
+    origins:
+      - '*'
+    methods:
+      - GET
+      - POST
+      - PUT
+      - PATCH
+      - DELETE
+      - OPTIONS
+    headers:
+      - Authorization
+      - Content-Type
+      - X-Correlation-Id
+      - X-Request-Id
+      - X-Cart-Token
+    credentials: true
+    maxAge: 3600
+  rateLimiting:
+    enabled: true
+    minute: 600
+    policy: local
+  requestSizeLimiting:
+    enabled: true
+    allowedPayloadSize: 10
+  securityHeaders:
+    enabled: true
+    headers:
+      X-Content-Type-Options: nosniff
+      X-Frame-Options: SAMEORIGIN
+      Referrer-Policy: strict-origin-when-cross-origin
+      Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+proxyTimeouts:
+  connect: 10000
+  send: 60000
+  read: 60000
+
+# Upstream services in the nexatech namespace (ClusterIP)
+namespace: nexatech
+
+# Path routing — strip only the gateway path prefix when needed.
+# API routes preserve /api/v1/... for Nest global prefixes.
+routes:
+  storefront:
+    paths: ['/']
+    service: storefront-web
+    port: 3000
+    stripPath: false
+    priority: 1
+  admin:
+    paths: ['/admin']
+    service: admin-web
+    port: 3100
+    stripPath: true
+    priority: 10
+  swagger:
+    paths: ['/swagger']
+    service: swagger-portal
+    # Matches apps/swagger-portal + docker-compose.apps.yml
+    port: 8090
+    stripPath: true
+    priority: 10
+  securityGuide:
+    paths: ['/security-guide']
+    service: security-guide-portal
+    # Matches apps/security-guide-portal + docker-compose.apps.yml
+    port: 3200
+    stripPath: true
+    priority: 10
+  identity:
+    paths: ['/api/v1/auth', '/api/v1/admin/users']
+    service: identity-service
+    port: 3001
+    stripPath: false
+    priority: 100
+  customers:
+    paths: ['/api/v1/customers']
+    service: customer-service
+    port: 3002
+    stripPath: false
+    priority: 100
+  catalog:
+    paths:
+      [
+        '/api/v1/categories',
+        '/api/v1/brands',
+        '/api/v1/products',
+        '/api/v1/skus',
+        '/api/v1/admin/catalog',
+      ]
+    service: catalog-service
+    port: 3003
+    stripPath: false
+    priority: 100
+  media:
+    paths: ['/api/v1/media']
+    service: media-service
+    port: 3004
+    stripPath: false
+    priority: 100
+  inventory:
+    paths:
+      [
+        '/api/v1/warehouses',
+        '/api/v1/stores',
+        '/api/v1/stock',
+        '/api/v1/admin/inventory',
+      ]
+    service: inventory-service
+    port: 3005
+    stripPath: false
+    priority: 100
+  cart:
+    paths:
+      [
+        '/api/v1/carts',
+        '/api/v1/wishlist',
+        '/api/v1/comparison',
+        '/api/v1/recently-viewed',
+      ]
+    service: cart-service
+    port: 3006
+    stripPath: false
+    priority: 100
+  orders:
+    paths: ['/api/v1/orders', '/api/v1/admin/orders']
+    service: order-service
+    port: 3007
+    stripPath: false
+    priority: 100
+  payments:
+    paths:
+      [
+        '/api/v1/payments',
+        '/api/v1/mock-payments',
+        '/api/v1/vnpay',
+        '/api/v1/admin/payments',
+      ]
+    service: payment-service
+    port: 3008
+    stripPath: false
+    priority: 100
+  shipping:
+    paths: ['/api/v1/shipping', '/api/v1/shipments', '/api/v1/admin/shipments']
+    service: shipping-service
+    port: 3009
+    stripPath: false
+    priority: 100
+  reviews:
+    paths: ['/api/v1/reviews', '/api/v1/admin/reviews']
+    service: review-service
+    port: 3010
+    stripPath: false
+    priority: 100
+  warranties:
+    paths:
+      [
+        '/api/v1/warranty',
+        '/api/v1/returns',
+        '/api/v1/admin/warranty',
+        '/api/v1/admin/returns',
+      ]
+    service: warranty-service
+    port: 3011
+    stripPath: false
+    priority: 100
+  support:
+    paths: ['/api/v1/support', '/api/v1/admin/support']
+    service: support-service
+    port: 3012
+    stripPath: false
+    priority: 100
+  notifications:
+    paths: ['/api/v1/notifications', '/api/v1/admin/notifications']
+    service: notification-service
+    port: 3013
+    stripPath: false
+    priority: 100
+  reporting:
+    paths: ['/api/v1/admin/reporting']
+    service: reporting-service
+    port: 3014
+    stripPath: false
+    priority: 100
+
+# OWASP lab routes — restrict by IP allowlist (VPN / operator LAN)
+labIpRestriction:
+  enabled: true
+  allow:
+    - 10.0.0.0/8
+    - 172.16.0.0/12
+    - 192.168.0.0/16
+  paths:
+    - /api/v1/security-lab
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: '1'
+    memory: 1Gi
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+serviceAccount:
+  create: true
+  name: ''

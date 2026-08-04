@@ -20,6 +20,8 @@ function first(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Tìm kiếm',
   description: 'Tìm sản phẩm công nghệ tại NexaTech',

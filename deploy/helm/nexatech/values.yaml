@@ -242,7 +242,9 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -267,7 +269,10 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      CART_SERVICE_URL: http://cart-service:3006
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -292,7 +297,8 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      ORDER_SERVICE_URL: http://order-service:3007
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -317,7 +323,9 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      ORDER_SERVICE_URL: http://order-service:3007
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -342,7 +350,10 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      ORDER_SERVICE_URL: http://order-service:3007
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -367,7 +378,9 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      ORDER_SERVICE_URL: http://order-service:3007
+      MEDIA_SERVICE_URL: http://media-service:3004
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -392,7 +405,9 @@ apps:
       limits:
         cpu: 500m
         memory: 512Mi
-    env: {}
+    env:
+      ORDER_SERVICE_URL: http://order-service:3007
+      MEDIA_SERVICE_URL: http://media-service:3004
     autoscaling:
       enabled: false
       minReplicas: 1
@@ -447,6 +462,58 @@ apps:
       enabled: false
       minReplicas: 1
       maxReplicas: 3
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  swagger:
+    # Lab/docs portal — enable in staging values; typically off in locked-down prod.
+    enabled: true
+    name: swagger-portal
+    replicaCount: 1
+    image:
+      name: swagger-portal
+      tag: ''
+    port: 8090
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+    env:
+      NEXATECH_SWAGGER_PORTAL_ENABLED: '1'
+      NEXATECH_DEPLOY_PROFILE: kubernetes
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 2
+      targetCPUUtilizationPercentage: 80
+    podDisruptionBudget:
+      enabled: false
+      minAvailable: 1
+  securityGuide:
+    enabled: true
+    name: security-guide-portal
+    replicaCount: 1
+    image:
+      name: security-guide-portal
+      tag: ''
+    port: 3200
+    resources:
+      requests:
+        cpu: 25m
+        memory: 64Mi
+      limits:
+        cpu: 250m
+        memory: 256Mi
+    env:
+      NEXATECH_DEPLOY_PROFILE: staging
+    autoscaling:
+      enabled: false
+      minReplicas: 1
+      maxReplicas: 2
       targetCPUUtilizationPercentage: 80
     podDisruptionBudget:
       enabled: false

@@ -7,10 +7,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { parseActor, WarrantyService } from './warranty.service';
 
 @ApiTags('returns')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
 @Controller({ path: 'returns', version: ['1', '2'] })

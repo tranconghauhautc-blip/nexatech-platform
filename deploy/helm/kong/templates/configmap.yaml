@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nexatech-kong.fullname" . }}-declarative
+  labels:
+    {{- include "nexatech-kong.labels" . | nindent 4 }}
+data:
+  kong.yml: |
+    _format_version: "3.0"
+    _transform: true
+    plugins:
+      {{- if .Values.plugins.correlationId.enabled }}
+      - name: correlation-id
+        config:
+          header_name: {{ .Values.plugins.correlationId.headerName | quote }}
+          generator: {{ .Values.plugins.correlationId.generator | quote }}
+          echo_downstream: {{ .Values.plugins.correlationId.echoDownstream }}
+      {{- end }}
+      {{- if .Values.plugins.cors.enabled }}
+      - name: cors
+        config:
+          origins:
+            {{- range .Values.plugins.cors.origins }}
+            - {{ . | quote }}
+            {{- end }}
+          methods:
+            {{- range .Values.plugins.cors.methods }}
+            - {{ . | quote }}
+            {{- end }}
+          headers:
+            {{- range .Values.plugins.cors.headers }}
+            - {{ . | quote }}
+            {{- end }}
+          credentials: {{ .Values.plugins.cors.credentials }}
+          max_age: {{ .Values.plugins.cors.maxAge }}
+      {{- end }}
+      {{- if .Values.plugins.rateLimiting.enabled }}
+      - name: rate-limiting
+        config:
+          minute: {{ .Values.plugins.rateLimiting.minute }}
+          policy: {{ .Values.plugins.rateLimiting.policy | quote }}
+      {{- end }}
+      {{- if .Values.plugins.requestSizeLimiting.enabled }}
+      - name: request-size-limiting
+        config:
+          allowed_payload_size: {{ .Values.plugins.requestSizeLimiting.allowedPayloadSize }}
+      {{- end }}
+      {{- if .Values.plugins.securityHeaders.enabled }}
+      - name: response-transformer
+        config:
+          add:
+            headers:
+              {{- range $k, $v := .Values.plugins.securityHeaders.headers }}
+              - {{ printf "%s: %s" $k $v | quote }}
+              {{- end }}
+      {{- end }}
+      {{- if .Values.labIpRestriction.enabled }}
+      - name: ip-restriction
+        route: lab-routes
+        config:
+          allow:
+            {{- range .Values.labIpRestriction.allow }}
+            - {{ . | quote }}
+            {{- end }}
+      {{- end }}
+    services:
+      {{- range $key, $route := .Values.routes }}
+      - name: {{ $key }}
+        url: http://{{ $route.service }}.{{ $.Values.namespace }}.svc.cluster.local:{{ $route.port }}
+        connect_timeout: {{ $.Values.proxyTimeouts.connect }}
+        write_timeout: {{ $.Values.proxyTimeouts.send }}
+        read_timeout: {{ $.Values.proxyTimeouts.read }}
+        routes:
+          - name: {{ $key }}-route
+            paths:
+              {{- range $route.paths }}
+              - {{ . | quote }}
+              {{- end }}
+            strip_path: {{ $route.stripPath }}
+            preserve_host: true
+            regex_priority: {{ $route.priority }}
+      {{- end }}
+      {{- if .Values.labIpRestriction.enabled }}
+      - name: lab
+        url: http://identity-service.{{ .Values.namespace }}.svc.cluster.local:3001
+        routes:
+          - name: lab-routes
+            paths:
+              {{- range .Values.labIpRestriction.paths }}
+              - {{ . | quote }}
+              {{- end }}
+            strip_path: false
+            regex_priority: 200
+      {{- end }}

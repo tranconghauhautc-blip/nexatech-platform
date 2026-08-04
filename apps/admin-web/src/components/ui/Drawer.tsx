@@ -7,11 +7,13 @@ export function Drawer({
   title,
   onClose,
   children,
+  size = 'md',
 }: {
   open: boolean;
   title: string;
   onClose: () => void;
   children: React.ReactNode;
+  size?: 'md' | 'lg';
 }) {
   useEffect(() => {
     if (!open) return;
@@ -29,7 +31,7 @@ export function Drawer({
   return (
     <div className="nx-overlay" onClick={onClose} role="presentation">
       <div
-        className="nx-drawer nx-scrollbar"
+        className={`nx-drawer nx-scrollbar${size === 'lg' ? ' nx-drawer-lg' : ''}`}
         role="dialog"
         aria-modal="true"
         aria-label={title}

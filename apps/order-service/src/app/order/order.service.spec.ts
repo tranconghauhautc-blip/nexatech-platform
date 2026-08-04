@@ -27,6 +27,7 @@ function seedSku(
     unitPrice: overrides?.unitPrice ?? 10_000_000,
     currency: overrides?.currency ?? 'VND',
     isSellable: overrides?.isSellable ?? true,
+    imageMediaId: overrides?.imageMediaId,
   };
   catalog.seed(sku);
   return sku;
@@ -90,8 +91,13 @@ function setup() {
   return { repository, catalog, cart, inventory, publisher, service };
 }
 
-function customerActor(customerId: string): OrderActor {
-  return { userId: customerId, customerId, roles: [Roles.Customer] };
+function customerActor(customerId: string, email?: string): OrderActor {
+  return {
+    userId: customerId,
+    customerId,
+    email,
+    roles: [Roles.Customer],
+  };
 }
 
 function staffActor(): OrderActor {
@@ -106,7 +112,7 @@ describe('OrderService', () => {
     seedCartForSku(cart, 'cust-1', sku, 2);
 
     const dto = await service.createOrder(
-      customerActor('cust-1'),
+      customerActor('cust-1', 'cust-1@example.com'),
       createRequest({ idempotencyKey: 'create-1' }),
     );
 
@@ -127,6 +133,12 @@ describe('OrderService', () => {
     expect(eventTypes).toContain(EventTypes.ORDER_CREATED);
     expect(eventTypes).toContain(EventTypes.ORDER_PACKAGE_CREATED);
     expect(eventTypes).toContain(EventTypes.ORDER_CONFIRMED);
+    const created = publisher.published.find(
+      (e) => e.eventType === EventTypes.ORDER_CREATED,
+    );
+    expect(created?.payload['customerId']).toBe('cust-1');
+    expect(created?.payload['email']).toBe('cust-1@example.com');
+    expect(created?.payload['customerEmail']).toBe('cust-1@example.com');
 
     expect(cart.convertedOrders).toHaveLength(1);
     expect(cart.convertedOrders[0]?.orderId).toBe(dto.id);
@@ -323,6 +335,41 @@ describe('OrderService', () => {
     );
     expect(fetched.items[0]?.productName).toBe('Điện thoại X');
     expect(fetched.items[0]?.unitPrice).toBe(sku.unitPrice);
+  });
+
+  it('persists and maps imageMediaId snapshot from catalog SKU onto the order item DTO', async () => {
+    const { catalog, cart, inventory, repository, service } = setup();
+    const sku = seedSku(catalog, { imageMediaId: 'media-thumb-abc' });
+    inventory.seed(sku.skuCode, 5);
+    seedCartForSku(cart, 'cust-image', sku, 1);
+
+    const dto = await service.createOrder(
+      customerActor('cust-image'),
+      createRequest({ idempotencyKey: 'idem-image' }),
+    );
+    expect(dto.items[0]?.imageMediaId).toBe('media-thumb-abc');
+
+    const persisted = await repository.findById(dto.id);
+    expect(persisted?.items[0]?.imageMediaId).toBe('media-thumb-abc');
+
+    const fetched = await service.getMyOrder(
+      customerActor('cust-image'),
+      dto.id,
+    );
+    expect(fetched.items[0]?.imageMediaId).toBe('media-thumb-abc');
+  });
+
+  it('leaves imageMediaId undefined when the catalog SKU has no image', async () => {
+    const { catalog, cart, inventory, service } = setup();
+    const sku = seedSku(catalog, { skuCode: 'SKU-NO-IMAGE' });
+    inventory.seed(sku.skuCode, 5);
+    seedCartForSku(cart, 'cust-no-image', sku, 1);
+
+    const dto = await service.createOrder(
+      customerActor('cust-no-image'),
+      createRequest({ idempotencyKey: 'idem-no-image' }),
+    );
+    expect(dto.items[0]?.imageMediaId).toBeUndefined();
   });
 
   it('allows another customer to access the order (SC-01 BOLA always-on lab)', async () => {
@@ -559,7 +606,8 @@ describe('OrderService', () => {
   });
 
   it('lets staff move a confirmed order through processing -> ready -> shipped -> delivered', async () => {
-    const { catalog, cart, inventory, publisher, service } = setup();
+    const { catalog, cart, inventory, publisher, repository, service } =
+      setup();
     const sku = seedSku(catalog);
     inventory.seed(sku.skuCode, 5);
     seedCartForSku(cart, 'cust-flow', sku, 1);
@@ -576,10 +624,37 @@ describe('OrderService', () => {
       toStatus: 'READY_TO_SHIP',
     });
     expect(ready.status).toBe('READY_TO_SHIP');
+
+    // Fulfillment guard: SHIPPED thủ công yêu cầu kiện hàng đã READY_TO_SHIP
+    // trở lên (mô phỏng shipping-service đã book kiện trước khi giao vận).
+    const pkg = ready.packages[0];
+    expect(pkg).toBeDefined();
+    await repository.updateShipping({
+      orderId: ready.id,
+      expectedVersion: ready.version,
+      packageId: pkg.id,
+      shipmentId: 'ship-flow-1',
+      packageStatus: 'READY_TO_SHIP',
+      actorId: 'system',
+      actorType: 'system',
+    });
+
     const shipped = await service.transitionStatus(staffActor(), dto.id, {
       toStatus: 'SHIPPED',
     });
     expect(shipped.status).toBe('SHIPPED');
+
+    // DELIVERED thủ công yêu cầu kiện hàng đã DELIVERED thực tế.
+    await repository.updateShipping({
+      orderId: shipped.id,
+      expectedVersion: shipped.version,
+      packageId: pkg.id,
+      shipmentId: 'ship-flow-1',
+      packageStatus: 'DELIVERED',
+      actorId: 'system',
+      actorType: 'system',
+    });
+
     const delivered = await service.transitionStatus(staffActor(), dto.id, {
       toStatus: 'DELIVERED',
     });
@@ -648,5 +723,447 @@ describe('OrderService', () => {
     expect(y.customerId).toBe('cust-y');
     expect(x.id).not.toBe(y.id);
     expect(inventory.availableFor(sku.skuCode)).toBe(20 - 2 - 3);
+  });
+
+  describe('fulfillment guard (SHIPPED/DELIVERED status-transitions)', () => {
+    it('rejects manual SHIPPED transition while the package is still ALLOCATED', async () => {
+      const { catalog, cart, inventory, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-guard-shipped', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-guard-shipped'),
+        createRequest({ idempotencyKey: 'idem-guard-shipped' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+
+      // Package vẫn ALLOCATED (chưa từng sync với shipping-service).
+      await expect(
+        service.transitionStatus(staffActor(), dto.id, {
+          toStatus: 'SHIPPED',
+        }),
+      ).rejects.toMatchObject({
+        errorCode: ErrorCodes.ORDER_INVALID_TRANSITION,
+      });
+    });
+
+    it('rejects manual DELIVERED transition while the package is still ALLOCATED', async () => {
+      const { catalog, cart, inventory, repository, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-guard-delivered', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-guard-delivered'),
+        createRequest({ idempotencyKey: 'idem-guard-delivered' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+
+      // Mô phỏng đơn đã lệch sang SHIPPED (ví dụ do dữ liệu cũ trước khi có
+      // fulfillment guard) nhưng package vẫn ALLOCATED — chưa từng được
+      // shipping-service đồng bộ. DELIVERED thủ công phải bị chặn.
+      await repository.updateStatus({
+        orderId: ready.id,
+        expectedVersion: ready.version,
+        toStatus: 'SHIPPED',
+        actorId: 'system',
+        actorType: 'system',
+      });
+
+      await expect(
+        service.transitionStatus(staffActor(), dto.id, {
+          toStatus: 'DELIVERED',
+        }),
+      ).rejects.toMatchObject({
+        errorCode: ErrorCodes.ORDER_INVALID_TRANSITION,
+      });
+    });
+
+    it('rejects manual DELIVERED transition for STORE_PICKUP orders via status-transitions', async () => {
+      const { catalog, cart, inventory, service } = setup();
+      const sku = seedSku(catalog);
+      const pickupStoreId = createId();
+      inventory.seedPickupStore({
+        id: pickupStoreId,
+        code: 'ST-PICKUP-1',
+        name: 'Cửa hàng Quận 1',
+        pickupEnabled: true,
+        isActive: true,
+      });
+      inventory.seed(sku.skuCode, 5, 'store', pickupStoreId);
+      seedCartForSku(cart, 'cust-pickup-guard', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-pickup-guard'),
+        createRequest({
+          idempotencyKey: 'idem-pickup-guard',
+          deliveryMethod: 'STORE_PICKUP',
+          pickupStoreId,
+          shippingAddress: undefined,
+        }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+      expect(pkg).toBeDefined();
+
+      // Package đã DELIVERED (đồng bộ qua shipping-service) nhưng status-
+      // transitions vẫn phải chặn thao tác thủ công cho STORE_PICKUP.
+      const synced = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-pickup-guard',
+        packageStatus: 'DELIVERED',
+        idempotencyKey: 'idem-pickup-guard-sync',
+      });
+      expect(synced.status).toBe('DELIVERED');
+
+      await expect(
+        service.transitionStatus(staffActor(), dto.id, {
+          toStatus: 'DELIVERED',
+        }),
+      ).rejects.toMatchObject({
+        errorCode: ErrorCodes.ORDER_INVALID_TRANSITION,
+      });
+    });
+  });
+
+  describe('STANDARD shipping-sync multi-step promotion', () => {
+    it('auto-promotes READY_TO_SHIP to DELIVERED when STANDARD package jumps to DELIVERED', async () => {
+      const { catalog, cart, inventory, publisher, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-std-multi', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-std-multi'),
+        createRequest({ idempotencyKey: 'idem-std-multi' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+
+      const delivered = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-std-multi',
+        packageStatus: 'DELIVERED',
+        orderStatus: 'DELIVERED',
+        idempotencyKey: 'idem-std-multi-sync',
+      });
+
+      expect(delivered.status).toBe('DELIVERED');
+      expect(delivered.packages[0]?.status).toBe('DELIVERED');
+      expect(publisher.published.map((e) => e.eventType)).toEqual(
+        expect.arrayContaining([
+          EventTypes.ORDER_SHIPPED,
+          EventTypes.ORDER_DELIVERED,
+        ]),
+      );
+    });
+  });
+
+  describe('STORE_PICKUP shipping-sync multi-step promotion', () => {
+    it('auto-promotes READY_TO_SHIP straight to DELIVERED via shipping sync (SHIPPED -> DELIVERED in one call)', async () => {
+      const { catalog, cart, inventory, publisher, service } = setup();
+      const sku = seedSku(catalog);
+      const pickupStoreId = createId();
+      inventory.seedPickupStore({
+        id: pickupStoreId,
+        code: 'ST-PICKUP-2',
+        name: 'Cửa hàng Quận 2',
+        pickupEnabled: true,
+        isActive: true,
+      });
+      inventory.seed(sku.skuCode, 5, 'store', pickupStoreId);
+      seedCartForSku(cart, 'cust-pickup-multi', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-pickup-multi'),
+        createRequest({
+          idempotencyKey: 'idem-pickup-multi',
+          deliveryMethod: 'STORE_PICKUP',
+          pickupStoreId,
+          shippingAddress: undefined,
+        }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      expect(ready.status).toBe('READY_TO_SHIP');
+      const pkg = ready.packages[0];
+
+      // Mô phỏng shipping-service confirmPickup: package nhảy thẳng lên
+      // DELIVERED kèm orderStatus hint DELIVERED, trong khi đơn vẫn đang
+      // READY_TO_SHIP (chưa từng qua SHIPPED) — order-service phải tự thăng
+      // cấp 2 bước (READY_TO_SHIP -> SHIPPED -> DELIVERED) trong cùng lần sync.
+      const delivered = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-pickup-multi',
+        packageStatus: 'DELIVERED',
+        orderStatus: 'DELIVERED',
+        idempotencyKey: 'idem-pickup-multi-sync',
+      });
+
+      expect(delivered.status).toBe('DELIVERED');
+      expect(delivered.packages[0]?.status).toBe('DELIVERED');
+
+      const history = await service.getStatusHistory(staffActor(), dto.id);
+      expect(history.map((h) => h.toStatus)).toEqual([
+        'CONFIRMED',
+        'PROCESSING',
+        'READY_TO_SHIP',
+        'SHIPPED',
+        'DELIVERED',
+      ]);
+
+      const eventTypes = publisher.published.map((e) => e.eventType);
+      expect(eventTypes).toContain(EventTypes.ORDER_SHIPPED);
+      expect(eventTypes).toContain(EventTypes.ORDER_DELIVERED);
+    });
+
+    it('decouples package sync from an order status transition that cannot be resolved', async () => {
+      const { catalog, cart, inventory, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-decouple', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-decouple'),
+        createRequest({ idempotencyKey: 'idem-decouple' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+
+      // packageStatus READY_TO_SHIP không kèm orderStatus/tự suy luận nào cần
+      // đổi trạng thái đơn (đơn đã READY_TO_SHIP) — vẫn phải áp dụng cập nhật
+      // tracking/provider cho package, không chặn toàn bộ sync.
+      const synced = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-decouple',
+        trackingCode: 'TRK-DECOUPLE',
+        shippingProvider: 'MOCK',
+        packageStatus: 'READY_TO_SHIP',
+        idempotencyKey: 'idem-decouple-sync',
+      });
+
+      expect(synced.status).toBe('READY_TO_SHIP');
+      expect(synced.packages[0]?.status).toBe('READY_TO_SHIP');
+      expect(synced.packages[0]?.trackingCode).toBe('TRK-DECOUPLE');
+    });
+  });
+
+  describe('shipping-sync idempotency', () => {
+    it('is idempotent when called again with unchanged package/order state under a different idempotencyKey', async () => {
+      const { catalog, cart, inventory, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-idem-sync', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-idem-sync'),
+        createRequest({ idempotencyKey: 'idem-idem-sync-create' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+
+      const first = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-idem',
+        trackingCode: 'TRK-IDEM',
+        shippingProvider: 'MOCK',
+        packageStatus: 'SHIPPED',
+        idempotencyKey: 'idem-idem-sync-1',
+      });
+      expect(first.status).toBe('SHIPPED');
+
+      // Gọi lại với nội dung giống hệt nhưng idempotencyKey khác — vẫn phải
+      // là no-op nhờ kiểm tra "samePackage" bên trong doSyncShipping, không
+      // chỉ dựa vào cache idempotencyKey ở tầng ngoài.
+      const second = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-idem',
+        trackingCode: 'TRK-IDEM',
+        shippingProvider: 'MOCK',
+        packageStatus: 'SHIPPED',
+        idempotencyKey: 'idem-idem-sync-2',
+      });
+      expect(second.version).toBe(first.version);
+      expect(second).toEqual(first);
+    });
+
+    it('deduplicates a repeated shipping-sync event carrying the same idempotency key (duplicate webhook/retry)', async () => {
+      const { catalog, cart, inventory, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-dup-event', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-dup-event'),
+        createRequest({ idempotencyKey: 'idem-dup-event-create' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+
+      const first = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-dup',
+        packageStatus: 'SHIPPED',
+        idempotencyKey: 'idem-dup-shipping-event',
+      });
+      expect(first.status).toBe('SHIPPED');
+
+      // Sự kiện lặp lại (retry webhook) mang CÙNG idempotencyKey nhưng nội
+      // dung khác (packageStatus DELIVERED) — phải trả về đúng kết quả của
+      // lần xử lý đầu tiên, không xử lý lại / không tạo outbox event mới.
+      const replay = await service.syncShipping(staffActor(), dto.id, {
+        packageId: pkg.id,
+        shipmentId: 'ship-dup',
+        packageStatus: 'DELIVERED',
+        idempotencyKey: 'idem-dup-shipping-event',
+      });
+      expect(replay).toEqual(first);
+    });
+  });
+
+  describe('reconcileFulfillment (admin-only, idempotent)', () => {
+    it('is admin-only, syncs lagging package status to DELIVERED, and is idempotent', async () => {
+      const { catalog, cart, inventory, repository, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-reconcile', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-reconcile'),
+        createRequest({ idempotencyKey: 'idem-reconcile' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+
+      // Mô phỏng đơn đã DELIVERED nhưng package bị kẹt ở SHIPPED (ví dụ do
+      // lỗi tạm thời khi shipping-service gọi shipping-sync trước đó).
+      const afterPackageUpdate = await repository.updateShipping({
+        orderId: ready.id,
+        expectedVersion: ready.version,
+        packageId: pkg.id,
+        shipmentId: 'ship-reconcile',
+        packageStatus: 'SHIPPED',
+        toStatus: 'SHIPPED',
+        actorId: 'system',
+        actorType: 'system',
+      });
+      await repository.updateStatus({
+        orderId: dto.id,
+        expectedVersion: afterPackageUpdate.version,
+        toStatus: 'DELIVERED',
+        actorId: 'system',
+        actorType: 'system',
+      });
+
+      await expect(
+        service.reconcileFulfillment(staffActor(), dto.id),
+      ).rejects.toMatchObject({ errorCode: ErrorCodes.FORBIDDEN });
+
+      const adminActor: OrderActor = {
+        userId: 'admin-1',
+        customerId: 'admin-1',
+        roles: [Roles.Admin],
+      };
+      const reconciled = await service.reconcileFulfillment(adminActor, dto.id);
+      expect(reconciled.status).toBe('DELIVERED');
+      expect(reconciled.packages[0]?.status).toBe('DELIVERED');
+
+      const again = await service.reconcileFulfillment(adminActor, dto.id);
+      expect(again.version).toBe(reconciled.version);
+    });
+
+    it('is a no-op when packages are not DELIVERED and order is not DELIVERED', async () => {
+      const { catalog, cart, inventory, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-reconcile-noop', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-reconcile-noop'),
+        createRequest({ idempotencyKey: 'idem-reconcile-noop' }),
+      );
+
+      const adminActor: OrderActor = {
+        userId: 'admin-2',
+        customerId: 'admin-2',
+        roles: [Roles.Admin],
+      };
+      const result = await service.reconcileFulfillment(adminActor, dto.id);
+      expect(result.status).toBe('CONFIRMED');
+      expect(result.version).toBe(dto.version);
+    });
+
+    it('promotes READY_TO_SHIP order to DELIVERED when packages are already DELIVERED', async () => {
+      const { catalog, cart, inventory, repository, service } = setup();
+      const sku = seedSku(catalog);
+      inventory.seed(sku.skuCode, 5);
+      seedCartForSku(cart, 'cust-reconcile-stuck', sku, 1);
+      const dto = await service.createOrder(
+        customerActor('cust-reconcile-stuck'),
+        createRequest({ idempotencyKey: 'idem-reconcile-stuck' }),
+      );
+      await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'PROCESSING',
+      });
+      const ready = await service.transitionStatus(staffActor(), dto.id, {
+        toStatus: 'READY_TO_SHIP',
+      });
+      const pkg = ready.packages[0];
+
+      // Mô phỏng P0: package đã DELIVERED (sync một phần) nhưng đơn kẹt READY_TO_SHIP.
+      await repository.updateShipping({
+        orderId: ready.id,
+        expectedVersion: ready.version,
+        packageId: pkg.id,
+        shipmentId: 'ship-stuck',
+        packageStatus: 'DELIVERED',
+        actorId: 'system',
+        actorType: 'system',
+      });
+
+      const adminActor: OrderActor = {
+        userId: 'admin-3',
+        customerId: 'admin-3',
+        roles: [Roles.Admin],
+      };
+      const reconciled = await service.reconcileFulfillment(adminActor, dto.id);
+      expect(reconciled.status).toBe('DELIVERED');
+      expect(reconciled.packages[0]?.status).toBe('DELIVERED');
+    });
   });
 });

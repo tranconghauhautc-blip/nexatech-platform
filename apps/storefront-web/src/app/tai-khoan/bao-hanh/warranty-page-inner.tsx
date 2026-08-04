@@ -4,12 +4,15 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { EmptyState } from '../../../components/common/empty-state';
+import { OrderItemThumb } from '../../../components/media/order-item-thumb';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 
 interface OrderItemOption {
   id: string;
   productName?: string;
   skuCode?: string;
+  productId?: string;
+  imageMediaId?: string;
 }
 
 interface OrderOption {
@@ -19,19 +22,36 @@ interface OrderOption {
   items?: OrderItemOption[];
 }
 
+type RequestKind = 'CLAIM' | 'RETURN';
+
+interface UnifiedItem {
+  kind: RequestKind;
+  id: string;
+  label: string;
+  status?: string;
+}
+
+function asList(data: unknown): unknown[] {
+  if (Array.isArray(data)) return data;
+  return (data as { items?: unknown[] })?.items ?? [];
+}
+
 export function WarrantyPageInner() {
   const search = useSearchParams();
   const showCreate = search.get('tao') === '1';
-  const [items, setItems] = useState<unknown[]>([]);
+  const [items, setItems] = useState<UnifiedItem[]>([]);
   const [orders, setOrders] = useState<OrderOption[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(showCreate);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  const [requestKind, setRequestKind] = useState<RequestKind>('CLAIM');
   const [orderId, setOrderId] = useState('');
   const [orderItemId, setOrderItemId] = useState('');
   const [issueType, setIssueType] = useState('DEFECT');
+  const [returnReason, setReturnReason] = useState('DEFECTIVE');
+  const [desiredResolution, setDesiredResolution] = useState('REFUND');
   const [description, setDescription] = useState('');
 
   const load = useCallback(() => {
@@ -39,16 +59,43 @@ export function WarrantyPageInner() {
     setError(null);
     Promise.all([
       bff.get('/api/bff/warranty/warranty/claims'),
+      bff.get('/api/bff/warranty/returns'),
       bff.get('/api/bff/order/orders').catch(() => ({ items: [] })),
     ])
-      .then(([claimsData, ordersData]) => {
-        const list = Array.isArray(claimsData)
-          ? claimsData
-          : ((claimsData as { items?: unknown[] })?.items ?? []);
-        setItems(list);
-        const orderList = Array.isArray(ordersData)
-          ? ordersData
-          : ((ordersData as { items?: unknown[] })?.items ?? []);
+      .then(([claimsData, returnsData, ordersData]) => {
+        const claims = asList(claimsData).map((item) => {
+          const record = item as Record<string, unknown>;
+          const id = String(
+            record.id ?? record.claimNumber ?? crypto.randomUUID(),
+          );
+          return {
+            kind: 'CLAIM' as const,
+            id,
+            label: String(
+              record.claimNumber ?? record.code ?? record.productName ?? id,
+            ),
+            status: record.status ? String(record.status) : undefined,
+          };
+        });
+        const returns = asList(returnsData).map((item) => {
+          const record = item as Record<string, unknown>;
+          const id = String(
+            record.id ??
+              record.returnCode ??
+              record.code ??
+              crypto.randomUUID(),
+          );
+          return {
+            kind: 'RETURN' as const,
+            id,
+            label: String(
+              record.returnCode ?? record.code ?? record.productName ?? id,
+            ),
+            status: record.status ? String(record.status) : undefined,
+          };
+        });
+        setItems([...claims, ...returns]);
+        const orderList = asList(ordersData);
         setOrders(orderList as OrderOption[]);
       })
       .catch((err) => setError(getErrorMessage(err)))
@@ -74,6 +121,7 @@ export function WarrantyPageInner() {
 
   const selectedOrder = eligibleOrders.find((o) => o.id === orderId);
   const orderItems = selectedOrder?.items ?? [];
+  const selectedItem = orderItems.find((item) => item.id === orderItemId);
   const canCreate = eligibleOrders.length > 0;
 
   useEffect(() => {
@@ -93,13 +141,25 @@ export function WarrantyPageInner() {
     }
     setSaving(true);
     try {
-      await bff.post('/api/bff/warranty/warranty/claims', {
-        orderId,
-        orderItemId,
-        issueType,
-        description: description.trim(),
-        idempotencyKey: crypto.randomUUID(),
-      });
+      if (requestKind === 'CLAIM') {
+        await bff.post('/api/bff/warranty/warranty/claims', {
+          orderId,
+          orderItemId,
+          issueType,
+          description: description.trim(),
+          idempotencyKey: crypto.randomUUID(),
+        });
+      } else {
+        await bff.post('/api/bff/warranty/returns', {
+          orderId,
+          orderItemId,
+          reason: returnReason,
+          desiredResolution,
+          quantity: 1,
+          description: description.trim(),
+          idempotencyKey: crypto.randomUUID(),
+        });
+      }
       setCreating(false);
       setOrderId('');
       setOrderItemId('');
@@ -114,28 +174,17 @@ export function WarrantyPageInner() {
 
   if (loading) {
     return (
-      <div
-        className="nt-skeleton"
-        style={{ minHeight: 160 }}
-        aria-busy="true"
-      />
+      <div className="nt-skeleton" aria-busy="true" role="status">
+        Đang tải bảo hành & đổi trả…
+      </div>
     );
   }
+
   if (error) {
     return (
-      <EmptyState
-        title="Không tải được dữ liệu"
-        description={error}
-        action={
-          <button
-            type="button"
-            className="nt-btn nt-btn-primary"
-            onClick={load}
-          >
-            Thử lại
-          </button>
-        }
-      />
+      <div role="alert" className="nt-form-error">
+        {error}
+      </div>
     );
   }
 
@@ -195,6 +244,18 @@ export function WarrantyPageInner() {
           }}
         >
           <label>
+            Loại yêu cầu
+            <select
+              className="nt-select"
+              value={requestKind}
+              onChange={(e) => setRequestKind(e.target.value as RequestKind)}
+              aria-label="Loại yêu cầu"
+            >
+              <option value="CLAIM">Bảo hành</option>
+              <option value="RETURN">Đổi trả</option>
+            </select>
+          </label>
+          <label>
             Đơn hàng đã giao
             <select
               className="nt-select"
@@ -230,19 +291,86 @@ export function WarrantyPageInner() {
               ))}
             </select>
           </label>
-          <label>
-            Loại sự cố
-            <select
-              className="nt-select"
-              value={issueType}
-              onChange={(e) => setIssueType(e.target.value)}
+          {selectedItem ? (
+            <div
+              style={{
+                display: 'flex',
+                gap: '0.65rem',
+                alignItems: 'center',
+                border: '1px solid #e2e8f0',
+                borderRadius: 10,
+                padding: '0.5rem',
+              }}
             >
-              <option value="DEFECT">Lỗi sản xuất</option>
-              <option value="MALFUNCTION">Hỏng / không hoạt động</option>
-              <option value="MISSING_PARTS">Thiếu linh kiện</option>
-              <option value="OTHER">Khác</option>
-            </select>
-          </label>
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  flexShrink: 0,
+                  borderRadius: 8,
+                  overflow: 'hidden',
+                }}
+              >
+                <OrderItemThumb
+                  item={selectedItem}
+                  alt={selectedItem.productName ?? 'Sản phẩm'}
+                />
+              </div>
+              <div style={{ fontSize: '0.9rem' }}>
+                <strong>{selectedItem.productName ?? 'Sản phẩm'}</strong>
+                <div style={{ color: '#4b6478' }}>
+                  SKU: {selectedItem.skuCode ?? '—'}
+                </div>
+              </div>
+            </div>
+          ) : null}
+          {requestKind === 'CLAIM' ? (
+            <label>
+              Loại sự cố
+              <select
+                className="nt-select"
+                value={issueType}
+                onChange={(e) => setIssueType(e.target.value)}
+              >
+                <option value="DEFECT">Lỗi sản xuất</option>
+                <option value="MALFUNCTION">Hỏng / không hoạt động</option>
+                <option value="MISSING_PARTS">Thiếu linh kiện</option>
+                <option value="OTHER">Khác</option>
+              </select>
+            </label>
+          ) : (
+            <>
+              <label>
+                Lý do đổi trả
+                <select
+                  className="nt-select"
+                  value={returnReason}
+                  onChange={(e) => setReturnReason(e.target.value)}
+                  aria-label="Lý do đổi trả"
+                >
+                  <option value="DEFECTIVE">Sản phẩm lỗi</option>
+                  <option value="WRONG_ITEM">Sai sản phẩm</option>
+                  <option value="CHANGED_MIND">Đổi ý</option>
+                  <option value="DAMAGED_SHIPPING">
+                    Hư hỏng khi vận chuyển
+                  </option>
+                  <option value="OTHER">Khác</option>
+                </select>
+              </label>
+              <label>
+                Mong muốn xử lý
+                <select
+                  className="nt-select"
+                  value={desiredResolution}
+                  onChange={(e) => setDesiredResolution(e.target.value)}
+                >
+                  <option value="REFUND">Hoàn tiền</option>
+                  <option value="EXCHANGE">Đổi sản phẩm</option>
+                  <option value="STORE_CREDIT">Điểm/tín dụng cửa hàng</option>
+                </select>
+              </label>
+            </>
+          )}
           <label>
             Mô tả
             <textarea
@@ -315,31 +443,27 @@ export function WarrantyPageInner() {
             gap: '0.65rem',
           }}
         >
-          {items.map((item, index) => {
-            const record = item as Record<string, unknown>;
-            const id = String(record.id ?? record.claimNumber ?? index);
-            const label = String(
-              record.claimNumber ?? record.code ?? record.productName ?? id,
-            );
-            return (
-              <li
-                key={id}
-                style={{
-                  border: '1px solid #dbeafe',
-                  borderRadius: 12,
-                  padding: '0.85rem',
-                  background: '#fff',
-                }}
-              >
-                <strong>{label}</strong>
-                {record.status ? (
-                  <div style={{ color: '#4b6478' }}>
-                    Trạng thái: {String(record.status)}
-                  </div>
-                ) : null}
-              </li>
-            );
-          })}
+          {items.map((record) => (
+            <li
+              key={`${record.kind}-${record.id}`}
+              style={{
+                border: '1px solid #dbeafe',
+                borderRadius: 12,
+                padding: '0.85rem',
+                background: '#fff',
+              }}
+            >
+              <strong>{record.label}</strong>
+              <div style={{ color: '#4b6478' }}>
+                Loại: {record.kind === 'CLAIM' ? 'Bảo hành' : 'Đổi trả'}
+              </div>
+              {record.status ? (
+                <div style={{ color: '#4b6478' }}>
+                  Trạng thái: {record.status}
+                </div>
+              ) : null}
+            </li>
+          ))}
         </ul>
       )}
     </div>

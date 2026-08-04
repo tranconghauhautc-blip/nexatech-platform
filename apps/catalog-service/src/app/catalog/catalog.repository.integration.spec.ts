@@ -1,8 +1,24 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaCatalogRepository } from './prisma-catalog.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['CATALOG_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires CATALOG_TEST_DATABASE_URL pointing at
+ * nexatech_catalog_test only — never falls back to CATALOG_DATABASE_URL.
+ */
+const CATALOG_TEST_DB = {
+  testUrlEnv: 'CATALOG_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_catalog_test',
+  runtimeUrlEnv: 'CATALOG_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  CATALOG_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -15,12 +31,14 @@ describeIfDb('PrismaCatalogRepository integration', () => {
   const createdSkuCodes: string[] = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(CATALOG_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaCatalogRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(CATALOG_TEST_DB);
     if (createdSkuCodes.length > 0) {
       await prisma.sku.deleteMany({
         where: { skuCode: { in: createdSkuCodes } },

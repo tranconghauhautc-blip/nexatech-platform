@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { AdminSupportController } from './admin-support.controller';
 import {
   InMemoryEventPublisher,
@@ -53,12 +53,12 @@ function createRepositoryProvider() {
     ];
   }
   throw new Error(
-    'SUPPORT_DATABASE_URL bắt buộc khi chạy support-service (trừ NODE_ENV=test)',
+    'SUPPORT_DATABASE_URL báº¯t buá»™c khi cháº¡y support-service (trá»« NODE_ENV=test)',
   );
 }
 
 function createPublisherProvider() {
-  const rabbitUrl = process.env['RABBITMQ_URL'];
+  const rabbitUrl = process.env['RABBITMQ_URL']?.trim();
   if (rabbitUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: SUPPORT_EVENT_PUBLISHER,
@@ -66,38 +66,53 @@ function createPublisherProvider() {
         new RabbitMqEventPublisher(rabbitUrl),
     };
   }
-  return {
-    provide: SUPPORT_EVENT_PUBLISHER,
-    useClass: InMemoryEventPublisher,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: SUPPORT_EVENT_PUBLISHER,
+      useClass: InMemoryEventPublisher,
+    };
+  }
+  throw new Error(
+    'RABBITMQ_URL bắt buộc khi chạy service (không silent fallback InMemoryEventPublisher)',
+  );
 }
 
 function createOrderClientProvider() {
-  const orderUrl = process.env['ORDER_SERVICE_URL'];
+  const orderUrl = process.env['ORDER_SERVICE_URL']?.trim();
   if (orderUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: ORDER_CLIENT,
       useFactory: (): OrderClient => new HttpOrderClient(orderUrl),
     };
   }
-  return {
-    provide: ORDER_CLIENT,
-    useClass: InMemoryOrderClient,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: ORDER_CLIENT,
+      useClass: InMemoryOrderClient,
+    };
+  }
+  throw new Error(
+    'ORDER_SERVICE_URL báº¯t buá»™c khi cháº¡y support-service (khÃ´ng silent fallback InMemory)',
+  );
 }
 
 function createMediaClientProvider() {
-  const mediaUrl = process.env['MEDIA_SERVICE_URL'];
+  const mediaUrl = process.env['MEDIA_SERVICE_URL']?.trim();
   if (mediaUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: MEDIA_CLIENT,
       useFactory: (): MediaClient => new HttpMediaClient(mediaUrl),
     };
   }
-  return {
-    provide: MEDIA_CLIENT,
-    useClass: InMemoryMediaClient,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: MEDIA_CLIENT,
+      useClass: InMemoryMediaClient,
+    };
+  }
+  throw new Error(
+    'MEDIA_SERVICE_URL báº¯t buá»™c khi cháº¡y support-service (khÃ´ng silent fallback InMemory)',
+  );
 }
 
 @Module({

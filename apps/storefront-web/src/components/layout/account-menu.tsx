@@ -54,6 +54,7 @@ export function AccountMenu() {
         type="button"
         className={styles.trigger}
         onClick={() => setOpen((v) => !v)}
+        aria-label={`Menu tài khoản của ${displayName}`}
         aria-haspopup="menu"
         aria-expanded={open}
       >

@@ -113,7 +113,7 @@ export default function OrderDetailPage() {
     const id = params.id;
     Promise.all([
       bff.get<Record<string, unknown>>(\`/api/bff/order/orders/\${id}\`),
-      bff.get<unknown[]>(\`/api/bff/shipping/shipping/shipments/by-order/\${id}\`).catch(() => []),
+      bff.get<unknown[]>(\`/api/bff/shipping/shipments/order/\${id}\`),
     ])
       .then(([orderData, shipmentData]) => {
         setOrder(orderData);

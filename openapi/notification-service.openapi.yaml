@@ -102,6 +102,9 @@ paths:
           description: ''
       tags:
         - admin-notifications
+      security:
+        - bearer: []
+      description: ''
   /api/v1/notifications:
     get:
       operationId: Notifications_list_v1
@@ -325,6 +328,9 @@ paths:
           description: ''
       tags:
         - admin-notifications
+      security:
+        - bearer: []
+      description: ''
   /api/v2/notifications:
     get:
       operationId: Notifications_list_v2

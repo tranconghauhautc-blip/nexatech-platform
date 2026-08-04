@@ -44,7 +44,7 @@ const TEMPLATES: Record<string, NotificationTemplate> = {
     category: 'IDENTITY',
     subject: 'Yêu cầu đặt lại mật khẩu',
     title: 'Yêu cầu đặt lại mật khẩu',
-    body: 'Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Nếu không phải bạn, vui lòng bỏ qua email này.',
+    body: 'Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Mã OTP: {{otp}}. Liên kết: {{resetUrl}}. Nếu không phải bạn, vui lòng bỏ qua email này.',
   },
   'order.created': {
     category: 'ORDER',

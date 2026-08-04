@@ -36,7 +36,11 @@ test.describe('customer address & pickup checkout', () => {
     ).toBeVisible({
       timeout: 15_000,
     });
-    await expect(page.getByText(/thêm địa chỉ/i).first()).toBeVisible();
+    // Add-address form is collapsed by default — expand before asserting fields.
+    await page.getByRole('button', { name: /thêm địa chỉ/i }).click();
+    await expect(
+      page.getByRole('heading', { name: /thêm địa chỉ/i }),
+    ).toBeVisible({ timeout: 5_000 });
     // Combobox labels from VietnamAddressSelector (not raw <select name=provinceCode>)
     await expect(
       page.getByText(/tỉnh\s*\/\s*thành phố/i).first(),

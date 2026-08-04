@@ -50,6 +50,7 @@ function mapItem(row: PrismaOrderFull['items'][number]): OrderItem {
     quantity: row.quantity,
     lineSubtotal: row.lineSubtotal,
     currency: row.currency,
+    imageMediaId: row.imageMediaId ?? undefined,
   };
 }
 
@@ -194,6 +195,7 @@ export class PrismaOrderRepository implements OrderRepository {
           quantity: item.quantity,
           lineSubtotal: item.lineSubtotal,
           currency: item.currency,
+          imageMediaId: item.imageMediaId,
         })),
       });
 

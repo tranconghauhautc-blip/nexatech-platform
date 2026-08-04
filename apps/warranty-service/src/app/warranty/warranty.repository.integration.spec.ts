@@ -1,9 +1,25 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaWarrantyRepository } from './prisma-warranty.repository';
 import { PrismaService } from './prisma.service';
 import { generateClaimCode, generateReturnCode } from './warranty-code';
 
-const describeIfDb = process.env['WARRANTY_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires WARRANTY_TEST_DATABASE_URL pointing at
+ * nexatech_warranty_test only — never falls back to WARRANTY_DATABASE_URL.
+ */
+const WARRANTY_TEST_DB = {
+  testUrlEnv: 'WARRANTY_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_warranty_test',
+  runtimeUrlEnv: 'WARRANTY_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  WARRANTY_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -14,12 +30,14 @@ describeIfDb('PrismaWarrantyRepository integration', () => {
   const createdReturnIds: string[] = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(WARRANTY_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaWarrantyRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(WARRANTY_TEST_DB);
     if (createdClaimIds.length > 0) {
       await prisma.warrantyClaimHistory.deleteMany({
         where: { claimId: { in: createdClaimIds } },

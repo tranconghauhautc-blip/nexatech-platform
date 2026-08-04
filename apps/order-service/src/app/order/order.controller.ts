@@ -7,12 +7,14 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { OrderService, parseActor } from './order.service';
 
 @ApiTags('orders')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
+@ApiHeader({ name: 'x-user-email', required: false })
 @Controller({ path: 'orders', version: ['1', '2'] })
 export class OrderController {
   constructor(private readonly orderService: OrderService) {}
@@ -21,9 +23,13 @@ export class OrderController {
   create(
     @Headers('x-user-id') userId?: string,
     @Headers('x-user-roles') roles?: string,
+    @Headers('x-user-email') email?: string,
     @Body() body?: unknown,
   ) {
-    return this.orderService.createOrder(parseActor(userId, roles), body);
+    return this.orderService.createOrder(
+      parseActor(userId, roles, email),
+      body,
+    );
   }
 
   @Get()

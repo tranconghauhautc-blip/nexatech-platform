@@ -11,7 +11,8 @@ export type AdminServiceKey =
   | 'support'
   | 'notification'
   | 'reporting'
-  | 'media';
+  | 'media'
+  | 'cart';
 
 interface ServiceConfig {
   envKey: string;
@@ -53,6 +54,7 @@ const SERVICE_CONFIG: Record<AdminServiceKey, ServiceConfig> = {
     fallback: 'http://localhost:3014',
   },
   media: { envKey: 'MEDIA_SERVICE_URL', fallback: 'http://localhost:3004' },
+  cart: { envKey: 'CART_SERVICE_URL', fallback: 'http://localhost:3006' },
 };
 
 export const ADMIN_SERVICE_KEYS = Object.keys(

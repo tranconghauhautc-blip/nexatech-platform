@@ -155,7 +155,12 @@ function assertVerifiedBuyer(
   const packageWithItem = order.packages.find((p) =>
     p.items.some((pi) => pi.orderItemId === orderItemId),
   );
-  if (packageWithItem && packageWithItem.status !== 'DELIVERED') {
+  if (
+    packageWithItem &&
+    packageWithItem.status !== 'DELIVERED' &&
+    packageWithItem.status !== 'CANCELLED' &&
+    order.status !== 'DELIVERED'
+  ) {
     throw new AppError({
       errorCode: ErrorCodes.WARRANTY_ORDER_NOT_DELIVERED,
       message: 'Kiện hàng chứa sản phẩm chưa được giao',

@@ -1,8 +1,22 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaMediaRepository } from './prisma-media.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['MEDIA_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires MEDIA_TEST_DATABASE_URL pointing at
+ * nexatech_media_test only — never falls back to MEDIA_DATABASE_URL.
+ */
+const MEDIA_TEST_DB = {
+  testUrlEnv: 'MEDIA_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_media_test',
+  runtimeUrlEnv: 'MEDIA_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(MEDIA_TEST_DB.testUrlEnv)
   ? describe
   : describe.skip;
 
@@ -12,12 +26,14 @@ describeIfDb('PrismaMediaRepository integration', () => {
   const createdMediaIds: string[] = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(MEDIA_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaMediaRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(MEDIA_TEST_DB);
     if (createdMediaIds.length > 0) {
       await prisma.mediaLink.deleteMany({
         where: { mediaId: { in: createdMediaIds } },

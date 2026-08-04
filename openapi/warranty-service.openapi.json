@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/returns/{returnId}": {
@@ -195,7 +201,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/returns/{returnId}/transition": {
@@ -258,7 +270,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/warranty/claims": {
@@ -305,7 +323,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/warranty/claims/{claimId}": {
@@ -360,7 +384,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/warranty/claims/{claimId}/transition": {
@@ -423,7 +453,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/returns": {
@@ -1032,7 +1068,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/returns/{returnId}": {
@@ -1087,7 +1129,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/returns/{returnId}/transition": {
@@ -1150,7 +1198,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/warranty/claims": {
@@ -1197,7 +1251,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/warranty/claims/{claimId}": {
@@ -1252,7 +1312,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/warranty/claims/{claimId}/transition": {
@@ -1315,7 +1381,13 @@
         },
         "tags": [
           "admin-warranty"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/returns": {

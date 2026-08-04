@@ -97,6 +97,9 @@ paths:
           description: ''
       tags:
         - media
+      security:
+        - bearer: []
+      description: ''
   /api/v1/media/by-entity/{entityType}/{entityId}:
     get:
       operationId: Media_byEntity_v1
@@ -268,6 +271,9 @@ paths:
           description: ''
       tags:
         - media
+      security:
+        - bearer: []
+      description: ''
   /api/v2/media/by-entity/{entityType}/{entityId}:
     get:
       operationId: Media_byEntity_v2

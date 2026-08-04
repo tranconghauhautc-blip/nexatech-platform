@@ -101,10 +101,10 @@ describe('AuthService', () => {
     });
 
     const reset = await service.requestPasswordReset('reset@nexatech.vn');
-    expect(reset.debugOtp).toMatch(/^\d{6}$/);
+    expect(reset['debugOtp']).toMatch(/^\d{6}$/);
     await service.resetPassword(
       'reset@nexatech.vn',
-      reset.debugOtp as string,
+      reset['debugOtp'] as string,
       'NewSecret1',
     );
 

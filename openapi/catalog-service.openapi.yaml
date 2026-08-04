@@ -87,6 +87,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/brands/{id}:
     patch:
       operationId: AdminCatalog_updateBrand_v1
@@ -106,6 +109,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/categories:
     post:
       operationId: AdminCatalog_createCategory_v1
@@ -120,6 +126,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/categories/{id}:
     patch:
       operationId: AdminCatalog_updateCategory_v1
@@ -139,6 +148,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/products:
     post:
       operationId: AdminCatalog_createProduct_v1
@@ -153,6 +165,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/products/{id}:
     patch:
       operationId: AdminCatalog_updateProduct_v1
@@ -172,6 +187,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/products/{id}/status:
     patch:
       operationId: AdminCatalog_updateProductStatus_v1
@@ -191,7 +209,31 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/products/{productId}/media-links:
+    get:
+      operationId: AdminCatalog_listMediaLinks_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
     post:
       operationId: AdminCatalog_linkMedia_v1
       parameters:
@@ -210,6 +252,62 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+  /api/v1/admin/catalog/products/{productId}/media-links/{linkId}:
+    delete:
+      operationId: AdminCatalog_unlinkMedia_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: linkId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+    patch:
+      operationId: AdminCatalog_updateMediaLink_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: linkId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/skus:
     post:
       operationId: AdminCatalog_createSku_v1
@@ -224,6 +322,31 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+  /api/v1/admin/catalog/skus/{skuId}:
+    patch:
+      operationId: AdminCatalog_updateSku_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/skus/{skuId}/prices:
     post:
       operationId: AdminCatalog_updatePrice_v1
@@ -248,6 +371,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/catalog/spec-templates:
     get:
       operationId: AdminCatalog_listSpecTemplates_v1
@@ -267,6 +393,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
     post:
       operationId: AdminCatalog_createSpecTemplate_v1
       parameters:
@@ -280,6 +409,73 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+  /api/v1/admin/catalog/spec-templates/{id}:
+    delete:
+      operationId: AdminCatalog_deleteSpecTemplate_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+    get:
+      operationId: AdminCatalog_getSpecTemplate_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+    patch:
+      operationId: AdminCatalog_updateSpecTemplate_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v1/brands:
     get:
       operationId: Catalog_brands_v1
@@ -382,6 +578,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/brands/{id}:
     patch:
       operationId: AdminCatalog_updateBrand_v2
@@ -401,6 +600,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/categories:
     post:
       operationId: AdminCatalog_createCategory_v2
@@ -415,6 +617,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/categories/{id}:
     patch:
       operationId: AdminCatalog_updateCategory_v2
@@ -434,6 +639,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/products:
     post:
       operationId: AdminCatalog_createProduct_v2
@@ -448,6 +656,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/products/{id}:
     patch:
       operationId: AdminCatalog_updateProduct_v2
@@ -467,6 +678,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/products/{id}/status:
     patch:
       operationId: AdminCatalog_updateProductStatus_v2
@@ -486,7 +700,31 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/products/{productId}/media-links:
+    get:
+      operationId: AdminCatalog_listMediaLinks_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
     post:
       operationId: AdminCatalog_linkMedia_v2
       parameters:
@@ -505,6 +743,62 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+  /api/v2/admin/catalog/products/{productId}/media-links/{linkId}:
+    delete:
+      operationId: AdminCatalog_unlinkMedia_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: linkId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+    patch:
+      operationId: AdminCatalog_updateMediaLink_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: productId
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: linkId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/skus:
     post:
       operationId: AdminCatalog_createSku_v2
@@ -519,6 +813,31 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+  /api/v2/admin/catalog/skus/{skuId}:
+    patch:
+      operationId: AdminCatalog_updateSku_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: skuId
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/skus/{skuId}/prices:
     post:
       operationId: AdminCatalog_updatePrice_v2
@@ -543,6 +862,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/catalog/spec-templates:
     get:
       operationId: AdminCatalog_listSpecTemplates_v2
@@ -562,6 +884,9 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
     post:
       operationId: AdminCatalog_createSpecTemplate_v2
       parameters:
@@ -575,6 +900,73 @@ paths:
           description: ''
       tags:
         - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+  /api/v2/admin/catalog/spec-templates/{id}:
+    delete:
+      operationId: AdminCatalog_deleteSpecTemplate_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+    get:
+      operationId: AdminCatalog_getSpecTemplate_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
+    patch:
+      operationId: AdminCatalog_updateSpecTemplate_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: ''
+      tags:
+        - admin-catalog
+      security:
+        - bearer: []
+      description: ''
   /api/v2/brands:
     get:
       operationId: Catalog_brands_v2

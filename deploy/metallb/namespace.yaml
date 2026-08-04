@@ -1,0 +1,13 @@
+# MetalLB — install when the cluster has no cloud LoadBalancer.
+# Set METALLB_ADDRESS_POOL in .env.deploy.local (e.g. 192.168.1.200-192.168.1.210)
+# Then render: envsubst < deploy/metallb/ipaddresspool.yaml.tpl > /tmp/pool.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: metallb-system
+  labels:
+    app.kubernetes.io/name: metallb
+    pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/audit: privileged
+    pod-security.kubernetes.io/warn: privileged

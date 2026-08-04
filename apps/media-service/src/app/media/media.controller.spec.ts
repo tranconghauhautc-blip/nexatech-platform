@@ -27,6 +27,7 @@ describe('MediaController', () => {
       sizeBytes: 100,
       ownerType: 'product',
       ownerId: 'p1',
+      role: 'gallery',
     });
     const metadata = await controller.metadata(presign.mediaId);
     expect(metadata.status).toBe('pending');
@@ -39,6 +40,7 @@ describe('MediaController', () => {
       sizeBytes: 100,
       ownerType: 'product',
       ownerId: 'p1',
+      role: 'gallery',
     });
     storage.markUploaded({
       bucket: presign.bucket,
@@ -49,6 +51,8 @@ describe('MediaController', () => {
       entityType: 'product',
       entityId: 'p1',
       role: 'gallery',
+      sortOrder: 0,
+      isPrimary: false,
     });
 
     const items = await controller.byEntity('product', 'p1');

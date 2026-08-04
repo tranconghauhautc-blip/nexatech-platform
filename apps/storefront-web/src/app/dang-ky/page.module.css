@@ -40,7 +40,7 @@
 }
 
 .field input:focus-visible {
-  outline: 2px solid #0284c7;
+  outline: 2px solid var(--nt-link);
   outline-offset: 1px;
 }
 
@@ -71,5 +71,5 @@
 }
 
 .links a {
-  color: #0284c7;
+  color: var(--nt-link);
 }

@@ -47,5 +47,5 @@
   font-size: 0.9rem;
 }
 .links a {
-  color: #0284c7;
+  color: var(--nt-link);
 }

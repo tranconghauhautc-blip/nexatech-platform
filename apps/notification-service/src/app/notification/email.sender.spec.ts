@@ -1,5 +1,7 @@
+import { ErrorCodes } from '@nexatech/shared-errors';
 import {
   createEmailSender,
+  DegradedEmailSender,
   InMemoryEmailSender,
   LoggingEmailSender,
   SmtpEmailSender,
@@ -36,6 +38,17 @@ describe('LoggingEmailSender', () => {
   });
 });
 
+describe('DegradedEmailSender', () => {
+  it('refuses delivery with NOTIFICATION_EMAIL_DEGRADED', async () => {
+    const sender = new DegradedEmailSender();
+    await expect(
+      sender.send({ to: 'ops@example.com', subject: 'x', text: 'y' }),
+    ).rejects.toMatchObject({
+      errorCode: ErrorCodes.NOTIFICATION_EMAIL_DEGRADED,
+    });
+  });
+});
+
 describe('createEmailSender factory', () => {
   const originalEnv = { ...process.env };
 
@@ -57,10 +70,17 @@ describe('createEmailSender factory', () => {
     expect(sender).toBeInstanceOf(SmtpEmailSender);
   });
 
-  it('returns LoggingEmailSender for dev without SMTP', () => {
+  it('returns LoggingEmailSender for development without SMTP', () => {
     process.env['NODE_ENV'] = 'development';
     delete process.env['SMTP_HOST'];
     const sender = createEmailSender();
     expect(sender).toBeInstanceOf(LoggingEmailSender);
+  });
+
+  it('returns DegradedEmailSender for production without SMTP', () => {
+    process.env['NODE_ENV'] = 'production';
+    delete process.env['SMTP_HOST'];
+    const sender = createEmailSender();
+    expect(sender).toBeInstanceOf(DegradedEmailSender);
   });
 });

@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/payments/{paymentId}": {
@@ -195,7 +201,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/payments/{paymentId}/cod-collect": {
@@ -250,7 +262,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/payments/{paymentId}/refunds": {
@@ -305,7 +323,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/mock-payments/{paymentId}/cancel": {
@@ -658,7 +682,13 @@
         },
         "tags": [
           "payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/payments/{paymentId}": {
@@ -960,7 +990,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/payments/{paymentId}": {
@@ -1015,7 +1051,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/payments/{paymentId}/cod-collect": {
@@ -1070,7 +1112,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/payments/{paymentId}/refunds": {
@@ -1125,7 +1173,13 @@
         },
         "tags": [
           "admin-payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/mock-payments/{paymentId}/cancel": {
@@ -1478,7 +1532,13 @@
         },
         "tags": [
           "payments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/payments/{paymentId}": {

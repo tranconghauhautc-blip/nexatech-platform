@@ -8,7 +8,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import type {
   ConfirmMediaUpload,
   LinkMediaRequest,
@@ -22,6 +22,8 @@ export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
   @Post('presign')
+  @ApiBearerAuth('bearer')
+  @ApiOperation({ summary: 'Presign upload (authenticated)' })
   presign(
     @Headers('x-user-id') userId: string,
     @Headers('x-user-roles') rolesHeader: string,
@@ -34,6 +36,7 @@ export class MediaController {
   }
 
   @Get('by-entity/:entityType/:entityId')
+  @ApiOperation({ summary: 'List media by entity (public browse)' })
   byEntity(
     @Param('entityType') entityType: string,
     @Param('entityId') entityId: string,
@@ -42,6 +45,10 @@ export class MediaController {
   }
 
   @Post('admin/cleanup-orphans')
+  @ApiBearerAuth('bearer')
+  @ApiOperation({
+    summary: 'Admin orphan cleanup (Bearer or gateway trust headers)',
+  })
   cleanupOrphans(
     @Headers('x-user-id') userId: string,
     @Headers('x-user-roles') rolesHeader: string,
@@ -55,6 +62,7 @@ export class MediaController {
   }
 
   @Post(':id/confirm')
+  @ApiBearerAuth('bearer')
   confirm(
     @Headers('x-user-id') userId: string,
     @Headers('x-user-roles') rolesHeader: string,
@@ -69,6 +77,7 @@ export class MediaController {
   }
 
   @Get(':id/download-url')
+  @ApiBearerAuth('bearer')
   downloadUrl(
     @Headers('x-user-id') userId: string,
     @Headers('x-user-roles') rolesHeader: string,
@@ -81,11 +90,13 @@ export class MediaController {
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Media metadata (public)' })
   metadata(@Param('id') id: string) {
     return this.mediaService.getMetadata(id);
   }
 
   @Delete(':id')
+  @ApiBearerAuth('bearer')
   deleteMedia(
     @Headers('x-user-id') userId: string,
     @Headers('x-user-roles') rolesHeader: string,
@@ -95,6 +106,7 @@ export class MediaController {
   }
 
   @Post(':id/links')
+  @ApiBearerAuth('bearer')
   linkMedia(
     @Headers('x-user-id') userId: string,
     @Headers('x-user-roles') rolesHeader: string,

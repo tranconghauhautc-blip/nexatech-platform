@@ -130,6 +130,8 @@ export interface SkuWithPrice extends Sku {
     slug: string;
     name: string;
     status: ProductStatus;
+    /** mediaId của ảnh đại diện sản phẩm (không phải URL tuyệt đối). */
+    thumbnailUrl?: string;
   };
 }
 

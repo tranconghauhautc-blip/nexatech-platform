@@ -8,7 +8,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CustomerService } from './customer.service';
 
 interface AddressBody {
@@ -35,6 +35,7 @@ interface AddressBody {
 type UpdateAddressBody = Partial<AddressBody>;
 
 @ApiTags('customers')
+@ApiBearerAuth('bearer')
 @Controller({ path: 'customers', version: ['1', '2'] })
 export class CustomerController {
   constructor(private readonly customerService: CustomerService) {}

@@ -95,6 +95,7 @@ describe('Order controllers (API)', () => {
     const created = await orderController.create(
       'api-customer-1',
       'Customer',
+      'api-customer-1@example.com',
       createOrderBody(),
     );
     expect(created.status).toBe('CONFIRMED');
@@ -132,6 +133,7 @@ describe('Order controllers (API)', () => {
     const created = await orderController.create(
       'api-customer-2',
       'Customer',
+      undefined,
       createOrderBody(),
     );
 
@@ -156,6 +158,7 @@ describe('Order controllers (API)', () => {
     const created = await orderController.create(
       'api-customer-3',
       'Customer',
+      undefined,
       createOrderBody(),
     );
 
@@ -186,6 +189,7 @@ describe('Order controllers (API)', () => {
     const created = await orderController.create(
       'api-customer-4',
       'Customer',
+      undefined,
       createOrderBody({ paymentMethod: 'MOCK' }),
     );
     expect(created.status).toBe('AWAITING_PAYMENT');

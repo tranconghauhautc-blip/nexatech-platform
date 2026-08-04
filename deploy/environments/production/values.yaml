@@ -1,0 +1,58 @@
+# Production overrides — domain/TLS via values; no hard-coded IPs in app source.
+global:
+  imagePullPolicy: IfNotPresent
+  postgresql:
+    host: '' # from POSTGRES_HOST
+    port: 5432
+    sslMode: require
+
+nodeSelector:
+  nexatech.io/role: app
+
+topologySpreadConstraints:
+  - maxSkew: 1
+    topologyKey: kubernetes.io/hostname
+    whenUnsatisfiable: DoNotSchedule
+    labelSelector:
+      matchLabels:
+        app.kubernetes.io/part-of: nexatech
+
+# Docs portals may stay enabled; operators can flip to false for locked-down prod.
+apps:
+  swagger:
+    enabled: true
+  securityGuide:
+    enabled: true
+
+platform:
+  redis:
+    enabled: true
+  rabbitmq:
+    enabled: true
+  minio:
+    enabled: true
+
+config:
+  nodeEnv: production
+  deployProfile: production
+  publicStorefrontUrl: '' # PUBLIC_STOREFRONT_URL
+  publicAdminUrl: '' # PUBLIC_ADMIN_URL
+  publicApiUrl: '' # PUBLIC_API_URL
+
+entry:
+  enabled: true
+  loadBalancerIP: '' # MetalLB VIP
+  exposeApiPorts: true
+
+migrations:
+  enabled: true
+
+networkPolicy:
+  enabled: false # enable after cluster CNI policy validation
+
+# SMTP: set via Secret; missing SMTP_HOST => email channel degraded (not fake success)
+smtp:
+  optional: true
+
+seed:
+  requiredOnly: true

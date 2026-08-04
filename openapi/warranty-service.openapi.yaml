@@ -102,6 +102,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/returns/{returnId}:
     get:
       operationId: AdminWarranty_getReturn_v1
@@ -136,6 +139,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/returns/{returnId}/transition:
     post:
       operationId: AdminWarranty_transitionReturn_v1
@@ -175,6 +181,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/warranty/claims:
     get:
       operationId: AdminWarranty_listClaims_v1
@@ -204,6 +213,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/warranty/claims/{claimId}:
     get:
       operationId: AdminWarranty_getClaim_v1
@@ -238,6 +250,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/warranty/claims/{claimId}/transition:
     post:
       operationId: AdminWarranty_transitionClaim_v1
@@ -277,6 +292,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v1/returns:
     get:
       operationId: Returns_list_v1
@@ -654,6 +672,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/returns/{returnId}:
     get:
       operationId: AdminWarranty_getReturn_v2
@@ -688,6 +709,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/returns/{returnId}/transition:
     post:
       operationId: AdminWarranty_transitionReturn_v2
@@ -727,6 +751,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/warranty/claims:
     get:
       operationId: AdminWarranty_listClaims_v2
@@ -756,6 +783,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/warranty/claims/{claimId}:
     get:
       operationId: AdminWarranty_getClaim_v2
@@ -790,6 +820,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/warranty/claims/{claimId}/transition:
     post:
       operationId: AdminWarranty_transitionClaim_v2
@@ -829,6 +862,9 @@ paths:
           description: ''
       tags:
         - admin-warranty
+      security:
+        - bearer: []
+      description: ''
   /api/v2/returns:
     get:
       operationId: Returns_list_v2

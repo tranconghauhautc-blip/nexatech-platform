@@ -7,10 +7,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { parseActor, SupportService } from './support.service';
 
 @ApiTags('support-tickets')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
 @Controller({ path: 'support/tickets', version: ['1', '2'] })

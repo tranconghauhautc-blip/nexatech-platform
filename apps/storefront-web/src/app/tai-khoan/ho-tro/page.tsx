@@ -13,6 +13,7 @@ import {
   useState,
 } from 'react';
 import { EmptyState } from '../../../components/common/empty-state';
+import { OrderItemThumb } from '../../../components/media/order-item-thumb';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 import {
   ORDER_STATUS_LABELS,
@@ -25,6 +26,8 @@ interface OrderItemOption {
   productName?: string;
   skuCode?: string;
   quantity?: number;
+  productId?: string;
+  imageMediaId?: string;
 }
 
 interface OrderOption {
@@ -332,8 +335,11 @@ function SupportPageInner() {
       <div
         className="nt-skeleton"
         style={{ minHeight: 160 }}
+        role="status"
         aria-busy="true"
-      />
+      >
+        Đang tải hỗ trợ…
+      </div>
     );
   }
   if (error) {
@@ -388,8 +394,11 @@ function SupportPageInner() {
           <div
             className="nt-skeleton"
             style={{ minHeight: 200, marginTop: '1rem' }}
+            role="status"
             aria-busy="true"
-          />
+          >
+            Đang tải phiếu…
+          </div>
         ) : detailError ? (
           <EmptyState
             title="Không tải được phiếu"
@@ -730,6 +739,44 @@ function SupportPageInner() {
             <span className="nt-field-hint">
               Chọn theo mã đơn, ngày, trạng thái và sản phẩm — không dùng UUID.
             </span>
+            {(() => {
+              const selectedOrder = orderId
+                ? ordersById.get(orderId)
+                : undefined;
+              const firstItem = selectedOrder?.items?.[0];
+              if (!firstItem) return null;
+              return (
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: '0.65rem',
+                    alignItems: 'center',
+                    marginTop: '0.5rem',
+                    border: '1px solid var(--nt-border)',
+                    borderRadius: 10,
+                    padding: '0.5rem',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: 48,
+                      height: 48,
+                      flexShrink: 0,
+                      borderRadius: 8,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <OrderItemThumb
+                      item={firstItem}
+                      alt={firstItem.productName ?? 'Sản phẩm'}
+                    />
+                  </div>
+                  <span style={{ fontSize: '0.9rem' }}>
+                    {summarizeOrderItems(selectedOrder?.items)}
+                  </span>
+                </div>
+              );
+            })()}
           </div>
 
           {formError ? (
@@ -858,7 +905,14 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="nt-skeleton" style={{ minHeight: 160 }} aria-busy />
+        <div
+          className="nt-skeleton"
+          style={{ minHeight: 160 }}
+          role="status"
+          aria-busy="true"
+        >
+          Đang tải hỗ trợ…
+        </div>
       }
     >
       <SupportPageInner />

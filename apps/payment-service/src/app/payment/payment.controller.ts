@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Headers, Param, Post } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { PaymentService, parseActor } from './payment.service';
 
 @ApiTags('payments')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
 @Controller({ path: 'payments', version: ['1', '2'] })

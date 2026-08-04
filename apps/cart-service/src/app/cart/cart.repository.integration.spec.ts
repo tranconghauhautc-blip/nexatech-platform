@@ -1,8 +1,22 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaCartRepository } from './prisma-cart.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['CART_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires CART_TEST_DATABASE_URL pointing at
+ * nexatech_cart_test only — never falls back to CART_DATABASE_URL.
+ */
+const CART_TEST_DB = {
+  testUrlEnv: 'CART_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_cart_test',
+  runtimeUrlEnv: 'CART_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(CART_TEST_DB.testUrlEnv)
   ? describe
   : describe.skip;
 
@@ -11,6 +25,7 @@ describeIfDb('cart repository integration', () => {
   let repository: PrismaCartRepository;
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(CART_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaCartRepository(prisma);
@@ -21,6 +36,7 @@ describeIfDb('cart repository integration', () => {
   });
 
   beforeEach(async () => {
+    assertIntegrationTestDatabaseReady(CART_TEST_DB);
     await prisma.cartItem.deleteMany();
     await prisma.cart.deleteMany();
     await prisma.wishlistItem.deleteMany();

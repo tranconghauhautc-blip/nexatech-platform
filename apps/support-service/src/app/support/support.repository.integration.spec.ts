@@ -1,9 +1,25 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaSupportRepository } from './prisma-support.repository';
 import { PrismaService } from './prisma.service';
 import { generateTicketCode } from './support-code';
 
-const describeIfDb = process.env['SUPPORT_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires SUPPORT_TEST_DATABASE_URL pointing at
+ * nexatech_support_test only — never falls back to SUPPORT_DATABASE_URL.
+ */
+const SUPPORT_TEST_DB = {
+  testUrlEnv: 'SUPPORT_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_support_test',
+  runtimeUrlEnv: 'SUPPORT_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  SUPPORT_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -13,12 +29,14 @@ describeIfDb('PrismaSupportRepository integration', () => {
   const createdTicketIds: string[] = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(SUPPORT_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaSupportRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(SUPPORT_TEST_DB);
     if (createdTicketIds.length > 0) {
       await prisma.supportTicketHistory.deleteMany({
         where: { ticketId: { in: createdTicketIds } },

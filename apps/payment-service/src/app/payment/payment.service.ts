@@ -32,6 +32,7 @@ import {
   type EventType,
 } from '@nexatech/shared-events';
 import { createId, createTraceId } from '@nexatech/shared-platform';
+import { Logger } from '@nestjs/common';
 import { ZodError } from 'zod';
 import type { OrderClient } from './order.client';
 import type { PaymentEventPublisher } from './event-publisher';
@@ -230,6 +231,7 @@ function toRefundDto(refund: Payment['refunds'][number]): RefundDto {
 }
 
 export class PaymentService {
+  private static readonly logger = new Logger(PaymentService.name);
   private readonly outbox: OutboxDispatcher;
   private readonly inFlight = new Map<string, Promise<unknown>>();
   private readonly callbackLocks = new Map<
@@ -296,6 +298,15 @@ export class PaymentService {
     return {
       userId: actor.userId,
       roles: actor.roles,
+      traceId,
+    };
+  }
+
+  /** Staff identity for order payment-sync (never forward Customer roles). */
+  private serviceSyncHeaders(traceId: string): OrderClientHeaders {
+    return {
+      userId: `payment-service:${traceId.slice(0, 8)}`,
+      roles: [Roles.Staff],
       traceId,
     };
   }
@@ -1038,7 +1049,7 @@ export class PaymentService {
 
   private async syncOrderIfNeeded(
     payment: Payment,
-    actor: PaymentActor,
+    _actor: PaymentActor,
     traceId: string,
   ): Promise<void> {
     if (payment.orderSyncedAt) {
@@ -1046,6 +1057,7 @@ export class PaymentService {
     }
     const confirmOrder =
       payment.provider === 'MOCK' || payment.provider === 'VNPAY';
+    const idempotencyKey = `sync-${payment.id}-paid`;
     try {
       await this.orderClient.syncPayment(
         payment.orderId,
@@ -1054,9 +1066,9 @@ export class PaymentService {
           paymentReference: payment.paymentReference,
           paidAt: payment.paidAt?.toISOString(),
           confirmOrder,
-          idempotencyKey: `sync-${payment.id}-paid`,
+          idempotencyKey,
         },
-        this.clientHeaders(actor, traceId),
+        this.serviceSyncHeaders(traceId),
       );
       const latest = await this.repository.findById(payment.id);
       if (!latest) return;
@@ -1068,8 +1080,25 @@ export class PaymentService {
         outboxEvents: [],
         actorId: 'system',
       });
-    } catch {
-      // Retry-safe: orderSyncedAt remains unset
+    } catch (error) {
+      const errorCode =
+        error instanceof AppError
+          ? error.errorCode
+          : 'PAYMENT_ORDER_SYNC_FAILED';
+      PaymentService.logger.error(
+        JSON.stringify({
+          message: 'order payment-sync failed',
+          eventId: idempotencyKey,
+          eventType: 'order.payment-sync',
+          routingKey: 'payment.order-sync',
+          orderId: payment.orderId,
+          paymentId: payment.id,
+          correlationId: traceId,
+          attempt: 1,
+          errorCode,
+          error: String(error),
+        }),
+      );
     }
   }
 
@@ -1116,10 +1145,27 @@ export class PaymentService {
             paymentReference: payment.paymentReference,
             idempotencyKey: `sync-${payment.id}-${to}`,
           },
-          this.clientHeaders(actor, traceId),
+          this.serviceSyncHeaders(traceId),
         );
-      } catch {
-        // optional sync
+      } catch (error) {
+        const errorCode =
+          error instanceof AppError
+            ? error.errorCode
+            : 'PAYMENT_ORDER_SYNC_FAILED';
+        PaymentService.logger.error(
+          JSON.stringify({
+            message: 'order payment-sync failed (failure path)',
+            eventId: `sync-${payment.id}-${to}`,
+            eventType: 'order.payment-sync',
+            routingKey: 'payment.order-sync',
+            orderId: payment.orderId,
+            paymentId: payment.id,
+            correlationId: traceId,
+            attempt: 1,
+            errorCode,
+            error: String(error),
+          }),
+        );
       }
     }
 

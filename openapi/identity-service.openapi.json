@@ -320,7 +320,19 @@
         },
         "tags": [
           "Health"
-        ]
+        ],
+        "security": [
+          {
+            "userId": []
+          },
+          {
+            "userRoles": []
+          },
+          {
+            "bearer": []
+          }
+        ],
+        "description": "Internal/BFF path — not anonymously callable; requires gateway identity headers or bearer."
       }
     },
     "/api/v1/admin/users": {
@@ -368,7 +380,13 @@
         "summary": "List users (SuperAdmin; BFLA in always-on lab)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "post": {
         "operationId": "AdminUsers_create_v1",
@@ -414,7 +432,13 @@
         "summary": "SC-76 — create user (BFLA; weak password SC-85)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/users/export": {
@@ -462,7 +486,13 @@
         "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/users/{userId}": {
@@ -518,7 +548,13 @@
         "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "get": {
         "operationId": "AdminUsers_get_v1",
@@ -572,7 +608,13 @@
         "summary": "Get user by id",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "patch": {
         "operationId": "AdminUsers_patch_v1",
@@ -626,7 +668,13 @@
         "summary": "Patch user roles/status (mass-assignment in always-on lab)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/users/{userId}/disable": {
@@ -682,7 +730,13 @@
         "summary": "SC-77 — soft-disable user (BFLA)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/auth/forgot-password": {
@@ -1070,7 +1124,13 @@
         "summary": "List users (SuperAdmin; BFLA in always-on lab)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "post": {
         "operationId": "AdminUsers_create_v2",
@@ -1116,7 +1176,13 @@
         "summary": "SC-76 — create user (BFLA; weak password SC-85)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/users/export": {
@@ -1164,7 +1230,13 @@
         "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/users/{userId}": {
@@ -1220,7 +1292,13 @@
         "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "get": {
         "operationId": "AdminUsers_get_v2",
@@ -1274,7 +1352,13 @@
         "summary": "Get user by id",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "patch": {
         "operationId": "AdminUsers_patch_v2",
@@ -1328,7 +1412,13 @@
         "summary": "Patch user roles/status (mass-assignment in always-on lab)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/users/{userId}/disable": {
@@ -1384,7 +1474,13 @@
         "summary": "SC-77 — soft-disable user (BFLA)",
         "tags": [
           "admin-users"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/auth/forgot-password": {

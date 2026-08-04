@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { AdminOrderController } from './admin-order.controller';
 import { CartClient, HttpCartClient, InMemoryCartClient } from './cart.client';
 import {
@@ -54,12 +54,12 @@ function createRepositoryProvider() {
     ];
   }
   throw new Error(
-    'ORDER_DATABASE_URL bắt buộc khi chạy order-service (trừ NODE_ENV=test)',
+    'ORDER_DATABASE_URL báº¯t buá»™c khi cháº¡y order-service (trá»« NODE_ENV=test)',
   );
 }
 
 function createPublisherProvider() {
-  const rabbitUrl = process.env['RABBITMQ_URL'];
+  const rabbitUrl = process.env['RABBITMQ_URL']?.trim();
   if (rabbitUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: ORDER_EVENT_PUBLISHER,
@@ -67,52 +67,72 @@ function createPublisherProvider() {
         new RabbitMqEventPublisher(rabbitUrl),
     };
   }
-  return {
-    provide: ORDER_EVENT_PUBLISHER,
-    useClass: InMemoryEventPublisher,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: ORDER_EVENT_PUBLISHER,
+      useClass: InMemoryEventPublisher,
+    };
+  }
+  throw new Error(
+    'RABBITMQ_URL bắt buộc khi chạy service (không silent fallback InMemoryEventPublisher)',
+  );
 }
 
 function createCatalogProvider() {
-  const catalogUrl = process.env['CATALOG_SERVICE_URL'];
+  const catalogUrl = process.env['CATALOG_SERVICE_URL']?.trim();
   if (catalogUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: CATALOG_CLIENT,
       useFactory: (): CatalogClient => new HttpCatalogClient(catalogUrl),
     };
   }
-  return {
-    provide: CATALOG_CLIENT,
-    useClass: InMemoryCatalogClient,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: CATALOG_CLIENT,
+      useClass: InMemoryCatalogClient,
+    };
+  }
+  throw new Error(
+    'CATALOG_SERVICE_URL bắt buộc khi chạy order-service (không silent fallback InMemory)',
+  );
 }
 
 function createCartProvider() {
-  const cartUrl = process.env['CART_SERVICE_URL'];
+  const cartUrl = process.env['CART_SERVICE_URL']?.trim();
   if (cartUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: CART_CLIENT,
       useFactory: (): CartClient => new HttpCartClient(cartUrl),
     };
   }
-  return {
-    provide: CART_CLIENT,
-    useClass: InMemoryCartClient,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: CART_CLIENT,
+      useClass: InMemoryCartClient,
+    };
+  }
+  throw new Error(
+    'CART_SERVICE_URL bắt buộc khi chạy order-service (không silent fallback InMemory)',
+  );
 }
 
 function createInventoryProvider() {
-  const inventoryUrl = process.env['INVENTORY_SERVICE_URL'];
+  const inventoryUrl = process.env['INVENTORY_SERVICE_URL']?.trim();
   if (inventoryUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: INVENTORY_CLIENT,
       useFactory: (): InventoryClient => new HttpInventoryClient(inventoryUrl),
     };
   }
-  return {
-    provide: INVENTORY_CLIENT,
-    useClass: InMemoryInventoryClient,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: INVENTORY_CLIENT,
+      useClass: InMemoryInventoryClient,
+    };
+  }
+  throw new Error(
+    'INVENTORY_SERVICE_URL bắt buộc khi chạy order-service (không silent fallback InMemory)',
+  );
 }
 
 @Module({

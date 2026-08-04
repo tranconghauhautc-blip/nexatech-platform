@@ -102,6 +102,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/orders/{orderId}:
     get:
       operationId: AdminOrder_get_v1
@@ -136,6 +139,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/orders/{orderId}/cancel:
     post:
       operationId: AdminOrder_cancel_v1
@@ -170,6 +176,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/orders/{orderId}/confirm:
     post:
       operationId: AdminOrder_confirm_v1
@@ -204,6 +213,46 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
+  /api/v1/admin/orders/{orderId}/reconcile-fulfillment:
+    post:
+      operationId: AdminOrder_reconcileFulfillment_v1
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: ''
+      tags:
+        - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/orders/{orderId}/status-transitions:
     post:
       operationId: AdminOrder_transition_v1
@@ -238,6 +287,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v1/orders:
     get:
       operationId: Order_list_v1
@@ -596,6 +648,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/orders/{orderId}:
     get:
       operationId: AdminOrder_get_v2
@@ -630,6 +685,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/orders/{orderId}/cancel:
     post:
       operationId: AdminOrder_cancel_v2
@@ -664,6 +722,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/orders/{orderId}/confirm:
     post:
       operationId: AdminOrder_confirm_v2
@@ -698,6 +759,46 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
+  /api/v2/admin/orders/{orderId}/reconcile-fulfillment:
+    post:
+      operationId: AdminOrder_reconcileFulfillment_v2
+      parameters:
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: orderId
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-id
+          required: true
+          schema:
+            type: string
+        - in: header
+          name: x-user-roles
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: ''
+      tags:
+        - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/orders/{orderId}/status-transitions:
     post:
       operationId: AdminOrder_transition_v2
@@ -732,6 +833,9 @@ paths:
           description: ''
       tags:
         - admin-orders
+      security:
+        - bearer: []
+      description: ''
   /api/v2/orders:
     get:
       operationId: Order_list_v2

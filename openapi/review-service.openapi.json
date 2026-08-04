@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/review-reports/{reportId}/resolve": {
@@ -203,7 +209,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/reviews": {
@@ -250,7 +262,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/reviews/aggregates/rebuild": {
@@ -305,7 +323,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/reviews/{reviewId}": {
@@ -360,7 +384,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/reviews/{reviewId}/moderate": {
@@ -423,7 +453,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/products/{productId}/reviews": {
@@ -571,7 +607,13 @@
         },
         "tags": [
           "reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/reviews/{reviewId}": {
@@ -1319,7 +1361,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/review-reports/{reportId}/resolve": {
@@ -1382,7 +1430,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/reviews": {
@@ -1429,7 +1483,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/reviews/aggregates/rebuild": {
@@ -1484,7 +1544,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/reviews/{reviewId}": {
@@ -1539,7 +1605,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/reviews/{reviewId}/moderate": {
@@ -1602,7 +1674,13 @@
         },
         "tags": [
           "admin-reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/products/{productId}/reviews": {
@@ -1750,7 +1828,13 @@
         },
         "tags": [
           "reviews"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/reviews/{reviewId}": {

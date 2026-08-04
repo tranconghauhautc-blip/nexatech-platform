@@ -25,7 +25,7 @@
 .clearAll {
   border: none;
   background: transparent;
-  color: #0284c7;
+  color: var(--nt-link);
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -86,7 +86,7 @@
 }
 
 .input:focus-visible {
-  outline: 2px solid #0284c7;
+  outline: 2px solid var(--nt-link);
   outline-offset: 1px;
 }
 
@@ -172,7 +172,7 @@
 }
 
 .priceChipActive {
-  border-color: #0284c7;
+  border-color: var(--nt-link);
   background: #e0f2fe;
   font-weight: 600;
   color: #0c4a6e;
@@ -200,7 +200,7 @@
 .applyBtn {
   border: none;
   border-radius: 8px;
-  background: #0284c7;
+  background: var(--nt-link);
   color: #fff;
   font-weight: 600;
   padding: 0.55rem 0.75rem;

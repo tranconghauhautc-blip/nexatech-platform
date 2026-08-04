@@ -16,7 +16,7 @@ describe('swagger-setup forbidden headers', () => {
           },
         },
       },
-    } as OpenAPIObject;
+    } as unknown as OpenAPIObject;
 
     stripForbiddenHeaderParametersForTest(document);
 

@@ -330,6 +330,15 @@ describe('ShippingService', () => {
     });
     expect(delivered.status).toBe('DELIVERED');
     expect(inventoryClient.commits.length).toBe(1);
+
+    // UC-SHIP / P0: confirmPickup must sync order with Staff service identity,
+    // never Customer roles (order-service.requireStaff).
+    const confirmSync = orderClient.syncCalls.find(
+      (c) => c.input.packageStatus === 'DELIVERED',
+    );
+    expect(confirmSync).toBeDefined();
+    expect(confirmSync!.headers.roles).toContain('Staff');
+    expect(confirmSync!.headers.roles).not.toContain('Customer');
   });
 
   it('syncs order and retries with orderSyncedAt', async () => {

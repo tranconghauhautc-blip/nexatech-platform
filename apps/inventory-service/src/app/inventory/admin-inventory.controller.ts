@@ -1,9 +1,10 @@
 import { Body, Controller, Headers, Param, Patch, Post } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { InventoryService, parseRolesHeader } from './inventory.service';
 import type { ReturnStockRequestInput } from './inventory.types';
 
 @ApiTags('admin-inventory')
+@ApiBearerAuth('bearer')
 @Controller({ path: 'admin/inventory', version: ['1', '2'] })
 export class AdminInventoryController {
   constructor(private readonly inventoryService: InventoryService) {}

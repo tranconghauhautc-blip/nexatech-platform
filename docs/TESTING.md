@@ -33,6 +33,37 @@ Runner: Jest (Nx default) hoặc Vitest nếu Nx generator chọn — thống nh
 - RabbitMQ publish/consume (testcontainer hoặc compose profile `test`)
 - MinIO presign (optional)
 
+### Prisma destructive suites (`*_TEST_DATABASE_URL`)
+
+Repository integration specs và `prisma.migration.spec.ts` có `deleteMany` / `prisma migrate deploy` **bắt buộc** dùng helper từ `@nexatech/shared-platform`:
+
+- `describeIntegrationDatabase(testUrlEnv)` — gate suite chỉ khi có `*_TEST_DATABASE_URL`
+- `assertIntegrationTestDatabaseReady({ testUrlEnv, requiredDatabaseName, runtimeUrlEnv })` — gọi **trước** mọi `deleteMany` / `migrate deploy`
+
+Quy tắc:
+
+1. Gate **chỉ** trên `*_TEST_DATABASE_URL` (ví dụ `ORDER_TEST_DATABASE_URL`).
+2. Database name phải đúng `nexatech_<service>_test` (ví dụ `nexatech_order_test`).
+3. **Không** dùng runtime `*_DATABASE_URL` làm gate hoặc fallback để chạy suite.
+4. Sau khi assert thành công, helper ghi đè `runtimeUrlEnv` bằng URL test để PrismaService / migrate trỏ đúng DB test.
+
+| Service      | testUrlEnv                       | requiredDatabaseName         |
+| ------------ | -------------------------------- | ---------------------------- |
+| cart         | `CART_TEST_DATABASE_URL`         | `nexatech_cart_test`         |
+| catalog      | `CATALOG_TEST_DATABASE_URL`      | `nexatech_catalog_test`      |
+| inventory    | `INVENTORY_TEST_DATABASE_URL`    | `nexatech_inventory_test`    |
+| media        | `MEDIA_TEST_DATABASE_URL`        | `nexatech_media_test`        |
+| order        | `ORDER_TEST_DATABASE_URL`        | `nexatech_order_test`        |
+| payment      | `PAYMENT_TEST_DATABASE_URL`      | `nexatech_payment_test`      |
+| shipping     | `SHIPPING_TEST_DATABASE_URL`     | `nexatech_shipping_test`     |
+| review       | `REVIEW_TEST_DATABASE_URL`       | `nexatech_review_test`       |
+| warranty     | `WARRANTY_TEST_DATABASE_URL`     | `nexatech_warranty_test`     |
+| support      | `SUPPORT_TEST_DATABASE_URL`      | `nexatech_support_test`      |
+| notification | `NOTIFICATION_TEST_DATABASE_URL` | `nexatech_notification_test` |
+| reporting    | `REPORTING_TEST_DATABASE_URL`    | `nexatech_reporting_test`    |
+
+Suite migration chỉ đọc file SQL snapshot (không kết nối DB) vẫn chạy luôn — không yêu cầu `*_TEST_DATABASE_URL`.
+
 ## API tests
 
 - Supertest / Pact-like contract từ `libs/shared/contracts`
@@ -55,6 +86,13 @@ Luồng tối thiểu:
 - Seed: `pnpm seed:pickup-stores` (idempotent) trước e2e pickup.
 - Cần `E2E_DEV_SEED_PASSWORD`; không hard-code password trong repo.
 - Ưu tiên Docker runtime + Postgres; không coi mock route interception là PASS nghiệp vụ.
+
+### Accessibility (axe)
+
+- Spec: `e2e/a11y/accessibility.spec.ts` — fail on serious/critical WCAG 2.0/2.1 A/AA.
+- Storefront root layout must keep `lang="vi"`.
+- **Third-party exclusion:** Swagger portal scopes axe to `body > header` and excludes `#swagger-ui` (`swagger-ui-dist` contrast / nested-interactive / unlabeled controls are out of product control). Documented in the spec header.
+- After storefront a11y CSS/markup changes, rebuild the storefront Docker image before re-running Playwright against Compose.
 
 ## k6
 
@@ -129,10 +167,11 @@ Backend thật qua Compose (khi có): seed catalog `pnpm seed:catalog` sau migra
 
 ## Integration (M4–M16)
 
-Bật Compose rồi set `IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, `CATALOG_DATABASE_URL`, `MEDIA_DATABASE_URL`, `MINIO_*`, `INVENTORY_DATABASE_URL`, `CART_DATABASE_URL`, `ORDER_DATABASE_URL`, `PAYMENT_DATABASE_URL`, `SHIPPING_DATABASE_URL`, `REVIEW_DATABASE_URL`, `WARRANTY_DATABASE_URL`, `SUPPORT_DATABASE_URL`, `NOTIFICATION_DATABASE_URL`, `REPORTING_DATABASE_URL`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
-Tests tự skip nếu thiếu env — riêng notification M13 đã chạy integration với Postgres Compose thật (`61/61` khi có DB).
+Bật Compose rồi set runtime URL (`IDENTITY_DATABASE_URL`, `CUSTOMER_DATABASE_URL`, …) cho app/dev nếu cần. Với **destructive** Prisma repository / migrate suites: set riêng `*_TEST_DATABASE_URL` trỏ tới database `nexatech_<service>_test` (xem bảng trên). **Không** trỏ `*_TEST_DATABASE_URL` vào runtime DB; **không** dùng `*_DATABASE_URL` làm gate/fallback cho các suite đó.
+Có thể bổ sung `MINIO_*`, `REDIS_URL`, `RABBITMQ_URL` (optional) trước `pnpm test`.
+Tests tự skip nếu thiếu `*_TEST_DATABASE_URL` — riêng notification M13 đã chạy integration với Postgres Compose thật (`61/61` khi có DB test).
 
-reporting-service M14 dự kiến **56+ test** (unit domain/metric mapping + controller RBAC + event-handlers extract/status + Prisma migration snapshot + Prisma integration + consumer bind/DLX), tương tự cấu trúc notification M13; chạy đủ khi có `REPORTING_DATABASE_URL`.
+reporting-service M14 dự kiến **56+ test** (unit domain/metric mapping + controller RBAC + event-handlers extract/status + Prisma migration snapshot + Prisma integration + consumer bind/DLX), tương tự cấu trúc notification M13; chạy đủ Prisma integration khi có `REPORTING_TEST_DATABASE_URL`.
 
 `inventory.concurrency.spec.ts` chạy song song nhiều lệnh `reserveStock`/`issueStock` bằng `InMemoryInventoryRepository` và khẳng định bất biến `reserved <= onHand` cùng `onHand >= 0` luôn đúng; các lần thất bại phải là `INVENTORY_INSUFFICIENT` hoặc `INVENTORY_CONFLICT`.
 

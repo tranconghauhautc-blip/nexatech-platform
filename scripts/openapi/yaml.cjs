@@ -170,6 +170,21 @@ function normalizeOpenApiDocument(doc, service) {
   };
   if (!normalized.paths) normalized.paths = {};
 
+  const PUBLIC_PATH_HINTS =
+    /\/(auth\/(login|register|forgot-password|reset-password|verify-email)|health|docs)/i;
+  function pathHasSegment(p, segment) {
+    return new RegExp(`(?:^|/)${segment}(?:/|$)`, 'i').test(p);
+  }
+  function looksProtectedPath(p) {
+    if (PUBLIC_PATH_HINTS.test(p)) return false;
+    return (
+      pathHasSegment(p, 'admin') ||
+      pathHasSegment(p, 'me') ||
+      pathHasSegment(p, 'sessions') ||
+      pathHasSegment(p, 'internal')
+    );
+  }
+
   const forbiddenHeaders = new Set([
     'accept',
     'accept-charset',
@@ -197,6 +212,8 @@ function normalizeOpenApiDocument(doc, service) {
 
   // Make operationIds unique across /api/v1 and /api/v2 mirrors.
   // Also drop browser-forbidden header params (e.g. user-agent on login).
+  // Inject accurate security for protected admin/me/sessions/internal ops
+  // when Nest live docs omit operation-level security (scheme still present).
   const seen = new Map();
   for (const pathKey of Object.keys(normalized.paths)) {
     const item = normalized.paths[pathKey];
@@ -224,6 +241,23 @@ function normalizeOpenApiDocument(doc, service) {
       seen.set(candidate, count + 1);
       if (count > 0) candidate = `${candidate}_${count + 1}`;
       op.operationId = candidate;
+
+      const hasSecurity =
+        (Array.isArray(op.security) && op.security.length > 0) ||
+        (Array.isArray(normalized.security) && normalized.security.length > 0);
+      if (looksProtectedPath(pathKey) && !hasSecurity) {
+        const isInternal = pathHasSegment(pathKey, 'internal');
+        op.security = isInternal
+          ? [{ userId: [] }, { userRoles: [] }, { bearer: [] }]
+          : [{ bearer: [] }];
+        if (!op.description) {
+          op.description = '';
+        }
+        if (isInternal && !/internal/i.test(op.description)) {
+          op.description =
+            `${op.description}\n\nInternal/BFF path — not anonymously callable; requires gateway identity headers or bearer.`.trim();
+        }
+      }
     }
   }
 

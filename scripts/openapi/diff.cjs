@@ -38,7 +38,8 @@ function main() {
       );
       drifted = true;
     }
-    const firstServer = (doc.servers && doc.servers[0] && doc.servers[0].url) || '';
+    const firstServer =
+      (doc.servers && doc.servers[0] && doc.servers[0].url) || '';
     if (!String(firstServer).includes(`localhost:${service.port}`)) {
       console.error(
         `[openapi:diff] DRIFT ${service.id} first server should be direct local (got ${firstServer})`,

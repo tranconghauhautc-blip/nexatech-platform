@@ -67,7 +67,7 @@ function formatSavedAddress(a: SavedAddress): string {
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
   const { cart, loading: cartLoading, subtotal, refresh } = useCart();
   const [deliveryMethod, setDeliveryMethod] =
     useState<DeliveryMethod>('STANDARD');
@@ -158,6 +158,9 @@ export default function CheckoutPage() {
         deliveryMethod,
         paymentMethod,
       };
+      if (user?.email) {
+        body['customerEmail'] = user.email;
+      }
       if (deliveryMethod === 'STORE_PICKUP') {
         body['pickupStoreId'] = pickupStoreId;
       } else if (selectedAddress) {
@@ -213,8 +216,11 @@ export default function CheckoutPage() {
       <div
         className="nt-container nt-skeleton"
         style={{ minHeight: 240, margin: '2rem auto' }}
+        role="status"
         aria-busy="true"
-      />
+      >
+        Đang tải thanh toán…
+      </div>
     );
   }
 
@@ -376,7 +382,7 @@ export default function CheckoutPage() {
             </div>
           )}
 
-          <h2>Thanh toán</h2>
+          <h2>Phương thức thanh toán</h2>
           {(Object.keys(PAYMENT_METHOD_LABELS) as PaymentMethod[]).map(
             (method) => (
               <label key={method} className={styles.radio}>

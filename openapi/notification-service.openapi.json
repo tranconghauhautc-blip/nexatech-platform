@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-notifications"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/notifications": {
@@ -501,7 +507,13 @@
         },
         "tags": [
           "admin-notifications"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/notifications": {

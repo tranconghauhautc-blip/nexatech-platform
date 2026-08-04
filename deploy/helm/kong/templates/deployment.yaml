@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ include "nexatech-kong.fullname" . }}
+  labels:
+    {{- include "nexatech-kong.labels" . | nindent 4 }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nexatech-kong.fullname" . }}
+  labels:
+    {{- include "nexatech-kong.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "nexatech-kong.selectorLabels" . | nindent 6 }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        {{- include "nexatech-kong.labels" . | nindent 8 }}
+        {{- include "nexatech-kong.selectorLabels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      serviceAccountName: {{ include "nexatech-kong.fullname" . }}
+      terminationGracePeriodSeconds: 30
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: kong
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: KONG_DATABASE
+              value: {{ .Values.env.database | quote }}
+            - name: KONG_DECLARATIVE_CONFIG
+              value: /kong/declarative/kong.yml
+            - name: KONG_PROXY_ACCESS_LOG
+              value: {{ .Values.env.proxy_access_log | quote }}
+            - name: KONG_ADMIN_ACCESS_LOG
+              value: {{ .Values.env.admin_access_log | quote }}
+            - name: KONG_PROXY_ERROR_LOG
+              value: {{ .Values.env.proxy_error_log | quote }}
+            - name: KONG_ADMIN_ERROR_LOG
+              value: {{ .Values.env.admin_error_log | quote }}
+            - name: KONG_ADMIN_LISTEN
+              value: 0.0.0.0:{{ .Values.admin.http.containerPort }}
+            - name: KONG_PROXY_LISTEN
+              value: 0.0.0.0:{{ .Values.proxy.http.containerPort }}
+            - name: KONG_NGINX_WORKER_PROCESSES
+              value: {{ .Values.env.nginx_worker_processes | quote }}
+            - name: KONG_ROUTER_FLAVOR
+              value: {{ .Values.env.router_flavor | quote }}
+          ports:
+            - name: proxy
+              containerPort: {{ .Values.proxy.http.containerPort }}
+            - name: admin
+              containerPort: {{ .Values.admin.http.containerPort }}
+          volumeMounts:
+            - name: declarative
+              mountPath: /kong/declarative
+              readOnly: true
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: admin
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: admin
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1000
+            capabilities:
+              drop: ["ALL"]
+      volumes:
+        - name: declarative
+          configMap:
+            name: {{ include "nexatech-kong.fullname" . }}-declarative
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech-kong.fullname" . }}-proxy
+  labels:
+    {{- include "nexatech-kong.labels" . | nindent 4 }}
+  {{- with .Values.proxy.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.proxy.type }}
+  {{- if and (eq .Values.proxy.type "LoadBalancer") .Values.proxy.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.proxy.loadBalancerIP | quote }}
+  {{- end }}
+  ports:
+    - name: http
+      port: {{ .Values.proxy.http.servicePort }}
+      targetPort: proxy
+      protocol: TCP
+  selector:
+    {{- include "nexatech-kong.selectorLabels" . | nindent 4 }}
+---
+# Admin API — ClusterIP only (never public)
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nexatech-kong.fullname" . }}-admin
+  labels:
+    {{- include "nexatech-kong.labels" . | nindent 4 }}
+spec:
+  type: ClusterIP
+  ports:
+    - name: admin
+      port: {{ .Values.admin.http.servicePort }}
+      targetPort: admin
+      protocol: TCP
+  selector:
+    {{- include "nexatech-kong.selectorLabels" . | nindent 4 }}
+{{- if .Values.podDisruptionBudget.enabled }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "nexatech-kong.fullname" . }}
+  labels:
+    {{- include "nexatech-kong.labels" . | nindent 4 }}
+spec:
+  minAvailable: {{ .Values.podDisruptionBudget.minAvailable }}
+  selector:
+    matchLabels:
+      {{- include "nexatech-kong.selectorLabels" . | nindent 6 }}
+{{- end }}

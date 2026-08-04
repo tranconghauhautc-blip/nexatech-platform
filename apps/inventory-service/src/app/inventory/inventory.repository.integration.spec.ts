@@ -1,8 +1,24 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaInventoryRepository } from './prisma-inventory.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['INVENTORY_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires INVENTORY_TEST_DATABASE_URL pointing at
+ * nexatech_inventory_test only — never falls back to INVENTORY_DATABASE_URL.
+ */
+const INVENTORY_TEST_DB = {
+  testUrlEnv: 'INVENTORY_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_inventory_test',
+  runtimeUrlEnv: 'INVENTORY_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  INVENTORY_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -13,12 +29,14 @@ describeIfDb('PrismaInventoryRepository integration', () => {
   const createdSkuCodes: string[] = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(INVENTORY_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaInventoryRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(INVENTORY_TEST_DB);
     if (createdSkuCodes.length > 0) {
       await prisma.stockMovement.deleteMany({
         where: { skuCode: { in: createdSkuCodes } },

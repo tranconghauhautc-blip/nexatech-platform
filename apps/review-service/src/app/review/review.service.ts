@@ -251,7 +251,14 @@ function assertVerifiedBuyer(
   const packageWithItem = order.packages.find((p) =>
     p.items.some((pi) => pi.orderItemId === orderItemId),
   );
-  if (packageWithItem && packageWithItem.status !== 'DELIVERED') {
+  // Order DELIVERED is authoritative for buyer eligibility. Package may lag
+  // behind after staff short-circuit; reconcile-fulfillment heals packages.
+  if (
+    packageWithItem &&
+    packageWithItem.status !== 'DELIVERED' &&
+    packageWithItem.status !== 'CANCELLED' &&
+    order.status !== 'DELIVERED'
+  ) {
     throw new AppError({
       errorCode: ErrorCodes.REVIEW_ORDER_NOT_DELIVERED,
       message: 'Kiện hàng chứa sản phẩm chưa được giao',

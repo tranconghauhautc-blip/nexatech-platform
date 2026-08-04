@@ -34,8 +34,11 @@ export default function Page() {
       <div
         className="nt-skeleton"
         style={{ minHeight: 160 }}
+        role="status"
         aria-busy="true"
-      />
+      >
+        Đang tải thông báo…
+      </div>
     );
   }
   if (error) {

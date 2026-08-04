@@ -1,12 +1,13 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import styles from './search-box.module.css';
 
 export function SearchBox({ className }: { className?: string }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const inputId = useId();
   const [value, setValue] = useState(searchParams.get('q') ?? '');
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -23,7 +24,7 @@ export function SearchBox({ className }: { className?: string }) {
       onSubmit={handleSubmit}
       role="search"
     >
-      <label htmlFor="nt-search-input" className="nt-visually-hidden">
+      <label htmlFor={inputId} className="nt-visually-hidden">
         Tìm kiếm sản phẩm
       </label>
       <svg
@@ -40,7 +41,7 @@ export function SearchBox({ className }: { className?: string }) {
         <line x1="21" y1="21" x2="16.65" y2="16.65" />
       </svg>
       <input
-        id="nt-search-input"
+        id={inputId}
         className={styles.input}
         type="search"
         name="q"
@@ -48,7 +49,7 @@ export function SearchBox({ className }: { className?: string }) {
         value={value}
         onChange={(event) => setValue(event.target.value)}
       />
-      <button type="submit" className={styles.button}>
+      <button type="submit" className={styles.button} aria-label="Tìm kiếm">
         Tìm
       </button>
     </form>

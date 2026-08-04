@@ -44,3 +44,14 @@ export function assertTransition(from: OrderStatus, to: OrderStatus): void {
     });
   }
 }
+
+/**
+ * Trạng thái kiện hàng được coi là "đủ điều kiện" để đơn chuyển sang SHIPPED
+ * bằng thao tác staff thủ công (status-transitions) — kiện phải tối thiểu đã
+ * READY_TO_SHIP (đã đóng gói/chờ giao), không còn ở ALLOCATED/PENDING.
+ */
+export const PACKAGE_READY_FOR_ORDER_SHIPPED: readonly string[] = [
+  'READY_TO_SHIP',
+  'SHIPPED',
+  'DELIVERED',
+];

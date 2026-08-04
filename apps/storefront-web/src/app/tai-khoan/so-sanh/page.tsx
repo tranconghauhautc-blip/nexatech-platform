@@ -173,6 +173,26 @@ export default function ComparePage() {
     }
   }
 
+  async function clearAll() {
+    if (busyId || items.length === 0) {
+      return;
+    }
+    setBusyId('__clear__');
+    setError(null);
+    try {
+      for (const item of items) {
+        await bff.delete(
+          `/api/bff/cart/comparison/${encodeURIComponent(item.productId)}`,
+        );
+      }
+      await load();
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   if (loading) {
     return (
       <div
@@ -221,13 +241,31 @@ export default function ComparePage() {
 
   return (
     <div style={{ overflowX: 'auto' }}>
-      <h2 style={{ marginTop: 0 }}>So sánh sản phẩm</h2>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
+          gap: 12,
+          alignItems: 'center',
+        }}
+      >
+        <h2 style={{ marginTop: 0, marginBottom: 0 }}>So sánh sản phẩm</h2>
+        <button
+          type="button"
+          className="nt-btn nt-btn-ghost"
+          disabled={busyId === '__clear__'}
+          onClick={() => void clearAll()}
+        >
+          {busyId === '__clear__' ? 'Đang xóa…' : 'Xóa tất cả'}
+        </button>
+      </div>
       {error ? (
         <p className="nt-form-error" role="alert">
           {error}
         </p>
       ) : null}
-      <p style={{ color: '#4b6478', marginTop: 0 }}>
+      <p style={{ color: '#4b6478', marginTop: 8 }}>
         Đang so sánh {items.length}/4 sản phẩm.
       </p>
       <table

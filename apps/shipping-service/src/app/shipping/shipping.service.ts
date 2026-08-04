@@ -28,6 +28,7 @@
   type ShippingQuoteDto,
   type SlotReservationDto,
 } from '@nexatech/shared-contracts';
+import { Logger } from '@nestjs/common';
 import {
   hasMinimumRole,
   isRole,
@@ -357,6 +358,16 @@ function packageStatusForShipment(status: ShipmentStatus): string | undefined {
   return undefined;
 }
 
+/**
+ * Gợi ý trạng thái đơn tương ứng với trạng thái shipment hiện tại.
+ *
+ * Với STORE_PICKUP, `confirmPickup` có thể chuyển thẳng READY_FOR_PICKUP ->
+ * DELIVERED (không đi qua PICKED_UP/IN_TRANSIT/OUT_FOR_DELIVERY), nên đơn ở
+ * order-service có thể vẫn đang READY_TO_SHIP khi nhận hint DELIVERED này.
+ * Vẫn trả về 'DELIVERED' — order-service (doSyncShipping) chịu trách nhiệm tự
+ * thăng cấp nhiều bước (READY_TO_SHIP -> SHIPPED -> DELIVERED) cho trường hợp
+ * này, không throw lỗi và không bỏ cập nhật packageStatus.
+ */
 function orderStatusHint(
   status: ShipmentStatus,
   allDelivered: boolean,
@@ -371,7 +382,26 @@ function orderStatusHint(
   return undefined;
 }
 
+/** Sibling shipments that no longer block order-level DELIVERED. */
+function isTerminalOrCancelledShipment(status: ShipmentStatus): boolean {
+  return status === 'DELIVERED' || status === 'CANCELLED';
+}
+
+/**
+ * Service-to-service actor for order shipping-sync.
+ * Customer confirm-pickup must not forward Customer roles — order-service
+ * requireStaff would FORBIDDEN and leave package/order stuck while shipment
+ * is already DELIVERED.
+ */
+function serviceSyncActor(traceId: string): ShippingActor {
+  return {
+    userId: `shipping-service:${traceId.slice(0, 8)}`,
+    roles: [Roles.Staff],
+  };
+}
+
 export class ShippingService {
+  private static readonly logger = new Logger(ShippingService.name);
   private readonly outbox: OutboxDispatcher;
   private readonly mockProvider: MockShippingProvider;
   private readonly ghnProvider: GhnShippingProvider;
@@ -1117,15 +1147,11 @@ export class ShippingService {
         message: 'Chỉ STORE_PICKUP mới confirm-pickup',
       });
     }
-    if (shipment.status !== 'READY_FOR_PICKUP') {
-      throw new AppError({
-        errorCode: ErrorCodes.SHIPPING_INVALID_TRANSITION,
-        message: 'Shipment chưa sẵn sàng nhận',
-      });
-    }
+
+    const normalizedCode = input.pickupCode.trim().toUpperCase();
     if (
       !shipment.pickupCodeHash ||
-      hashPickupCode(input.pickupCode) !== shipment.pickupCodeHash
+      hashPickupCode(normalizedCode) !== shipment.pickupCodeHash
     ) {
       throw new AppError({
         errorCode: ErrorCodes.SHIPPING_PICKUP_INVALID,
@@ -1134,6 +1160,25 @@ export class ShippingService {
     }
 
     const traceId = createTraceId();
+
+    // Idempotent retry: shipment already DELIVERED but order sync pending.
+    if (shipment.status === 'DELIVERED') {
+      if (shipment.orderSyncedAt) {
+        return toShipmentDto(shipment);
+      }
+      await this.syncOrder(actor, shipment, traceId, { rethrow: true });
+      await this.outbox.dispatchPending();
+      const refreshed = await this.requireShipment(shipmentId);
+      return toShipmentDto(refreshed);
+    }
+
+    if (shipment.status !== 'READY_FOR_PICKUP') {
+      throw new AppError({
+        errorCode: ErrorCodes.SHIPPING_INVALID_TRANSITION,
+        message: 'Shipment chưa sẵn sàng nhận',
+      });
+    }
+
     let stockCommittedAt = shipment.stockCommittedAt;
     if (!stockCommittedAt) {
       const order = await this.orderClient.getOrder(
@@ -1173,7 +1218,8 @@ export class ShippingService {
       ],
     });
 
-    await this.syncOrder(actor, updated, traceId);
+    // Fail loudly if order sync fails so client can retry (idempotent path above).
+    await this.syncOrder(actor, updated, traceId, { rethrow: true });
     await this.outbox.dispatchPending();
     return toShipmentDto(updated);
   }
@@ -1433,14 +1479,11 @@ export class ShippingService {
   }
 
   private async syncOrder(
-    actor: ShippingActor,
+    _actor: ShippingActor,
     shipment: Shipment,
     traceId: string,
+    options: { rethrow?: boolean } = {},
   ): Promise<void> {
-    if (shipment.orderSyncedAt && shipment.status === 'DELIVERED') {
-      // allow re-entry only when not yet synced for this terminal state
-    }
-    // Prevent double sync stamp for same status cycle: if already synced and still same version path
     const packageStatus = packageStatusForShipment(shipment.status);
     if (!packageStatus) return;
 
@@ -1454,9 +1497,16 @@ export class ShippingService {
     );
     const allDelivered = siblings.every((s) =>
       s.id === shipment.id
-        ? shipment.status === 'DELIVERED'
-        : s.status === 'DELIVERED',
+        ? isTerminalOrCancelledShipment(shipment.status)
+        : isTerminalOrCancelledShipment(s.status),
     );
+
+    // Always use Staff service identity — never forward Customer roles.
+    // order-service.shipping-sync requires Staff+; customer confirm-pickup
+    // previously left package/order at READY_TO_SHIP while shipment=DELIVERED.
+    const syncHeaders = this.headers(serviceSyncActor(traceId), traceId);
+    const idempotencyKey = `ship-sync-${shipment.id}-${shipment.status}-${shipment.version}`;
+    const orderStatus = orderStatusHint(shipment.status, allDelivered);
 
     try {
       await this.orderClient.shippingSync(
@@ -1468,18 +1518,55 @@ export class ShippingService {
           shippingProvider: shipment.provider,
           packageStatus,
           estimatedDeliveryAt: shipment.estimatedDeliveryAt?.toISOString(),
-          orderStatus: orderStatusHint(shipment.status, allDelivered),
-          idempotencyKey: `ship-sync-${shipment.id}-${shipment.status}-${shipment.version}`,
+          orderStatus,
+          idempotencyKey,
         },
-        this.headers(actor, traceId),
+        syncHeaders,
       );
       await this.repository.markOrderSynced(
         shipment.id,
         shipment.version,
         new Date(),
       );
-    } catch {
-      // leave orderSyncedAt unset for retry
+    } catch (error) {
+      const errorCode =
+        error instanceof AppError
+          ? error.errorCode
+          : 'SHIPPING_ORDER_SYNC_FAILED';
+      ShippingService.logger.error(
+        JSON.stringify({
+          message: 'order shipping-sync failed',
+          eventId: idempotencyKey,
+          eventType: 'order.shipping-sync',
+          routingKey: 'shipping.order-sync',
+          orderId: shipment.orderId,
+          shipmentId: shipment.id,
+          packageId: shipment.packageId,
+          correlationId: traceId,
+          attempt: 1,
+          errorCode,
+          shipmentStatus: shipment.status,
+          packageStatus,
+          orderStatus,
+          error: String(error),
+        }),
+      );
+      if (options.rethrow) {
+        throw error instanceof AppError
+          ? error
+          : new AppError({
+              errorCode: ErrorCodes.SHIPPING_ORDER_UNAVAILABLE,
+              message:
+                'Đã xác nhận nhận hàng nhưng chưa đồng bộ được đơn hàng. Vui lòng thử lại.',
+              details: {
+                orderId: shipment.orderId,
+                shipmentId: shipment.id,
+                packageId: shipment.packageId,
+                correlationId: traceId,
+                cause: String(error),
+              },
+            });
+      }
     }
   }
 

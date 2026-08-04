@@ -552,7 +552,14 @@ export class PrismaShippingRepository implements ShippingRepository {
           estimatedDeliveryAt: input.estimatedDeliveryAt,
           pickupCodeHash: input.pickupCodeHash,
           pickupCodeHint: input.pickupCodeHint,
-          orderSyncedAt: input.orderSyncedAt,
+          // Clear sync stamp on status change so terminal DELIVERED re-syncs
+          // after intermediate READY_FOR_PICKUP / IN_TRANSIT syncs.
+          orderSyncedAt:
+            input.orderSyncedAt !== undefined
+              ? input.orderSyncedAt
+              : current.status !== input.status
+                ? null
+                : undefined,
           stockCommittedAt: input.stockCommittedAt,
           failureAttempts: input.failureAttempts,
         },

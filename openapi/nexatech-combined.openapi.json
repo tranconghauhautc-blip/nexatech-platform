@@ -340,12 +340,24 @@
   "paths": {
     "/api/v0/internal/routes": {
       "get": {
+        "description": "Internal/BFF path — not anonymously callable; requires gateway identity headers or bearer.",
         "operationId": "identity_Health_deprecatedApiInventory_v0",
         "responses": {
           "200": {
             "description": ""
           }
         },
+        "security": [
+          {
+            "userId": []
+          },
+          {
+            "userRoles": []
+          },
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Identity"
         ],
@@ -354,6 +366,7 @@
     },
     "/api/v1/admin/catalog/brands": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createBrand_v1",
         "parameters": [
           {
@@ -370,6 +383,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -378,6 +396,7 @@
     },
     "/api/v1/admin/catalog/brands/{id}": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateBrand_v1",
         "parameters": [
           {
@@ -402,6 +421,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -410,6 +434,7 @@
     },
     "/api/v1/admin/catalog/categories": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createCategory_v1",
         "parameters": [
           {
@@ -426,6 +451,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -434,6 +464,7 @@
     },
     "/api/v1/admin/catalog/categories/{id}": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateCategory_v1",
         "parameters": [
           {
@@ -458,6 +489,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -466,6 +502,7 @@
     },
     "/api/v1/admin/catalog/products": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createProduct_v1",
         "parameters": [
           {
@@ -482,6 +519,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -490,6 +532,7 @@
     },
     "/api/v1/admin/catalog/products/{id}": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateProduct_v1",
         "parameters": [
           {
@@ -514,6 +557,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -522,6 +570,7 @@
     },
     "/api/v1/admin/catalog/products/{id}/status": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateProductStatus_v1",
         "parameters": [
           {
@@ -546,6 +595,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -553,7 +607,44 @@
       }
     },
     "/api/v1/admin/catalog/products/{productId}/media-links": {
+      "get": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_listMediaLinks_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_linkMedia_v1",
         "parameters": [
           {
@@ -578,6 +669,101 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v1/admin/catalog/products/{productId}/media-links/{linkId}": {
+      "delete": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_unlinkMedia_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
+      "patch": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_updateMediaLink_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -586,6 +772,7 @@
     },
     "/api/v1/admin/catalog/skus": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createSku_v1",
         "parameters": [
           {
@@ -602,6 +789,49 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v1/admin/catalog/skus/{skuId}": {
+      "patch": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_updateSku_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "skuId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -610,6 +840,7 @@
     },
     "/api/v1/admin/catalog/skus/{skuId}/prices": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updatePrice_v1",
         "parameters": [
           {
@@ -642,6 +873,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -650,6 +886,7 @@
     },
     "/api/v1/admin/catalog/spec-templates": {
       "get": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_listSpecTemplates_v1",
         "parameters": [
           {
@@ -674,12 +911,18 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
         "x-nexatech-service": "catalog-service"
       },
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createSpecTemplate_v1",
         "parameters": [
           {
@@ -696,6 +939,121 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v1/admin/catalog/spec-templates/{id}": {
+      "delete": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_deleteSpecTemplate_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
+      "get": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_getSpecTemplate_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
+      "patch": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_updateSpecTemplate_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -704,6 +1062,7 @@
     },
     "/api/v1/admin/inventory/reservations/{id}/commit": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_commitReservation_v1",
         "parameters": [
           {
@@ -736,6 +1095,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -744,6 +1108,7 @@
     },
     "/api/v1/admin/inventory/reservations/{id}/release": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_releaseReservation_v1",
         "parameters": [
           {
@@ -776,6 +1141,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -784,6 +1154,7 @@
     },
     "/api/v1/admin/inventory/stock/adjust": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_adjustStock_v1",
         "parameters": [
           {
@@ -808,6 +1179,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -816,6 +1192,7 @@
     },
     "/api/v1/admin/inventory/stock/issue": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_issueStock_v1",
         "parameters": [
           {
@@ -840,6 +1217,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -848,6 +1230,7 @@
     },
     "/api/v1/admin/inventory/stock/receive": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_receiveStock_v1",
         "parameters": [
           {
@@ -872,6 +1255,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -880,6 +1268,7 @@
     },
     "/api/v1/admin/inventory/stock/reserve": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_reserveStock_v1",
         "parameters": [
           {
@@ -904,6 +1293,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -912,6 +1306,7 @@
     },
     "/api/v1/admin/inventory/stock/return": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_returnStock_v1",
         "parameters": [
           {
@@ -936,6 +1331,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -944,6 +1344,7 @@
     },
     "/api/v1/admin/inventory/stores": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_createStore_v1",
         "parameters": [
           {
@@ -968,6 +1369,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -976,6 +1382,7 @@
     },
     "/api/v1/admin/inventory/stores/{id}": {
       "patch": {
+        "description": "",
         "operationId": "inventory_AdminInventory_updateStore_v1",
         "parameters": [
           {
@@ -1008,6 +1415,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -1016,6 +1428,7 @@
     },
     "/api/v1/admin/inventory/transfers": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_transferStock_v1",
         "parameters": [
           {
@@ -1040,6 +1453,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -1048,6 +1466,7 @@
     },
     "/api/v1/admin/inventory/warehouses": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_createWarehouse_v1",
         "parameters": [
           {
@@ -1072,6 +1491,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -1080,6 +1504,7 @@
     },
     "/api/v1/admin/inventory/warehouses/{id}": {
       "patch": {
+        "description": "",
         "operationId": "inventory_AdminInventory_updateWarehouse_v1",
         "parameters": [
           {
@@ -1112,6 +1537,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -1120,6 +1550,7 @@
     },
     "/api/v1/admin/notifications/email-deliveries": {
       "get": {
+        "description": "",
         "operationId": "notification_AdminNotifications_listEmailDeliveries_v1",
         "parameters": [
           {
@@ -1160,6 +1591,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Notification"
         ],
@@ -1168,6 +1604,7 @@
     },
     "/api/v1/admin/orders": {
       "get": {
+        "description": "",
         "operationId": "order_AdminOrder_list_v1",
         "parameters": [
           {
@@ -1208,6 +1645,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -1216,6 +1658,7 @@
     },
     "/api/v1/admin/orders/{orderId}": {
       "get": {
+        "description": "",
         "operationId": "order_AdminOrder_get_v1",
         "parameters": [
           {
@@ -1264,6 +1707,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -1272,6 +1720,7 @@
     },
     "/api/v1/admin/orders/{orderId}/cancel": {
       "post": {
+        "description": "",
         "operationId": "order_AdminOrder_cancel_v1",
         "parameters": [
           {
@@ -1320,6 +1769,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -1328,6 +1782,7 @@
     },
     "/api/v1/admin/orders/{orderId}/confirm": {
       "post": {
+        "description": "",
         "operationId": "order_AdminOrder_confirm_v1",
         "parameters": [
           {
@@ -1376,6 +1831,73 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Order"
+        ],
+        "x-nexatech-service": "order-service"
+      }
+    },
+    "/api/v1/admin/orders/{orderId}/reconcile-fulfillment": {
+      "post": {
+        "description": "",
+        "operationId": "order_AdminOrder_reconcileFulfillment_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -1384,6 +1906,7 @@
     },
     "/api/v1/admin/orders/{orderId}/status-transitions": {
       "post": {
+        "description": "",
         "operationId": "order_AdminOrder_transition_v1",
         "parameters": [
           {
@@ -1432,6 +1955,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -1440,6 +1968,7 @@
     },
     "/api/v1/admin/payments": {
       "get": {
+        "description": "",
         "operationId": "payment_AdminPayment_list_v1",
         "parameters": [
           {
@@ -1480,6 +2009,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -1488,6 +2022,7 @@
     },
     "/api/v1/admin/payments/{paymentId}": {
       "get": {
+        "description": "",
         "operationId": "payment_AdminPayment_get_v1",
         "parameters": [
           {
@@ -1536,6 +2071,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -1544,6 +2084,7 @@
     },
     "/api/v1/admin/payments/{paymentId}/cod-collect": {
       "post": {
+        "description": "",
         "operationId": "payment_AdminPayment_codCollect_v1",
         "parameters": [
           {
@@ -1592,6 +2133,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -1600,6 +2146,7 @@
     },
     "/api/v1/admin/payments/{paymentId}/refunds": {
       "post": {
+        "description": "",
         "operationId": "payment_AdminPayment_createRefund_v1",
         "parameters": [
           {
@@ -1648,6 +2195,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -1656,6 +2208,7 @@
     },
     "/api/v1/admin/reporting/audit": {
       "post": {
+        "description": "",
         "operationId": "reporting_AdminReporting_recordAudit_v1",
         "parameters": [
           {
@@ -1704,6 +2257,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -1712,6 +2270,7 @@
     },
     "/api/v1/admin/reporting/audit-logs": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listAuditLogs_v1",
         "parameters": [
           {
@@ -1752,6 +2311,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -1760,6 +2324,7 @@
     },
     "/api/v1/admin/reporting/dashboard": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_dashboard_v1",
         "parameters": [
           {
@@ -1800,6 +2365,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -1808,6 +2378,7 @@
     },
     "/api/v1/admin/reporting/metrics/daily": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_dailyMetrics_v1",
         "parameters": [
           {
@@ -1848,6 +2419,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -1856,6 +2432,7 @@
     },
     "/api/v1/admin/reporting/orders": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listOrders_v1",
         "parameters": [
           {
@@ -1896,6 +2473,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -1904,6 +2486,7 @@
     },
     "/api/v1/admin/reporting/payments": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listPayments_v1",
         "parameters": [
           {
@@ -1944,6 +2527,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -1952,6 +2540,7 @@
     },
     "/api/v1/admin/reporting/reviews": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listReviews_v1",
         "parameters": [
           {
@@ -1992,6 +2581,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -2000,6 +2594,7 @@
     },
     "/api/v1/admin/reporting/shipments": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listShipments_v1",
         "parameters": [
           {
@@ -2040,6 +2635,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -2048,6 +2648,7 @@
     },
     "/api/v1/admin/reporting/support/tickets": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listSupportTickets_v1",
         "parameters": [
           {
@@ -2088,6 +2689,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -2096,6 +2702,7 @@
     },
     "/api/v1/admin/reporting/warranty/claims": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listWarrantyClaims_v1",
         "parameters": [
           {
@@ -2136,6 +2743,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -2144,6 +2756,7 @@
     },
     "/api/v1/admin/reporting/warranty/returns": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listWarrantyReturns_v1",
         "parameters": [
           {
@@ -2184,6 +2797,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -2192,6 +2810,7 @@
     },
     "/api/v1/admin/returns": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_listReturns_v1",
         "parameters": [
           {
@@ -2232,6 +2851,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -2240,6 +2864,7 @@
     },
     "/api/v1/admin/returns/{returnId}": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_getReturn_v1",
         "parameters": [
           {
@@ -2288,6 +2913,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -2296,6 +2926,7 @@
     },
     "/api/v1/admin/returns/{returnId}/transition": {
       "post": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_transitionReturn_v1",
         "parameters": [
           {
@@ -2352,6 +2983,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -2360,6 +2996,7 @@
     },
     "/api/v1/admin/review-reports": {
       "get": {
+        "description": "",
         "operationId": "review_AdminReview_listReports_v1",
         "parameters": [
           {
@@ -2400,6 +3037,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -2408,6 +3050,7 @@
     },
     "/api/v1/admin/review-reports/{reportId}/resolve": {
       "post": {
+        "description": "",
         "operationId": "review_AdminReview_resolveReport_v1",
         "parameters": [
           {
@@ -2464,6 +3107,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -2472,6 +3120,7 @@
     },
     "/api/v1/admin/reviews": {
       "get": {
+        "description": "",
         "operationId": "review_AdminReview_list_v1",
         "parameters": [
           {
@@ -2512,6 +3161,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -2520,6 +3174,7 @@
     },
     "/api/v1/admin/reviews/aggregates/rebuild": {
       "post": {
+        "description": "",
         "operationId": "review_AdminReview_rebuild_v1",
         "parameters": [
           {
@@ -2568,6 +3223,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -2576,6 +3236,7 @@
     },
     "/api/v1/admin/reviews/{reviewId}": {
       "get": {
+        "description": "",
         "operationId": "review_AdminReview_get_v1",
         "parameters": [
           {
@@ -2624,6 +3285,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -2632,6 +3298,7 @@
     },
     "/api/v1/admin/reviews/{reviewId}/moderate": {
       "post": {
+        "description": "",
         "operationId": "review_AdminReview_moderate_v1",
         "parameters": [
           {
@@ -2688,6 +3355,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -2696,6 +3368,7 @@
     },
     "/api/v1/admin/shipments": {
       "get": {
+        "description": "",
         "operationId": "shipping_AdminShipping_list_v1",
         "parameters": [
           {
@@ -2736,6 +3409,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Shipping"
         ],
@@ -2744,6 +3422,7 @@
     },
     "/api/v1/admin/shipments/{shipmentId}": {
       "get": {
+        "description": "",
         "operationId": "shipping_AdminShipping_get_v1",
         "parameters": [
           {
@@ -2792,6 +3471,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Shipping"
         ],
@@ -2800,6 +3484,7 @@
     },
     "/api/v1/admin/shipments/{shipmentId}/status-transitions": {
       "post": {
+        "description": "",
         "operationId": "shipping_AdminShipping_transition_v1",
         "parameters": [
           {
@@ -2848,6 +3533,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Shipping"
         ],
@@ -2856,6 +3546,7 @@
     },
     "/api/v1/admin/support/tickets": {
       "get": {
+        "description": "",
         "operationId": "support_AdminSupport_listTickets_v1",
         "parameters": [
           {
@@ -2896,6 +3587,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -2904,6 +3600,7 @@
     },
     "/api/v1/admin/support/tickets/{ticketId}": {
       "get": {
+        "description": "",
         "operationId": "support_AdminSupport_getTicket_v1",
         "parameters": [
           {
@@ -2952,6 +3649,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -2960,6 +3662,7 @@
     },
     "/api/v1/admin/support/tickets/{ticketId}/assign": {
       "post": {
+        "description": "",
         "operationId": "support_AdminSupport_assign_v1",
         "parameters": [
           {
@@ -3016,6 +3719,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -3024,6 +3732,7 @@
     },
     "/api/v1/admin/support/tickets/{ticketId}/messages": {
       "post": {
+        "description": "",
         "operationId": "support_AdminSupport_addMessage_v1",
         "parameters": [
           {
@@ -3080,6 +3789,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -3088,6 +3802,7 @@
     },
     "/api/v1/admin/support/tickets/{ticketId}/priority": {
       "patch": {
+        "description": "",
         "operationId": "support_AdminSupport_updatePriority_v1",
         "parameters": [
           {
@@ -3144,6 +3859,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -3152,6 +3872,7 @@
     },
     "/api/v1/admin/support/tickets/{ticketId}/transition": {
       "post": {
+        "description": "",
         "operationId": "support_AdminSupport_transition_v1",
         "parameters": [
           {
@@ -3208,6 +3929,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -3216,6 +3942,7 @@
     },
     "/api/v1/admin/users": {
       "get": {
+        "description": "",
         "operationId": "identity_AdminUsers_list_v1",
         "parameters": [
           {
@@ -3256,6 +3983,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "List users (SuperAdmin; BFLA in always-on lab)",
         "tags": [
           "Identity"
@@ -3263,6 +3995,7 @@
         "x-nexatech-service": "identity-service"
       },
       "post": {
+        "description": "",
         "operationId": "identity_AdminUsers_create_v1",
         "parameters": [
           {
@@ -3303,6 +4036,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "SC-76 — create user (BFLA; weak password SC-85)",
         "tags": [
           "Identity"
@@ -3312,6 +4050,7 @@
     },
     "/api/v1/admin/users/export": {
       "get": {
+        "description": "",
         "operationId": "identity_AdminUsers_exportAll_v1",
         "parameters": [
           {
@@ -3352,6 +4091,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
         "tags": [
           "Identity"
@@ -3361,6 +4105,7 @@
     },
     "/api/v1/admin/users/{userId}": {
       "delete": {
+        "description": "",
         "operationId": "identity_AdminUsers_softDelete_v1",
         "parameters": [
           {
@@ -3409,6 +4154,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
         "tags": [
           "Identity"
@@ -3416,6 +4166,7 @@
         "x-nexatech-service": "identity-service"
       },
       "get": {
+        "description": "",
         "operationId": "identity_AdminUsers_get_v1",
         "parameters": [
           {
@@ -3464,6 +4215,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Get user by id",
         "tags": [
           "Identity"
@@ -3471,6 +4227,7 @@
         "x-nexatech-service": "identity-service"
       },
       "patch": {
+        "description": "",
         "operationId": "identity_AdminUsers_patch_v1",
         "parameters": [
           {
@@ -3519,6 +4276,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Patch user roles/status (mass-assignment in always-on lab)",
         "tags": [
           "Identity"
@@ -3528,6 +4290,7 @@
     },
     "/api/v1/admin/users/{userId}/disable": {
       "post": {
+        "description": "",
         "operationId": "identity_AdminUsers_disable_v1",
         "parameters": [
           {
@@ -3576,6 +4339,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "SC-77 — soft-disable user (BFLA)",
         "tags": [
           "Identity"
@@ -3585,6 +4353,7 @@
     },
     "/api/v1/admin/warranty/claims": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_listClaims_v1",
         "parameters": [
           {
@@ -3625,6 +4394,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -3633,6 +4407,7 @@
     },
     "/api/v1/admin/warranty/claims/{claimId}": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_getClaim_v1",
         "parameters": [
           {
@@ -3681,6 +4456,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -3689,6 +4469,7 @@
     },
     "/api/v1/admin/warranty/claims/{claimId}/transition": {
       "post": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_transitionClaim_v1",
         "parameters": [
           {
@@ -3745,6 +4526,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -4699,6 +5485,7 @@
     },
     "/api/v1/customers/me": {
       "get": {
+        "description": "",
         "operationId": "customer_Customer_me_v1",
         "parameters": [
           {
@@ -4715,12 +5502,18 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
         "x-nexatech-service": "customer-service"
       },
       "put": {
+        "description": "",
         "operationId": "customer_Customer_updateMe_v1",
         "parameters": [
           {
@@ -4737,6 +5530,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
@@ -4745,6 +5543,7 @@
     },
     "/api/v1/customers/me/addresses": {
       "get": {
+        "description": "",
         "operationId": "customer_Customer_addresses_v1",
         "parameters": [
           {
@@ -4761,12 +5560,18 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
         "x-nexatech-service": "customer-service"
       },
       "post": {
+        "description": "",
         "operationId": "customer_Customer_addAddress_v1",
         "parameters": [
           {
@@ -4783,6 +5588,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
@@ -4790,7 +5600,44 @@
       }
     },
     "/api/v1/customers/me/addresses/{id}": {
+      "delete": {
+        "description": "",
+        "operationId": "customer_Customer_deleteAddress_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "x-nexatech-service": "customer-service"
+      },
       "put": {
+        "description": "",
         "operationId": "customer_Customer_updateAddress_v1",
         "parameters": [
           {
@@ -4815,6 +5662,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
@@ -4823,6 +5675,7 @@
     },
     "/api/v1/media/admin/cleanup-orphans": {
       "post": {
+        "description": "",
         "operationId": "media_Media_cleanupOrphans_v1",
         "parameters": [
           {
@@ -4855,6 +5708,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Media"
         ],
@@ -6323,6 +7181,7 @@
     },
     "/api/v1/payments/me": {
       "get": {
+        "description": "",
         "operationId": "payment_Payment_listMine_v1",
         "parameters": [
           {
@@ -6363,6 +7222,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -7169,6 +8033,7 @@
     },
     "/api/v1/reviews/me": {
       "get": {
+        "description": "",
         "operationId": "review_Reviews_listMine_v1",
         "parameters": [
           {
@@ -7209,6 +8074,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -9763,6 +10633,7 @@
     },
     "/api/v2/admin/catalog/brands": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createBrand_v2",
         "parameters": [
           {
@@ -9779,6 +10650,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9787,6 +10663,7 @@
     },
     "/api/v2/admin/catalog/brands/{id}": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateBrand_v2",
         "parameters": [
           {
@@ -9811,6 +10688,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9819,6 +10701,7 @@
     },
     "/api/v2/admin/catalog/categories": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createCategory_v2",
         "parameters": [
           {
@@ -9835,6 +10718,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9843,6 +10731,7 @@
     },
     "/api/v2/admin/catalog/categories/{id}": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateCategory_v2",
         "parameters": [
           {
@@ -9867,6 +10756,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9875,6 +10769,7 @@
     },
     "/api/v2/admin/catalog/products": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createProduct_v2",
         "parameters": [
           {
@@ -9891,6 +10786,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9899,6 +10799,7 @@
     },
     "/api/v2/admin/catalog/products/{id}": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateProduct_v2",
         "parameters": [
           {
@@ -9923,6 +10824,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9931,6 +10837,7 @@
     },
     "/api/v2/admin/catalog/products/{id}/status": {
       "patch": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updateProductStatus_v2",
         "parameters": [
           {
@@ -9955,6 +10862,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9962,7 +10874,44 @@
       }
     },
     "/api/v2/admin/catalog/products/{productId}/media-links": {
+      "get": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_listMediaLinks_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_linkMedia_v2",
         "parameters": [
           {
@@ -9987,6 +10936,101 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v2/admin/catalog/products/{productId}/media-links/{linkId}": {
+      "delete": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_unlinkMedia_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
+      "patch": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_updateMediaLink_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -9995,6 +11039,7 @@
     },
     "/api/v2/admin/catalog/skus": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createSku_v2",
         "parameters": [
           {
@@ -10011,6 +11056,49 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v2/admin/catalog/skus/{skuId}": {
+      "patch": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_updateSku_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "skuId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -10019,6 +11107,7 @@
     },
     "/api/v2/admin/catalog/skus/{skuId}/prices": {
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_updatePrice_v2",
         "parameters": [
           {
@@ -10051,6 +11140,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -10059,6 +11153,7 @@
     },
     "/api/v2/admin/catalog/spec-templates": {
       "get": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_listSpecTemplates_v2",
         "parameters": [
           {
@@ -10083,12 +11178,18 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
         "x-nexatech-service": "catalog-service"
       },
       "post": {
+        "description": "",
         "operationId": "catalog_AdminCatalog_createSpecTemplate_v2",
         "parameters": [
           {
@@ -10105,6 +11206,121 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      }
+    },
+    "/api/v2/admin/catalog/spec-templates/{id}": {
+      "delete": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_deleteSpecTemplate_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
+      "get": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_getSpecTemplate_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Catalog"
+        ],
+        "x-nexatech-service": "catalog-service"
+      },
+      "patch": {
+        "description": "",
+        "operationId": "catalog_AdminCatalog_updateSpecTemplate_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Catalog"
         ],
@@ -10113,6 +11329,7 @@
     },
     "/api/v2/admin/inventory/reservations/{id}/commit": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_commitReservation_v2",
         "parameters": [
           {
@@ -10145,6 +11362,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10153,6 +11375,7 @@
     },
     "/api/v2/admin/inventory/reservations/{id}/release": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_releaseReservation_v2",
         "parameters": [
           {
@@ -10185,6 +11408,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10193,6 +11421,7 @@
     },
     "/api/v2/admin/inventory/stock/adjust": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_adjustStock_v2",
         "parameters": [
           {
@@ -10217,6 +11446,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10225,6 +11459,7 @@
     },
     "/api/v2/admin/inventory/stock/issue": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_issueStock_v2",
         "parameters": [
           {
@@ -10249,6 +11484,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10257,6 +11497,7 @@
     },
     "/api/v2/admin/inventory/stock/receive": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_receiveStock_v2",
         "parameters": [
           {
@@ -10281,6 +11522,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10289,6 +11535,7 @@
     },
     "/api/v2/admin/inventory/stock/reserve": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_reserveStock_v2",
         "parameters": [
           {
@@ -10313,6 +11560,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10321,6 +11573,7 @@
     },
     "/api/v2/admin/inventory/stock/return": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_returnStock_v2",
         "parameters": [
           {
@@ -10345,6 +11598,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10353,6 +11611,7 @@
     },
     "/api/v2/admin/inventory/stores": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_createStore_v2",
         "parameters": [
           {
@@ -10377,6 +11636,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10385,6 +11649,7 @@
     },
     "/api/v2/admin/inventory/stores/{id}": {
       "patch": {
+        "description": "",
         "operationId": "inventory_AdminInventory_updateStore_v2",
         "parameters": [
           {
@@ -10417,6 +11682,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10425,6 +11695,7 @@
     },
     "/api/v2/admin/inventory/transfers": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_transferStock_v2",
         "parameters": [
           {
@@ -10449,6 +11720,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10457,6 +11733,7 @@
     },
     "/api/v2/admin/inventory/warehouses": {
       "post": {
+        "description": "",
         "operationId": "inventory_AdminInventory_createWarehouse_v2",
         "parameters": [
           {
@@ -10481,6 +11758,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10489,6 +11771,7 @@
     },
     "/api/v2/admin/inventory/warehouses/{id}": {
       "patch": {
+        "description": "",
         "operationId": "inventory_AdminInventory_updateWarehouse_v2",
         "parameters": [
           {
@@ -10521,6 +11804,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Inventory"
         ],
@@ -10529,6 +11817,7 @@
     },
     "/api/v2/admin/notifications/email-deliveries": {
       "get": {
+        "description": "",
         "operationId": "notification_AdminNotifications_listEmailDeliveries_v2",
         "parameters": [
           {
@@ -10569,6 +11858,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Notification"
         ],
@@ -10577,6 +11871,7 @@
     },
     "/api/v2/admin/orders": {
       "get": {
+        "description": "",
         "operationId": "order_AdminOrder_list_v2",
         "parameters": [
           {
@@ -10617,6 +11912,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -10625,6 +11925,7 @@
     },
     "/api/v2/admin/orders/{orderId}": {
       "get": {
+        "description": "",
         "operationId": "order_AdminOrder_get_v2",
         "parameters": [
           {
@@ -10673,6 +11974,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -10681,6 +11987,7 @@
     },
     "/api/v2/admin/orders/{orderId}/cancel": {
       "post": {
+        "description": "",
         "operationId": "order_AdminOrder_cancel_v2",
         "parameters": [
           {
@@ -10729,6 +12036,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -10737,6 +12049,7 @@
     },
     "/api/v2/admin/orders/{orderId}/confirm": {
       "post": {
+        "description": "",
         "operationId": "order_AdminOrder_confirm_v2",
         "parameters": [
           {
@@ -10785,6 +12098,73 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Order"
+        ],
+        "x-nexatech-service": "order-service"
+      }
+    },
+    "/api/v2/admin/orders/{orderId}/reconcile-fulfillment": {
+      "post": {
+        "description": "",
+        "operationId": "order_AdminOrder_reconcileFulfillment_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -10793,6 +12173,7 @@
     },
     "/api/v2/admin/orders/{orderId}/status-transitions": {
       "post": {
+        "description": "",
         "operationId": "order_AdminOrder_transition_v2",
         "parameters": [
           {
@@ -10841,6 +12222,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Order"
         ],
@@ -10849,6 +12235,7 @@
     },
     "/api/v2/admin/payments": {
       "get": {
+        "description": "",
         "operationId": "payment_AdminPayment_list_v2",
         "parameters": [
           {
@@ -10889,6 +12276,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -10897,6 +12289,7 @@
     },
     "/api/v2/admin/payments/{paymentId}": {
       "get": {
+        "description": "",
         "operationId": "payment_AdminPayment_get_v2",
         "parameters": [
           {
@@ -10945,6 +12338,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -10953,6 +12351,7 @@
     },
     "/api/v2/admin/payments/{paymentId}/cod-collect": {
       "post": {
+        "description": "",
         "operationId": "payment_AdminPayment_codCollect_v2",
         "parameters": [
           {
@@ -11001,6 +12400,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -11009,6 +12413,7 @@
     },
     "/api/v2/admin/payments/{paymentId}/refunds": {
       "post": {
+        "description": "",
         "operationId": "payment_AdminPayment_createRefund_v2",
         "parameters": [
           {
@@ -11057,6 +12462,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -11065,6 +12475,7 @@
     },
     "/api/v2/admin/reporting/audit": {
       "post": {
+        "description": "",
         "operationId": "reporting_AdminReporting_recordAudit_v2",
         "parameters": [
           {
@@ -11113,6 +12524,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11121,6 +12537,7 @@
     },
     "/api/v2/admin/reporting/audit-logs": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listAuditLogs_v2",
         "parameters": [
           {
@@ -11161,6 +12578,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11169,6 +12591,7 @@
     },
     "/api/v2/admin/reporting/dashboard": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_dashboard_v2",
         "parameters": [
           {
@@ -11209,6 +12632,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11217,6 +12645,7 @@
     },
     "/api/v2/admin/reporting/metrics/daily": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_dailyMetrics_v2",
         "parameters": [
           {
@@ -11257,6 +12686,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11265,6 +12699,7 @@
     },
     "/api/v2/admin/reporting/orders": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listOrders_v2",
         "parameters": [
           {
@@ -11305,6 +12740,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11313,6 +12753,7 @@
     },
     "/api/v2/admin/reporting/payments": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listPayments_v2",
         "parameters": [
           {
@@ -11353,6 +12794,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11361,6 +12807,7 @@
     },
     "/api/v2/admin/reporting/reviews": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listReviews_v2",
         "parameters": [
           {
@@ -11401,6 +12848,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11409,6 +12861,7 @@
     },
     "/api/v2/admin/reporting/shipments": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listShipments_v2",
         "parameters": [
           {
@@ -11449,6 +12902,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11457,6 +12915,7 @@
     },
     "/api/v2/admin/reporting/support/tickets": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listSupportTickets_v2",
         "parameters": [
           {
@@ -11497,6 +12956,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11505,6 +12969,7 @@
     },
     "/api/v2/admin/reporting/warranty/claims": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listWarrantyClaims_v2",
         "parameters": [
           {
@@ -11545,6 +13010,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11553,6 +13023,7 @@
     },
     "/api/v2/admin/reporting/warranty/returns": {
       "get": {
+        "description": "",
         "operationId": "reporting_AdminReporting_listWarrantyReturns_v2",
         "parameters": [
           {
@@ -11593,6 +13064,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Reporting"
         ],
@@ -11601,6 +13077,7 @@
     },
     "/api/v2/admin/returns": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_listReturns_v2",
         "parameters": [
           {
@@ -11641,6 +13118,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -11649,6 +13131,7 @@
     },
     "/api/v2/admin/returns/{returnId}": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_getReturn_v2",
         "parameters": [
           {
@@ -11697,6 +13180,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -11705,6 +13193,7 @@
     },
     "/api/v2/admin/returns/{returnId}/transition": {
       "post": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_transitionReturn_v2",
         "parameters": [
           {
@@ -11761,6 +13250,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -11769,6 +13263,7 @@
     },
     "/api/v2/admin/review-reports": {
       "get": {
+        "description": "",
         "operationId": "review_AdminReview_listReports_v2",
         "parameters": [
           {
@@ -11809,6 +13304,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -11817,6 +13317,7 @@
     },
     "/api/v2/admin/review-reports/{reportId}/resolve": {
       "post": {
+        "description": "",
         "operationId": "review_AdminReview_resolveReport_v2",
         "parameters": [
           {
@@ -11873,6 +13374,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -11881,6 +13387,7 @@
     },
     "/api/v2/admin/reviews": {
       "get": {
+        "description": "",
         "operationId": "review_AdminReview_list_v2",
         "parameters": [
           {
@@ -11921,6 +13428,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -11929,6 +13441,7 @@
     },
     "/api/v2/admin/reviews/aggregates/rebuild": {
       "post": {
+        "description": "",
         "operationId": "review_AdminReview_rebuild_v2",
         "parameters": [
           {
@@ -11977,6 +13490,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -11985,6 +13503,7 @@
     },
     "/api/v2/admin/reviews/{reviewId}": {
       "get": {
+        "description": "",
         "operationId": "review_AdminReview_get_v2",
         "parameters": [
           {
@@ -12033,6 +13552,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -12041,6 +13565,7 @@
     },
     "/api/v2/admin/reviews/{reviewId}/moderate": {
       "post": {
+        "description": "",
         "operationId": "review_AdminReview_moderate_v2",
         "parameters": [
           {
@@ -12097,6 +13622,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],
@@ -12105,6 +13635,7 @@
     },
     "/api/v2/admin/shipments": {
       "get": {
+        "description": "",
         "operationId": "shipping_AdminShipping_list_v2",
         "parameters": [
           {
@@ -12145,6 +13676,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Shipping"
         ],
@@ -12153,6 +13689,7 @@
     },
     "/api/v2/admin/shipments/{shipmentId}": {
       "get": {
+        "description": "",
         "operationId": "shipping_AdminShipping_get_v2",
         "parameters": [
           {
@@ -12201,6 +13738,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Shipping"
         ],
@@ -12209,6 +13751,7 @@
     },
     "/api/v2/admin/shipments/{shipmentId}/status-transitions": {
       "post": {
+        "description": "",
         "operationId": "shipping_AdminShipping_transition_v2",
         "parameters": [
           {
@@ -12257,6 +13800,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Shipping"
         ],
@@ -12265,6 +13813,7 @@
     },
     "/api/v2/admin/support/tickets": {
       "get": {
+        "description": "",
         "operationId": "support_AdminSupport_listTickets_v2",
         "parameters": [
           {
@@ -12305,6 +13854,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -12313,6 +13867,7 @@
     },
     "/api/v2/admin/support/tickets/{ticketId}": {
       "get": {
+        "description": "",
         "operationId": "support_AdminSupport_getTicket_v2",
         "parameters": [
           {
@@ -12361,6 +13916,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -12369,6 +13929,7 @@
     },
     "/api/v2/admin/support/tickets/{ticketId}/assign": {
       "post": {
+        "description": "",
         "operationId": "support_AdminSupport_assign_v2",
         "parameters": [
           {
@@ -12425,6 +13986,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -12433,6 +13999,7 @@
     },
     "/api/v2/admin/support/tickets/{ticketId}/messages": {
       "post": {
+        "description": "",
         "operationId": "support_AdminSupport_addMessage_v2",
         "parameters": [
           {
@@ -12489,6 +14056,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -12497,6 +14069,7 @@
     },
     "/api/v2/admin/support/tickets/{ticketId}/priority": {
       "patch": {
+        "description": "",
         "operationId": "support_AdminSupport_updatePriority_v2",
         "parameters": [
           {
@@ -12553,6 +14126,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -12561,6 +14139,7 @@
     },
     "/api/v2/admin/support/tickets/{ticketId}/transition": {
       "post": {
+        "description": "",
         "operationId": "support_AdminSupport_transition_v2",
         "parameters": [
           {
@@ -12617,6 +14196,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Support"
         ],
@@ -12625,6 +14209,7 @@
     },
     "/api/v2/admin/users": {
       "get": {
+        "description": "",
         "operationId": "identity_AdminUsers_list_v2",
         "parameters": [
           {
@@ -12665,6 +14250,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "List users (SuperAdmin; BFLA in always-on lab)",
         "tags": [
           "Identity"
@@ -12672,6 +14262,7 @@
         "x-nexatech-service": "identity-service"
       },
       "post": {
+        "description": "",
         "operationId": "identity_AdminUsers_create_v2",
         "parameters": [
           {
@@ -12712,6 +14303,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "SC-76 — create user (BFLA; weak password SC-85)",
         "tags": [
           "Identity"
@@ -12721,6 +14317,7 @@
     },
     "/api/v2/admin/users/export": {
       "get": {
+        "description": "",
         "operationId": "identity_AdminUsers_exportAll_v2",
         "parameters": [
           {
@@ -12761,6 +14358,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "SC-95 — bulk user export (BFLA / unauthenticated export flag)",
         "tags": [
           "Identity"
@@ -12770,6 +14372,7 @@
     },
     "/api/v2/admin/users/{userId}": {
       "delete": {
+        "description": "",
         "operationId": "identity_AdminUsers_softDelete_v2",
         "parameters": [
           {
@@ -12818,6 +14421,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Soft-disable via DELETE (no hard delete — maps to SC-77)",
         "tags": [
           "Identity"
@@ -12825,6 +14433,7 @@
         "x-nexatech-service": "identity-service"
       },
       "get": {
+        "description": "",
         "operationId": "identity_AdminUsers_get_v2",
         "parameters": [
           {
@@ -12873,6 +14482,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Get user by id",
         "tags": [
           "Identity"
@@ -12880,6 +14494,7 @@
         "x-nexatech-service": "identity-service"
       },
       "patch": {
+        "description": "",
         "operationId": "identity_AdminUsers_patch_v2",
         "parameters": [
           {
@@ -12928,6 +14543,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "Patch user roles/status (mass-assignment in always-on lab)",
         "tags": [
           "Identity"
@@ -12937,6 +14557,7 @@
     },
     "/api/v2/admin/users/{userId}/disable": {
       "post": {
+        "description": "",
         "operationId": "identity_AdminUsers_disable_v2",
         "parameters": [
           {
@@ -12985,6 +14606,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "summary": "SC-77 — soft-disable user (BFLA)",
         "tags": [
           "Identity"
@@ -12994,6 +14620,7 @@
     },
     "/api/v2/admin/warranty/claims": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_listClaims_v2",
         "parameters": [
           {
@@ -13034,6 +14661,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -13042,6 +14674,7 @@
     },
     "/api/v2/admin/warranty/claims/{claimId}": {
       "get": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_getClaim_v2",
         "parameters": [
           {
@@ -13090,6 +14723,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -13098,6 +14736,7 @@
     },
     "/api/v2/admin/warranty/claims/{claimId}/transition": {
       "post": {
+        "description": "",
         "operationId": "warranty_AdminWarranty_transitionClaim_v2",
         "parameters": [
           {
@@ -13154,6 +14793,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Warranty"
         ],
@@ -14108,6 +15752,7 @@
     },
     "/api/v2/customers/me": {
       "get": {
+        "description": "",
         "operationId": "customer_Customer_me_v2",
         "parameters": [
           {
@@ -14124,12 +15769,18 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
         "x-nexatech-service": "customer-service"
       },
       "put": {
+        "description": "",
         "operationId": "customer_Customer_updateMe_v2",
         "parameters": [
           {
@@ -14146,6 +15797,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
@@ -14154,6 +15810,7 @@
     },
     "/api/v2/customers/me/addresses": {
       "get": {
+        "description": "",
         "operationId": "customer_Customer_addresses_v2",
         "parameters": [
           {
@@ -14170,12 +15827,18 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
         "x-nexatech-service": "customer-service"
       },
       "post": {
+        "description": "",
         "operationId": "customer_Customer_addAddress_v2",
         "parameters": [
           {
@@ -14192,6 +15855,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
@@ -14199,7 +15867,44 @@
       }
     },
     "/api/v2/customers/me/addresses/{id}": {
+      "delete": {
+        "description": "",
+        "operationId": "customer_Customer_deleteAddress_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "tags": [
+          "Customer"
+        ],
+        "x-nexatech-service": "customer-service"
+      },
       "put": {
+        "description": "",
         "operationId": "customer_Customer_updateAddress_v2",
         "parameters": [
           {
@@ -14224,6 +15929,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Customer"
         ],
@@ -14232,6 +15942,7 @@
     },
     "/api/v2/media/admin/cleanup-orphans": {
       "post": {
+        "description": "",
         "operationId": "media_Media_cleanupOrphans_v2",
         "parameters": [
           {
@@ -14264,6 +15975,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Media"
         ],
@@ -15732,6 +17448,7 @@
     },
     "/api/v2/payments/me": {
       "get": {
+        "description": "",
         "operationId": "payment_Payment_listMine_v2",
         "parameters": [
           {
@@ -15772,6 +17489,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Payment"
         ],
@@ -16578,6 +18300,7 @@
     },
     "/api/v2/reviews/me": {
       "get": {
+        "description": "",
         "operationId": "review_Reviews_listMine_v2",
         "parameters": [
           {
@@ -16618,6 +18341,11 @@
             "description": ""
           }
         },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
         "tags": [
           "Review"
         ],

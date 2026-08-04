@@ -34,6 +34,10 @@ export const SERVICE_ENV_MAP = {
     envKey: 'NOTIFICATION_SERVICE_URL',
     fallback: 'http://localhost:3013',
   },
+  reporting: {
+    envKey: 'REPORTING_SERVICE_URL',
+    fallback: 'http://localhost:3014',
+  },
 } as const;
 
 export type ServiceName = keyof typeof SERVICE_ENV_MAP;

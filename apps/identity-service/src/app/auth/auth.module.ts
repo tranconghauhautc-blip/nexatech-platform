@@ -3,11 +3,17 @@ import { AdminUsersController } from '../admin/admin-users.controller';
 import { AdminUsersService } from '../admin/admin-users.service';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
+import {
+  IdentityEventPublisher,
+  InMemoryEventPublisher,
+  RabbitMqEventPublisher,
+} from './event-publisher';
 import { InMemoryIdentityStore, IdentityStore } from './identity.store';
 import { PrismaIdentityStore } from './prisma-identity.store';
 import { PrismaService } from './prisma.service';
 
 export const IDENTITY_STORE = Symbol('IDENTITY_STORE');
+export const IDENTITY_EVENTS = Symbol('IDENTITY_EVENTS');
 
 function createStoreProviders() {
   const dbUrl =
@@ -36,28 +42,44 @@ function createStoreProviders() {
   );
 }
 
+function createEventPublisher(): IdentityEventPublisher {
+  const url = process.env['RABBITMQ_URL']?.trim();
+  if (url && process.env['NODE_ENV'] !== 'test') {
+    return new RabbitMqEventPublisher(url);
+  }
+  return new InMemoryEventPublisher();
+}
+
 @Module({
   controllers: [AuthController, AdminUsersController],
   providers: [
     ...createStoreProviders(),
     {
+      provide: IDENTITY_EVENTS,
+      useFactory: createEventPublisher,
+    },
+    {
       provide: AuthService,
-      useFactory: (store: IdentityStore) =>
-        new AuthService(store, {
-          accessSecret:
-            process.env['JWT_ACCESS_SECRET'] ??
-            'dev-access-secret-change-me-32chars',
-          refreshSecret:
-            process.env['JWT_REFRESH_SECRET'] ??
-            'dev-refresh-secret-change-me-32chars',
-          accessTtlSeconds: Number(
-            process.env['JWT_ACCESS_TTL_SECONDS'] ?? 900,
-          ),
-          refreshTtlSeconds: Number(
-            process.env['JWT_REFRESH_TTL_SECONDS'] ?? 60 * 60 * 24 * 30,
-          ),
-        }),
-      inject: [IDENTITY_STORE],
+      useFactory: (store: IdentityStore, events: IdentityEventPublisher) =>
+        new AuthService(
+          store,
+          {
+            accessSecret:
+              process.env['JWT_ACCESS_SECRET'] ??
+              'dev-access-secret-change-me-32chars',
+            refreshSecret:
+              process.env['JWT_REFRESH_SECRET'] ??
+              'dev-refresh-secret-change-me-32chars',
+            accessTtlSeconds: Number(
+              process.env['JWT_ACCESS_TTL_SECONDS'] ?? 900,
+            ),
+            refreshTtlSeconds: Number(
+              process.env['JWT_REFRESH_TTL_SECONDS'] ?? 60 * 60 * 24 * 30,
+            ),
+          },
+          events,
+        ),
+      inject: [IDENTITY_STORE, IDENTITY_EVENTS],
     },
     {
       provide: AdminUsersService,

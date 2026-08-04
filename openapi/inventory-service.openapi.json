@@ -132,7 +132,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/reservations/{id}/release": {
@@ -171,7 +177,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stock/adjust": {
@@ -202,7 +214,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stock/issue": {
@@ -233,7 +251,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stock/receive": {
@@ -264,7 +288,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stock/reserve": {
@@ -295,7 +325,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stock/return": {
@@ -326,7 +362,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stores": {
@@ -357,7 +399,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/stores/{id}": {
@@ -396,7 +444,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/transfers": {
@@ -427,7 +481,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/warehouses": {
@@ -458,7 +518,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/inventory/warehouses/{id}": {
@@ -497,7 +563,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/movements": {
@@ -790,7 +862,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/reservations/{id}/release": {
@@ -829,7 +907,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stock/adjust": {
@@ -860,7 +944,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stock/issue": {
@@ -891,7 +981,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stock/receive": {
@@ -922,7 +1018,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stock/reserve": {
@@ -953,7 +1055,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stock/return": {
@@ -984,7 +1092,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stores": {
@@ -1015,7 +1129,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/stores/{id}": {
@@ -1054,7 +1174,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/transfers": {
@@ -1085,7 +1211,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/warehouses": {
@@ -1116,7 +1248,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/inventory/warehouses/{id}": {
@@ -1155,7 +1293,13 @@
         },
         "tags": [
           "admin-inventory"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/movements": {

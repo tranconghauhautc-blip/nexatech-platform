@@ -30,8 +30,9 @@
 
   /* Text */
   --nx-text-primary: #0f172a;
-  --nx-text-secondary: #64748b;
-  --nx-text-muted: #94a3b8;
+  /* #475569 ≥ 7:1 on white / ≥ 4.5:1 on #f6f8fc and #f1f5f9 */
+  --nx-text-secondary: #475569;
+  --nx-text-muted: #475569;
 
   /* Status — accessible */
   --nx-success: #15803d;
@@ -536,6 +537,10 @@ textarea {
   overflow-y: auto;
   box-shadow: var(--nx-shadow-lg);
   animation: nx-drawer-in var(--nx-duration-slow) var(--nx-ease);
+}
+
+.nx-drawer.nx-drawer-lg {
+  width: min(760px, 100vw);
 }
 
 .nx-modal {

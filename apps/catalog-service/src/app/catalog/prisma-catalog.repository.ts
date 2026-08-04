@@ -150,9 +150,13 @@ function mapSku(
       slug: string;
       name: string;
       status: string;
+      mediaLinks?: PrismaProductMediaLink[];
     } | null;
   },
 ): SkuWithPrice {
+  const primaryMedia = row.product?.mediaLinks
+    ? [...row.product.mediaLinks].sort((a, b) => a.sortOrder - b.sortOrder)[0]
+    : undefined;
   return {
     id: row.id,
     productId: row.productId,
@@ -169,6 +173,7 @@ function mapSku(
           slug: row.product.slug,
           name: row.product.name,
           status: toDomainStatus(row.product.status as PrismaProductStatus),
+          thumbnailUrl: primaryMedia?.mediaId,
         }
       : undefined,
   };
@@ -1031,7 +1036,14 @@ export class PrismaCatalogRepository implements CatalogRepository {
   async getSkuByCode(skuCode: string): Promise<SkuWithPrice | null> {
     const row = await this.prisma.sku.findUnique({
       where: { skuCode },
-      include: { price: true, product: true },
+      include: {
+        price: true,
+        product: {
+          include: {
+            mediaLinks: { where: { isPrimary: true }, take: 1 },
+          },
+        },
+      },
     });
     return row ? mapSku(row) : null;
   }
@@ -1039,7 +1051,14 @@ export class PrismaCatalogRepository implements CatalogRepository {
   async getSkuById(skuId: string): Promise<SkuWithPrice | null> {
     const row = await this.prisma.sku.findUnique({
       where: { id: skuId },
-      include: { price: true, product: true },
+      include: {
+        price: true,
+        product: {
+          include: {
+            mediaLinks: { where: { isPrimary: true }, take: 1 },
+          },
+        },
+      },
     });
     return row ? mapSku(row) : null;
   }

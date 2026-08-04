@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { formatVnd } from '@nexatech/shared-web';
 import { EmptyState } from '../../../components/common/empty-state';
+import { OrderItemThumb } from '../../../components/media/order-item-thumb';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 import {
   DELIVERY_METHOD_LABELS,
@@ -40,8 +41,11 @@ export default function Page() {
       <div
         className="nt-skeleton"
         style={{ minHeight: 160 }}
+        role="status"
         aria-busy="true"
-      />
+      >
+        Đang tải đơn hàng…
+      </div>
     );
   }
   if (error) {
@@ -103,6 +107,9 @@ export default function Page() {
           const delivery = String(record['deliveryMethod'] ?? '');
           const payment = String(record['paymentMethod'] ?? '');
           const createdAt = record['createdAt'];
+          const firstItem = Array.isArray(record['items'])
+            ? (record['items'] as Record<string, unknown>[])[0]
+            : undefined;
           return (
             <li
               key={id}
@@ -117,25 +124,48 @@ export default function Page() {
                 alignItems: 'center',
               }}
             >
-              <div>
-                <strong>{code}</strong>
-                <div style={{ color: '#4b6478' }}>
-                  {ORDER_STATUS_LABELS[status] ?? (status || '—')}
-                  {typeof createdAt === 'string'
-                    ? ` · ${new Date(createdAt).toLocaleString('vi-VN')}`
-                    : ''}
+              <div style={{ display: 'flex', gap: '0.85rem', flex: 1 }}>
+                {firstItem ? (
+                  <div
+                    style={{
+                      width: 56,
+                      height: 56,
+                      flexShrink: 0,
+                      borderRadius: 8,
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <OrderItemThumb
+                      item={{
+                        imageMediaId: firstItem['imageMediaId'] as
+                          | string
+                          | undefined,
+                        productId: firstItem['productId'] as string | undefined,
+                      }}
+                      alt={String(firstItem['productName'] ?? 'Sản phẩm')}
+                    />
+                  </div>
+                ) : null}
+                <div>
+                  <strong>{code}</strong>
+                  <div style={{ color: '#4b6478' }}>
+                    {ORDER_STATUS_LABELS[status] ?? (status || '—')}
+                    {typeof createdAt === 'string'
+                      ? ` · ${new Date(createdAt).toLocaleString('vi-VN')}`
+                      : ''}
+                  </div>
+                  <div style={{ color: '#4b6478', fontSize: '0.9rem' }}>
+                    {itemCount} sản phẩm ·{' '}
+                    {DELIVERY_METHOD_LABELS[
+                      delivery as keyof typeof DELIVERY_METHOD_LABELS
+                    ] ?? delivery}{' '}
+                    ·{' '}
+                    {PAYMENT_METHOD_LABELS[
+                      payment as keyof typeof PAYMENT_METHOD_LABELS
+                    ] ?? payment}
+                  </div>
+                  <div style={{ color: '#0b1f3a' }}>{formatVnd(total)}</div>
                 </div>
-                <div style={{ color: '#4b6478', fontSize: '0.9rem' }}>
-                  {itemCount} sản phẩm ·{' '}
-                  {DELIVERY_METHOD_LABELS[
-                    delivery as keyof typeof DELIVERY_METHOD_LABELS
-                  ] ?? delivery}{' '}
-                  ·{' '}
-                  {PAYMENT_METHOD_LABELS[
-                    payment as keyof typeof PAYMENT_METHOD_LABELS
-                  ] ?? payment}
-                </div>
-                <div style={{ color: '#0b1f3a' }}>{formatVnd(total)}</div>
               </div>
               <Link
                 href={`/tai-khoan/don-hang/${encodeURIComponent(id)}`}

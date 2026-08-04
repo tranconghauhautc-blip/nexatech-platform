@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}": {
@@ -195,7 +201,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/assign": {
@@ -258,7 +270,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/messages": {
@@ -321,7 +339,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/priority": {
@@ -384,7 +408,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/support/tickets/{ticketId}/transition": {
@@ -447,7 +477,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/support/tickets": {
@@ -838,7 +874,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}": {
@@ -893,7 +935,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/assign": {
@@ -956,7 +1004,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/messages": {
@@ -1019,7 +1073,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/priority": {
@@ -1082,7 +1142,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/support/tickets/{ticketId}/transition": {
@@ -1145,7 +1211,13 @@
         },
         "tags": [
           "admin-support"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/support/tickets": {

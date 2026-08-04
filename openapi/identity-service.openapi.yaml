@@ -234,6 +234,11 @@ paths:
           description: ''
       tags:
         - Health
+      security:
+        - userId: []
+        - userRoles: []
+        - bearer: []
+      description: Internal/BFF path — not anonymously callable; requires gateway identity headers or bearer.
   /api/v1/admin/users:
     get:
       operationId: AdminUsers_list_v1
@@ -264,6 +269,9 @@ paths:
       summary: List users (SuperAdmin; BFLA in always-on lab)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
     post:
       operationId: AdminUsers_create_v1
       parameters:
@@ -293,6 +301,9 @@ paths:
       summary: SC-76 — create user (BFLA; weak password SC-85)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/users/export:
     get:
       operationId: AdminUsers_exportAll_v1
@@ -323,6 +334,9 @@ paths:
       summary: SC-95 — bulk user export (BFLA / unauthenticated export flag)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/users/{userId}:
     delete:
       operationId: AdminUsers_softDelete_v1
@@ -358,6 +372,9 @@ paths:
       summary: Soft-disable via DELETE (no hard delete — maps to SC-77)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
     get:
       operationId: AdminUsers_get_v1
       parameters:
@@ -392,6 +409,9 @@ paths:
       summary: Get user by id
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
     patch:
       operationId: AdminUsers_patch_v1
       parameters:
@@ -426,6 +446,9 @@ paths:
       summary: Patch user roles/status (mass-assignment in always-on lab)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/users/{userId}/disable:
     post:
       operationId: AdminUsers_disable_v1
@@ -461,6 +484,9 @@ paths:
       summary: SC-77 — soft-disable user (BFLA)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v1/auth/forgot-password:
     post:
       operationId: Auth_forgotPassword_v1
@@ -698,6 +724,9 @@ paths:
       summary: List users (SuperAdmin; BFLA in always-on lab)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
     post:
       operationId: AdminUsers_create_v2
       parameters:
@@ -727,6 +756,9 @@ paths:
       summary: SC-76 — create user (BFLA; weak password SC-85)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/users/export:
     get:
       operationId: AdminUsers_exportAll_v2
@@ -757,6 +789,9 @@ paths:
       summary: SC-95 — bulk user export (BFLA / unauthenticated export flag)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/users/{userId}:
     delete:
       operationId: AdminUsers_softDelete_v2
@@ -792,6 +827,9 @@ paths:
       summary: Soft-disable via DELETE (no hard delete — maps to SC-77)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
     get:
       operationId: AdminUsers_get_v2
       parameters:
@@ -826,6 +864,9 @@ paths:
       summary: Get user by id
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
     patch:
       operationId: AdminUsers_patch_v2
       parameters:
@@ -860,6 +901,9 @@ paths:
       summary: Patch user roles/status (mass-assignment in always-on lab)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/users/{userId}/disable:
     post:
       operationId: AdminUsers_disable_v2
@@ -895,6 +939,9 @@ paths:
       summary: SC-77 — soft-disable user (BFLA)
       tags:
         - admin-users
+      security:
+        - bearer: []
+      description: ''
   /api/v2/auth/forgot-password:
     post:
       operationId: Auth_forgotPassword_v2

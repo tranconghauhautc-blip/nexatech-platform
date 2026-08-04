@@ -13,3 +13,8 @@
 # Lockfile has its own formatter (pnpm); Prettier reformatting it (flow -> block
 # YAML style) creates massive noisy diffs with no functional benefit.
 /pnpm-lock.yaml
+
+# Generated OpenAPI artifacts — formatted by scripts/openapi (custom YAML dumper)
+/openapi/**/*.json
+/openapi/**/*.yaml
+/openapi/**/*.yml

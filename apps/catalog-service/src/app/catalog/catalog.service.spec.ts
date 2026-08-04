@@ -17,7 +17,7 @@ describe('CatalogService', () => {
 
   it('creates category tree, brand, product, sku and price history', async () => {
     const parent = await service.createCategory(
-      { name: 'Điện thoại', slug: 'dien-thoai', sortOrder: 1 },
+      { name: 'Điện thoại', slug: 'dien-thoai', sortOrder: 1, isActive: true },
       staffRoles,
     );
     const child = await service.createCategory(
@@ -26,6 +26,7 @@ describe('CatalogService', () => {
         slug: 'iphone',
         parentId: parent.id,
         sortOrder: 1,
+        isActive: true,
       },
       staffRoles,
     );
@@ -34,7 +35,7 @@ describe('CatalogService', () => {
     expect(tree[0]?.children[0]?.slug).toBe(child.slug);
 
     const brand = await service.createBrand(
-      { name: 'Apple', slug: 'apple' },
+      { name: 'Apple', slug: 'apple', isActive: true },
       staffRoles,
     );
 
@@ -45,6 +46,7 @@ describe('CatalogService', () => {
         categoryId: parent.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -55,13 +57,15 @@ describe('CatalogService', () => {
         skuCode: 'IP16-128-BK',
         name: '128GB Đen',
         price: 24990000,
+        attributes: {},
+        currency: 'VND',
       },
       staffRoles,
     );
 
     const updated = await service.updateSkuPrice(
       sku.id,
-      { amount: 23990000, reason: 'Khuyến mãi' },
+      { amount: 23990000, currency: 'VND', reason: 'Khuyến mãi' },
       staffRoles,
       'staff-1',
     );
@@ -73,11 +77,11 @@ describe('CatalogService', () => {
 
   it('searches and filters products', async () => {
     const category = await service.createCategory(
-      { name: 'Laptop', slug: 'laptop' },
+      { name: 'Laptop', slug: 'laptop', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Dell', slug: 'dell' },
+      { name: 'Dell', slug: 'dell', isActive: true },
       staffRoles,
     );
     const product = await service.createProduct(
@@ -87,6 +91,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -96,6 +101,8 @@ describe('CatalogService', () => {
         skuCode: 'XPS13-I7',
         name: 'i7 16GB',
         price: 32000000,
+        attributes: {},
+        currency: 'VND',
       },
       staffRoles,
     );
@@ -113,11 +120,11 @@ describe('CatalogService', () => {
 
   it('computes minPrice as lowest SKU amount (never clamped by trailing 0)', async () => {
     const category = await service.createCategory(
-      { name: 'Laptop', slug: 'laptop-min' },
+      { name: 'Laptop', slug: 'laptop-min', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Dell', slug: 'dell-min' },
+      { name: 'Dell', slug: 'dell-min', isActive: true },
       staffRoles,
     );
     const product = await service.createProduct(
@@ -127,6 +134,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -136,6 +144,8 @@ describe('CatalogService', () => {
         skuCode: 'XPS-HI',
         name: 'High',
         price: 40_000_000,
+        attributes: {},
+        currency: 'VND',
       },
       staffRoles,
     );
@@ -145,6 +155,8 @@ describe('CatalogService', () => {
         skuCode: 'XPS-LO',
         name: 'Low',
         price: 28_000_000,
+        attributes: {},
+        currency: 'VND',
       },
       staffRoles,
     );
@@ -163,11 +175,11 @@ describe('CatalogService', () => {
 
   it('rejects duplicate product slug', async () => {
     const category = await service.createCategory(
-      { name: 'Tablet', slug: 'tablet' },
+      { name: 'Tablet', slug: 'tablet', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Samsung', slug: 'samsung' },
+      { name: 'Samsung', slug: 'samsung', isActive: true },
       staffRoles,
     );
     await service.createProduct(
@@ -176,6 +188,8 @@ describe('CatalogService', () => {
         slug: 'galaxy-tab',
         categoryId: category.id,
         brandId: brand.id,
+        status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -186,6 +200,8 @@ describe('CatalogService', () => {
           slug: 'galaxy-tab',
           categoryId: category.id,
           brandId: brand.id,
+          status: 'active',
+          specs: [],
         },
         staffRoles,
       ),
@@ -196,11 +212,11 @@ describe('CatalogService', () => {
 
   it('returns rule-based recommendations', async () => {
     const category = await service.createCategory(
-      { name: 'Phụ kiện', slug: 'phu-kien' },
+      { name: 'Phụ kiện', slug: 'phu-kien', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Anker', slug: 'anker' },
+      { name: 'Anker', slug: 'anker', isActive: true },
       staffRoles,
     );
     const main = await service.createProduct(
@@ -210,6 +226,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -220,6 +237,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -231,7 +249,10 @@ describe('CatalogService', () => {
 
   it('forbids admin actions without staff role', async () => {
     await expect(
-      service.createCategory({ name: 'Test', slug: 'test' }, [Roles.Customer]),
+      service.createCategory(
+        { name: 'Test', slug: 'test', sortOrder: 0, isActive: true },
+        [Roles.Customer],
+      ),
     ).rejects.toMatchObject({
       errorCode: ErrorCodes.FORBIDDEN,
     });
@@ -239,7 +260,12 @@ describe('CatalogService', () => {
 
   it('updates spec template preserving attribute ids by key', async () => {
     const category = await service.createCategory(
-      { name: 'Điện thoại', slug: 'dien-thoai-spec' },
+      {
+        name: 'Điện thoại',
+        slug: 'dien-thoai-spec',
+        sortOrder: 0,
+        isActive: true,
+      },
       staffRoles,
     );
     const template = await service.createSpecTemplate(
@@ -308,11 +334,11 @@ describe('CatalogService', () => {
 
   it('blocks spec template delete when attributes are referenced', async () => {
     const category = await service.createCategory(
-      { name: 'Tablet', slug: 'tablet-spec' },
+      { name: 'Tablet', slug: 'tablet-spec', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Samsung', slug: 'samsung-spec' },
+      { name: 'Samsung', slug: 'samsung-spec', isActive: true },
       staffRoles,
     );
     const template = await service.createSpecTemplate(
@@ -322,12 +348,15 @@ describe('CatalogService', () => {
         groups: [
           {
             name: 'Thông số chung',
+            sortOrder: 0,
             attributes: [
               {
                 key: 'screen_inch',
                 label: 'Màn hình',
                 dataType: 'number',
                 unit: 'inch',
+                isFilterable: true,
+                sortOrder: 0,
               },
             ],
           },
@@ -347,6 +376,7 @@ describe('CatalogService', () => {
         slug: 'galaxy-tab-s9',
         categoryId: category.id,
         brandId: brand.id,
+        status: 'active',
         specs: [{ attributeId, value: '11' }],
       },
       staffRoles,
@@ -361,11 +391,16 @@ describe('CatalogService', () => {
 
   it('updates sku name and attributes via updateSku', async () => {
     const category = await service.createCategory(
-      { name: 'Tai nghe', slug: 'tai-nghe-sku-edit' },
+      {
+        name: 'Tai nghe',
+        slug: 'tai-nghe-sku-edit',
+        sortOrder: 0,
+        isActive: true,
+      },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Sony', slug: 'sony-sku-edit' },
+      { name: 'Sony', slug: 'sony-sku-edit', isActive: true },
       staffRoles,
     );
     const product = await service.createProduct(
@@ -375,6 +410,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );
@@ -385,6 +421,7 @@ describe('CatalogService', () => {
         name: 'Den',
         price: 5990000,
         attributes: { color: 'black' },
+        currency: 'VND',
       },
       staffRoles,
     );
@@ -415,11 +452,11 @@ describe('CatalogService', () => {
   });
   it('updates product fields and specs via PATCH input', async () => {
     const category = await service.createCategory(
-      { name: 'Phụ kiện', slug: 'phu-kien-edit' },
+      { name: 'Phụ kiện', slug: 'phu-kien-edit', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Anker', slug: 'anker-edit' },
+      { name: 'Anker', slug: 'anker-edit', isActive: true },
       staffRoles,
     );
     const template = await service.createSpecTemplate(
@@ -429,8 +466,15 @@ describe('CatalogService', () => {
         groups: [
           {
             name: 'Chung',
+            sortOrder: 0,
             attributes: [
-              { key: 'watt', label: 'Công suất', dataType: 'number' },
+              {
+                key: 'watt',
+                label: 'Công suất',
+                dataType: 'number',
+                isFilterable: true,
+                sortOrder: 0,
+              },
             ],
           },
         ],
@@ -448,6 +492,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'draft',
+        specs: [],
       },
       staffRoles,
     );
@@ -472,11 +517,11 @@ describe('CatalogService', () => {
 
   it('manages product media links with atomic primary and unlink', async () => {
     const category = await service.createCategory(
-      { name: 'Đồng hồ', slug: 'dong-ho-media' },
+      { name: 'Đồng hồ', slug: 'dong-ho-media', sortOrder: 0, isActive: true },
       staffRoles,
     );
     const brand = await service.createBrand(
-      { name: 'Garmin', slug: 'garmin-media' },
+      { name: 'Garmin', slug: 'garmin-media', isActive: true },
       staffRoles,
     );
     const product = await service.createProduct(
@@ -486,6 +531,7 @@ describe('CatalogService', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       staffRoles,
     );

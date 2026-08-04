@@ -17,7 +17,7 @@
 
 .brand {
   margin: 0;
-  color: #0284c7;
+  color: var(--nt-link);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;

@@ -104,34 +104,46 @@ services:
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+  - name: security-guide-portal
+    url: http://security-guide-portal:3200
+    retries: 3
+    connect_timeout: 5000
+    write_timeout: 60000
+    read_timeout: 60000
 
 routes:
   - name: storefront-root
-    service: storefront-web
+    service:
+      name: storefront-web
     paths: ['/']
     strip_path: false
     preserve_host: true
     regex_priority: 0
   - name: admin-ui
-    service: admin-web
+    service:
+      name: admin-web
     paths: ['/admin']
     strip_path: true
     preserve_host: true
     regex_priority: 10
   - name: identity-auth
-    service: identity-service
+    service:
+      name: identity-service
     paths: ['/api/v1/auth', '/api/v2/auth']
     strip_path: false
   - name: identity-admin-users
-    service: identity-service
+    service:
+      name: identity-service
     paths: ['/api/v1/admin/users', '/api/v2/admin/users']
     strip_path: false
   - name: customer
-    service: customer-service
+    service:
+      name: customer-service
     paths: ['/api/v1/customers', '/api/v2/customers']
     strip_path: false
   - name: catalog
-    service: catalog-service
+    service:
+      name: catalog-service
     paths:
       [
         '/api/v1/categories',
@@ -151,7 +163,8 @@ routes:
       ]
     strip_path: false
   - name: media
-    service: media-service
+    service:
+      name: media-service
     paths:
       [
         '/api/v1/media',
@@ -161,7 +174,8 @@ routes:
       ]
     strip_path: false
   - name: inventory
-    service: inventory-service
+    service:
+      name: inventory-service
     paths:
       [
         '/api/v1/inventory',
@@ -179,7 +193,8 @@ routes:
       ]
     strip_path: false
   - name: cart
-    service: cart-service
+    service:
+      name: cart-service
     paths:
       [
         '/api/v1/cart',
@@ -197,7 +212,8 @@ routes:
       ]
     strip_path: false
   - name: order
-    service: order-service
+    service:
+      name: order-service
     paths:
       [
         '/api/v1/orders',
@@ -209,7 +225,8 @@ routes:
       ]
     strip_path: false
   - name: payment
-    service: payment-service
+    service:
+      name: payment-service
     paths:
       [
         '/api/v1/payments',
@@ -219,7 +236,8 @@ routes:
       ]
     strip_path: false
   - name: shipping
-    service: shipping-service
+    service:
+      name: shipping-service
     paths:
       [
         '/api/v1/shipping',
@@ -233,12 +251,20 @@ routes:
       ]
     strip_path: false
   - name: swagger-portal
-    service: swagger-portal
-    paths: ['/docs', '/openapi']
+    service:
+      name: swagger-portal
+    paths: ['/docs', '/openapi', '/swagger']
     strip_path: false
     regex_priority: 100
+  - name: security-guide-portal
+    service:
+      name: security-guide-portal
+    paths: ['/security-guide']
+    strip_path: true
+    regex_priority: 100
   - name: review
-    service: review-service
+    service:
+      name: review-service
     paths:
       [
         '/api/v1/reviews',
@@ -248,7 +274,8 @@ routes:
       ]
     strip_path: false
   - name: warranty
-    service: warranty-service
+    service:
+      name: warranty-service
     paths:
       [
         '/api/v1/warranty',
@@ -260,7 +287,8 @@ routes:
       ]
     strip_path: false
   - name: support
-    service: support-service
+    service:
+      name: support-service
     paths:
       [
         '/api/v1/support',
@@ -270,7 +298,8 @@ routes:
       ]
     strip_path: false
   - name: notification
-    service: notification-service
+    service:
+      name: notification-service
     paths:
       [
         '/api/v1/notifications',
@@ -280,7 +309,8 @@ routes:
       ]
     strip_path: false
   - name: reporting
-    service: reporting-service
+    service:
+      name: reporting-service
     paths: ['/api/v1/admin/reporting', '/api/v2/admin/reporting']
     strip_path: false
 
@@ -304,6 +334,7 @@ plugins:
         - x-trace-id
         - x-user-id
         - x-user-roles
+        - x-user-email
         - x-cart-token
       credentials: true
       max_age: 3600

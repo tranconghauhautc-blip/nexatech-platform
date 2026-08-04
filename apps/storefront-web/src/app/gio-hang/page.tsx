@@ -64,9 +64,11 @@ export default function CartPage() {
       <div
         className="nt-container nt-skeleton"
         style={{ margin: '2rem auto', minHeight: 200 }}
+        role="status"
         aria-busy="true"
-        aria-label="Đang tải giỏ hàng"
-      />
+      >
+        Đang tải giỏ hàng…
+      </div>
     );
   }
 

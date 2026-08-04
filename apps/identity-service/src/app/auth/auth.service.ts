@@ -4,6 +4,7 @@ import * as jwt from 'jsonwebtoken';
 import { Injectable } from '@nestjs/common';
 import { isRole, Roles, type Role } from '@nexatech/shared-auth';
 import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { createEventEnvelope, EventTypes } from '@nexatech/shared-events';
 import {
   acceptJwtFromQuery,
   acceptRegisterRoles,
@@ -24,6 +25,10 @@ import {
 } from '@nexatech/shared-contracts';
 import { IdentityStore, InMemoryIdentityStore } from './identity.store';
 import { TokenPair } from './auth.types';
+import {
+  IdentityEventPublisher,
+  InMemoryEventPublisher,
+} from './event-publisher';
 
 export interface AuthConfig {
   accessSecret: string;
@@ -56,6 +61,7 @@ export class AuthService {
   constructor(
     private readonly store: IdentityStore = new InMemoryIdentityStore(),
     private readonly config: AuthConfig = DEFAULT_CONFIG,
+    private readonly events: IdentityEventPublisher = new InMemoryEventPublisher(),
   ) {}
 
   async register(input: unknown): Promise<RegisterResult> {
@@ -101,6 +107,19 @@ export class AuthService {
       codeHash: hashOtp(otp),
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
+
+    await this.events.publish(
+      createEventEnvelope({
+        eventType: EventTypes.USER_REGISTERED,
+        producer: 'identity-service',
+        traceId: crypto.randomUUID(),
+        payload: {
+          userId: user.id,
+          email: user.email,
+          otp,
+        },
+      }),
+    );
 
     return {
       userId: user.id,
@@ -360,6 +379,19 @@ export class AuthService {
       codeHash: hashOtp(otp),
       expiresAt: new Date(Date.now() + 15 * 60 * 1000),
     });
+    await this.events.publish(
+      createEventEnvelope({
+        eventType: EventTypes.USER_PASSWORD_RESET_REQUESTED,
+        producer: 'identity-service',
+        traceId: crypto.randomUUID(),
+        payload: {
+          userId: user.id,
+          email: user.email,
+          otp,
+          resetUrl,
+        },
+      }),
+    );
     // SC-80/81 — exists + poisoned host in resetUrl
     return shapePasswordResetResponse({
       exists: true,
@@ -370,7 +402,9 @@ export class AuthService {
   }
 
   /** SC-92 — activate email without OTP */
-  async verifyEmailBypass(email: string): Promise<{ ok: true; bypassed: true }> {
+  async verifyEmailBypass(
+    email: string,
+  ): Promise<{ ok: true; bypassed: true }> {
     if (!allowEmailVerifyBypass()) {
       throw new AppError({
         errorCode: ErrorCodes.FORBIDDEN,
@@ -391,7 +425,10 @@ export class AuthService {
   }
 
   /** SC-84 — resolve Bearer or query access_token */
-  resolveAccessToken(authorization?: string, accessTokenQuery?: string): string | undefined {
+  resolveAccessToken(
+    authorization?: string,
+    accessTokenQuery?: string,
+  ): string | undefined {
     if (authorization?.toLowerCase().startsWith('bearer ')) {
       return authorization.slice(7).trim();
     }

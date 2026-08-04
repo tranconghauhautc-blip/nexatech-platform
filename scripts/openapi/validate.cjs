@@ -18,6 +18,11 @@ const openapiDir = path.join(root, OPENAPI_DIR_NAME);
 const PUBLIC_PATH_HINTS =
   /\/(auth\/(login|register|forgot-password|reset-password|verify-email)|health|docs)/i;
 
+/** True path segment match — avoids `/media` falsely matching `/me`. */
+function pathHasSegment(p, segment) {
+  return new RegExp(`(?:^|/)${segment}(?:/|$)`, 'i').test(p);
+}
+
 function loadJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
@@ -95,22 +100,17 @@ function validateDoc(label, doc, { requirePaths }) {
       }
     }
 
-    const looksProtected =
-      !PUBLIC_PATH_HINTS.test(p) &&
-      !['get'].includes(method) === false &&
-      (p.includes('/admin') ||
-        p.includes('/me') ||
-        p.includes('/sessions') ||
-        method !== 'get');
+    const isAdminOrMe =
+      pathHasSegment(p, 'admin') ||
+      pathHasSegment(p, 'me') ||
+      pathHasSegment(p, 'sessions') ||
+      pathHasSegment(p, 'internal');
+    const looksProtected = !PUBLIC_PATH_HINTS.test(p) && isAdminOrMe;
     const hasSecurity =
       (Array.isArray(op.security) && op.security.length > 0) ||
       (Array.isArray(doc.security) && doc.security.length > 0);
-    if (
-      looksProtected &&
-      !hasSecurity &&
-      (p.includes('/admin') || p.includes('/me') || method === 'delete')
-    ) {
-      warnings.push(
+    if (looksProtected && !hasSecurity) {
+      errors.push(
         `${label}: ${id} looks protected but has no security declaration`,
       );
     }

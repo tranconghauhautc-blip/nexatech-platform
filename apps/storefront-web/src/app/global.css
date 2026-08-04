@@ -17,15 +17,20 @@
 
   --nt-text: #0f1f36;
   --nt-text-muted: #55688a;
-  --nt-text-faint: #8595b3;
+  /* #64748b ≈ 4.76:1 on white — meets WCAG AA for small text (was #8595b3 at 3.02:1) */
+  --nt-text-faint: #64748b;
   --nt-text-on-dark: #eef6fb;
   --nt-text-on-dark-muted: #9db3d1;
+  /* Link / accent blue — #0369a1 ≈ 5.9:1 on white (replaces former #0284c7 at 4.1:1) */
+  --nt-link: #0369a1;
+  --nt-link-hover: #0c4a6e;
 
-  --nt-danger: #e5484d;
+  --nt-danger: #b91c1c;
   --nt-danger-bg: #fdecec;
-  --nt-success: #16a34a;
+  /* Text on badge bg must be ≥4.5:1 — #14532d on #e9f9ef ≈ 7:1 */
+  --nt-success: #14532d;
   --nt-success-bg: #e9f9ef;
-  --nt-warning: #d97706;
+  --nt-warning: #92400e;
   --nt-warning-bg: #fef3e2;
 
   --nt-radius-sm: 8px;
@@ -271,7 +276,7 @@ textarea {
 
 .nt-btn--outline,
 .nt-btn-outline {
-  background: transparent;
+  background: var(--nt-surface);
   border-color: var(--nt-border-strong);
   color: var(--nt-text);
 }

@@ -11,12 +11,13 @@ import {
   type VietnamAddressSelectorErrors,
   type VietnamAddressSelectorValue,
 } from '@nexatech/shared-web/address';
-import Link from 'next/link';
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { AccountPageHeader } from '../../../components/account/account-page-header';
 import { EmptyState } from '../../../components/common/empty-state';
 import { useAuth } from '../../../components/providers/auth-provider';
 import { bff, getErrorMessage } from '../../../lib/api-browser';
 import { flattenZodErrors, profileFormSchema } from '../../../lib/validation';
+import styles from './page.module.css';
 
 interface CustomerProfile {
   id?: string;
@@ -92,13 +93,15 @@ export default function Page() {
     Record<string, string>
   >({});
   const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [savingProfile, setSavingProfile] = useState(false);
 
   const [form, setForm] = useState<VietnamAddressSelectorValue>({
     ...EMPTY_VIETNAM_ADDRESS_VALUE,
     label: 'Nhà',
-    isDefault: true,
+    isDefault: false,
   });
+  const [showAddForm, setShowAddForm] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<VietnamAddressSelectorErrors>(
     {},
   );
@@ -145,6 +148,14 @@ export default function Page() {
     load();
   }, [load]);
 
+  useEffect(() => {
+    if (!profileSuccess) {
+      return;
+    }
+    const timer = window.setTimeout(() => setProfileSuccess(null), 4000);
+    return () => window.clearTimeout(timer);
+  }, [profileSuccess]);
+
   async function onSaveProfile(event: FormEvent) {
     event.preventDefault();
     setProfileError(null);
@@ -158,6 +169,7 @@ export default function Page() {
     }
 
     setSavingProfile(true);
+    setProfileSuccess(null);
     try {
       const updated = await bff.put<CustomerProfile>(
         '/api/bff/customer/customers/me',
@@ -170,6 +182,7 @@ export default function Page() {
       setFullName(String(updated.fullName ?? ''));
       setPhone(String(updated.phone ?? ''));
       setEditing(false);
+      setProfileSuccess('Đã cập nhật hồ sơ.');
       await refreshAuth();
     } catch (err) {
       setProfileError(getErrorMessage(err, 'Không lưu được hồ sơ'));
@@ -206,8 +219,9 @@ export default function Page() {
       setForm({
         ...EMPTY_VIETNAM_ADDRESS_VALUE,
         label: 'Nhà',
-        isDefault: true,
+        isDefault: false,
       });
+      setShowAddForm(false);
       await load();
     } catch (err) {
       setFormError(getErrorMessage(err, 'Không lưu được địa chỉ'));
@@ -303,8 +317,11 @@ export default function Page() {
       <div
         className="nt-skeleton"
         style={{ minHeight: 160 }}
+        role="status"
         aria-busy="true"
-      />
+      >
+        Đang tải hồ sơ…
+      </div>
     );
   }
   if (error) {
@@ -325,101 +342,102 @@ export default function Page() {
     );
   }
 
-  return (
-    <div>
-      <h2 style={{ marginTop: 0 }}>Hồ sơ & địa chỉ</h2>
+  const displayName =
+    profile?.fullName?.trim() || user?.email?.split('@')[0] || 'Khách hàng';
+  const initials = displayName
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join('');
 
-      <section
-        style={{
-          border: '1px solid #dbeafe',
-          borderRadius: 12,
-          padding: '1rem',
-          background: '#fff',
-          marginBottom: '1.25rem',
-          maxWidth: 520,
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            gap: '0.75rem',
-            alignItems: 'center',
-          }}
-        >
-          <h3 style={{ margin: 0 }}>Thông tin cá nhân</h3>
-          {!editing ? (
-            <button
-              type="button"
-              className="nt-btn nt-btn-ghost"
-              onClick={() => {
-                setEditing(true);
-                setProfileError(null);
-                setProfileFieldErrors({});
-                setFullName(String(profile?.fullName ?? ''));
-                setPhone(String(profile?.phone ?? ''));
-              }}
-            >
-              Chỉnh sửa hồ sơ
-            </button>
-          ) : null}
+  return (
+    <div className={styles.page}>
+      <AccountPageHeader
+        title="Hồ sơ & địa chỉ"
+        description="Cập nhật thông tin cá nhân và địa chỉ giao hàng."
+      />
+
+      <section className={styles.hero}>
+        <div className={styles.avatar} aria-hidden="true">
+          {initials || 'N'}
+        </div>
+        <div className={styles.heroBody}>
+          <h3 className={styles.heroName}>{displayName}</h3>
+          <p className={styles.heroMeta}>{user?.email || '—'}</p>
+          <span className={styles.badge}>Thành viên NexaTech</span>
+        </div>
+        {!editing ? (
+          <button
+            type="button"
+            className="nt-btn nt-btn-secondary"
+            onClick={() => {
+              setEditing(true);
+              setProfileError(null);
+              setProfileSuccess(null);
+              setProfileFieldErrors({});
+              setFullName(String(profile?.fullName ?? ''));
+              setPhone(String(profile?.phone ?? ''));
+            }}
+          >
+            Chỉnh sửa
+          </button>
+        ) : null}
+      </section>
+
+      {profileSuccess ? (
+        <p className={styles.success} role="status">
+          {profileSuccess}
+        </p>
+      ) : null}
+
+      <section className={styles.card}>
+        <div className={styles.cardHead}>
+          <h3 className={styles.cardTitle}>Thông tin cá nhân</h3>
         </div>
 
         {!editing ? (
-          <dl
-            style={{
-              margin: '0.85rem 0 0',
-              display: 'grid',
-              gap: '0.55rem',
-            }}
-          >
+          <dl className={styles.dl}>
             <div>
-              <dt style={{ color: '#4b6478', fontSize: 13 }}>Họ và tên</dt>
-              <dd style={{ margin: 0, fontWeight: 600 }}>
-                {profile?.fullName || '—'}
-              </dd>
+              <dt className={styles.dt}>Họ và tên</dt>
+              <dd className={styles.dd}>{profile?.fullName || '—'}</dd>
             </div>
             <div>
-              <dt style={{ color: '#4b6478', fontSize: 13 }}>Email</dt>
-              <dd style={{ margin: 0 }}>{user?.email || '—'}</dd>
+              <dt className={styles.dt}>Email</dt>
+              <dd className={styles.dd}>{user?.email || '—'}</dd>
             </div>
             <div>
-              <dt style={{ color: '#4b6478', fontSize: 13 }}>Số điện thoại</dt>
-              <dd style={{ margin: 0 }}>{profile?.phone || '—'}</dd>
+              <dt className={styles.dt}>Số điện thoại</dt>
+              <dd className={styles.dd}>{profile?.phone || '—'}</dd>
             </div>
           </dl>
         ) : (
-          <form
-            onSubmit={onSaveProfile}
-            style={{ display: 'grid', gap: '0.65rem', marginTop: '0.85rem' }}
-          >
-            <label>
+          <form onSubmit={onSaveProfile} className={styles.formGrid}>
+            <label className={styles.fieldLabel}>
               Họ và tên
               <input
                 className="nt-input"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 disabled={savingProfile}
-                style={{ display: 'block', width: '100%', marginTop: 4 }}
                 autoComplete="name"
               />
               {profileFieldErrors['fullName'] ? (
-                <span style={{ color: '#b91c1c', fontSize: 13 }}>
+                <span className={styles.fieldError}>
                   {profileFieldErrors['fullName']}
                 </span>
               ) : null}
             </label>
-            <label>
+            <label className={styles.fieldLabel}>
               Email (chỉ đọc)
               <input
                 className="nt-input"
                 value={user?.email ?? ''}
                 readOnly
                 disabled
-                style={{ display: 'block', width: '100%', marginTop: 4 }}
               />
             </label>
-            <label>
+            <label className={styles.fieldLabel}>
               Số điện thoại
               <input
                 className="nt-input"
@@ -427,21 +445,20 @@ export default function Page() {
                 onChange={(e) => setPhone(e.target.value)}
                 disabled={savingProfile}
                 placeholder="090xxxxxxx"
-                style={{ display: 'block', width: '100%', marginTop: 4 }}
                 autoComplete="tel"
               />
               {profileFieldErrors['phone'] ? (
-                <span style={{ color: '#b91c1c', fontSize: 13 }}>
+                <span className={styles.fieldError}>
                   {profileFieldErrors['phone']}
                 </span>
               ) : null}
             </label>
             {profileError ? (
-              <p style={{ color: '#b91c1c', margin: 0 }} role="alert">
+              <p className={styles.error} role="alert">
                 {profileError}
               </p>
             ) : null}
-            <div style={{ display: 'flex', gap: '0.5rem' }}>
+            <div className={styles.actions}>
               <button
                 type="submit"
                 className="nt-btn nt-btn-primary"
@@ -466,201 +483,198 @@ export default function Page() {
         )}
       </section>
 
-      {items.length === 0 ? (
-        <p style={{ color: '#4b6478' }}>
-          Chưa có địa chỉ. Thêm địa chỉ bên dưới.
-        </p>
-      ) : (
-        <ul
-          style={{
-            listStyle: 'none',
-            padding: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '0.65rem',
-          }}
-        >
-          {items.map((record, index) => {
-            const id = String(record.id ?? index);
-            const display =
-              record.displayAddress ||
-              formatVietnamAddress({
-                addressLine1: record.line1 ?? '',
-                wardName: record.wardName ?? record.ward,
-                provinceName: record.provinceName ?? record.city,
-                legacyDistrictName:
-                  record.legacyDistrictName ?? record.district,
-              });
-            const isEditing = editingAddressId === id;
-            const isRemoving = removingAddressId === id;
-            const isBusy = addressActionId === id;
-            return (
-              <li
-                key={id}
-                style={{
-                  border: '1px solid #dbeafe',
-                  borderRadius: 12,
-                  padding: '0.85rem',
-                  background: '#fff',
-                }}
-              >
-                {isEditing ? (
-                  <form
-                    onSubmit={onSaveEdit}
-                    style={{ display: 'grid', gap: '0.65rem' }}
-                  >
-                    <h4 style={{ margin: 0 }}>Chỉnh sửa địa chỉ</h4>
-                    <VietnamAddressSelector
-                      value={editForm}
-                      onChange={setEditForm}
-                      errors={editFieldErrors}
-                      disabled={savingEdit}
-                      idPrefix={`edit-address-${id}`}
-                    />
-                    {editFormError ? (
-                      <p style={{ color: '#b91c1c', margin: 0 }} role="alert">
-                        {editFormError}
-                      </p>
-                    ) : null}
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '0.5rem',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                      <button
-                        type="submit"
-                        className="nt-btn nt-btn-primary"
+      <section className={styles.card}>
+        <div className={styles.cardHead}>
+          <h3 className={styles.cardTitle}>Địa chỉ giao hàng</h3>
+          {!showAddForm ? (
+            <button
+              type="button"
+              className="nt-btn nt-btn-secondary"
+              onClick={() => {
+                setShowAddForm(true);
+                setFormError(null);
+                setFieldErrors({});
+              }}
+            >
+              Thêm địa chỉ
+            </button>
+          ) : null}
+        </div>
+
+        {items.length === 0 && !showAddForm ? (
+          <p className={styles.emptyHint}>
+            Chưa có địa chỉ. Nhấn &quot;Thêm địa chỉ&quot; để thanh toán nhanh
+            hơn.
+          </p>
+        ) : items.length === 0 ? (
+          <p className={styles.emptyHint}>Chưa có địa chỉ đã lưu.</p>
+        ) : (
+          <ul className={styles.addressList}>
+            {items.map((record, index) => {
+              const id = String(record.id ?? index);
+              const display =
+                record.displayAddress ||
+                formatVietnamAddress({
+                  addressLine1: record.line1 ?? '',
+                  wardName: record.wardName ?? record.ward,
+                  provinceName: record.provinceName ?? record.city,
+                  legacyDistrictName:
+                    record.legacyDistrictName ?? record.district,
+                });
+              const isEditing = editingAddressId === id;
+              const isRemoving = removingAddressId === id;
+              const isBusy = addressActionId === id;
+              return (
+                <li key={id} className={styles.addressCard}>
+                  {isEditing ? (
+                    <form onSubmit={onSaveEdit} className={styles.formGrid}>
+                      <h4 className={styles.cardTitle}>Chỉnh sửa địa chỉ</h4>
+                      <VietnamAddressSelector
+                        value={editForm}
+                        onChange={setEditForm}
+                        errors={editFieldErrors}
                         disabled={savingEdit}
-                      >
-                        {savingEdit ? 'Đang lưu…' : 'Lưu thay đổi'}
-                      </button>
-                      <button
-                        type="button"
-                        className="nt-btn nt-btn-ghost"
-                        disabled={savingEdit}
-                        onClick={() => setEditingAddressId(null)}
-                      >
-                        Hủy
-                      </button>
-                    </div>
-                  </form>
-                ) : (
-                  <>
-                    <strong>
-                      {record.label ?? 'Địa chỉ'}
-                      {record.isDefault ? ' · Mặc định' : ''}
-                    </strong>
-                    <div style={{ color: '#4b6478', marginTop: 4 }}>
-                      {record.recipient} · {record.phone}
-                    </div>
-                    <div style={{ color: '#0b1f3a' }}>{display}</div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '0.5rem',
-                        flexWrap: 'wrap',
-                        marginTop: '0.65rem',
-                      }}
-                    >
-                      <button
-                        type="button"
-                        className="nt-btn nt-btn-ghost"
-                        disabled={isBusy}
-                        onClick={() => startEditAddress(record)}
-                      >
-                        Chỉnh sửa
-                      </button>
-                      {!record.isDefault ? (
+                        idPrefix={`edit-address-${id}`}
+                      />
+                      {editFormError ? (
+                        <p className={styles.error} role="alert">
+                          {editFormError}
+                        </p>
+                      ) : null}
+                      <div className={styles.actions}>
+                        <button
+                          type="submit"
+                          className="nt-btn nt-btn-primary"
+                          disabled={savingEdit}
+                        >
+                          {savingEdit ? 'Đang lưu…' : 'Lưu thay đổi'}
+                        </button>
+                        <button
+                          type="button"
+                          className="nt-btn nt-btn-ghost"
+                          disabled={savingEdit}
+                          onClick={() => setEditingAddressId(null)}
+                        >
+                          Hủy
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <div className={styles.addressTitle}>
+                        <span>{record.label ?? 'Địa chỉ'}</span>
+                        {record.isDefault ? (
+                          <span className={styles.defaultBadge}>Mặc định</span>
+                        ) : null}
+                      </div>
+                      <div className={styles.muted}>
+                        {record.recipient} · {record.phone}
+                      </div>
+                      <div style={{ marginTop: 4, color: '#0b1f3a' }}>
+                        {display}
+                      </div>
+                      <div className={styles.actions} style={{ marginTop: 12 }}>
                         <button
                           type="button"
                           className="nt-btn nt-btn-ghost"
                           disabled={isBusy}
-                          onClick={() => onSetDefault(id)}
+                          onClick={() => startEditAddress(record)}
                         >
-                          {isBusy ? 'Đang xử lý…' : 'Đặt mặc định'}
+                          Chỉnh sửa
                         </button>
-                      ) : null}
-                      {isRemoving ? (
-                        <>
-                          <span style={{ color: '#4b6478', fontSize: 13 }}>
-                            Xóa địa chỉ này?
-                          </span>
-                          <button
-                            type="button"
-                            className="nt-btn nt-btn-primary"
-                            disabled={isBusy}
-                            onClick={() => onRemoveAddress(id)}
-                          >
-                            {isBusy ? 'Đang xóa…' : 'Xác nhận xóa'}
-                          </button>
+                        {!record.isDefault ? (
                           <button
                             type="button"
                             className="nt-btn nt-btn-ghost"
                             disabled={isBusy}
-                            onClick={() => setRemovingAddressId(null)}
+                            onClick={() => onSetDefault(id)}
                           >
-                            Hủy
+                            {isBusy ? 'Đang xử lý…' : 'Đặt mặc định'}
                           </button>
-                        </>
-                      ) : (
-                        <button
-                          type="button"
-                          className="nt-btn nt-btn-ghost"
-                          disabled={isBusy}
-                          onClick={() => setRemovingAddressId(id)}
-                        >
-                          Xóa
-                        </button>
-                      )}
-                    </div>
-                  </>
-                )}
-              </li>
-            );
-          })}
-        </ul>
-      )}
+                        ) : null}
+                        {isRemoving ? (
+                          <>
+                            <span className={styles.muted}>
+                              Xóa địa chỉ này?
+                            </span>
+                            <button
+                              type="button"
+                              className="nt-btn nt-btn-primary"
+                              disabled={isBusy}
+                              onClick={() => onRemoveAddress(id)}
+                            >
+                              {isBusy ? 'Đang xóa…' : 'Xác nhận xóa'}
+                            </button>
+                            <button
+                              type="button"
+                              className="nt-btn nt-btn-ghost"
+                              disabled={isBusy}
+                              onClick={() => setRemovingAddressId(null)}
+                            >
+                              Hủy
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            type="button"
+                            className="nt-btn nt-btn-ghost"
+                            disabled={isBusy}
+                            onClick={() => setRemovingAddressId(id)}
+                          >
+                            Xóa
+                          </button>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
+      </section>
 
-      <form
-        onSubmit={onAdd}
-        style={{
-          marginTop: '1.25rem',
-          display: 'grid',
-          gap: '0.65rem',
-          maxWidth: 480,
-          border: '1px solid #dbeafe',
-          borderRadius: 12,
-          padding: '1rem',
-          background: '#f8fbff',
-        }}
-      >
-        <h3 style={{ margin: 0 }}>Thêm địa chỉ</h3>
-        <VietnamAddressSelector
-          value={form}
-          onChange={setForm}
-          errors={fieldErrors}
-          disabled={saving}
-          idPrefix="profile-address"
-        />
-        {formError ? (
-          <p style={{ color: '#b91c1c', margin: 0 }} role="alert">
-            {formError}
-          </p>
-        ) : null}
-        <button
-          type="submit"
-          className="nt-btn nt-btn-primary"
-          disabled={saving}
+      {showAddForm ? (
+        <form
+          onSubmit={onAdd}
+          className={`${styles.addCard} ${styles.formGrid}`}
         >
-          {saving ? 'Đang lưu…' : 'Lưu địa chỉ'}
-        </button>
-      </form>
-
-      <p style={{ marginTop: '1rem' }}>
-        <Link href="/thanh-toan">Đến thanh toán</Link>
-      </p>
+          <h3 className={styles.cardTitle}>Thêm địa chỉ</h3>
+          <VietnamAddressSelector
+            value={form}
+            onChange={setForm}
+            errors={fieldErrors}
+            disabled={saving}
+            idPrefix="profile-address"
+          />
+          {formError ? (
+            <p className={styles.error} role="alert">
+              {formError}
+            </p>
+          ) : null}
+          <div className={styles.actions}>
+            <button
+              type="submit"
+              className="nt-btn nt-btn-primary"
+              disabled={saving}
+            >
+              {saving ? 'Đang lưu…' : 'Lưu địa chỉ'}
+            </button>
+            <button
+              type="button"
+              className="nt-btn nt-btn-ghost"
+              disabled={saving}
+              onClick={() => {
+                setShowAddForm(false);
+                setFormError(null);
+                setFieldErrors({});
+              }}
+            >
+              Hủy
+            </button>
+          </div>
+        </form>
+      ) : null}
     </div>
   );
 }

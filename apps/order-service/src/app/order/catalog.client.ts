@@ -57,6 +57,8 @@ export class HttpCatalogClient implements CatalogClient {
         id: string;
         name: string;
         status: CatalogSkuInfo['productStatus'];
+        /** catalog-service lưu thumbnailUrl là mediaId (không phải URL tuyệt đối). */
+        thumbnailUrl?: string;
       };
     };
 
@@ -73,6 +75,7 @@ export class HttpCatalogClient implements CatalogClient {
       unitPrice,
       currency: body.price?.currency ?? 'VND',
       isSellable: productStatus === 'active' && unitPrice > 0,
+      imageMediaId: body.product?.thumbnailUrl || undefined,
     };
   }
 

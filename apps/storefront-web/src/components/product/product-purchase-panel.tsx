@@ -89,21 +89,8 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
     );
   }
 
-  async function requireLoginOrContinue(): Promise<boolean> {
-    if (isAuthenticated) {
-      return true;
-    }
-    router.push(
-      `/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`,
-    );
-    return false;
-  }
-
   async function handleAddToCart() {
     setFeedback(null);
-    if (!(await requireLoginOrContinue())) {
-      return false;
-    }
     try {
       await addItem(selectedSku!.skuCode, quantity);
       setFeedback({
@@ -113,10 +100,9 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
       return true;
     } catch (error) {
       const message = getErrorMessage(error);
-      if (/cart token|đăng nhập|UNAUTHORIZED/i.test(message)) {
-        router.push(
-          `/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`,
-        );
+      if (/cart token|UNAUTHORIZED/i.test(message) && !isAuthenticated) {
+        // Guest cart token failed unexpectedly — surface error, do not force login for add.
+        setFeedback({ type: 'error', message });
         return false;
       }
       setFeedback({ type: 'error', message });
@@ -126,20 +112,15 @@ export function ProductPurchasePanel({ product }: { product: ProductDetail }) {
 
   async function handleBuyNow() {
     setFeedback(null);
-    if (!(await requireLoginOrContinue())) {
-      return;
-    }
     try {
       await addItem(selectedSku!.skuCode, quantity);
+      if (!isAuthenticated) {
+        router.push(`/dang-nhap?next=${encodeURIComponent('/thanh-toan')}`);
+        return;
+      }
       router.push('/thanh-toan');
     } catch (error) {
       const message = getErrorMessage(error);
-      if (/cart token|đăng nhập|UNAUTHORIZED/i.test(message)) {
-        router.push(
-          `/dang-nhap?next=${encodeURIComponent(`/san-pham/${product.slug}`)}`,
-        );
-        return;
-      }
       setFeedback({ type: 'error', message });
     }
   }

@@ -24,12 +24,13 @@ describe('CatalogController', () => {
 
   it('searches products with pagination shape', async () => {
     const category = await service.createCategory(
-      { name: 'Điện thoại', slug: 'dien-thoai' },
+      { name: 'Điện thoại', slug: 'dien-thoai', sortOrder: 0, isActive: true },
       [Roles.Staff],
     );
-    const brand = await service.createBrand({ name: 'Apple', slug: 'apple' }, [
-      Roles.Staff,
-    ]);
+    const brand = await service.createBrand(
+      { name: 'Apple', slug: 'apple', isActive: true },
+      [Roles.Staff],
+    );
     const product = await service.createProduct(
       {
         name: 'iPhone 16',
@@ -37,6 +38,7 @@ describe('CatalogController', () => {
         categoryId: category.id,
         brandId: brand.id,
         status: 'active',
+        specs: [],
       },
       [Roles.Staff],
     );
@@ -46,6 +48,8 @@ describe('CatalogController', () => {
         skuCode: 'IP16-128',
         name: '128GB',
         price: 24990000,
+        attributes: {},
+        currency: 'VND',
       },
       [Roles.Staff],
     );

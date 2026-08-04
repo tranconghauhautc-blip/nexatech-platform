@@ -49,7 +49,11 @@ import type { CatalogClient } from './catalog.client';
 import type { OrderEventPublisher } from './event-publisher';
 import type { InventoryClient } from './inventory.client';
 import { generateOrderCode } from './order-code';
-import { assertTransition } from './order-state-machine';
+import {
+  assertTransition,
+  canTransition,
+  PACKAGE_READY_FOR_ORDER_SHIPPED,
+} from './order-state-machine';
 import type { OrderRepository } from './order.repository';
 import type {
   CreateOrderAddressInput,
@@ -93,14 +97,25 @@ export function parseRolesHeader(value?: string): Role[] {
 export interface OrderActor {
   userId?: string;
   customerId?: string;
+  email?: string;
   roles: Role[];
 }
 
-export function parseActor(userId?: string, rolesHeader?: string): OrderActor {
-  const trimmedUserId = userId?.trim() || undefined;
+export function parseActor(
+  userId?: string,
+  rolesHeader?: string,
+  emailHeader?: string,
+): OrderActor {
+  const trimmedUserId =
+    typeof userId === 'string' ? userId.trim() || undefined : undefined;
+  const trimmedEmail =
+    typeof emailHeader === 'string'
+      ? emailHeader.trim() || undefined
+      : undefined;
   return {
     userId: trimmedUserId,
     customerId: trimmedUserId,
+    email: trimmedEmail,
     roles: parseRolesHeader(rolesHeader),
   };
 }
@@ -154,7 +169,7 @@ export class OrderService {
     const order = await this.withIdempotency(
       input.idempotencyKey,
       'order.create',
-      () => this.doCreateOrder(customerId, input),
+      () => this.doCreateOrder(customerId, input, actor),
     );
     this.recentCreateCounts.set(customerId, recentCount + 1);
     return order;
@@ -163,6 +178,7 @@ export class OrderService {
   private async doCreateOrder(
     customerId: string,
     input: CreateOrderRequest,
+    actor: OrderActor,
   ): Promise<OrderDto> {
     await this.cart.refreshCart(customerId);
     const cartSnapshot = await this.cart.getCurrentCart(customerId);
@@ -209,6 +225,7 @@ export class OrderService {
       productName: string;
       skuName: string;
       attributes: Record<string, string>;
+      imageMediaId?: string;
     }> = [];
     const priceChangedLines: Array<{
       skuCode: string;
@@ -242,6 +259,7 @@ export class OrderService {
         productName: sku.productName,
         skuName: sku.skuName,
         attributes: sku.attributes,
+        imageMediaId: sku.imageMediaId,
       });
     }
 
@@ -289,6 +307,7 @@ export class OrderService {
         quantity: line.quantity,
         lineSubtotal: line.unitPrice * line.quantity,
         currency: line.currency,
+        imageMediaId: line.imageMediaId,
       }));
 
       const merchandiseSubtotal = items.reduce(
@@ -312,12 +331,15 @@ export class OrderService {
 
       const packages = this.buildPackages(orderCode, reservation.lines);
 
+      const recipientEmail = actor.email ?? input.customerEmail;
       const traceId = createTraceId();
       const outboxEvents: OutboxEventInput[] = [
         this.buildEvent(EventTypes.ORDER_CREATED, traceId, {
           orderId,
           orderCode,
           customerId,
+          email: recipientEmail,
+          customerEmail: recipientEmail,
           grandTotal,
           totalQuantity,
           status,
@@ -338,6 +360,9 @@ export class OrderService {
           this.buildEvent(EventTypes.ORDER_CONFIRMED, traceId, {
             orderId,
             orderCode,
+            customerId,
+            email: recipientEmail,
+            customerEmail: recipientEmail,
           }),
         );
       }
@@ -351,7 +376,7 @@ export class OrderService {
         orderCode,
         customerId,
         customerDisplayName: input.customerDisplayName,
-        customerEmail: input.customerEmail,
+        customerEmail: input.customerEmail ?? actor.email,
         customerPhone: input.customerPhone,
         status,
         cartId: cartSnapshot.id,
@@ -833,12 +858,54 @@ export class OrderService {
       return this.toDto(order);
     }
 
+    // Xác định trạng thái đơn mong muốn: ưu tiên orderStatus tường minh do
+    // caller gửi (ví dụ orderStatusHint từ shipping-service), nếu không có thì
+    // suy luận từ packageStatus (SHIPPED khi đơn đang READY_TO_SHIP; DELIVERED
+    // khi mọi kiện khác đã DELIVERED/CANCELLED).
     let toStatus = input.orderStatus;
+    if (!toStatus && input.packageStatus === 'SHIPPED') {
+      toStatus = 'SHIPPED';
+    } else if (!toStatus && input.packageStatus === 'DELIVERED') {
+      const otherPackagesDelivered = order.packages
+        .filter((p) => p.id !== input.packageId)
+        .every((p) => p.status === 'DELIVERED' || p.status === 'CANCELLED');
+      if (otherPackagesDelivered) {
+        toStatus = 'DELIVERED';
+      }
+    }
+
+    // Phân giải toStatus mong muốn thành: (a) chuyển 1 bước hợp lệ, (b) chuyển
+    // 2 bước READY_TO_SHIP -> SHIPPED -> DELIVERED khi shipment/package nhảy
+    // thẳng DELIVERED (STORE_PICKUP confirm-pickup hoặc STANDARD miss sync
+    // trung gian), hoặc (c) bỏ qua chuyển trạng thái đơn nếu không hợp lệ —
+    // vẫn áp dụng cập nhật kiện hàng (decouple package sync khỏi order status).
+    let intermediateStatus: OrderStatus | undefined;
+    if (toStatus && toStatus === order.status) {
+      toStatus = undefined;
+    } else if (toStatus && !canTransition(order.status, toStatus)) {
+      if (
+        toStatus === 'DELIVERED' &&
+        canTransition(order.status, 'SHIPPED') &&
+        canTransition('SHIPPED', 'DELIVERED')
+      ) {
+        intermediateStatus = 'SHIPPED';
+      } else {
+        toStatus = undefined;
+      }
+    }
+
     const outboxEvents: OutboxEventInput[] = [];
     const traceId = createTraceId();
-
-    if (toStatus && toStatus !== order.status) {
-      assertTransition(order.status, toStatus);
+    if (intermediateStatus) {
+      outboxEvents.push(
+        this.buildEvent(EventTypes.ORDER_SHIPPED, traceId, {
+          orderId: order.id,
+          packageId: input.packageId,
+          shipmentId: input.shipmentId,
+        }),
+      );
+    }
+    if (toStatus) {
       outboxEvents.push(
         this.buildEvent(this.eventForTransition(toStatus), traceId, {
           orderId: order.id,
@@ -847,52 +914,60 @@ export class OrderService {
           shipmentId: input.shipmentId,
         }),
       );
-    } else if (!toStatus && input.packageStatus === 'SHIPPED') {
-      if (order.status === 'READY_TO_SHIP') {
-        toStatus = 'SHIPPED';
-        assertTransition(order.status, toStatus);
-        outboxEvents.push(
-          this.buildEvent(EventTypes.ORDER_SHIPPED, traceId, {
-            orderId: order.id,
-            packageId: input.packageId,
-            shipmentId: input.shipmentId,
-          }),
-        );
-      }
-    } else if (!toStatus && input.packageStatus === 'DELIVERED') {
-      const otherPackagesDelivered = order.packages
-        .filter((p) => p.id !== input.packageId)
-        .every((p) => p.status === 'DELIVERED' || p.status === 'CANCELLED');
-      if (otherPackagesDelivered && order.status === 'SHIPPED') {
-        toStatus = 'DELIVERED';
-        assertTransition(order.status, toStatus);
-        outboxEvents.push(
-          this.buildEvent(EventTypes.ORDER_DELIVERED, traceId, {
-            orderId: order.id,
-            packageId: input.packageId,
-            shipmentId: input.shipmentId,
-          }),
-        );
-      }
     }
 
-    const updated = await this.repository.updateShipping({
-      orderId: order.id,
-      expectedVersion: order.version,
-      packageId: input.packageId,
-      shipmentId: input.shipmentId,
-      trackingCode: input.trackingCode,
-      shippingProvider: input.shippingProvider,
-      packageStatus: input.packageStatus,
-      estimatedDeliveryAt: input.estimatedDeliveryAt
-        ? new Date(input.estimatedDeliveryAt)
-        : undefined,
-      toStatus,
-      actorId: actorIdOf(actor),
-      actorType: 'staff',
-      reason: 'shipping-service sync',
-      outboxEvents,
-    });
+    let updated: Order;
+    if (intermediateStatus) {
+      // Bước 1/2: thăng cấp READY_TO_SHIP -> SHIPPED và áp dụng cập nhật kiện
+      // hàng (tracking/provider/packageStatus) trong cùng lần đồng bộ.
+      const promoted = await this.repository.updateShipping({
+        orderId: order.id,
+        expectedVersion: order.version,
+        packageId: input.packageId,
+        shipmentId: input.shipmentId,
+        trackingCode: input.trackingCode,
+        shippingProvider: input.shippingProvider,
+        packageStatus: input.packageStatus,
+        estimatedDeliveryAt: input.estimatedDeliveryAt
+          ? new Date(input.estimatedDeliveryAt)
+          : undefined,
+        toStatus: intermediateStatus,
+        actorId: actorIdOf(actor),
+        actorType: 'staff',
+        reason: 'shipping-service sync (auto SHIPPED trước DELIVERED)',
+        outboxEvents: outboxEvents.slice(0, 1),
+      });
+      // Bước 2/2: thăng cấp tiếp SHIPPED -> DELIVERED.
+      updated = await this.repository.updateShipping({
+        orderId: order.id,
+        expectedVersion: promoted.version,
+        packageId: input.packageId,
+        shipmentId: input.shipmentId,
+        toStatus,
+        actorId: actorIdOf(actor),
+        actorType: 'staff',
+        reason: 'shipping-service sync',
+        outboxEvents: outboxEvents.slice(1),
+      });
+    } else {
+      updated = await this.repository.updateShipping({
+        orderId: order.id,
+        expectedVersion: order.version,
+        packageId: input.packageId,
+        shipmentId: input.shipmentId,
+        trackingCode: input.trackingCode,
+        shippingProvider: input.shippingProvider,
+        packageStatus: input.packageStatus,
+        estimatedDeliveryAt: input.estimatedDeliveryAt
+          ? new Date(input.estimatedDeliveryAt)
+          : undefined,
+        toStatus,
+        actorId: actorIdOf(actor),
+        actorType: 'staff',
+        reason: 'shipping-service sync',
+        outboxEvents,
+      });
+    }
 
     await this.repository.writeAudit(
       'order.shipping.synced',
@@ -929,6 +1004,7 @@ export class OrderService {
   ): Promise<OrderDto> {
     const order = await this.requireOrder(orderId);
     assertTransition(order.status, input.toStatus);
+    this.assertFulfillmentGuard(order, input.toStatus);
 
     let inventoryReleased = order.inventoryReleased;
     if (
@@ -977,6 +1053,110 @@ export class OrderService {
     });
     await this.outbox.dispatchPending();
     return this.toDto(updated);
+  }
+
+  /**
+   * Đối soát fulfillment khi kiện/đơn lệch projection so với bằng chứng
+   * vận chuyển (shipping-sync đã thành công một phần hoặc miss sync).
+   *
+   * Modes:
+   * 1) Order already DELIVERED → promote stale packages to DELIVERED.
+   * 2) Package(s) already DELIVERED but order still READY_TO_SHIP/SHIPPED →
+   *    promote order (multi-step if needed) using shipping-sync semantics.
+   *
+   * Idempotent + audited. Does not invent shipment evidence — only uses
+   * package statuses already persisted on the order.
+   */
+  async reconcileFulfillment(
+    actor: OrderActor,
+    orderId: string,
+  ): Promise<OrderDto> {
+    this.requireAdmin(actor);
+    const order = await this.requireOrder(orderId);
+
+    // Mode 1: order DELIVERED, packages lagging
+    if (order.status === 'DELIVERED') {
+      const stalePackages = order.packages.filter(
+        (pkg) => pkg.status !== 'DELIVERED' && pkg.status !== 'CANCELLED',
+      );
+      if (stalePackages.length === 0) {
+        return this.toDto(order);
+      }
+
+      let current = order;
+      for (const pkg of stalePackages) {
+        current = await this.repository.updateShipping({
+          orderId: current.id,
+          expectedVersion: current.version,
+          packageId: pkg.id,
+          shipmentId: `reconcile:${pkg.id}`,
+          packageStatus: 'DELIVERED',
+          actorId: actorIdOf(actor),
+          actorType: 'staff',
+          reason: 'admin reconcile-fulfillment',
+          outboxEvents: [],
+        });
+      }
+
+      await this.repository.writeAudit(
+        'order.fulfillment.reconciled',
+        actorIdOf(actor),
+        {
+          orderId: order.id,
+          orderCode: order.orderCode,
+          mode: 'packages-to-delivered',
+          packageIds: stalePackages.map((pkg) => pkg.id),
+        },
+      );
+      await this.outbox.dispatchPending();
+      return this.toDto(current);
+    }
+
+    // Mode 2: packages already DELIVERED (shipping synced package only) but
+    // order stuck at READY_TO_SHIP / SHIPPED — promote order from evidence.
+    const deliveredPackages = order.packages.filter(
+      (pkg) => pkg.status === 'DELIVERED',
+    );
+    const activePackages = order.packages.filter(
+      (pkg) => pkg.status !== 'CANCELLED',
+    );
+    const allActiveDelivered =
+      activePackages.length > 0 &&
+      activePackages.every((pkg) => pkg.status === 'DELIVERED');
+
+    if (
+      !allActiveDelivered ||
+      (order.status !== 'READY_TO_SHIP' && order.status !== 'SHIPPED')
+    ) {
+      return this.toDto(order);
+    }
+
+    const anchor = deliveredPackages[0];
+    if (!anchor) {
+      return this.toDto(order);
+    }
+
+    const synced = await this.doSyncShipping(actor, orderId, {
+      packageId: anchor.id,
+      shipmentId: `reconcile:${anchor.id}`,
+      packageStatus: 'DELIVERED',
+      orderStatus: 'DELIVERED',
+      idempotencyKey: `reconcile-order-${order.id}-${order.version}`,
+    });
+
+    await this.repository.writeAudit(
+      'order.fulfillment.reconciled',
+      actorIdOf(actor),
+      {
+        orderId: order.id,
+        orderCode: order.orderCode,
+        mode: 'order-to-delivered',
+        fromStatus: order.status,
+        toStatus: synced.status,
+        packageIds: deliveredPackages.map((pkg) => pkg.id),
+      },
+    );
+    return synced;
   }
 
   async getStatusHistory(
@@ -1090,6 +1270,15 @@ export class OrderService {
     }
   }
 
+  private requireAdmin(actor: OrderActor): void {
+    if (!hasMinimumRole(actor.roles, Roles.Admin)) {
+      throw new AppError({
+        errorCode: ErrorCodes.FORBIDDEN,
+        message: 'Yêu cầu quyền quản trị (Admin) để đối soát đơn hàng',
+      });
+    }
+  }
+
   private async requireOrder(orderId: string): Promise<Order> {
     const order = await this.repository.findById(orderId);
     if (!order) {
@@ -1099,6 +1288,73 @@ export class OrderService {
       });
     }
     return order;
+  }
+
+  /**
+   * Chặn chuyển trạng thái thủ công (status-transitions) sang SHIPPED/DELIVERED
+   * khi kiện hàng thực tế chưa theo kịp — tránh đơn "SHIPPED"/"DELIVERED" ảo
+   * trong khi kiện hàng vẫn ALLOCATED/PENDING (mất đồng bộ dữ liệu vận hành).
+   */
+  private assertFulfillmentGuard(order: Order, toStatus: OrderStatus): void {
+    if (toStatus !== 'SHIPPED' && toStatus !== 'DELIVERED') {
+      return;
+    }
+    const activePackages = order.packages.filter(
+      (pkg) => pkg.status !== 'CANCELLED',
+    );
+    if (activePackages.length === 0) {
+      return;
+    }
+
+    if (toStatus === 'SHIPPED') {
+      const notReady = activePackages.filter(
+        (pkg) => !PACKAGE_READY_FOR_ORDER_SHIPPED.includes(pkg.status),
+      );
+      if (notReady.length > 0) {
+        throw new AppError({
+          errorCode: ErrorCodes.ORDER_INVALID_TRANSITION,
+          message:
+            'Không thể chuyển đơn sang SHIPPED khi còn kiện hàng chưa sẵn sàng giao (cần READY_TO_SHIP trở lên)',
+          details: {
+            orderId: order.id,
+            pendingPackages: notReady.map((pkg) => ({
+              id: pkg.id,
+              packageCode: pkg.packageCode,
+              status: pkg.status,
+            })),
+          },
+        });
+      }
+      return;
+    }
+
+    // toStatus === 'DELIVERED'
+    if (order.deliveryMethod === 'STORE_PICKUP') {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_INVALID_TRANSITION,
+        message:
+          'Đơn nhận tại cửa hàng (STORE_PICKUP) phải hoàn tất qua shipping-service (confirm-pickup) để tự đồng bộ DELIVERED, không thao tác thủ công qua status-transitions',
+        details: { orderId: order.id, deliveryMethod: order.deliveryMethod },
+      });
+    }
+    const notDelivered = activePackages.filter(
+      (pkg) => pkg.status !== 'DELIVERED',
+    );
+    if (notDelivered.length > 0) {
+      throw new AppError({
+        errorCode: ErrorCodes.ORDER_INVALID_TRANSITION,
+        message:
+          'Không thể chuyển đơn sang DELIVERED khi còn kiện hàng chưa DELIVERED',
+        details: {
+          orderId: order.id,
+          pendingPackages: notDelivered.map((pkg) => ({
+            id: pkg.id,
+            packageCode: pkg.packageCode,
+            status: pkg.status,
+          })),
+        },
+      });
+    }
   }
 
   private assertOwnershipOrStaff(order: Order, actor: OrderActor): void {
@@ -1230,6 +1486,7 @@ export class OrderService {
       quantity: item.quantity,
       lineSubtotal: item.lineSubtotal,
       currency: item.currency,
+      imageMediaId: item.imageMediaId,
     };
   }
 

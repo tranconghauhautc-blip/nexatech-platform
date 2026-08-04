@@ -9,7 +9,7 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type {
   CreateBrandRequest,
   CreateCategoryRequest,
@@ -24,6 +24,7 @@ import type {
 import { CatalogService, parseRolesHeader } from './catalog.service';
 
 @ApiTags('admin-catalog')
+@ApiBearerAuth('bearer')
 @Controller({ path: 'admin/catalog', version: ['1', '2'] })
 export class AdminCatalogController {
   constructor(private readonly catalogService: CatalogService) {}

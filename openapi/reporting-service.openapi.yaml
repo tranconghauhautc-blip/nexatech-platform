@@ -107,6 +107,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/audit-logs:
     get:
       operationId: AdminReporting_listAuditLogs_v1
@@ -136,6 +139,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/dashboard:
     get:
       operationId: AdminReporting_dashboard_v1
@@ -165,6 +171,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/metrics/daily:
     get:
       operationId: AdminReporting_dailyMetrics_v1
@@ -194,6 +203,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/orders:
     get:
       operationId: AdminReporting_listOrders_v1
@@ -223,6 +235,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/payments:
     get:
       operationId: AdminReporting_listPayments_v1
@@ -252,6 +267,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/reviews:
     get:
       operationId: AdminReporting_listReviews_v1
@@ -281,6 +299,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/shipments:
     get:
       operationId: AdminReporting_listShipments_v1
@@ -310,6 +331,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/support/tickets:
     get:
       operationId: AdminReporting_listSupportTickets_v1
@@ -339,6 +363,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/warranty/claims:
     get:
       operationId: AdminReporting_listWarrantyClaims_v1
@@ -368,6 +395,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v1/admin/reporting/warranty/returns:
     get:
       operationId: AdminReporting_listWarrantyReturns_v1
@@ -397,6 +427,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/audit:
     post:
       operationId: AdminReporting_recordAudit_v2
@@ -431,6 +464,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/audit-logs:
     get:
       operationId: AdminReporting_listAuditLogs_v2
@@ -460,6 +496,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/dashboard:
     get:
       operationId: AdminReporting_dashboard_v2
@@ -489,6 +528,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/metrics/daily:
     get:
       operationId: AdminReporting_dailyMetrics_v2
@@ -518,6 +560,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/orders:
     get:
       operationId: AdminReporting_listOrders_v2
@@ -547,6 +592,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/payments:
     get:
       operationId: AdminReporting_listPayments_v2
@@ -576,6 +624,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/reviews:
     get:
       operationId: AdminReporting_listReviews_v2
@@ -605,6 +656,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/shipments:
     get:
       operationId: AdminReporting_listShipments_v2
@@ -634,6 +688,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/support/tickets:
     get:
       operationId: AdminReporting_listSupportTickets_v2
@@ -663,6 +720,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/warranty/claims:
     get:
       operationId: AdminReporting_listWarrantyClaims_v2
@@ -692,6 +752,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /api/v2/admin/reporting/warranty/returns:
     get:
       operationId: AdminReporting_listWarrantyReturns_v2
@@ -721,6 +784,9 @@ paths:
           description: ''
       tags:
         - admin-reporting
+      security:
+        - bearer: []
+      description: ''
   /health:
     get:
       operationId: Health_health

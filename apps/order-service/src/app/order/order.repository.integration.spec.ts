@@ -1,8 +1,22 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaOrderRepository } from './prisma-order.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['ORDER_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires ORDER_TEST_DATABASE_URL pointing at
+ * nexatech_order_test only — never falls back to ORDER_DATABASE_URL.
+ */
+const ORDER_TEST_DB = {
+  testUrlEnv: 'ORDER_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_order_test',
+  runtimeUrlEnv: 'ORDER_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(ORDER_TEST_DB.testUrlEnv)
   ? describe
   : describe.skip;
 
@@ -11,6 +25,7 @@ describeIfDb('order repository integration', () => {
   let repository: PrismaOrderRepository;
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(ORDER_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaOrderRepository(prisma);
@@ -21,6 +36,7 @@ describeIfDb('order repository integration', () => {
   });
 
   beforeEach(async () => {
+    assertIntegrationTestDatabaseReady(ORDER_TEST_DB);
     await prisma.orderPackageItem.deleteMany();
     await prisma.orderPackage.deleteMany();
     await prisma.orderStatusHistory.deleteMany();

@@ -134,7 +134,7 @@
 }
 
 .sectionLink {
-  color: #0284c7;
+  color: var(--nt-link);
   font-weight: 600;
   text-decoration: none;
   padding: 8px 4px;

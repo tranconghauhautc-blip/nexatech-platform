@@ -132,7 +132,13 @@
         },
         "tags": [
           "media"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/media/by-entity/{entityType}/{entityId}": {
@@ -410,7 +416,13 @@
         },
         "tags": [
           "media"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/media/by-entity/{entityType}/{entityId}": {

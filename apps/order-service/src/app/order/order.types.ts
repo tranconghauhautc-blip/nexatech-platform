@@ -31,6 +31,8 @@ export interface OrderItem {
   quantity: number;
   lineSubtotal: number;
   currency: string;
+  /** Snapshot ảnh sản phẩm/SKU tại thời điểm đặt hàng (mediaId), dùng để hiển thị. */
+  imageMediaId?: string;
 }
 
 export interface OrderAddressSnapshot {
@@ -163,6 +165,7 @@ export interface CreateOrderItemInput {
   quantity: number;
   lineSubtotal: number;
   currency: string;
+  imageMediaId?: string;
 }
 
 export interface CreateOrderAddressInput {
@@ -302,6 +305,8 @@ export interface CatalogSkuInfo {
   unitPrice: number;
   currency: string;
   isSellable: boolean;
+  /** mediaId ảnh đại diện sản phẩm (thumbnail) từ catalog-service, nếu có. */
+  imageMediaId?: string;
 }
 
 export interface CartSnapshotItem {

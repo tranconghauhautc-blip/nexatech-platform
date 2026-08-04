@@ -7,10 +7,11 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { PaymentService, parseActor } from './payment.service';
 
 @ApiTags('admin-payments')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: true })
 @ApiHeader({ name: 'x-user-roles', required: true })
 @Controller({ path: 'admin/payments', version: ['1', '2'] })

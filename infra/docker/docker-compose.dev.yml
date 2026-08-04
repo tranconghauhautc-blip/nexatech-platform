@@ -77,6 +77,18 @@ services:
       exit 0;
       "
 
+  # Local / staging email sink — switch notification-service to real Gmail via SMTP_* only.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    ports:
+      - '8025:8025'
+      - '1025:1025'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:8025/api/v1/info']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
   # Frontend images (M15) — build từ repo root khi cần:
   # docker build -f apps/storefront-web/Dockerfile -t nexatech/storefront-web:0.15.0 .
   # docker build -f apps/admin-web/Dockerfile -t nexatech/admin-web:0.15.0 .

@@ -106,7 +106,8 @@ export class AuthController {
 
   @Post('forgot-password')
   @ApiOperation({
-    summary: 'Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)',
+    summary:
+      'Yêu cầu OTP đặt lại mật khẩu (SC-80/81 enumeration + host poison)',
   })
   @ApiBody({ type: ForgotPasswordRequestDto })
   forgotPassword(

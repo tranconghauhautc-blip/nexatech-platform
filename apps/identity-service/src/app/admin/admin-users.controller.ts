@@ -9,13 +9,16 @@ import {
   Post,
   Query,
 } from '@nestjs/common';
-import { ApiHeader, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  AdminUsersService,
-  parseAdminActor,
-} from './admin-users.service';
+  ApiBearerAuth,
+  ApiHeader,
+  ApiOperation,
+  ApiTags,
+} from '@nestjs/swagger';
+import { AdminUsersService, parseAdminActor } from './admin-users.service';
 
 @ApiTags('admin-users')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
 @Controller({ path: 'admin/users', version: ['1', '2'] })
@@ -68,10 +71,7 @@ export class AdminUsersController {
     @Headers('x-user-id') actorId?: string,
     @Headers('x-user-roles') roles?: string,
   ) {
-    return this.adminUsersService.get(
-      parseAdminActor(actorId, roles),
-      userId,
-    );
+    return this.adminUsersService.get(parseAdminActor(actorId, roles), userId);
   }
 
   @Patch(':userId')

@@ -1,8 +1,9 @@
 import { Controller, Get, Headers, Query } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { NotificationService, parseActor } from './notification.service';
 
 @ApiTags('admin-notifications')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
 @Controller({ path: 'admin/notifications', version: ['1', '2'] })

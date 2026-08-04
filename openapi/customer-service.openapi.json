@@ -116,7 +116,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "put": {
         "operationId": "Customer_updateMe_v1",
@@ -137,7 +143,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/customers/me/addresses": {
@@ -160,7 +172,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "post": {
         "operationId": "Customer_addAddress_v1",
@@ -181,10 +199,51 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/customers/me/addresses/{id}": {
+      "delete": {
+        "operationId": "Customer_deleteAddress_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "customers"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
       "put": {
         "operationId": "Customer_updateAddress_v1",
         "parameters": [
@@ -212,7 +271,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/customers/me": {
@@ -235,7 +300,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "put": {
         "operationId": "Customer_updateMe_v2",
@@ -256,7 +327,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/customers/me/addresses": {
@@ -279,7 +356,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "post": {
         "operationId": "Customer_addAddress_v2",
@@ -300,10 +383,51 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/customers/me/addresses/{id}": {
+      "delete": {
+        "operationId": "Customer_deleteAddress_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "customers"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
       "put": {
         "operationId": "Customer_updateAddress_v2",
         "parameters": [
@@ -331,7 +455,13 @@
         },
         "tags": [
           "customers"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/health": {

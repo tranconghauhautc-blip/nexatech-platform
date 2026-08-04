@@ -440,6 +440,11 @@ export class InMemoryShippingRepository implements ShippingRepository {
     shipment.status = input.status;
     shipment.version += 1;
     shipment.updatedAt = new Date();
+    // Status change invalidates prior order sync stamp so DELIVERED can
+    // re-sync after READY_FOR_PICKUP / IN_TRANSIT intermediate syncs.
+    if (fromStatus !== input.status && input.orderSyncedAt === undefined) {
+      shipment.orderSyncedAt = undefined;
+    }
     if (input.providerShipmentRef !== undefined)
       shipment.providerShipmentRef = input.providerShipmentRef;
     if (input.trackingCode !== undefined) {

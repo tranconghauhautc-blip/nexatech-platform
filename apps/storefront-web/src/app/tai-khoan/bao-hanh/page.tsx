@@ -7,7 +7,14 @@ export default function Page() {
   return (
     <Suspense
       fallback={
-        <div className="nt-skeleton" style={{ minHeight: 160 }} aria-busy />
+        <div
+          className="nt-skeleton"
+          style={{ minHeight: 160 }}
+          role="status"
+          aria-busy="true"
+        >
+          Đang tải bảo hành…
+        </div>
       }
     >
       <WarrantyPageInner />

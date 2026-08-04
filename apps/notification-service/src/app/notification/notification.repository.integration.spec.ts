@@ -1,8 +1,24 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaNotificationRepository } from './prisma-notification.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['NOTIFICATION_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires NOTIFICATION_TEST_DATABASE_URL pointing at
+ * nexatech_notification_test only — never falls back to NOTIFICATION_DATABASE_URL.
+ */
+const NOTIFICATION_TEST_DB = {
+  testUrlEnv: 'NOTIFICATION_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_notification_test',
+  runtimeUrlEnv: 'NOTIFICATION_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  NOTIFICATION_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -15,12 +31,14 @@ describeIfDb('PrismaNotificationRepository integration', () => {
   const createdIdempotencyKeys: string[] = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(NOTIFICATION_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaNotificationRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(NOTIFICATION_TEST_DB);
     if (createdInAppIds.length > 0) {
       await prisma.inAppNotification.deleteMany({
         where: { id: { in: createdInAppIds } },

@@ -180,6 +180,8 @@ describe('PaymentService', () => {
     expect(paid.status).toBe('PAID');
     expect(orderClient.syncCalls.length).toBeGreaterThanOrEqual(1);
     expect(orderClient.syncCalls[0]?.input.confirmOrder).toBe(true);
+    expect(orderClient.syncCalls[0]?.headers.roles).toContain('Staff');
+    expect(orderClient.syncCalls[0]?.headers.roles).not.toContain('Customer');
     expect(
       publisher.published.some(
         (e) => e.eventType === EventTypes.PAYMENT_SUCCEEDED,

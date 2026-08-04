@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { AdminPaymentController } from './admin-payment.controller';
 import {
   InMemoryEventPublisher,
@@ -50,12 +50,12 @@ function createRepositoryProvider() {
     ];
   }
   throw new Error(
-    'PAYMENT_DATABASE_URL bắt buộc khi chạy payment-service (trừ NODE_ENV=test)',
+    'PAYMENT_DATABASE_URL báº¯t buá»™c khi cháº¡y payment-service (trá»« NODE_ENV=test)',
   );
 }
 
 function createPublisherProvider() {
-  const rabbitUrl = process.env['RABBITMQ_URL'];
+  const rabbitUrl = process.env['RABBITMQ_URL']?.trim();
   if (rabbitUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: PAYMENT_EVENT_PUBLISHER,
@@ -63,24 +63,34 @@ function createPublisherProvider() {
         new RabbitMqEventPublisher(rabbitUrl),
     };
   }
-  return {
-    provide: PAYMENT_EVENT_PUBLISHER,
-    useClass: InMemoryEventPublisher,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: PAYMENT_EVENT_PUBLISHER,
+      useClass: InMemoryEventPublisher,
+    };
+  }
+  throw new Error(
+    'RABBITMQ_URL bắt buộc khi chạy service (không silent fallback InMemoryEventPublisher)',
+  );
 }
 
 function createOrderClientProvider() {
-  const orderUrl = process.env['ORDER_SERVICE_URL'];
+  const orderUrl = process.env['ORDER_SERVICE_URL']?.trim();
   if (orderUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: ORDER_CLIENT,
       useFactory: (): OrderClient => new HttpOrderClient(orderUrl),
     };
   }
-  return {
-    provide: ORDER_CLIENT,
-    useClass: InMemoryOrderClient,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: ORDER_CLIENT,
+      useClass: InMemoryOrderClient,
+    };
+  }
+  throw new Error(
+    'ORDER_SERVICE_URL báº¯t buá»™c khi cháº¡y payment-service (khÃ´ng silent fallback InMemory)',
+  );
 }
 
 @Module({

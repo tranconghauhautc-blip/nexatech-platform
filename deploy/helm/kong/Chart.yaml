@@ -1,0 +1,6 @@
+apiVersion: v2
+name: nexatech-kong
+description: Kong Gateway OSS + Ingress Controller for NexaTech (dedicated Kong node)
+type: application
+version: 0.1.0
+appVersion: '3.9.0'

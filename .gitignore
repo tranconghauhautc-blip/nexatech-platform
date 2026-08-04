@@ -3,6 +3,7 @@
 # compiled output
 dist
 tmp
+.tmp/
 out-tsc
 
 # dependencies
@@ -53,8 +54,13 @@ Thumbs.db
 .env.*
 !.env.example
 !.env.nx
+!.env.deploy.local.example
+!.env.e2e.example
 .env.security-guide.local
 *.security-guide.session*
+.secrets/
+deploy/checkpoints/*.json
+!deploy/checkpoints/.gitkeep
 
 # Local scratch
 tmp-*

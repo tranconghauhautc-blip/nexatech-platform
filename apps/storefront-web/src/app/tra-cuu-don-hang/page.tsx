@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { bff, getErrorMessage } from '../../lib/api-browser';
+import { shippingTrackingPath } from '../../lib/bff-path';
 import styles from '../dang-nhap/page.module.css';
 
 export default function GuestTrackingPage() {
@@ -22,9 +23,7 @@ export default function GuestTrackingPage() {
     }
     setLoading(true);
     try {
-      const data = await bff.get(
-        `/api/bff/shipping/tracking/${encodeURIComponent(code)}`,
-      );
+      const data = await bff.get(shippingTrackingPath(code));
       setResult(data as Record<string, unknown>);
     } catch (err) {
       setError(getErrorMessage(err, 'Không tìm thấy mã vận đơn'));

@@ -1,6 +1,6 @@
 import { EventTypes } from '@nexatech/shared-events';
 import { Roles, type Role } from '@nexatech/shared-auth';
-import { AppError, ErrorCodes } from '@nexatech/shared-errors';
+import { ErrorCodes } from '@nexatech/shared-errors';
 import { InMemoryObjectStorage } from './in-memory.object-storage';
 import { InMemoryMediaRepository } from './media.repository';
 import { auditEvents, MediaService } from './media.service';
@@ -30,6 +30,7 @@ describe('MediaService', () => {
         sizeBytes: 1024,
         ownerType: 'product',
         ownerId: 'prod-1',
+        role: 'gallery',
       },
       userActor,
     );
@@ -63,6 +64,7 @@ describe('MediaService', () => {
         sizeBytes: 1024,
         ownerType: 'product',
         ownerId: 'prod-1',
+        role: 'gallery',
       },
       userActor,
     );
@@ -88,6 +90,7 @@ describe('MediaService', () => {
           sizeBytes: 1024,
           ownerType: 'product',
           ownerId: 'prod-1',
+          role: 'gallery',
         },
         userActor,
       ),
@@ -105,6 +108,7 @@ describe('MediaService', () => {
           sizeBytes: 21 * 1024 * 1024,
           ownerType: 'product',
           ownerId: 'prod-1',
+          role: 'gallery',
         },
         userActor,
       ),
@@ -121,6 +125,7 @@ describe('MediaService', () => {
         sizeBytes: 1024,
         ownerType: 'product',
         ownerId: 'prod-1',
+        role: 'gallery',
       },
       userActor,
     );
@@ -146,6 +151,7 @@ describe('MediaService', () => {
         sizeBytes: 1024,
         ownerType: 'product',
         ownerId: 'prod-1',
+        role: 'gallery',
       },
       userActor,
     );
@@ -162,6 +168,7 @@ describe('MediaService', () => {
         entityId: 'prod-1',
         role: 'thumbnail',
         isPrimary: true,
+        sortOrder: 0,
       },
       staffActor,
     );
@@ -173,6 +180,7 @@ describe('MediaService', () => {
         sizeBytes: 1024,
         ownerType: 'product',
         ownerId: 'prod-1',
+        role: 'gallery',
       },
       userActor,
     );
@@ -189,6 +197,7 @@ describe('MediaService', () => {
         entityId: 'prod-1',
         role: 'thumbnail',
         isPrimary: true,
+        sortOrder: 0,
       },
       staffActor,
     );
@@ -209,6 +218,7 @@ describe('MediaService', () => {
         sizeBytes: 512,
         ownerType: 'misc',
         ownerId: 'misc-1',
+        role: 'gallery',
       },
       userActor,
     );
@@ -234,6 +244,7 @@ describe('MediaService', () => {
         sizeBytes: 512,
         ownerType: 'product',
         ownerId: 'prod-public',
+        role: 'gallery',
       },
       userActor,
     );
@@ -255,6 +266,7 @@ describe('MediaService', () => {
         sizeBytes: 512,
         ownerType: 'user',
         ownerId: 'user-1',
+        role: 'gallery',
       },
       userActor,
     );

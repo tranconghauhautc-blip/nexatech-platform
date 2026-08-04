@@ -1,0 +1,285 @@
+# Application stack for isolated E2E — uses images already built; DB names end with _test.
+# Network: joins nexatech-e2e from docker-compose.e2e.yml
+#
+# Usage (after e2e infra is up and migrated/seeded):
+#   docker compose -f infra/docker/docker-compose.e2e.yml -f infra/docker/docker-compose.e2e-apps.yml up -d
+#
+# Does NOT use runtime deploy databases or runtime volumes.
+
+name: nexatech-e2e
+
+x-backend-env: &backend-env
+  JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret-min-32-chars-e2e}
+  JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-change-me-refresh-secret-min-32-chars-e2e}
+  REDIS_URL: redis://redis:6379
+  RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+  NODE_ENV: production
+  SMTP_HOST: mailpit
+  SMTP_PORT: 1025
+  SMTP_SECURE: 'false'
+  SMTP_FROM_NAME: NexaTech E2E
+  SMTP_FROM_EMAIL: noreply@nexatech.local
+
+x-depends-infra: &depends-infra
+  postgres:
+    condition: service_healthy
+  redis:
+    condition: service_healthy
+  rabbitmq:
+    condition: service_healthy
+
+services:
+  identity-service:
+    image: nexatech/identity-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3001
+      IDENTITY_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_identity_test
+    ports: ['3001:3001']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  customer-service:
+    image: nexatech/customer-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3002
+      CUSTOMER_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_customer_test
+    ports: ['3002:3002']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  catalog-service:
+    image: nexatech/catalog-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3003
+      CATALOG_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_catalog_test
+    ports: ['3003:3003']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  media-service:
+    image: nexatech/media-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3004
+      MEDIA_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_media_test
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: 9000
+      MINIO_ACCESS_KEY: e2e_minio
+      MINIO_SECRET_KEY: e2e_minio_password_change_me
+      MINIO_PUBLIC_ENDPOINT: 127.0.0.1
+      MINIO_PUBLIC_PORT: 59000
+      MINIO_USE_SSL: 'false'
+    ports: ['3004:3004']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  inventory-service:
+    image: nexatech/inventory-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3005
+      INVENTORY_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_inventory_test
+    ports: ['3005:3005']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  cart-service:
+    image: nexatech/cart-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3006
+      CART_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_cart_test
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+    ports: ['3006:3006']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  order-service:
+    image: nexatech/order-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3007
+      ORDER_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_order_test
+      CART_SERVICE_URL: http://cart-service:3006
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+    ports: ['3007:3007']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  payment-service:
+    image: nexatech/payment-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3008
+      PAYMENT_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_payment_test
+      ORDER_SERVICE_URL: http://order-service:3007
+    ports: ['3008:3008']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  shipping-service:
+    image: nexatech/shipping-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3009
+      SHIPPING_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_shipping_test
+      ORDER_SERVICE_URL: http://order-service:3007
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+    ports: ['3009:3009']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  review-service:
+    image: nexatech/review-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3010
+      REVIEW_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_review_test
+      ORDER_SERVICE_URL: http://order-service:3007
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
+    ports: ['3010:3010']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  warranty-service:
+    image: nexatech/warranty-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3011
+      WARRANTY_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_warranty_test
+      ORDER_SERVICE_URL: http://order-service:3007
+      MEDIA_SERVICE_URL: http://media-service:3004
+    ports: ['3011:3011']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  support-service:
+    image: nexatech/support-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3012
+      SUPPORT_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_support_test
+      ORDER_SERVICE_URL: http://order-service:3007
+      MEDIA_SERVICE_URL: http://media-service:3004
+    ports: ['3012:3012']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  notification-service:
+    image: nexatech/notification-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3013
+      NOTIFICATION_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_notification_test
+    ports: ['3013:3013']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  reporting-service:
+    image: nexatech/reporting-service:0.17.0
+    environment:
+      <<: *backend-env
+      PORT: 3014
+      REPORTING_DATABASE_URL: postgresql://nexatech_e2e:e2e_password_change_me@postgres:5432/nexatech_reporting_test
+    ports: ['3014:3014']
+    depends_on: *depends-infra
+    restart: on-failure:5
+
+  kong:
+    image: kong:3.9.0
+    environment:
+      KONG_DATABASE: 'off'
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+      KONG_PROXY_LISTEN: '0.0.0.0:8000'
+      KONG_ADMIN_LISTEN: '0.0.0.0:8001'
+    ports: ['8000:8000', '8001:8001']
+    volumes:
+      - ../kong/kong.yml:/kong/kong.yml:ro
+    depends_on:
+      identity-service:
+        condition: service_started
+    healthcheck:
+      test: ['CMD', 'kong', 'health']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  storefront-web:
+    image: nexatech/storefront-web:0.17.0
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      APP_BASE_URL: http://localhost:3000
+      INTERNAL_API_BASE_URL: http://kong:8000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      CUSTOMER_SERVICE_URL: http://customer-service:3002
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      CART_SERVICE_URL: http://cart-service:3006
+      ORDER_SERVICE_URL: http://order-service:3007
+      PAYMENT_SERVICE_URL: http://payment-service:3008
+      SHIPPING_SERVICE_URL: http://shipping-service:3009
+      REVIEW_SERVICE_URL: http://review-service:3010
+      WARRANTY_SERVICE_URL: http://warranty-service:3011
+      SUPPORT_SERVICE_URL: http://support-service:3012
+      NOTIFICATION_SERVICE_URL: http://notification-service:3013
+      REPORTING_SERVICE_URL: http://reporting-service:3014
+      MEDIA_PUBLIC_BASE_URL: http://127.0.0.1:59000
+    ports: ['3000:3000']
+
+  admin-web:
+    image: nexatech/admin-web:0.17.0
+    environment:
+      NODE_ENV: production
+      PORT: 3100
+      ADMIN_BASE_URL: http://localhost:3100
+      INTERNAL_API_BASE_URL: http://kong:8000
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000
+      ADMIN_SESSION_SECRET: ${ADMIN_SESSION_SECRET:-change-me-admin-session-secret-e2e}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-change-me-access-secret-min-32-chars-e2e}
+      IDENTITY_SERVICE_URL: http://identity-service:3001
+      CUSTOMER_SERVICE_URL: http://customer-service:3002
+      CATALOG_SERVICE_URL: http://catalog-service:3003
+      MEDIA_SERVICE_URL: http://media-service:3004
+      INVENTORY_SERVICE_URL: http://inventory-service:3005
+      CART_SERVICE_URL: http://cart-service:3006
+      ORDER_SERVICE_URL: http://order-service:3007
+      PAYMENT_SERVICE_URL: http://payment-service:3008
+      SHIPPING_SERVICE_URL: http://shipping-service:3009
+      REVIEW_SERVICE_URL: http://review-service:3010
+      WARRANTY_SERVICE_URL: http://warranty-service:3011
+      SUPPORT_SERVICE_URL: http://support-service:3012
+      NOTIFICATION_SERVICE_URL: http://notification-service:3013
+      REPORTING_SERVICE_URL: http://reporting-service:3014
+    ports: ['3100:3100']
+
+  swagger-portal:
+    image: nexatech/swagger-portal:0.17.0
+    environment:
+      NODE_ENV: production
+      PORT: 8090
+      HOST: 0.0.0.0
+      OPENAPI_DIR: /app/openapi
+      SWAGGER_UI_DIST: /app/node_modules/swagger-ui-dist
+      NEXATECH_SWAGGER_PORTAL_ENABLED: '1'
+      NEXATECH_DEPLOY_PROFILE: e2e
+    ports: ['8090:8090']
+
+  security-guide-portal:
+    image: nexatech/security-guide-portal:0.17.0
+    env_file:
+      - path: ../../.env.security-guide.local
+        required: false
+    environment:
+      PORT: 3200
+      HOST: 0.0.0.0
+      NODE_ENV: production
+    ports: ['3200:3200']

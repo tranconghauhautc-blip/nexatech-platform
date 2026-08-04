@@ -11,6 +11,10 @@ const startLocal =
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: true,
+  // Cart/checkout journeys share seeded customer accounts — keep concurrency low.
+  workers: process.env.PLAYWRIGHT_WORKERS
+    ? Number(process.env.PLAYWRIGHT_WORKERS)
+    : 4,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
@@ -53,6 +57,21 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         baseURL: adminBase,
+      },
+    },
+    {
+      name: 'a11y-chromium',
+      testMatch: /a11y\/.*\.spec\.ts/,
+      use: {
+        ...devices['Desktop Chrome'],
+        baseURL: storefrontBase,
+      },
+    },
+    {
+      name: 'api',
+      testMatch: /api\/.*\.spec\.ts/,
+      use: {
+        baseURL: process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://127.0.0.1:8000',
       },
     },
     {

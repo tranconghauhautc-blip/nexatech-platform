@@ -116,7 +116,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/brands/{id}": {
@@ -147,7 +153,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/categories": {
@@ -170,7 +182,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/categories/{id}": {
@@ -201,7 +219,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/products": {
@@ -224,7 +248,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/products/{id}": {
@@ -255,7 +285,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/products/{id}/status": {
@@ -286,10 +322,51 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/products/{productId}/media-links": {
+      "get": {
+        "operationId": "AdminCatalog_listMediaLinks_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
       "post": {
         "operationId": "AdminCatalog_linkMedia_v1",
         "parameters": [
@@ -317,7 +394,101 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v1/admin/catalog/products/{productId}/media-links/{linkId}": {
+      "delete": {
+        "operationId": "AdminCatalog_unlinkMedia_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
+      "patch": {
+        "operationId": "AdminCatalog_updateMediaLink_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/skus": {
@@ -340,7 +511,50 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v1/admin/catalog/skus/{skuId}": {
+      "patch": {
+        "operationId": "AdminCatalog_updateSku_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "skuId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/skus/{skuId}/prices": {
@@ -379,7 +593,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/catalog/spec-templates": {
@@ -410,7 +630,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "post": {
         "operationId": "AdminCatalog_createSpecTemplate_v1",
@@ -431,7 +657,120 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v1/admin/catalog/spec-templates/{id}": {
+      "delete": {
+        "operationId": "AdminCatalog_deleteSpecTemplate_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
+      "get": {
+        "operationId": "AdminCatalog_getSpecTemplate_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
+      "patch": {
+        "operationId": "AdminCatalog_updateSpecTemplate_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/brands": {
@@ -598,7 +937,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/brands/{id}": {
@@ -629,7 +974,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/categories": {
@@ -652,7 +1003,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/categories/{id}": {
@@ -683,7 +1040,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/products": {
@@ -706,7 +1069,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/products/{id}": {
@@ -737,7 +1106,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/products/{id}/status": {
@@ -768,10 +1143,51 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/products/{productId}/media-links": {
+      "get": {
+        "operationId": "AdminCatalog_listMediaLinks_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
       "post": {
         "operationId": "AdminCatalog_linkMedia_v2",
         "parameters": [
@@ -799,7 +1215,101 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v2/admin/catalog/products/{productId}/media-links/{linkId}": {
+      "delete": {
+        "operationId": "AdminCatalog_unlinkMedia_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
+      "patch": {
+        "operationId": "AdminCatalog_updateMediaLink_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "linkId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/skus": {
@@ -822,7 +1332,50 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v2/admin/catalog/skus/{skuId}": {
+      "patch": {
+        "operationId": "AdminCatalog_updateSku_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "skuId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/skus/{skuId}/prices": {
@@ -861,7 +1414,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/catalog/spec-templates": {
@@ -892,7 +1451,13 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       },
       "post": {
         "operationId": "AdminCatalog_createSpecTemplate_v2",
@@ -913,7 +1478,120 @@
         },
         "tags": [
           "admin-catalog"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v2/admin/catalog/spec-templates/{id}": {
+      "delete": {
+        "operationId": "AdminCatalog_deleteSpecTemplate_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
+      "get": {
+        "operationId": "AdminCatalog_getSpecTemplate_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      },
+      "patch": {
+        "operationId": "AdminCatalog_updateSpecTemplate_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-catalog"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/brands": {

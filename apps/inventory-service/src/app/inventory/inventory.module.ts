@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+﻿import { Module } from '@nestjs/common';
 import { AdminInventoryController } from './admin-inventory.controller';
 import {
   InMemoryEventPublisher,
@@ -39,12 +39,12 @@ function createRepositoryProvider() {
     ];
   }
   throw new Error(
-    'INVENTORY_DATABASE_URL bắt buộc khi chạy inventory-service (trừ NODE_ENV=test)',
+    'INVENTORY_DATABASE_URL báº¯t buá»™c khi cháº¡y inventory-service (trá»« NODE_ENV=test)',
   );
 }
 
 function createPublisherProvider() {
-  const rabbitUrl = process.env['RABBITMQ_URL'];
+  const rabbitUrl = process.env['RABBITMQ_URL']?.trim();
   if (rabbitUrl && process.env['NODE_ENV'] !== 'test') {
     return {
       provide: INVENTORY_EVENT_PUBLISHER,
@@ -52,10 +52,15 @@ function createPublisherProvider() {
         new RabbitMqEventPublisher(rabbitUrl),
     };
   }
-  return {
-    provide: INVENTORY_EVENT_PUBLISHER,
-    useClass: InMemoryEventPublisher,
-  };
+  if (process.env['NODE_ENV'] === 'test') {
+    return {
+      provide: INVENTORY_EVENT_PUBLISHER,
+      useClass: InMemoryEventPublisher,
+    };
+  }
+  throw new Error(
+    'RABBITMQ_URL bắt buộc khi chạy service (không silent fallback InMemoryEventPublisher)',
+  );
 }
 
 @Module({

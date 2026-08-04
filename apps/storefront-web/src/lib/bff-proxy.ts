@@ -100,6 +100,9 @@ export async function proxyToService(
     headers.set('x-user-id', session.userId);
     headers.set('x-user-roles', (session.roles ?? []).join(','));
     headers.set('Authorization', `Bearer ${session.accessToken}`);
+    if (session.email) {
+      headers.set('x-user-email', session.email);
+    }
   }
   const cartToken = req.cookies.get(CART_TOKEN_COOKIE)?.value;
   if (cartToken) {

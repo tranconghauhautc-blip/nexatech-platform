@@ -1,8 +1,24 @@
-import { createId } from '@nexatech/shared-platform';
+import {
+  assertIntegrationTestDatabaseReady,
+  createId,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaReportingRepository } from './prisma-reporting.repository';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['REPORTING_DATABASE_URL']
+/**
+ * Destructive integration suite. Requires REPORTING_TEST_DATABASE_URL pointing at
+ * nexatech_reporting_test only — never falls back to REPORTING_DATABASE_URL.
+ */
+const REPORTING_TEST_DB = {
+  testUrlEnv: 'REPORTING_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_reporting_test',
+  runtimeUrlEnv: 'REPORTING_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  REPORTING_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
@@ -21,12 +37,14 @@ describeIfDb('PrismaReportingRepository integration', () => {
   }> = [];
 
   beforeAll(async () => {
+    assertIntegrationTestDatabaseReady(REPORTING_TEST_DB);
     prisma = new PrismaService();
     await prisma.$connect();
     repository = new PrismaReportingRepository(prisma);
   });
 
   afterAll(async () => {
+    assertIntegrationTestDatabaseReady(REPORTING_TEST_DB);
     if (createdOrderIds.length > 0) {
       await prisma.orderProjection.deleteMany({
         where: { orderId: { in: createdOrderIds } },

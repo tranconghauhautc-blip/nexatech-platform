@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-shipments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/shipments/{shipmentId}": {
@@ -195,7 +201,13 @@
         },
         "tags": [
           "admin-shipments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/shipments/{shipmentId}/status-transitions": {
@@ -250,7 +262,13 @@
         },
         "tags": [
           "admin-shipments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/shipments": {
@@ -1137,7 +1155,13 @@
         },
         "tags": [
           "admin-shipments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/shipments/{shipmentId}": {
@@ -1192,7 +1216,13 @@
         },
         "tags": [
           "admin-shipments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/shipments/{shipmentId}/status-transitions": {
@@ -1247,7 +1277,13 @@
         },
         "tags": [
           "admin-shipments"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/shipments": {

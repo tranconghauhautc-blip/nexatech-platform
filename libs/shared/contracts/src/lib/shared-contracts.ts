@@ -709,6 +709,8 @@ export interface OrderItemDto {
   quantity: number;
   lineSubtotal: number;
   currency: string;
+  /** Snapshot ảnh sản phẩm/SKU (mediaId) tại thời điểm đặt hàng, nếu có. */
+  imageMediaId?: string;
 }
 
 export interface OrderAddressDto {

@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Headers, Post, Query } from '@nestjs/common';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 import { ReportingService, parseActor } from './reporting.service';
 
 @ApiTags('admin-reporting')
+@ApiBearerAuth('bearer')
 @ApiHeader({ name: 'x-user-id', required: false })
 @ApiHeader({ name: 'x-user-roles', required: false })
 @Controller({ path: 'admin/reporting', version: ['1', '2'] })

@@ -1,15 +1,32 @@
 import { execSync } from 'node:child_process';
 import path from 'node:path';
+import {
+  assertIntegrationTestDatabaseReady,
+  shouldRunIntegrationDatabaseSuite,
+} from '@nexatech/shared-platform';
 import { PrismaService } from './prisma.service';
 
-const describeIfDb = process.env['PAYMENT_DATABASE_URL']
+const PAYMENT_TEST_DB = {
+  testUrlEnv: 'PAYMENT_TEST_DATABASE_URL',
+  requiredDatabaseName: 'nexatech_payment_test',
+  runtimeUrlEnv: 'PAYMENT_DATABASE_URL',
+} as const;
+
+const describeIfDb = shouldRunIntegrationDatabaseSuite(
+  PAYMENT_TEST_DB.testUrlEnv,
+)
   ? describe
   : describe.skip;
 
 describeIfDb('payment prisma migration', () => {
   const serviceDir = path.join(__dirname, '../../..');
 
+  beforeAll(() => {
+    assertIntegrationTestDatabaseReady(PAYMENT_TEST_DB);
+  });
+
   it('applies migrations successfully', () => {
+    assertIntegrationTestDatabaseReady(PAYMENT_TEST_DB);
     execSync('npx prisma migrate deploy', {
       cwd: serviceDir,
       env: process.env,
@@ -18,6 +35,7 @@ describeIfDb('payment prisma migration', () => {
   });
 
   it('records migration in _prisma_migrations', async () => {
+    assertIntegrationTestDatabaseReady(PAYMENT_TEST_DB);
     const prisma = new PrismaService();
     await prisma.$connect();
     const rows = await prisma.$queryRaw<Array<{ migration_name: string }>>`

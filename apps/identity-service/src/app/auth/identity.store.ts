@@ -72,8 +72,7 @@ export class InMemoryIdentityStore implements IdentityStore {
     if (filter.q) {
       const q = filter.q.toLowerCase();
       items = items.filter(
-        (u) =>
-          u.email.includes(q) || u.fullName.toLowerCase().includes(q),
+        (u) => u.email.includes(q) || u.fullName.toLowerCase().includes(q),
       );
     }
     if (filter.status) {

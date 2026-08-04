@@ -658,6 +658,13 @@ export class InMemoryCatalogRepository implements CatalogRepository {
     return product ? this.toProductDetail(product) : null;
   }
 
+  private primaryThumbnailFor(productId: string): string | undefined {
+    const primaryMedia = [...this.mediaLinks.values()]
+      .filter((link) => link.productId === productId && link.isPrimary)
+      .sort((a, b) => a.sortOrder - b.sortOrder)[0];
+    return primaryMedia?.mediaId;
+  }
+
   private getMinPrice(productId: string): number {
     const productSkus = [...this.skus.values()].filter(
       (sku) => sku.productId === productId,
@@ -674,9 +681,6 @@ export class InMemoryCatalogRepository implements CatalogRepository {
   private toSearchItem(product: Product): ProductSearchItem {
     const brand = this.brands.get(product.brandId);
     const category = this.categories.get(product.categoryId);
-    const primaryMedia = [...this.mediaLinks.values()]
-      .filter((link) => link.productId === product.id && link.isPrimary)
-      .sort((a, b) => a.sortOrder - b.sortOrder)[0];
     return {
       id: product.id,
       slug: product.slug,
@@ -686,7 +690,7 @@ export class InMemoryCatalogRepository implements CatalogRepository {
       status: product.status,
       minPrice: this.getMinPrice(product.id),
       currency: 'VND',
-      thumbnailUrl: primaryMedia?.mediaId,
+      thumbnailUrl: this.primaryThumbnailFor(product.id),
     };
   }
 
@@ -840,6 +844,7 @@ export class InMemoryCatalogRepository implements CatalogRepository {
             slug: product.slug,
             name: product.name,
             status: product.status,
+            thumbnailUrl: this.primaryThumbnailFor(product.id),
           }
         : undefined,
     };
@@ -847,7 +852,22 @@ export class InMemoryCatalogRepository implements CatalogRepository {
 
   async getSkuById(skuId: string): Promise<SkuWithPrice | null> {
     const sku = this.skus.get(skuId);
-    return sku ? { ...sku } : null;
+    if (!sku) {
+      return null;
+    }
+    const product = this.products.get(sku.productId);
+    return {
+      ...sku,
+      product: product
+        ? {
+            id: product.id,
+            slug: product.slug,
+            name: product.name,
+            status: product.status,
+            thumbnailUrl: this.primaryThumbnailFor(product.id),
+          }
+        : undefined,
+    };
   }
 
   async listSkusByProduct(productId: string): Promise<SkuWithPrice[]> {

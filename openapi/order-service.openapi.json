@@ -140,7 +140,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/orders/{orderId}": {
@@ -195,7 +201,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/orders/{orderId}/cancel": {
@@ -250,7 +262,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/orders/{orderId}/confirm": {
@@ -305,7 +323,74 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v1/admin/orders/{orderId}/reconcile-fulfillment": {
+      "post": {
+        "operationId": "AdminOrder_reconcileFulfillment_v1",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-orders"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/admin/orders/{orderId}/status-transitions": {
@@ -360,7 +445,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v1/orders": {
@@ -939,7 +1030,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/orders/{orderId}": {
@@ -994,7 +1091,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/orders/{orderId}/cancel": {
@@ -1049,7 +1152,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/orders/{orderId}/confirm": {
@@ -1104,7 +1213,74 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
+      }
+    },
+    "/api/v2/admin/orders/{orderId}/reconcile-fulfillment": {
+      "post": {
+        "operationId": "AdminOrder_reconcileFulfillment_v2",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-user-roles",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "admin-orders"
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/admin/orders/{orderId}/status-transitions": {
@@ -1159,7 +1335,13 @@
         },
         "tags": [
           "admin-orders"
-        ]
+        ],
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "description": ""
       }
     },
     "/api/v2/orders": {
