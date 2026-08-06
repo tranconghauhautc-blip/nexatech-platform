@@ -301,6 +301,9 @@ Until these are supplied, use `-DryRun` deploy scripts and local/E2E Compose onl
 
 ## Related
 
+- [K8S-DEPLOYMENT-CHECKLIST.md](./K8S-DEPLOYMENT-CHECKLIST.md) — exact 30-step K8s sequence
+- [INFRASTRUCTURE-INPUTS.md](./INFRASTRUCTURE-INPUTS.md) — input matrix
+- [`../../deploy/images-manifest.txt`](../../deploy/images-manifest.txt) — image handoff manifest
 - [../README.md](../README.md) — full documentation index
 - [../PROGRESS.md](../PROGRESS.md) — engineering verdict
 - [../FINAL-HANDOFF.md](../FINAL-HANDOFF.md) — milestone handoff

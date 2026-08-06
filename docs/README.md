@@ -50,6 +50,8 @@ Engineering status: see [PROGRESS.md](./PROGRESS.md) and [deployment/DEVOPS-HAND
 | Document | Description |
 | -------- | ----------- |
 | [deployment/DEVOPS-HANDOFF.md](./deployment/DEVOPS-HANDOFF.md) | **DevOps handoff (start here)** |
+| [deployment/K8S-DEPLOYMENT-CHECKLIST.md](./deployment/K8S-DEPLOYMENT-CHECKLIST.md) | Exact K8s deploy sequence (30 steps) |
+| [deployment/INFRASTRUCTURE-INPUTS.md](./deployment/INFRASTRUCTURE-INPUTS.md) | DevOps/System input matrix |
 | [DEPLOYMENT.md](./DEPLOYMENT.md) | Deployment principles and local Compose |
 | [deployment/lan-ip-first.md](./deployment/lan-ip-first.md) | LAN / IP-first exposure |
 | [DEPLOYMENT-ORDER.md](./DEPLOYMENT-ORDER.md) | Ordered install / upgrade steps |
@@ -58,6 +60,7 @@ Engineering status: see [PROGRESS.md](./PROGRESS.md) and [deployment/DEVOPS-HAND
 | [K8S-OPS.md](./K8S-OPS.md) | Kubernetes operations |
 | [K8S-MIGRATION-READINESS.md](./K8S-MIGRATION-READINESS.md) | K8s migration readiness |
 | [IMAGE-MATRIX.md](./IMAGE-MATRIX.md) | Container image matrix |
+| [`deploy/images-manifest.txt`](../deploy/images-manifest.txt) | Image handoff manifest (tag/port/health) |
 | [RELEASE-CHECKLIST.md](./RELEASE-CHECKLIST.md) | Release checklist |
 | [runbooks/rollback.md](./runbooks/rollback.md) | Rollback runbook |
 

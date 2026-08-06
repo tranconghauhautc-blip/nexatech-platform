@@ -60,6 +60,7 @@ Thumbs.db
 *.security-guide.session*
 .secrets/
 deploy/checkpoints/*.json
+deploy/checkpoints/*-rendered.yaml
 !deploy/checkpoints/.gitkeep
 
 # Local scratch

@@ -1,6 +1,9 @@
 ﻿_format_version: '3.0'
 _transform: true
 
+# Nested routes under services — required for Kong 3.9+ DB-less (avoids
+# "service.id missing primary key" on top-level route→service name refs).
+
 services:
   - name: storefront-web
     url: http://storefront-web:3000
@@ -8,311 +11,306 @@ services:
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: storefront-root
+        paths: ['/']
+        strip_path: false
+        preserve_host: true
+        regex_priority: 0
+
   - name: admin-web
     url: http://admin-web:3100
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: admin-ui
+        paths: ['/admin']
+        strip_path: true
+        preserve_host: true
+        regex_priority: 10
+
   - name: identity-service
     url: http://identity-service:3001
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: identity-auth
+        paths: ['/api/v1/auth', '/api/v2/auth']
+        strip_path: false
+      - name: identity-admin-users
+        paths: ['/api/v1/admin/users', '/api/v2/admin/users']
+        strip_path: false
+
   - name: customer-service
     url: http://customer-service:3002
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: customer
+        paths: ['/api/v1/customers', '/api/v2/customers']
+        strip_path: false
+
   - name: catalog-service
     url: http://catalog-service:3003
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: catalog
+        paths:
+          [
+            '/api/v1/categories',
+            '/api/v2/categories',
+            '/api/v1/brands',
+            '/api/v2/brands',
+            '/api/v1/products',
+            '/api/v2/products',
+            '/api/v1/skus',
+            '/api/v2/skus',
+            '/api/v1/search',
+            '/api/v2/search',
+            '/api/v1/spec-templates',
+            '/api/v2/spec-templates',
+            '/api/v1/admin/catalog',
+            '/api/v2/admin/catalog',
+          ]
+        strip_path: false
+
   - name: media-service
     url: http://media-service:3004
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: media
+        paths:
+          [
+            '/api/v1/media',
+            '/api/v2/media',
+            '/api/v1/admin/media',
+            '/api/v2/admin/media',
+          ]
+        strip_path: false
+
   - name: inventory-service
     url: http://inventory-service:3005
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: inventory
+        paths:
+          [
+            '/api/v1/inventory',
+            '/api/v2/inventory',
+            '/api/v1/warehouses',
+            '/api/v2/warehouses',
+            '/api/v1/stores',
+            '/api/v2/stores',
+            '/api/v1/stock',
+            '/api/v2/stock',
+            '/api/v1/movements',
+            '/api/v2/movements',
+            '/api/v1/admin/inventory',
+            '/api/v2/admin/inventory',
+          ]
+        strip_path: false
+
   - name: cart-service
     url: http://cart-service:3006
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: cart
+        paths:
+          [
+            '/api/v1/cart',
+            '/api/v2/cart',
+            '/api/v1/carts',
+            '/api/v2/carts',
+            '/api/v1/wishlist',
+            '/api/v2/wishlist',
+            '/api/v1/comparison',
+            '/api/v2/comparison',
+            '/api/v1/comparisons',
+            '/api/v2/comparisons',
+            '/api/v1/recently-viewed',
+            '/api/v2/recently-viewed',
+          ]
+        strip_path: false
+
   - name: order-service
     url: http://order-service:3007
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: order
+        paths:
+          [
+            '/api/v1/orders',
+            '/api/v2/orders',
+            '/api/v1/checkout',
+            '/api/v2/checkout',
+            '/api/v1/admin/orders',
+            '/api/v2/admin/orders',
+          ]
+        strip_path: false
+
   - name: payment-service
     url: http://payment-service:3008
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: payment
+        paths:
+          [
+            '/api/v1/payments',
+            '/api/v2/payments',
+            '/api/v1/admin/payments',
+            '/api/v2/admin/payments',
+          ]
+        strip_path: false
+
   - name: shipping-service
     url: http://shipping-service:3009
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: shipping
+        paths:
+          [
+            '/api/v1/shipping',
+            '/api/v2/shipping',
+            '/api/v1/shipments',
+            '/api/v2/shipments',
+            '/api/v1/admin/shipments',
+            '/api/v2/admin/shipments',
+            '/api/v1/admin/shipping',
+            '/api/v2/admin/shipping',
+          ]
+        strip_path: false
+
   - name: review-service
     url: http://review-service:3010
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: review
+        paths:
+          [
+            '/api/v1/reviews',
+            '/api/v2/reviews',
+            '/api/v1/admin/reviews',
+            '/api/v2/admin/reviews',
+          ]
+        strip_path: false
+
   - name: warranty-service
     url: http://warranty-service:3011
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: warranty
+        paths:
+          [
+            '/api/v1/warranty',
+            '/api/v2/warranty',
+            '/api/v1/returns',
+            '/api/v2/returns',
+            '/api/v1/admin/warranty',
+            '/api/v2/admin/warranty',
+          ]
+        strip_path: false
+
   - name: support-service
     url: http://support-service:3012
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: support
+        paths:
+          [
+            '/api/v1/support',
+            '/api/v2/support',
+            '/api/v1/admin/support',
+            '/api/v2/admin/support',
+          ]
+        strip_path: false
+
   - name: notification-service
     url: http://notification-service:3013
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: notification
+        paths:
+          [
+            '/api/v1/notifications',
+            '/api/v2/notifications',
+            '/api/v1/admin/notifications',
+            '/api/v2/admin/notifications',
+          ]
+        strip_path: false
+
   - name: reporting-service
     url: http://reporting-service:3014
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: reporting
+        paths: ['/api/v1/admin/reporting', '/api/v2/admin/reporting']
+        strip_path: false
+
   - name: swagger-portal
     url: http://swagger-portal:8090
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
+    routes:
+      - name: swagger-portal
+        paths: ['/docs', '/openapi', '/swagger']
+        strip_path: false
+        regex_priority: 100
+
   - name: security-guide-portal
     url: http://security-guide-portal:3200
     retries: 3
     connect_timeout: 5000
     write_timeout: 60000
     read_timeout: 60000
-
-routes:
-  - name: storefront-root
-    service:
-      name: storefront-web
-    paths: ['/']
-    strip_path: false
-    preserve_host: true
-    regex_priority: 0
-  - name: admin-ui
-    service:
-      name: admin-web
-    paths: ['/admin']
-    strip_path: true
-    preserve_host: true
-    regex_priority: 10
-  - name: identity-auth
-    service:
-      name: identity-service
-    paths: ['/api/v1/auth', '/api/v2/auth']
-    strip_path: false
-  - name: identity-admin-users
-    service:
-      name: identity-service
-    paths: ['/api/v1/admin/users', '/api/v2/admin/users']
-    strip_path: false
-  - name: customer
-    service:
-      name: customer-service
-    paths: ['/api/v1/customers', '/api/v2/customers']
-    strip_path: false
-  - name: catalog
-    service:
-      name: catalog-service
-    paths:
-      [
-        '/api/v1/categories',
-        '/api/v2/categories',
-        '/api/v1/brands',
-        '/api/v2/brands',
-        '/api/v1/products',
-        '/api/v2/products',
-        '/api/v1/skus',
-        '/api/v2/skus',
-        '/api/v1/search',
-        '/api/v2/search',
-        '/api/v1/spec-templates',
-        '/api/v2/spec-templates',
-        '/api/v1/admin/catalog',
-        '/api/v2/admin/catalog',
-      ]
-    strip_path: false
-  - name: media
-    service:
-      name: media-service
-    paths:
-      [
-        '/api/v1/media',
-        '/api/v2/media',
-        '/api/v1/admin/media',
-        '/api/v2/admin/media',
-      ]
-    strip_path: false
-  - name: inventory
-    service:
-      name: inventory-service
-    paths:
-      [
-        '/api/v1/inventory',
-        '/api/v2/inventory',
-        '/api/v1/warehouses',
-        '/api/v2/warehouses',
-        '/api/v1/stores',
-        '/api/v2/stores',
-        '/api/v1/stock',
-        '/api/v2/stock',
-        '/api/v1/movements',
-        '/api/v2/movements',
-        '/api/v1/admin/inventory',
-        '/api/v2/admin/inventory',
-      ]
-    strip_path: false
-  - name: cart
-    service:
-      name: cart-service
-    paths:
-      [
-        '/api/v1/cart',
-        '/api/v2/cart',
-        '/api/v1/carts',
-        '/api/v2/carts',
-        '/api/v1/wishlist',
-        '/api/v2/wishlist',
-        '/api/v1/comparison',
-        '/api/v2/comparison',
-        '/api/v1/comparisons',
-        '/api/v2/comparisons',
-        '/api/v1/recently-viewed',
-        '/api/v2/recently-viewed',
-      ]
-    strip_path: false
-  - name: order
-    service:
-      name: order-service
-    paths:
-      [
-        '/api/v1/orders',
-        '/api/v2/orders',
-        '/api/v1/checkout',
-        '/api/v2/checkout',
-        '/api/v1/admin/orders',
-        '/api/v2/admin/orders',
-      ]
-    strip_path: false
-  - name: payment
-    service:
-      name: payment-service
-    paths:
-      [
-        '/api/v1/payments',
-        '/api/v2/payments',
-        '/api/v1/admin/payments',
-        '/api/v2/admin/payments',
-      ]
-    strip_path: false
-  - name: shipping
-    service:
-      name: shipping-service
-    paths:
-      [
-        '/api/v1/shipping',
-        '/api/v2/shipping',
-        '/api/v1/shipments',
-        '/api/v2/shipments',
-        '/api/v1/admin/shipments',
-        '/api/v2/admin/shipments',
-        '/api/v1/admin/shipping',
-        '/api/v2/admin/shipping',
-      ]
-    strip_path: false
-  - name: swagger-portal
-    service:
-      name: swagger-portal
-    paths: ['/docs', '/openapi', '/swagger']
-    strip_path: false
-    regex_priority: 100
-  - name: security-guide-portal
-    service:
-      name: security-guide-portal
-    paths: ['/security-guide']
-    strip_path: true
-    regex_priority: 100
-  - name: review
-    service:
-      name: review-service
-    paths:
-      [
-        '/api/v1/reviews',
-        '/api/v2/reviews',
-        '/api/v1/admin/reviews',
-        '/api/v2/admin/reviews',
-      ]
-    strip_path: false
-  - name: warranty
-    service:
-      name: warranty-service
-    paths:
-      [
-        '/api/v1/warranty',
-        '/api/v2/warranty',
-        '/api/v1/returns',
-        '/api/v2/returns',
-        '/api/v1/admin/warranty',
-        '/api/v2/admin/warranty',
-      ]
-    strip_path: false
-  - name: support
-    service:
-      name: support-service
-    paths:
-      [
-        '/api/v1/support',
-        '/api/v2/support',
-        '/api/v1/admin/support',
-        '/api/v2/admin/support',
-      ]
-    strip_path: false
-  - name: notification
-    service:
-      name: notification-service
-    paths:
-      [
-        '/api/v1/notifications',
-        '/api/v2/notifications',
-        '/api/v1/admin/notifications',
-        '/api/v2/admin/notifications',
-      ]
-    strip_path: false
-  - name: reporting
-    service:
-      name: reporting-service
-    paths: ['/api/v1/admin/reporting', '/api/v2/admin/reporting']
-    strip_path: false
+    routes:
+      - name: security-guide-portal
+        paths: ['/security-guide']
+        strip_path: true
+        regex_priority: 100
 
 plugins:
   - name: cors
