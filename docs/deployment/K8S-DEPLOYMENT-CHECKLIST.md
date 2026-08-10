@@ -80,12 +80,15 @@ pwsh -File scripts/deployment/deploy-sequence.ps1
 
 ```powershell
 docker login $env:CONTAINER_REGISTRY_URL -u $env:CONTAINER_REGISTRY_USERNAME -p $env:CONTAINER_REGISTRY_TOKEN
-# Create imagePullSecret in namespace (operator):
-kubectl -n nexatech create secret docker-registry dockerhub-pull `
-  --docker-server=$env:CONTAINER_REGISTRY_URL `
+# GHCR private packages — create imagePullSecret in namespace (operator):
+kubectl -n nexatech create secret docker-registry ghcr-pull `
+  --docker-server=ghcr.io `
   --docker-username=$env:CONTAINER_REGISTRY_USERNAME `
   --docker-password=$env:CONTAINER_REGISTRY_TOKEN
 ```
+
+Helm overlay for this GitHub owner: `deploy/environments/staging/values-ghcr.yaml`
+(`global.imageRegistry=ghcr.io`, `global.imageRepository=tranconghauhautc-blip/nexatech`, `imagePullSecrets: [{name: ghcr-pull}]`).
 
 (See also deploy-sequence step `04-registry`.)
 

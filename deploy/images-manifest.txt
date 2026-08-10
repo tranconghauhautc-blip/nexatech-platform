@@ -1,40 +1,40 @@
 # NexaTech image handoff manifest
 # Source: docs/image-matrix.json — never use tag latest
-# Target: ${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/<name>:<tag>
-# Build: pwsh -File scripts/images/build-all.ps1 | pnpm docker:build:all | pwsh -File scripts/docker-build-all.ps1
-# Tag:  pwsh -File scripts/images/tag-all.ps1
-# Push: pwsh -File scripts/images/push-all.ps1 (requires docker login)
-# Scan: pwsh -File scripts/images/scan-all.ps1
-# Migrate: docker build -f deploy/docker/prisma-migrate.Dockerfile --build-arg SERVICE_NAME=<svc> -t nexatech/<svc>:<tag>-migrate .
+# Active GHCR target: ghcr.io/tranconghauhautc-blip/nexatech/<name>:<tag>
+# Build/tag/push: scripts/images/{build,tag,push}-all.ps1
+# Requires docker login ghcr.io with write:packages (push) / read:packages (pull)
+# Helm overlay: deploy/environments/staging/values-ghcr.yaml
+# imagePullSecret (do not commit token):
+#   kubectl create secret docker-registry ghcr-pull --docker-server=ghcr.io --docker-username=<GHCR_USERNAME> --docker-password=<GHCR_TOKEN> --namespace=nexatech
 
 local_image	tag	target_registry_placeholder	helm_value_key	container_port	health_endpoint	kind
-nexatech/storefront-web:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/storefront-web:0.17.0	apps.storefront.image	3000	/	frontend
-nexatech/admin-web:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/admin-web:0.17.0	apps.admin.image	3100	/	frontend
-nexatech/identity-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/identity-service:0.17.0	apps.identity.image	3001	/health/live	backend
-nexatech/identity-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/identity-service:0.17.0-migrate	migrations Job image (identity-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/customer-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/customer-service:0.17.0	apps.customer.image	3002	/health/live	backend
-nexatech/customer-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/customer-service:0.17.0-migrate	migrations Job image (customer-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/catalog-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/catalog-service:0.17.0	apps.catalog.image	3003	/health/live	backend
-nexatech/catalog-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/catalog-service:0.17.0-migrate	migrations Job image (catalog-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/media-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/media-service:0.17.0	apps.media.image	3004	/health/live	backend
-nexatech/media-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/media-service:0.17.0-migrate	migrations Job image (media-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/inventory-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/inventory-service:0.17.0	apps.inventory.image	3005	/health/live	backend
-nexatech/inventory-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/inventory-service:0.17.0-migrate	migrations Job image (inventory-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/cart-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/cart-service:0.17.0	apps.cart.image	3006	/health/live	backend
-nexatech/cart-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/cart-service:0.17.0-migrate	migrations Job image (cart-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/order-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/order-service:0.17.0	apps.order.image	3007	/health/live	backend
-nexatech/order-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/order-service:0.17.0-migrate	migrations Job image (order-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/payment-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/payment-service:0.17.0	apps.payment.image	3008	/health/live	backend
-nexatech/payment-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/payment-service:0.17.0-migrate	migrations Job image (payment-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/shipping-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/shipping-service:0.17.0	apps.shipping.image	3009	/health/live	backend
-nexatech/shipping-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/shipping-service:0.17.0-migrate	migrations Job image (shipping-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/review-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/review-service:0.17.0	apps.review.image	3010	/health/live	backend
-nexatech/review-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/review-service:0.17.0-migrate	migrations Job image (review-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/warranty-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/warranty-service:0.17.0	apps.warranty.image	3011	/health/live	backend
-nexatech/warranty-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/warranty-service:0.17.0-migrate	migrations Job image (warranty-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/support-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/support-service:0.17.0	apps.support.image	3012	/health/live	backend
-nexatech/support-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/support-service:0.17.0-migrate	migrations Job image (support-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/notification-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/notification-service:0.17.0	apps.notification.image	3013	/health/live	backend
-nexatech/notification-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/notification-service:0.17.0-migrate	migrations Job image (notification-service:0.17.0-migrate)	n/a	n/a	migration
-nexatech/reporting-service:0.17.0	0.17.0	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/reporting-service:0.17.0	apps.reporting.image	3014	/health/live	backend
-nexatech/reporting-service:0.17.0-migrate	0.17.0-migrate	${CONTAINER_REGISTRY_URL}/${CONTAINER_REGISTRY_NAMESPACE}/reporting-service:0.17.0-migrate	migrations Job image (reporting-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/storefront-web:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/storefront-web:0.17.0	apps.storefront.image	3000	/	frontend
+nexatech/admin-web:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/admin-web:0.17.0	apps.admin.image	3100	/	frontend
+nexatech/identity-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/identity-service:0.17.0	apps.identity.image	3001	/health/live	backend
+nexatech/identity-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/identity-service:0.17.0-migrate	migrations Job image (identity-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/customer-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/customer-service:0.17.0	apps.customer.image	3002	/health/live	backend
+nexatech/customer-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/customer-service:0.17.0-migrate	migrations Job image (customer-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/catalog-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/catalog-service:0.17.0	apps.catalog.image	3003	/health/live	backend
+nexatech/catalog-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/catalog-service:0.17.0-migrate	migrations Job image (catalog-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/media-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/media-service:0.17.0	apps.media.image	3004	/health/live	backend
+nexatech/media-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/media-service:0.17.0-migrate	migrations Job image (media-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/inventory-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/inventory-service:0.17.0	apps.inventory.image	3005	/health/live	backend
+nexatech/inventory-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/inventory-service:0.17.0-migrate	migrations Job image (inventory-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/cart-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/cart-service:0.17.0	apps.cart.image	3006	/health/live	backend
+nexatech/cart-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/cart-service:0.17.0-migrate	migrations Job image (cart-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/order-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/order-service:0.17.0	apps.order.image	3007	/health/live	backend
+nexatech/order-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/order-service:0.17.0-migrate	migrations Job image (order-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/payment-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/payment-service:0.17.0	apps.payment.image	3008	/health/live	backend
+nexatech/payment-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/payment-service:0.17.0-migrate	migrations Job image (payment-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/shipping-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/shipping-service:0.17.0	apps.shipping.image	3009	/health/live	backend
+nexatech/shipping-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/shipping-service:0.17.0-migrate	migrations Job image (shipping-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/review-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/review-service:0.17.0	apps.review.image	3010	/health/live	backend
+nexatech/review-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/review-service:0.17.0-migrate	migrations Job image (review-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/warranty-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/warranty-service:0.17.0	apps.warranty.image	3011	/health/live	backend
+nexatech/warranty-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/warranty-service:0.17.0-migrate	migrations Job image (warranty-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/support-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/support-service:0.17.0	apps.support.image	3012	/health/live	backend
+nexatech/support-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/support-service:0.17.0-migrate	migrations Job image (support-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/notification-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/notification-service:0.17.0	apps.notification.image	3013	/health/live	backend
+nexatech/notification-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/notification-service:0.17.0-migrate	migrations Job image (notification-service:0.17.0-migrate)	n/a	n/a	migration
+nexatech/reporting-service:0.17.0	0.17.0	ghcr.io/tranconghauhautc-blip/nexatech/reporting-service:0.17.0	apps.reporting.image	3014	/health/live	backend
+nexatech/reporting-service:0.17.0-migrate	0.17.0-migrate	ghcr.io/tranconghauhautc-blip/nexatech/reporting-service:0.17.0-migrate	migrations Job image (reporting-service:0.17.0-migrate)	n/a	n/a	migration

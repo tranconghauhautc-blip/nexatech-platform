@@ -1,0 +1,32 @@
+# Staging overlay for GitHub Container Registry (GHCR).
+# Kong remains outside Kubernetes — this chart only references app images.
+# Do NOT put registry tokens in this file. Create imagePullSecret in-cluster:
+#
+#   kubectl create secret docker-registry ghcr-pull `
+#     --docker-server=ghcr.io `
+#     --docker-username=<GHCR_USERNAME> `
+#     --docker-password=<GHCR_TOKEN> `
+#     --namespace=nexatech
+#
+# Required token scopes: read:packages (pull) + write:packages (push from CI/dev).
+
+global:
+  imageRegistry: ghcr.io
+  imageRepository: tranconghauhautc-blip/nexatech
+  imageTag: '0.17.0'
+  imagePullPolicy: IfNotPresent
+  imagePullSecrets:
+    - name: ghcr-pull
+
+apps:
+  swagger:
+    enabled: true
+  securityGuide:
+    enabled: true
+
+migrations:
+  enabled: true
+
+config:
+  nodeEnv: production
+  deployProfile: staging

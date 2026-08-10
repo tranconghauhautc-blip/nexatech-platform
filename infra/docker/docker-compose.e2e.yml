@@ -67,7 +67,8 @@ services:
   mailpit:
     image: axllent/mailpit:v1.21
     ports:
-      - '58025:8025'
+      # Host UI 18025 — avoids Windows Hyper-V dynamic excluded ranges in 50xxx–65xxx
+      - '18025:8025'
       - '51025:1025'
     healthcheck:
       test: ['CMD', 'wget', '-qO-', 'http://localhost:8025/api/v1/info']

@@ -3,12 +3,14 @@ import { randomUUID } from 'crypto';
 
 /**
  * DEF-019 — order.created → in-app notification + email (Mailpit).
- * Isolated E2E: Kong :8000, Mailpit :58025.
+ * Isolated E2E: Kong :8000, Mailpit :18025.
+ *
+ * Requires seeded order + notification outbox path. Skips without E2E_DEV_SEED_PASSWORD.
  */
 const password = process.env.E2E_DEV_SEED_PASSWORD;
 const kong = process.env.PLAYWRIGHT_API_BASE_URL ?? 'http://127.0.0.1:8000';
 const mailpit =
-  process.env.PLAYWRIGHT_MAILPIT_URL ?? 'http://127.0.0.1:58025';
+  process.env.PLAYWRIGHT_MAILPIT_URL ?? 'http://127.0.0.1:18025';
 
 test.describe('DEF-019 order to notification', () => {
   test.skip(!password, 'E2E_DEV_SEED_PASSWORD required');

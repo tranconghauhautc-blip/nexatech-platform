@@ -166,7 +166,7 @@ Helm runs per-service migrate Jobs as pre-install/pre-upgrade hooks (`deploy/hel
 | Environment | Mechanism |
 | ----------- | --------- |
 | Local Compose | Mailpit in `infra/docker/docker-compose.dev.yml` |
-| Isolated E2E | Mailpit in `infra/docker/docker-compose.e2e.yml` (host UI typically `:58025`) |
+| Isolated E2E | Mailpit in `infra/docker/docker-compose.e2e.yml` (host UI typically `:18025`) |
 | Production / staging | Set `SMTP_*` from `.env.deploy.local.example` (Gmail App Password optional) |
 
 Notification behaviour: [../use-cases/13-notification.md](../use-cases/13-notification.md).
