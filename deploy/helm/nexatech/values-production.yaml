@@ -15,6 +15,7 @@ global:
   imageRegistry: ghcr.io
   imageRepository: tranconghauhautc-blip/nexatech
   imageTag: '0.17.0'
+  migrationImageTag: '0.17.1-migrate'
   imagePullPolicy: IfNotPresent
   # Public GHCR: []. Private: [{ name: ghcr-pull }]
   imagePullSecrets: []

@@ -82,7 +82,7 @@ console.log('[helm:validate] template with values-ghcr.yaml');
     ['POSIX set -eu', /set -eu/],
     ['no pipefail', (t) => !/set -euo pipefail/.test(t)],
     ['GHCR identity image', /ghcr\.io\/tranconghauhautc-blip\/nexatech\/identity-service:0\.17\.0/],
-    ['GHCR migrate image', /ghcr\.io\/tranconghauhautc-blip\/nexatech\/identity-service:0\.17\.0-migrate/],
+    ['GHCR migrate image', /ghcr\.io\/tranconghauhautc-blip\/nexatech\/identity-service:0\.17\.1-migrate/],
     ['entry VIP', /loadBalancerIP: "192\.168\.4\.204"/],
     ['redis PVC local-path', /storageClassName: "local-path"/],
     ['otel disabled in configmap/deploy', (t) => !/OTEL_EXPORTER_OTLP_ENDPOINT/.test(t)],

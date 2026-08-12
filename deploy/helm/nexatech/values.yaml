@@ -6,6 +6,9 @@ global:
   imageRegistry: ''
   imageRepository: nexatech
   imageTag: '0.17.0'
+  # Optional explicit migrate tag (avoids IfNotPresent cache of stale *-migrate).
+  # Empty => derive as "${imageTag}-migrate" (or per-app image.tag + "-migrate").
+  migrationImageTag: ''
   imagePullPolicy: IfNotPresent
   # Empty for public registries. Private GHCR: [{ name: ghcr-pull }] via overlay.
   imagePullSecrets: []

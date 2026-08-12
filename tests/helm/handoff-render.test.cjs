@@ -50,6 +50,7 @@ describe('helm handoff render assertions', () => {
     assert.match(text, /imageRegistry:\s*ghcr\.io/);
     assert.match(text, /imageRepository:\s*tranconghauhautc-blip\/nexatech/);
     assert.match(text, /imageTag:\s*'0\.17\.0'/);
+    assert.match(text, /migrationImageTag:\s*'0\.17\.1-migrate'/);
     assert.match(text, /imagePullSecrets:\s*\[\]/);
     assert.match(text, /host:\s*'192\.168\.3\.50'/);
     assert.match(text, /loadBalancerIP:\s*'192\.168\.4\.204'/);

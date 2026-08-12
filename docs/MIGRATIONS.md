@@ -25,9 +25,11 @@ DROP DATABASE / DROP SCHEMA / TRUNCATE
 | Sequencing | Independent per DB; preferred contract order in `docs/DEPLOYMENT-ORDER.md` |
 | Unattended | Agents do not run migrate against production                               |
 
-## Image
+Images:
+- Tag `{IMAGE_TAG}-migrate` by default
+- Or explicit `global.migrationImageTag` (e.g. `0.17.1-migrate`) when apps stay on an older app tag
 
-Build migrate images (tag `${IMAGE_TAG}-migrate`):
+Build migrate images (tag `${IMAGE_TAG}-migrate` or explicit):
 
 ```powershell
 .\scripts\docker-build-all.ps1 -Image identity-service

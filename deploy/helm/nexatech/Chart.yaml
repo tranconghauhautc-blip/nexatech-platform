@@ -2,7 +2,7 @@ apiVersion: v2
 name: nexatech
 description: NexaTech e-commerce platform Helm chart
 type: application
-version: 0.17.1
+version: 0.17.2
 appVersion: '0.17.0'
 kubeVersion: '>=1.29.0-0'
 keywords:

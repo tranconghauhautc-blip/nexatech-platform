@@ -36,16 +36,7 @@ spec:
         {{- toYaml $.Values.podSecurityContext | nindent 8 }}
       containers:
         - name: migrate
-          {{- $registry := $.Values.global.imageRegistry }}
-          {{- $repo := $.Values.global.imageRepository }}
-          {{- $baseTag := default $.Values.global.imageTag $app.image.tag }}
-          {{- $migrateTag := printf "%s-migrate" $baseTag }}
-          {{- $imgName := $app.image.name }}
-          {{- if $registry }}
-          image: {{ printf "%s/%s/%s:%s" $registry $repo $imgName $migrateTag }}
-          {{- else }}
-          image: {{ printf "%s/%s:%s" $repo $imgName $migrateTag }}
-          {{- end }}
+          image: {{ include "nexatech.migrateImage" (list $ $app) }}
           imagePullPolicy: {{ $.Values.global.imagePullPolicy }}
           command: ["/bin/sh", "-c"]
           args:

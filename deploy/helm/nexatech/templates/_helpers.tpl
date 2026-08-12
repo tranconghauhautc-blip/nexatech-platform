@@ -52,3 +52,21 @@ app.kubernetes.io/instance: {{ .Release.Name }}
 {{- printf "%s/%s:%s" $repo $name $tag -}}
 {{- end -}}
 {{- end -}}
+
+{{- define "nexatech.migrateImage" -}}
+{{- $root := index . 0 -}}
+{{- $app := index . 1 -}}
+{{- $registry := $root.Values.global.imageRegistry -}}
+{{- $repo := $root.Values.global.imageRepository -}}
+{{- $baseTag := default $root.Values.global.imageTag $app.image.tag -}}
+{{- $migrateTag := $root.Values.global.migrationImageTag -}}
+{{- if not $migrateTag -}}
+{{- $migrateTag = printf "%s-migrate" $baseTag -}}
+{{- end -}}
+{{- $name := $app.image.name -}}
+{{- if $registry -}}
+{{- printf "%s/%s/%s:%s" $registry $repo $name $migrateTag -}}
+{{- else -}}
+{{- printf "%s/%s:%s" $repo $name $migrateTag -}}
+{{- end -}}
+{{- end -}}

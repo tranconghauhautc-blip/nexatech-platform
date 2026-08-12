@@ -8,6 +8,10 @@
 #   4. MetalLB pool includes 192.168.4.204
 #   5. External PostgreSQL reachable at 192.168.3.50:5432
 #
+# Images:
+#   Apps:        ghcr.io/tranconghauhautc-blip/nexatech/<svc>:0.17.0
+#   Migrations:  ghcr.io/tranconghauhautc-blip/nexatech/<svc>:0.17.1-migrate
+#
 # GHCR image pull:
 #   - Public packages: leave imagePullSecrets empty (default below).
 #   - Private packages: create secret ghcr-pull, then set:
@@ -25,6 +29,8 @@ global:
   imageRegistry: ghcr.io
   imageRepository: tranconghauhautc-blip/nexatech
   imageTag: '0.17.0'
+  # Fresh migrate images (pipefail fix). Apps stay on 0.17.0; avoid IfNotPresent cache.
+  migrationImageTag: '0.17.1-migrate'
   imagePullPolicy: IfNotPresent
   # Empty = public GHCR. Set [{ name: ghcr-pull }] only when packages are private.
   imagePullSecrets: []
