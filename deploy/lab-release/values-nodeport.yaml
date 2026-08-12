@@ -1,0 +1,5 @@
+# Optional overlay when MetalLB / VIP is not available.
+entry:
+  loadBalancerIP: ''
+  serviceType: NodePort
+  annotations: {}
