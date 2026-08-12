@@ -10,6 +10,24 @@ spec:
   podSelector: {}
   policyTypes:
     - Ingress
+  # Ingress-only: egress is unrestricted so pods can reach external PostgreSQL
+  # (e.g. 192.168.3.50:5432), DNS, and the container registry.
+---
+# Allow MetalLB / Kong VM / cluster clients to reach entry nginx.
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "nexatech.fullname" . }}-allow-entry-external
+  labels:
+    {{- include "nexatech.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/component: entry
+  policyTypes:
+    - Ingress
+  ingress:
+    - {}
 ---
 # Allow entry nginx to reach app pods on HTTP ports.
 apiVersion: networking.k8s.io/v1

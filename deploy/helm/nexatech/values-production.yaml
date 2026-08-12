@@ -1,16 +1,26 @@
-# Production overlays — IP only in deployment values (not app source).
-# Secrets: use --set-file / sealed-secrets / external secret — never commit real passwords.
+# Production / staging-cluster overlay — real LAN topology.
+# Secrets: operator-created Secret only — never commit real passwords.
+#
+# One-command (with GHCR registry overlay when needed):
+#   helm upgrade --install nexatech deploy/helm/nexatech \
+#     -n nexatech \
+#     -f deploy/helm/nexatech/values-production.yaml
+#
+# Or GHCR lab:
+#   helm upgrade --install nexatech deploy/helm/nexatech \
+#     -n nexatech \
+#     -f deploy/environments/staging/values-ghcr.yaml
 
 global:
-  imageRegistry: docker.io
-  imageRepository: CHANGE_ME_DOCKERHUB_USER
+  imageRegistry: ghcr.io
+  imageRepository: tranconghauhautc-blip/nexatech
   imageTag: '0.17.0'
   imagePullPolicy: IfNotPresent
-  imagePullSecrets:
-    - name: dockerhub-pull
+  # Public GHCR: []. Private: [{ name: ghcr-pull }]
+  imagePullSecrets: []
   postgresql:
-    # External PostgreSQL VM
-    host: '192.168.4.208'
+    # External PostgreSQL
+    host: '192.168.3.50'
     port: 5432
     sslMode: prefer
     poolMax: '20'
@@ -36,17 +46,21 @@ apps:
     replicaCount: 2
   order:
     replicaCount: 2
+  swagger:
+    enabled: true
+  securityGuide:
+    enabled: true
 
 platform:
   redis:
     persistence:
-      storageClass: ''
+      storageClass: local-path
   rabbitmq:
     persistence:
-      storageClass: ''
+      storageClass: local-path
   minio:
     persistence:
-      storageClass: ''
+      storageClass: local-path
 
 entry:
   enabled: true
@@ -62,6 +76,7 @@ observability:
     enabled: true
     path: /health/live
 
+# Ingress-only — egress to 192.168.3.50:5432 remains allowed.
 networkPolicy:
   enabled: true
 
@@ -71,10 +86,14 @@ config:
   deployProfile: production
   securityLab:
     enabled: false
-  publicStorefrontUrl: 'https://CHANGE_ME_PUBLIC_HOST'
-  publicAdminUrl: 'https://CHANGE_ME_PUBLIC_HOST/admin'
-  publicApiUrl: 'https://CHANGE_ME_PUBLIC_HOST'
+  publicStorefrontUrl: 'http://192.168.4.204'
+  publicAdminUrl: 'http://192.168.4.204:3100'
+  publicApiUrl: 'http://192.168.4.204'
   otel:
-    enabled: true
+    # Enable only after deploy/helm/nexatech-observability is installed.
+    enabled: false
     exporterEndpoint: 'http://nexatech-obs-otel-collector:4318'
     protocol: 'http/protobuf'
+
+migrations:
+  enabled: true

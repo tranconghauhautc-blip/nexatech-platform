@@ -11,7 +11,8 @@ metadata:
     app.kubernetes.io/component: migrate
     app.kubernetes.io/name: {{ $app.name }}-migrate
   annotations:
-    # Run once per release revision; helm hook pre-upgrade/pre-install
+    # Depends on ServiceAccount hook (weight -10). Secrets are operator-precreated.
+    # Does NOT depend on Redis/RabbitMQ/MinIO or other regular chart resources.
     helm.sh/hook: pre-install,pre-upgrade
     helm.sh/hook-weight: "-5"
     helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
@@ -49,7 +50,7 @@ spec:
           command: ["/bin/sh", "-c"]
           args:
             - |
-              set -euo pipefail
+              set -eu
               echo "Running prisma migrate deploy for {{ $app.name }}"
               if [ -x /app/migrate.sh ]; then
                 exec /app/migrate.sh

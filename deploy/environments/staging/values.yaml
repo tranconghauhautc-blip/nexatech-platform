@@ -1,13 +1,14 @@
 # Staging overrides — LAN/IP first. Domain/TLS later via values only.
+# Prefer values-ghcr.yaml for the complete one-command GHCR lab install.
 global:
-  imageTag: '' # set from build (HEAD+dirty hash)
+  imageTag: '0.17.0'
   imagePullPolicy: IfNotPresent
   postgresql:
-    host: '' # from POSTGRES_HOST
+    host: '192.168.3.50'
     port: 5432
     sslMode: prefer
 
-# Application workloads stay off Kong node
+# Application workloads stay off Kong node (when nodes are labeled).
 nodeSelector:
   nexatech.io/role: app
 
@@ -25,19 +26,40 @@ apps:
   securityGuide:
     enabled: true
 
+platform:
+  redis:
+    persistence:
+      storageClass: local-path
+  rabbitmq:
+    persistence:
+      storageClass: local-path
+  minio:
+    persistence:
+      storageClass: local-path
+
 config:
   nodeEnv: production
   deployProfile: staging
-  publicStorefrontUrl: '' # PUBLIC_STOREFRONT_URL
-  publicAdminUrl: '' # PUBLIC_ADMIN_URL
-  publicApiUrl: '' # PUBLIC_API_URL
+  publicStorefrontUrl: 'http://192.168.4.204'
+  publicAdminUrl: 'http://192.168.4.204:3100'
+  publicApiUrl: 'http://192.168.4.204'
+  otel:
+    enabled: false
+    exporterEndpoint: ''
+    protocol: http/protobuf
 
 entry:
   enabled: true
-  loadBalancerIP: '' # MetalLB VIP / staging LB
+  loadBalancerIP: '192.168.4.204'
+  serviceType: LoadBalancer
+  annotations:
+    metallb.universe.tf/allow-shared-ip: nexatech-entry
   exposeApiPorts: true
 
 migrations:
+  enabled: true
+
+networkPolicy:
   enabled: true
 
 # SMTP optional in staging — Mailpit (compose) is primary for email verification

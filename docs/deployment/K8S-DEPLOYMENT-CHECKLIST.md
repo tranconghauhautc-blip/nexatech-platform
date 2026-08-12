@@ -80,15 +80,22 @@ pwsh -File scripts/deployment/deploy-sequence.ps1
 
 ```powershell
 docker login $env:CONTAINER_REGISTRY_URL -u $env:CONTAINER_REGISTRY_USERNAME -p $env:CONTAINER_REGISTRY_TOKEN
-# GHCR private packages — create imagePullSecret in namespace (operator):
+# Only when GHCR packages are PRIVATE — create imagePullSecret:
 kubectl -n nexatech create secret docker-registry ghcr-pull `
   --docker-server=ghcr.io `
   --docker-username=$env:CONTAINER_REGISTRY_USERNAME `
   --docker-password=$env:CONTAINER_REGISTRY_TOKEN
+# Then set in values: global.imagePullSecrets: [{ name: ghcr-pull }]
+# Public packages: leave imagePullSecrets empty (values-ghcr.yaml default).
 ```
 
 Helm overlay for this GitHub owner: `deploy/environments/staging/values-ghcr.yaml`
-(`global.imageRegistry=ghcr.io`, `global.imageRepository=tranconghauhautc-blip/nexatech`, `imagePullSecrets: [{name: ghcr-pull}]`).
+(`global.imageRegistry=ghcr.io`, `global.imageRepository=tranconghauhautc-blip/nexatech`,
+`imageTag: 0.17.0`, `imagePullSecrets: []` for public packages).
+
+To make GHCR packages pullable without `ghcr-pull`: GitHub → Packages → each
+`tranconghauhautc-blip/nexatech/<image>` → Package settings → Change visibility → Public
+(or grant the pull token `read:packages`).
 
 (See also deploy-sequence step `04-registry`.)
 
@@ -131,13 +138,17 @@ Model: one DB + app role per service — [../DATABASES.md](../DATABASES.md). Nev
 
 ### 13. Run migration Jobs
 
-Preferred (in-cluster Jobs via Helm hooks + host scripts):
+Migrations run automatically as Helm `pre-install`/`pre-upgrade` hooks when
+`migrations.enabled: true` (ServiceAccount hook weight `-10`, migrate Jobs `-5`).
+No manual `kubectl create serviceaccount` and no manual Job apply required.
+
+Optional host-side helper (operator):
 
 ```powershell
 pwsh -File scripts/deployment/migrate-all.ps1
 ```
 
-Helm: `deploy/helm/nexatech/templates/migrations-job.yaml` (`migrations.enabled: true`).  
+Helm: `deploy/helm/nexatech/templates/migrations-job.yaml`.  
 **Forbidden:** `prisma migrate reset`, `prisma db push` on production data.
 
 ### 14. Run required seed Job
@@ -150,19 +161,24 @@ node scripts/seed-catalog-production.cjs --dry-run
 
 Writes account **emails** to `.secrets/seeded-accounts.txt` (gitignored). Requires `REQUIRED_SEED_PASSWORD` / `NEXATECH_ALLOW_REQUIRED_SEED=YES`.
 
-### 15–18. Deploy Redis, RabbitMQ, MinIO, optional Mailpit
+### 15–18. Deploy full NexaTech stack (ONE Helm command)
+
+After namespace + `nexatech-secrets` (+ optional `ghcr-pull` if private) exist:
 
 ```powershell
 helm upgrade --install nexatech deploy/helm/nexatech `
-  -n $env:HELM_NAMESPACE --create-namespace `
-  -f deploy/environments/staging/values.yaml `
-  --set global.postgresql.host=$env:POSTGRES_HOST `
-  --wait --timeout 15m
+  -n nexatech `
+  -f deploy/environments/staging/values-ghcr.yaml `
+  --wait --timeout 20m
 ```
 
-Platform components live in the same chart (`platform.redis|rabbitmq|minio`). Staging Mailpit is Compose/lab-oriented; production SMTP via Secrets (see INFRASTRUCTURE-INPUTS).
+This single command deploys ServiceAccount, ConfigMap, Redis/RabbitMQ/MinIO (+ PVCs + MinIO bucket init),
+14 backends, storefront, admin, swagger + security-guide portals, migrations, entry nginx (VIP 192.168.4.204),
+Services, and NetworkPolicy when enabled.
 
-### 19. Deploy Kong
+Kong is **outside** this chart (VM `192.168.4.209`) — do not install `deploy/helm/kong` for this lab topology.
+
+### 19. Deploy Kong (optional — only if Kong runs in-cluster)
 
 ```powershell
 helm upgrade --install $env:HELM_KONG_RELEASE_NAME deploy/helm/kong `
@@ -178,17 +194,11 @@ Declarative routes also exist at:
 
 Kong Admin API Service is **ClusterIP-only** (`deploy/helm/kong/values.yaml` → `admin.type: ClusterIP`).
 
-### 20–24. Deploy backends, Storefront, Admin, Swagger Portal, Security Guide
+### 20–24. Backends / Storefront / Admin / Portals
 
-Covered by the NexaTech Helm chart apps map (`deploy/helm/nexatech/values.yaml`):
+Covered by the one-command install in step 15–18 (`deploy/helm/nexatech`).
 
-- 14 Nest backends
-- `storefront-web` (:3000)
-- `admin-web` (:3100)
-- `swagger-portal` (:8090)
-- `security-guide-portal` (:3200)
-
-Environment overlays: `deploy/environments/staging/values.yaml`, `deploy/environments/production/values.yaml`.
+Environment overlays: `deploy/environments/staging/values-ghcr.yaml`, `deploy/environments/staging/values.yaml`, `deploy/environments/production/values.yaml`.
 
 ### 25. Wait for rollouts
 

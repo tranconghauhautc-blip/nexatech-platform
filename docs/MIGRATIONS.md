@@ -42,6 +42,15 @@ Chart runs one Job per Prisma service as `pre-install,pre-upgrade` hooks.
 `ttlSecondsAfterFinished: 86400`.
 Hook delete policy: `before-hook-creation,hook-succeeded`.
 
+Hook ordering (clean-cluster install must not deadlock):
+
+| Weight | Resource | Notes |
+| ------ | -------- | ----- |
+| `-10` | `ServiceAccount` | `pre-install,pre-upgrade`; delete policy `before-hook-creation` only (persists for Deployments) |
+| `-5` | migrate Jobs | Need SA + operator Secret `*-database-url` only; POSIX `set -eu` (no bash `pipefail`) |
+
+Do **not** require a manually pre-created ServiceAccount. Do **not** make migrate Jobs depend on Redis/RabbitMQ/MinIO.
+
 ## Retry after failure
 
 1. Inspect Job logs: `kubectl -n nexatech logs job/<service>-migrate`

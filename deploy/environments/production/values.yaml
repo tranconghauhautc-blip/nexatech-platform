@@ -1,10 +1,10 @@
-# Production overrides — domain/TLS via values; no hard-coded IPs in app source.
+# Production overrides — domain/TLS via values; no hard-coded secrets in app source.
 global:
   imagePullPolicy: IfNotPresent
   postgresql:
-    host: '' # from POSTGRES_HOST
+    host: '192.168.3.50' # override from POSTGRES_HOST when needed
     port: 5432
-    sslMode: require
+    sslMode: prefer
 
 nodeSelector:
   nexatech.io/role: app
@@ -27,28 +27,42 @@ apps:
 platform:
   redis:
     enabled: true
+    persistence:
+      storageClass: local-path
   rabbitmq:
     enabled: true
+    persistence:
+      storageClass: local-path
   minio:
     enabled: true
+    persistence:
+      storageClass: local-path
 
 config:
   nodeEnv: production
   deployProfile: production
-  publicStorefrontUrl: '' # PUBLIC_STOREFRONT_URL
-  publicAdminUrl: '' # PUBLIC_ADMIN_URL
-  publicApiUrl: '' # PUBLIC_API_URL
+  publicStorefrontUrl: 'http://192.168.4.204'
+  publicAdminUrl: 'http://192.168.4.204:3100'
+  publicApiUrl: 'http://192.168.4.204'
+  otel:
+    enabled: false
+    exporterEndpoint: ''
+    protocol: http/protobuf
 
 entry:
   enabled: true
-  loadBalancerIP: '' # MetalLB VIP
+  loadBalancerIP: '192.168.4.204'
+  serviceType: LoadBalancer
+  annotations:
+    metallb.universe.tf/allow-shared-ip: nexatech-entry
   exposeApiPorts: true
 
 migrations:
   enabled: true
 
+# Ingress-only when enabled — egress to external PostgreSQL remains open.
 networkPolicy:
-  enabled: false # enable after cluster CNI policy validation
+  enabled: true
 
 # SMTP: set via Secret; missing SMTP_HOST => email channel degraded (not fake success)
 smtp:

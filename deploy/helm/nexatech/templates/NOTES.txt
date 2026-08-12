@@ -2,35 +2,32 @@ CHART NAME: {{ .Chart.Name }}
 CHART VERSION: {{ .Chart.Version }}
 APP VERSION: {{ .Chart.AppVersion }}
 
-NexaTech has been packaged for release {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
+NexaTech release {{ .Release.Name }} in namespace {{ .Release.Namespace }}.
 
-1. Create secrets BEFORE install (never commit real values):
+Prerequisites (once, before Helm — operator only):
+  1. Namespace {{ .Release.Namespace }}
+  2. Secret {{ .Values.global.secretsName }} (see secret-values.example.yaml)
+  3. StorageClass available (staging/lab uses local-path)
+  4. MetalLB (or equivalent) for entry VIP when serviceType=LoadBalancer
+  5. Optional imagePullSecret ONLY if GHCR packages are private
+     (set global.imagePullSecrets; leave empty for public packages)
 
-   kubectl create namespace {{ .Release.Namespace }} --dry-run=client -o yaml | kubectl apply -f -
-   kubectl -n {{ .Release.Namespace }} create secret generic {{ .Values.global.secretsName }} \
-     --from-literal=jwt-access-secret='REPLACE' \
-     --from-literal=jwt-refresh-secret='REPLACE' \
-     --from-literal=admin-session-secret='REPLACE' \
-     --from-literal=rabbitmq-user='nexatech' \
-     --from-literal=rabbitmq-password='REPLACE' \
-     --from-literal=minio-access-key='REPLACE' \
-     --from-literal=minio-secret-key='REPLACE' \
-     --from-literal=redis-url='redis://{{ include "nexatech.fullname" . }}-redis:6379' \
-     --from-literal=rabbitmq-url='amqp://nexatech:REPLACE@{{ include "nexatech.fullname" . }}-rabbitmq:5672' \
-     --from-literal=identity-database-url='postgresql://nexatech_identity:REPLACE@HOST:5432/nexatech_identity' \
-     # ... remaining *-database-url keys — see secret-values.example.yaml
+ONE-COMMAND install / upgrade:
 
-2. Install / upgrade (operator only after kube-context verified):
+  helm upgrade --install {{ .Release.Name }} deploy/helm/nexatech \
+    -n {{ .Release.Namespace }} \
+    -f deploy/environments/staging/values-ghcr.yaml
 
-   helm upgrade --install {{ .Release.Name }} deploy/helm/nexatech \
-     -n {{ .Release.Namespace }} \
-     -f deploy/helm/nexatech/values-production.yaml
+Helm creates ServiceAccount (pre-install hook), ConfigMap, Redis/RabbitMQ/MinIO + PVCs,
+14 backends, storefront, admin, portals, migrations, entry nginx, Services,
+and NetworkPolicy/PDB/HPA when enabled in values.
 
-3. Entry VIP (MetalLB): {{ .Values.entry.loadBalancerIP | default "<pending>" }}
-   Kong VM (192.168.4.209) must upstream to this VIP only.
-   Do NOT expose Redis / RabbitMQ management / MinIO console / PostgreSQL.
+Entry VIP (MetalLB): {{ .Values.entry.loadBalancerIP | default "<pending>" }}
+Kong VM (outside this chart) should upstream to this VIP only.
+Do NOT expose Redis / RabbitMQ management / MinIO console / PostgreSQL publicly.
 
-4. Migrations run as Helm pre-install/pre-upgrade Jobs (prisma migrate deploy).
-   On failure: fix DB URL / permissions, then retry the Job. Never migrate reset / db push.
+Migrations: pre-install/pre-upgrade Jobs (prisma migrate deploy), after ServiceAccount hook.
+On failure: fix DB URL / grants, then retry helm upgrade. Never migrate reset / db push.
 
-5. Observability / backup runbooks: see docs/DEPLOYMENT.md and M18 handoff.
+Observability: sibling chart deploy/helm/nexatech-observability (install separately).
+Keep config.otel.enabled=false unless the collector is deployed.

@@ -1,22 +1,43 @@
-# Staging overlay for GitHub Container Registry (GHCR).
-# Kong remains outside Kubernetes — this chart only references app images.
-# Do NOT put registry tokens in this file. Create imagePullSecret in-cluster:
+# Staging / lab overlay for GHCR — ONE-COMMAND Helm install target.
 #
-#   kubectl create secret docker-registry ghcr-pull `
-#     --docker-server=ghcr.io `
-#     --docker-username=<GHCR_USERNAME> `
-#     --docker-password=<GHCR_TOKEN> `
-#     --namespace=nexatech
+# Prerequisites (operator, once — NOT created by this chart):
+#   1. kubectl create namespace nexatech
+#   2. kubectl -n nexatech create secret generic nexatech-secrets --from-env-file=...
+#      (keys: see deploy/helm/nexatech/secret-values.example.yaml)
+#   3. StorageClass local-path available
+#   4. MetalLB pool includes 192.168.4.204
+#   5. External PostgreSQL reachable at 192.168.3.50:5432
 #
-# Required token scopes: read:packages (pull) + write:packages (push from CI/dev).
+# GHCR image pull:
+#   - Public packages: leave imagePullSecrets empty (default below).
+#   - Private packages: create secret ghcr-pull, then set:
+#       global.imagePullSecrets: [{ name: ghcr-pull }]
+#
+# Exact one-command install:
+#
+#   helm upgrade --install nexatech deploy/helm/nexatech \
+#     -n nexatech \
+#     -f deploy/environments/staging/values-ghcr.yaml
+#
+# Kong stays outside Kubernetes (VM 192.168.4.209) — do not install deploy/helm/kong here.
 
 global:
   imageRegistry: ghcr.io
   imageRepository: tranconghauhautc-blip/nexatech
   imageTag: '0.17.0'
   imagePullPolicy: IfNotPresent
-  imagePullSecrets:
-    - name: ghcr-pull
+  # Empty = public GHCR. Set [{ name: ghcr-pull }] only when packages are private.
+  imagePullSecrets: []
+  postgresql:
+    host: '192.168.3.50'
+    port: 5432
+    sslMode: prefer
+    poolMax: '10'
+    connectTimeout: '10'
+  secretsName: nexatech-secrets
+
+serviceAccount:
+  create: true
 
 apps:
   swagger:
@@ -24,9 +45,55 @@ apps:
   securityGuide:
     enabled: true
 
-migrations:
+platform:
+  redis:
+    enabled: true
+    persistence:
+      enabled: true
+      storageClass: local-path
+  rabbitmq:
+    enabled: true
+    persistence:
+      enabled: true
+      storageClass: local-path
+  minio:
+    enabled: true
+    persistence:
+      enabled: true
+      storageClass: local-path
+    bucketInit:
+      enabled: true
+
+entry:
+  enabled: true
+  loadBalancerIP: '192.168.4.204'
+  serviceType: LoadBalancer
+  annotations:
+    metallb.universe.tf/allow-shared-ip: nexatech-entry
+  exposeApiPorts: true
+
+# Ingress-only policies — egress to external PostgreSQL 192.168.3.50:5432 remains open.
+networkPolicy:
   enabled: true
 
+observability:
+  enabled: false
+
 config:
+  logLevel: info
   nodeEnv: production
   deployProfile: staging
+  securityLab:
+    enabled: false
+  # Direct entry VIP until Kong VM (192.168.4.209) fronts the stack.
+  # After Kong is live, override to http://192.168.4.209 (and /admin as needed).
+  publicStorefrontUrl: 'http://192.168.4.204'
+  publicAdminUrl: 'http://192.168.4.204:3100'
+  publicApiUrl: 'http://192.168.4.204'
+  otel:
+    enabled: false
+    exporterEndpoint: ''
+    protocol: http/protobuf
+
+migrations:
+  enabled: true
