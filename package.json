@@ -33,6 +33,7 @@
     "openapi:check": "node scripts/openapi/check.cjs",
     "helm:lint": "node scripts/deployment/helm-lint.cjs",
     "helm:validate": "node scripts/deployment/helm-validate-one-command.cjs",
+    "lab:kit": "powershell -NoProfile -File scripts/package-lab-kit.ps1",
     "docker:build:all": "pwsh -File scripts/images/build-all.ps1",
     "e2e:setup": "pwsh -File scripts/e2e/setup.ps1",
     "e2e:seed": "pwsh -File scripts/e2e/seed.ps1",

@@ -124,6 +124,20 @@ Internet / LAN
                 → ClusterIP services (storefront, admin, APIs)
 ```
 
+## Lab one-command (GHCR public)
+
+Images: `ghcr.io/tranconghauhautc-blip/nexatech/<svc>:0.17.0` (+ `:0.17.1-migrate`).
+Packages are **public** — no `imagePullSecret` required.
+
+Portable kit (Helm chart + `install.ps1`):
+
+```powershell
+powershell -NoProfile -File .\scripts\package-lab-kit.ps1
+# → dist/nexatech-lab-kit-0.17.2.zip  (copy to lab, unzip, fill secret.env, .\install.ps1)
+```
+
+Full guide: [deployment/LAB-ONE-COMMAND.md](./deployment/LAB-ONE-COMMAND.md).
+
 ## Helm chart (M17)
 
 Path: **`deploy/helm/nexatech`**
