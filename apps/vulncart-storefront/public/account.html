@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tài khoản — VulnCart</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">VulnCart</div>
+    <nav>
+      <a href="/">Sản phẩm</a>
+      <a href="/cart.html">Giỏ hàng</a>
+      <a href="/orders.html">Đơn hàng</a>
+      <a href="/account.html">Tài khoản</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Tài khoản</h1>
+    <section>
+      <h2>Đăng nhập</h2>
+      <input id="lu" placeholder="username" value="demo" />
+      <input id="lp" placeholder="password" value="user123" type="password" />
+      <button id="login">Login</button>
+      <button id="logout">Logout</button>
+    </section>
+    <section>
+      <h2>Đăng ký (mass-assign role)</h2>
+      <input id="ru" placeholder="username" />
+      <input id="rp" placeholder="password" type="password" />
+      <input id="rr" placeholder="role (USER|ADMIN)" value="USER" />
+      <button id="register">Register</button>
+    </section>
+    <section>
+      <h2>Profile / self-promote</h2>
+      <pre id="me"></pre>
+      <input id="role" placeholder="role" value="ADMIN" />
+      <button id="promote">PATCH /users/me {role}</button>
+    </section>
+    <section>
+      <h2>Review (không cần mua)</h2>
+      <input id="pid" placeholder="productId" />
+      <input id="content" placeholder="content" value="spam review" />
+      <button id="rev">Tạo review</button>
+    </section>
+  </main>
+  <script src="/app.js"></script>
+  <script>
+    async function refresh() {
+      try {
+        const me = await api.get('/api/users/me');
+        document.getElementById('me').textContent = JSON.stringify(me, null, 2);
+      } catch {
+        document.getElementById('me').textContent = '(chưa đăng nhập)';
+      }
+    }
+    document.getElementById('login').onclick = async () => {
+      const r = await api.post('/api/auth/login', {
+        username: document.getElementById('lu').value,
+        password: document.getElementById('lp').value,
+      });
+      api.setToken(r.accessToken);
+      refresh();
+    };
+    document.getElementById('logout').onclick = async () => {
+      try { await api.post('/api/auth/logout', {}); } catch {}
+      api.setToken('');
+      refresh();
+    };
+    document.getElementById('register').onclick = async () => {
+      const r = await api.post('/api/auth/register', {
+        username: document.getElementById('ru').value,
+        password: document.getElementById('rp').value,
+        role: document.getElementById('rr').value,
+      });
+      api.setToken(r.accessToken);
+      refresh();
+    };
+    document.getElementById('promote').onclick = async () => {
+      await api.patch('/api/users/me', { role: document.getElementById('role').value });
+      refresh();
+    };
+    document.getElementById('rev').onclick = async () => {
+      await api.post('/api/reviews', {
+        productId: document.getElementById('pid').value,
+        rating: 5,
+        content: document.getElementById('content').value,
+      });
+      alert('review created');
+    };
+    refresh();
+  </script>
+</body>
+</html>

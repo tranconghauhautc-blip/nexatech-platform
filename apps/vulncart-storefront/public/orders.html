@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Đơn hàng — VulnCart</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">VulnCart</div>
+    <nav>
+      <a href="/">Sản phẩm</a>
+      <a href="/cart.html">Giỏ hàng</a>
+      <a href="/orders.html">Đơn hàng</a>
+      <a href="/account.html">Tài khoản</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Đơn của tôi</h1>
+    <p class="muted">Lab IDOR: nhập UUID đơn người khác vào ô xem.</p>
+    <div class="row">
+      <input id="oid" placeholder="Order UUID (IDOR)" />
+      <button id="peek">Xem theo ID</button>
+    </div>
+    <pre id="peekOut"></pre>
+    <div id="list"></div>
+  </main>
+  <script src="/app.js"></script>
+  <script>
+    async function load() {
+      await api.authRequired();
+      const orders = await api.get('/api/orders');
+      document.getElementById('list').innerHTML = orders.map(o => `
+        <article>
+          <div><code>${o.id}</code> · ${o.status} · ${Number(o.totalAmount).toLocaleString('vi-VN')}đ</div>
+          <button onclick="cancelOrder('${o.id}')">Hủy (kể cả completed)</button>
+        </article>`).join('') || '<p>Chưa có đơn</p>';
+    }
+    async function cancelOrder(id) {
+      await api.post(`/api/orders/${id}/cancel`, {});
+      load();
+    }
+    document.getElementById('peek').onclick = async () => {
+      const id = document.getElementById('oid').value.trim();
+      const o = await api.get(`/api/orders/${id}`);
+      document.getElementById('peekOut').textContent = JSON.stringify(o, null, 2);
+    };
+    load();
+  </script>
+</body>
+</html>

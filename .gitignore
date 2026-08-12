@@ -59,6 +59,8 @@ Thumbs.db
 .env.security-guide.local
 *.security-guide.session*
 .secrets/
+secret.env
+!secret.env.example
 deploy/checkpoints/*.json
 deploy/checkpoints/*-rendered.yaml
 !deploy/checkpoints/.gitkeep
@@ -79,3 +81,5 @@ test-results/
 out
 
 *.tsbuildinfo
+
+

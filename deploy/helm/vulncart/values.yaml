@@ -1,0 +1,89 @@
+# VulnCart Helm values — lean 3-node lab
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullSecrets: []
+
+# Images (override after build/push)
+images:
+  backendApi:
+    repository: vulncart/backend-api
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  migrate:
+    repository: vulncart/backend-api-migrate
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  storefront:
+    repository: vulncart/storefront-web
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  admin:
+    repository: vulncart/admin-web
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+  securityGuide:
+    repository: vulncart/security-guide-portal
+    tag: "1.0.0"
+    pullPolicy: IfNotPresent
+
+# Populated by install.sh from secret.env (or --set)
+secret:
+  create: true
+  postgresPassword: ""
+  databaseUrl: ""
+  jwtSecret: ""
+  adminUsername: "admin"
+  adminPassword: ""
+
+postgres:
+  enabled: true
+  image: postgres:16-alpine
+  database: vulncart
+  username: vulncart_app
+  storageClassName: local-path
+  storageSize: 5Gi
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+backendApi:
+  replicas: 1
+  port: 3000
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: "1"
+      memory: 512Mi
+
+storefront:
+  replicas: 1
+  port: 3100
+
+admin:
+  replicas: 1
+  port: 3200
+
+securityGuide:
+  replicas: 1
+  port: 3300
+
+ingress:
+  enabled: true
+  className: nginx
+  # Leave host empty for IP / nip.io style access
+  host: ""
+  # Optional TLS secret name
+  tlsSecretName: ""
+  annotations: {}
+  # If your ingress-nginx Service is LoadBalancer, leave controller as-is.
+  # This chart only creates an Ingress (no MetalLB / Kong dependency).
+
+migration:
+  enabled: true

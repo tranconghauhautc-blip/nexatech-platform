@@ -1,4 +1,37 @@
-# NexaTech Architecture
+# VulnCart Architecture (current deploy target)
+
+> Primary product path is now **VulnCart** — intentionally vulnerable API lab.
+> See `docs/VULNCART.md`. Legacy NexaTech microservices remain in-tree for reference only.
+
+## VulnCart (lean lab)
+
+```text
+                    ingress-nginx
+                         │
+     ┌───────────┬───────┼───────────┬──────────────┐
+     │           │       │           │              │
+     ▼           ▼       ▼           ▼              ▼
+ storefront   /admin  /security-  /api (+docs)   (no Kong)
+    /                    guide
+     │           │       │           │
+     └───────────┴───────┴───────────┤
+                                     ▼
+                              backend-api
+                              (NestJS monolith)
+                                     │
+                                     ▼
+                         PostgreSQL 16 in-cluster
+                         PVC: local-path
+                         DB: vulncart
+```
+
+Components: `backend-api`, `storefront-web`, `admin-web`, `security-guide-portal`, `postgres`, `migrate` Job.
+
+No Redis, RabbitMQ, MinIO, MetalLB requirement, or external database server.
+
+---
+
+# Legacy: NexaTech Architecture (archived reference)
 
 ## 1. Tổng quan
 

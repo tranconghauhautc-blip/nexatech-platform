@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VulnCart Storefront</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">VulnCart</div>
+    <nav>
+      <a href="/">Sản phẩm</a>
+      <a href="/cart.html">Giỏ hàng</a>
+      <a href="/orders.html">Đơn hàng</a>
+      <a href="/account.html">Tài khoản</a>
+      <a href="/api/docs" target="_blank">Swagger</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Cửa hàng demo (API Security Lab)</h1>
+    <p class="muted">UI gọn để gọi relative <code>/api</code>. Lỗ hổng luôn bật.</p>
+    <div class="row">
+      <input id="q" placeholder="Tìm sản phẩm..." />
+      <button id="searchBtn">Tìm</button>
+    </div>
+    <div id="list" class="grid"></div>
+  </main>
+  <script src="/app.js"></script>
+  <script>
+    async function load() {
+      const q = document.getElementById('q').value;
+      const items = await api.get('/api/products' + (q ? `?q=${encodeURIComponent(q)}` : ''));
+      const el = document.getElementById('list');
+      el.innerHTML = items.map(p => `
+        <article>
+          <h3>${esc(p.name)}</h3>
+          <p>${esc(p.description || '')}</p>
+          <p><strong>${Number(p.price).toLocaleString('vi-VN')}đ</strong> · tồn ${p.stock}</p>
+          <button onclick="addCart('${p.id}', ${p.price})">Thêm giỏ</button>
+        </article>`).join('') || '<p>Không có sản phẩm</p>';
+    }
+    async function addCart(productId, price) {
+      await api.authRequired();
+      await api.post('/api/cart/items', { productId, quantity: 1, unitPrice: price });
+      alert('Đã thêm vào giỏ');
+    }
+    document.getElementById('searchBtn').onclick = load;
+    load();
+  </script>
+</body>
+</html>

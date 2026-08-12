@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Giỏ hàng — VulnCart</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">VulnCart</div>
+    <nav>
+      <a href="/">Sản phẩm</a>
+      <a href="/cart.html">Giỏ hàng</a>
+      <a href="/orders.html">Đơn hàng</a>
+      <a href="/account.html">Tài khoản</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Giỏ hàng</h1>
+    <p class="muted">Lab: có thể sửa quantity âm / unitPrice trước khi checkout.</p>
+    <div id="cart"></div>
+    <div class="row">
+      <label>checkoutKey (double checkout) <input id="ck" placeholder="optional" /></label>
+      <button id="checkout">Checkout</button>
+    </div>
+  </main>
+  <script src="/app.js"></script>
+  <script>
+    async function load() {
+      await api.authRequired();
+      const items = await api.get('/api/cart');
+      document.getElementById('cart').innerHTML = items.map(i => `
+        <article>
+          <div>${esc(i.product?.name || i.productId)} × ${i.quantity}
+            · giá client: <input data-id="${i.id}" class="price" value="${i.unitPrice ?? i.product?.price ?? 0}" style="width:100px" />
+            · SL: <input data-id="${i.id}" class="qty" value="${i.quantity}" style="width:60px" />
+          </div>
+          <button onclick="save('${i.id}')">Cập nhật</button>
+          <button onclick="removeItem('${i.id}')">Xóa</button>
+        </article>`).join('') || '<p>Giỏ trống</p>';
+    }
+    async function save(id) {
+      const qty = Number(document.querySelector(`.qty[data-id="${id}"]`).value);
+      const unitPrice = Number(document.querySelector(`.price[data-id="${id}"]`).value);
+      await api.patch(`/api/cart/items/${id}`, { quantity: qty, unitPrice });
+      load();
+    }
+    async function removeItem(id) {
+      await api.del(`/api/cart/items/${id}`);
+      load();
+    }
+    document.getElementById('checkout').onclick = async () => {
+      const checkoutKey = document.getElementById('ck').value || undefined;
+      const order = await api.post('/api/orders/checkout', { checkoutKey });
+      alert('Order ' + order.id + ' total=' + order.totalAmount);
+      location.href = '/orders.html';
+    };
+    load();
+  </script>
+</body>
+</html>

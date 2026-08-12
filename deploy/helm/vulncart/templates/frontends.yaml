@@ -1,0 +1,183 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vulncart.fullname" . }}-storefront-web
+  labels:
+    {{- include "vulncart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storefront-web
+spec:
+  replicas: {{ .Values.storefront.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: storefront-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: storefront-web
+        {{- include "vulncart.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: storefront
+          image: "{{ .Values.images.storefront.repository }}:{{ .Values.images.storefront.tag }}"
+          imagePullPolicy: {{ .Values.images.storefront.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.storefront.port }}
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vulncart.fullname" . }}-storefront-web
+  labels:
+    {{- include "vulncart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: storefront-web
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: storefront-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vulncart.fullname" . }}-admin-web
+  labels:
+    {{- include "vulncart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: admin-web
+spec:
+  replicas: {{ .Values.admin.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: admin-web
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: admin-web
+        {{- include "vulncart.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: admin
+          image: "{{ .Values.images.admin.repository }}:{{ .Values.images.admin.tag }}"
+          imagePullPolicy: {{ .Values.images.admin.pullPolicy }}
+          env:
+            - name: PORT
+              value: {{ .Values.admin.port | quote }}
+            - name: BASE_PATH
+              value: /admin
+          ports:
+            - name: http
+              containerPort: {{ .Values.admin.port }}
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vulncart.fullname" . }}-admin-web
+  labels:
+    {{- include "vulncart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: admin-web
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: admin-web
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "vulncart.fullname" . }}-security-guide
+  labels:
+    {{- include "vulncart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: security-guide-portal
+spec:
+  replicas: {{ .Values.securityGuide.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: security-guide-portal
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: security-guide-portal
+        {{- include "vulncart.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: security-guide
+          image: "{{ .Values.images.securityGuide.repository }}:{{ .Values.images.securityGuide.tag }}"
+          imagePullPolicy: {{ .Values.images.securityGuide.pullPolicy }}
+          env:
+            - name: PORT
+              value: {{ .Values.securityGuide.port | quote }}
+            - name: BASE_PATH
+              value: /security-guide
+          ports:
+            - name: http
+              containerPort: {{ .Values.securityGuide.port }}
+          readinessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "vulncart.fullname" . }}-security-guide
+  labels:
+    {{- include "vulncart.labels" . | nindent 4 }}
+    app.kubernetes.io/component: security-guide-portal
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: security-guide-portal
+  ports:
+    - name: http
+      port: 80
+      targetPort: http

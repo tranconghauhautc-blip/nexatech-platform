@@ -1,0 +1,19 @@
+{{- /*
+VulnCart Helm notes
+*/ -}}
+VulnCart intentionally vulnerable API lab
+
+1. Ensure images in values.yaml (or --set / env in install.sh) are pullable.
+2. Access via ingress-nginx:
+
+   /                -> storefront-web
+   /admin           -> admin-web
+   /security-guide  -> security-guide-portal
+   /api             -> backend-api
+   /api/docs        -> Swagger UI
+
+3. Default DB: vulncart / user vulncart_app (password from secret).
+
+4. Admin seed: ADMIN_USERNAME / ADMIN_PASSWORD from secret.env
+
+Lab vulnerabilities are ALWAYS ON. Do not expose to the public Internet.

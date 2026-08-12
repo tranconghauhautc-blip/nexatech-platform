@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VulnCart Security Guide</title>
+  <base href="/security-guide/" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">VulnCart Security Guide</div>
+    <nav>
+      <a href="/">Storefront</a>
+      <a href="/admin/">Admin</a>
+      <a href="/api/docs" target="_blank">Swagger</a>
+    </nav>
+  </header>
+  <main>
+    <h1>API Security Lab Scenarios</h1>
+    <p class="muted">Brand: <strong>VulnCart</strong>. Vulnerabilities always on. Dùng Swagger Try-it-out hoặc curl.</p>
+    <table>
+      <thead><tr><th>#</th><th>OWASP / Theme</th><th>Endpoint</th><th>How to demo</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>BOLA / IDOR</td><td><code>GET /api/orders/{id}</code></td><td>Đăng nhập user A, đọc order UUID của user B</td></tr>
+        <tr><td>2</td><td>Broken Authentication</td><td><code>GET /api/lab/jwt-alg-none</code></td><td>Dùng token alg=none làm ADMIN</td></tr>
+        <tr><td>3</td><td>Mass Assignment / BOPLA</td><td><code>PATCH /api/users/me</code></td><td>Body <code>{"role":"ADMIN"}</code></td></tr>
+        <tr><td>4</td><td>BFLA</td><td><code>GET /api/admin/users?asAdmin=1</code></td><td>User thường + query hoặc header <code>x-user-role: ADMIN</code></td></tr>
+        <tr><td>5</td><td>Unrestricted Resource Consumption</td><td><code>GET /api/products?limit=100000</code></td><td>Limit không bị chặn</td></tr>
+        <tr><td>6</td><td>Sensitive Business Flow</td><td>Cart / Checkout</td><td>quantity âm, unitPrice=1, buy over stock, double checkout, cancel completed</td></tr>
+        <tr><td>7</td><td>SSRF</td><td><code>GET /api/lab/ssrf-probe?url=</code></td><td>Fetch URL nội bộ</td></tr>
+        <tr><td>8</td><td>Security Misconfiguration</td><td><code>GET /api/lab/debug</code></td><td>Leak env + stack trong lỗi</td></tr>
+        <tr><td>9</td><td>Improper Inventory Management</td><td><code>GET /api/lab/inventory</code> · <code>/api/v0/internal/users</code></td><td>Shadow / deprecated APIs</td></tr>
+        <tr><td>10</td><td>Unsafe Consumption of APIs</td><td><code>GET /api/lab/unsafe-consume</code></td><td>Product metadata.callbackUrl được server fetch</td></tr>
+      </tbody>
+    </table>
+    <h2>Business logic checklist</h2>
+    <ul>
+      <li>negative quantity — <code>POST /api/cart/items</code></li>
+      <li>price tampering — <code>unitPrice</code> trên cart item</li>
+      <li>buy over stock — checkout không check stock</li>
+      <li>double checkout — gửi <code>checkoutKey</code> (cart không clear)</li>
+      <li>cancel completed order — <code>POST /api/orders/{id}/cancel</code></li>
+      <li>review without purchase — <code>POST /api/reviews</code></li>
+      <li>multiple review spam — không unique constraint</li>
+      <li>user self-promote role — register/patch role</li>
+      <li>read another user's order — IDOR</li>
+      <li>edit another user's review — <code>PATCH /api/reviews/{id}</code></li>
+    </ul>
+  </main>
+</body>
+</html>

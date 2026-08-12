@@ -1,0 +1,49 @@
+{
+  "name": "backend-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/backend-api/src",
+  "projectType": "application",
+  "tags": ["scope:backend", "type:service", "brand:vulncart"],
+  "targets": {
+    "prisma-generate": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "cross-env DATABASE_URL=postgresql://vulncart_app:changeme@localhost:5432/vulncart prisma generate",
+        "cwd": "apps/backend-api"
+      }
+    },
+    "build": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["prisma-generate"],
+      "options": {
+        "command": "webpack-cli build",
+        "args": ["--node-env=production"],
+        "cwd": "apps/backend-api"
+      },
+      "configurations": {
+        "development": {
+          "args": ["--node-env=development"]
+        },
+        "production": {
+          "args": ["--node-env=production"]
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "backend-api:build",
+        "runBuildTargetDependencies": false
+      }
+    },
+    "test": {
+      "dependsOn": ["prisma-generate"],
+      "options": {
+        "passWithNoTests": true
+      }
+    }
+  }
+}

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>VulnCart Admin</title>
+  <base href="/admin/" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <div class="brand">VulnCart Admin</div>
+    <nav>
+      <a href="./">Dashboard</a>
+      <a href="/api/docs" target="_blank">Swagger</a>
+      <a href="/security-guide/">Security Guide</a>
+    </nav>
+  </header>
+  <main>
+    <h1>Admin demo</h1>
+    <p class="muted">Gọi relative <code>/api/admin/*</code>. BFLA: thử header <code>x-user-role: ADMIN</code> hoặc <code>?asAdmin=1</code>.</p>
+    <section>
+      <h2>Login admin</h2>
+      <input id="u" value="admin" />
+      <input id="p" type="password" value="Admin123!" />
+      <button id="login">Login</button>
+    </section>
+    <section>
+      <h2>Users</h2>
+      <button id="loadUsers">Load users</button>
+      <pre id="users"></pre>
+    </section>
+    <section>
+      <h2>Products CRUD</h2>
+      <button id="loadProducts">Load products</button>
+      <div class="row">
+        <input id="pname" placeholder="name" value="Lab Gadget" />
+        <input id="pprice" placeholder="price" value="1000" />
+        <input id="pstock" placeholder="stock" value="5" />
+        <button id="createP">Create</button>
+      </div>
+      <pre id="products"></pre>
+    </section>
+    <section>
+      <h2>Orders</h2>
+      <button id="loadOrders">Load orders</button>
+      <pre id="orders"></pre>
+    </section>
+    <section>
+      <h2>Reviews moderation</h2>
+      <button id="loadReviews">Load reviews</button>
+      <pre id="reviews"></pre>
+    </section>
+  </main>
+  <script src="app.js"></script>
+  <script>
+    document.getElementById('login').onclick = async () => {
+      const r = await api.post('/api/auth/login', {
+        username: document.getElementById('u').value,
+        password: document.getElementById('p').value,
+      });
+      api.setToken(r.accessToken);
+      alert('logged in as ' + r.user.role);
+    };
+    document.getElementById('loadUsers').onclick = async () => {
+      document.getElementById('users').textContent = JSON.stringify(await api.get('/api/admin/users'), null, 2);
+    };
+    document.getElementById('loadProducts').onclick = async () => {
+      document.getElementById('products').textContent = JSON.stringify(await api.get('/api/admin/products'), null, 2);
+    };
+    document.getElementById('createP').onclick = async () => {
+      const p = await api.post('/api/admin/products', {
+        name: document.getElementById('pname').value,
+        price: Number(document.getElementById('pprice').value),
+        stock: Number(document.getElementById('pstock').value),
+        metadata: { callbackUrl: 'http://127.0.0.1:3000/health' },
+      });
+      alert('created ' + p.id);
+    };
+    document.getElementById('loadOrders').onclick = async () => {
+      document.getElementById('orders').textContent = JSON.stringify(await api.get('/api/admin/orders'), null, 2);
+    };
+    document.getElementById('loadReviews').onclick = async () => {
+      document.getElementById('reviews').textContent = JSON.stringify(await api.get('/api/admin/reviews'), null, 2);
+    };
+  </script>
+</body>
+</html>
